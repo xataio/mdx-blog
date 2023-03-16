@@ -102,7 +102,7 @@ xata codegen
 
 Astro starts with a mininal setup on its `src/pages/index.astro` file. We'll keep it as is. It should look something like the below.
 
-```astro
+```tsx
 ---
 ---
 
@@ -124,7 +124,7 @@ First let's import the `getXataClient` function which was provided to us by the 
 
 > ❌ Error: Option apiKey is required
 
-```astro {2-3}
+```tsx {2-3}
 ---
 import { getXataClient } from "../xata";
 const xata = getXataClient();
@@ -146,7 +146,7 @@ const xata = getXataClient();
 
 This error occurs because the Xata client is being called directly in the browser where the API key is not set. We can fix this a few different ways but the easiest is to import the key from `.env` key when calling the client. Rather than use the `getXataClient()` function directly from the `src/xata.ts` file, let's instead make our own wrapping function that passes the key in the options.
 
-```astro {2-3}
+```tsx {2-3}
 ---
 import { XataClient } from "../xata";
 const xata = new XataClient({ apiKey: import.meta.env.XATA_API_KEY });
@@ -168,7 +168,7 @@ const xata = new XataClient({ apiKey: import.meta.env.XATA_API_KEY });
 
 After refreshing we'll notice we have no more errors. At this point it should be easy to query the `Posts` table.
 
-```astro {4,17-23}
+```tsx {4,17-23}
 ---
 import { XataClient } from "../xata";
 const xata = new XataClient({ apiKey: import.meta.env.XATA_API_KEY });
@@ -195,27 +195,6 @@ const records = await xata.db.Posts.getMany();
 </body>
 </html>
 ```
-
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Astro</title>
-  </head>
-  <body>
-  <h1>My posts</h1>
-  {records.map((record) => (
-    <div>
-      <h2>{record.title}</h2>
-      <p>{record.body}</p>
-      <p>{record.pubDate}</p>
-    </div>
-  ))}
-</body>
-</html>
-
 
 At this point you should have a basic understanding of how to query Xata records from the Database with Astro. Note that this method will only return records on build. If you need to wanted to output the same method dynamically, we'd need to utilize Astro's server-side rendering.
 
