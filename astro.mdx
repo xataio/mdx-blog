@@ -176,25 +176,46 @@ const records = await xata.db.Posts.getMany();
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>My posts</h1>
-		{records.map((record) => (
-				<div>
-					<h2>{record.title}</h2>
-					<p>{record.body}</p>
-					<p>{record.pubDate}</p>
-				</div>
-		))}
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Astro</title>
+  </head>
+  <body>
+  <h1>My posts</h1>
+  {records.map((record) => (
+    <div>
+      <h2>{record.title}</h2>
+      <p>{record.body}</p>
+      <p>{record.pubDate}</p>
+    </div>
+  ))}
+</body>
 </html>
 ```
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Astro</title>
+  </head>
+  <body>
+  <h1>My posts</h1>
+  {records.map((record) => (
+    <div>
+      <h2>{record.title}</h2>
+      <p>{record.body}</p>
+      <p>{record.pubDate}</p>
+    </div>
+  ))}
+</body>
+</html>
+
 
 At this point you should have a basic understanding of how to query Xata records from the Database with Astro. Note that this method will only return records on build. If you need to wanted to output the same method dynamically, we'd need to utilize Astro's server-side rendering.
 
