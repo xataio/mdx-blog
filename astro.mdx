@@ -93,7 +93,7 @@ Since we set the project up with TypeScript support it also created files that p
 
 The `src/xata.ts` includes generated code that typically you should never touch manually. If you change the schema of your `my-xata-app` database, like adding a column to `Posts`, you'll want to run `xata codegen` to update the typings within that file.
 
-```
+```bash
 # To update the contents of ~/project/src/.xatarc
 xata codegen
 ```
@@ -105,7 +105,6 @@ Astro starts with a mininal setup on its `src/pages/index.astro` file. We'll kee
 ```tsx
 ---
 ---
-
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
