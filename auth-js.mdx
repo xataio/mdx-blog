@@ -21,7 +21,7 @@ Before going into the Next.js specifics, let's first understand our goals with t
 
 A diagram is probably the fastest way to visualizing a process. This is important to see if there aren't any redundant calls, or if any of those requests are chained in some condition. Chained requests are the grim reapers of perceived performance, we need to get those out of the way as soon as possible.
 
-![diagram mapping how authentication will work in our app](/images/blog/auth_js/diagram.png)
+<ArticleImage src="https://xata.io/images/blog/auth_js/diagram.png" width="954" height="420" alt="Diagram mapping how authentication will work in our app" caption="Our auth architecture" variant="crystal_river" position="center" />
 
 In the above graph, we have “Frontend” and “Backend” that are both handled by Next.js. We have the “auth provider” which our app is connected to via Auth.js (within a Next.js endpoint), and we have Xata as our database, connecting as well via Next.js’ backend layer. We can examine and translate the flow of that diagram into 3 steps:
 
@@ -65,7 +65,6 @@ export const authConfig = {
 }
 
 export default NextAuth(authConfig)
-
 ```
 
 With that, Auth.js is ready to authenticate and provide our app with a valid session to fetch user specific data. Now it's time to setup our database our app can communicate to Xata, it is important to setup a workspace and push our schema to it. First ,take the following `json` and save it somewhere:
@@ -223,7 +222,6 @@ With that, Auth.js is ready to authenticate and provide our app with a valid ses
     }
   ]
 }
-
 ```
 
 And now if you have our CLI installed, you can use the  `xata` namespace, otherwise `npx @xata.io/cli@latest` will also work:
@@ -257,7 +255,6 @@ GITHUB_SECRET=<secret of your Provider OAuth app for this environment>
 # Auth.js specifics
 NEXTAUTH_URL=http://localhost:3000 # if in local dev
 NEXTAUTH_SECRET=<a random secret string>
-
 ```
 
 Finally, it's time to manage some data.
@@ -297,7 +294,6 @@ export const getServerSideProps = async ({
     },
   }
 }
-
 ```
 
 In the above example, we are using the user's email as their unique identifier (or Primary Key). And we implemented a getter in a file named `db.server.ts`. Let's see how that looks like using the Xata SDK.
@@ -350,7 +346,6 @@ export const fetchData = async (userEmail: string) => {
     )
   }
 }
-
 ```
 
 ## Working Code
