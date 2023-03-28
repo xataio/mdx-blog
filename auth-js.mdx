@@ -21,7 +21,7 @@ Before going into the Next.js specifics, let's first understand our goals with t
 
 A diagram is probably the fastest way to visualizing a process. This is important to see if there aren't any redundant calls, or if any of those requests are chained in some condition. Chained requests are the grim reapers of perceived performance, we need to get those out of the way as soon as possible.
 
-<ArticleImage src="https://xata.io/images/blog/auth_js/diagram.png" width="954" height="420" alt="Diagram mapping how authentication will work in our app" caption="Our auth architecture" variant="crystal_river" position="center" />
+<ArticleImage src="https://xata.io/images/blog/auth_js/diagram.png" width="954" height="420" alt="Diagram mapping how authentication will work in our app" caption="Our auth architecture" variant="crystalRiver" position="center" />
 
 In the above graph, we have “Frontend” and “Backend” that are both handled by Next.js. We have the “auth provider” which our app is connected to via Auth.js (within a Next.js endpoint), and we have Xata as our database, connecting as well via Next.js’ backend layer. We can examine and translate the flow of that diagram into 3 steps:
 
