@@ -32,7 +32,7 @@ Regional: sends 10 requests to a Vercel function that is pinned to be executed i
 
 Global: sends 10 requests to a Vercel function that is not pinned to a region, it picks a region close to where we run the Vercel function from – in our case, Spain (Europe).
 
-<ArticleImage src="https://xata.io/images/blog/latency/latency_dist1.png" width="500" height="522" alt="Latency distribution" caption="Latency distribution from Spain" position="center" />
+<ArticleImage src="https://xata.io/images/blog/latency/latency_dist2.png" width="500" height="522" alt="Latency distribution" caption="Latency distribution from Spain" position="center" />
 
 “Global” response times are worse than “regional” response times, but digging deeper, we saw that by consistently sending requests the times decreased, but not as much as we expected. This prompted us to seek improvement, and we conducted a proof of concept to test Cloudflare’s services.
 
