@@ -1,0 +1,93 @@
+---
+title: "Securely querying Your database with Xata (and why browser-based requests are not secure)"
+description: "Creating a secure connection between an application and a Xata database. How to fetch data from pure client-side apps without exposing your security keys."
+image:
+  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  alt: Xata
+author: Atila Fassina
+date: 10-24-2022
+published: true
+slug: securely-querying-your-database-on-xata
+---
+
+With a database access key being sent out from the browser, your database is readable and writable by anyone. They may read the key and therefore use the key to create malicious connections to your database. These actions (attacks) are called **exploits**, and the data retrieved from such exploits are called **leaks**. Yes, like the famous “data leaks” we hear about in the news. Whether your leaked app makes to the news or not will depend on how big and influential your user-base is, but the problem is still the same. Someone with the key can even delete all of your data if they so choose.
+
+When building an app, a common pattern is to build an API (Application Program Interface) that will work as a bridge between your database and the client-side app. Said API will expose a certain number of endpoints depending on how it is designed. For example:
+
+<ArticleImage src="https://i.imgur.com/NgpZvIp.jpg" width="2083" height="1386" alt="Diagram of App-API-DB architecture" caption="Diagram of App-API-DB architecture" position="center" />
+
+This architecture is not only common, it's a requirement. It happens because a database requires **access keys**. As anything valuable, user data must be stored behind locked doors. Wherever the query originates from, must add these **access keys** (often referred to as **access tokens** as well) to the request. This is why any communication with a database must happen in a **private connection**.
+
+A browser is a **public** interface. Whatever data and code an app has in the browser is **exposed the public**. Now connect the dots: if everything on the browser is available to the public, and a query (request) goes from the browser straight to the database, what happens to the secure key it must carry to actually retrieve the data? You guessed it: the key is readable, as said in security contexts, it is **exposed**.
+
+## Querying Xata
+
+To make things more ergonomic, Xata has a [Software Development Kit (SDK)](https://xata.io/docs/sdk/getting-started) we call [client-ts](https://github.com/xataio/client-ts). Under the hood, there are many best practices we enforce. It also generates TypeScript types for your data request and responses based on your schema - that is the Object Relational Mapping (ORM) side of our SDK.
+
+But arguably, the most important aspect of our SDK is that it will securely query Xata using your environment variables (`process.env`) the `XATA_API_KEY`, which is the key required to query your database. There multiple different ways to expose this environment variable to your running app, for example:
+
+- when calling the script:
+
+```bash
+XATA_API_KEY=my_api_key node ./script/query.js
+```
+
+- more commonly, via the `.env` configuration file:
+
+```bash
+XATA_API_KEY=my_api_key
+```
+
+When deploying your app, you must find out how to define Environment Variables to the deployment script. Each PaaS (Platform as a Service) has a different way of doing that. Have a look for examples at [CircleCI](https://circleci.com/docs/env-vars/), [Cloudflare Workers](https://developers.cloudflare.com/workers/platform/environment-variables/), [Netlify](https://docs.netlify.com/configure-builds/environment-variables/), or [Vercel](https://vercel.com/docs/concepts/projects/environment-variables).
+
+The `process.env` namespace is not available in browser environments so if using the SDK, you will experience *friction* when attempting to query your Xata database from the browser. **This is intentional and by design.** Essentially, `process.env.XATA_API_KEY` will be `undefined`,  and the SDK will not be able to fire your request (thus preventing you from leaking access to your database), and you will see a runtime error like:
+
+```bash
+error Error: Option apiKey is required
+    at XataClient.parseOptions_fn (index.mjs?4597:3090:1)
+    at new _a (index.mjs?4597:3053:1)
+    at XataClient._createSuperInternal (_create_super.mjs?05d7:12:1)
+    at new XataClient (xata.codegen.ts?b4b0:32:24)
+    at getXataClient (xata.codegen.ts?b4b0:42:14)
+    at eval (stepone.js?34b1:101:47)
+```
+
+If on a Node.js environment, this means the SDK cannot read your API key. You can solve this by using one of the methods mentioned above to expose your access key to your runtime. If using the `.env` approach, you may need a package like [dotenv](https://www.npmjs.com/package/dotenv) to read those values.
+
+If on a browser environment, this error **********************************************should not be “fixed”**********************************************. As explained in the first section of this article: exposing your Xata API keys to a client-side runtime like a browser is a huge security issue. For more information, read our documentation about [Securely Talking to Xata](https://xata.io/docs/quickstart/updating-data-with-xata#securely-talking-to-xata).
+
+## Creating Apps and Connecting to Xata
+
+The path of least resistance to create an app and connect it to Xata is to use a full-stack framework such as [Next.js](https://nextjs.org/docs), [Remix](https://remix.run/docs/en/v1), [Nuxt](https://nuxtjs.org), [Gatsby](https://www.gatsbyjs.com/docs/), and others. Such apps offer a way of creating **serverless functions** within them. In Next.js for example, any files in `./pages/api` contain these functions. But what are they? In a nutshell serverless functions are pieces of code that will run only on the server, allowing developers to query their database there and thus remaining close to the app logic and more importantly, ***out of the unsafe browser environment.***
+
+When creating a pure client-side app ([Astro](http://astro.build), [Eleventy](https://www.11ty.dev/), [Qwik](https://qwik.builder.io/), [React](https://beta.reactjs.org/), [Solid](https://www.solidjs.com/), [Svelte](https://svelte.dev/), [Vue](https://vuejs.org/), etc.), the database request will not be able to originate from the app. Instead, refer to the initial architecture we outlined in this post: first hit an API, then the API connects to the Database. This keeps your API keys secret.
+
+### What are Serverless Functions?
+
+Different than a long-standing server that will continue to run even when there are no requests coming in or out, a serverless function will cease activity and go into “sleep” whenever its execution is finished. This makes serverless functions a perfect use-case to bridge connections between your app and your database.
+
+Additionally, serverless providers like [AWS Amplify](https://aws.amazon.com/amplify/), [Cloudflare Workers](http://workers.cloudflare.com), [Netlify](http://netlify.com), and [Vercel](http://vercel.com) will provide developers with a no-obstacle deployment. You define your function handler (most receive 2 parameters: `request` and `response`).
+
+## Connecting a Serverless Function to Xata
+
+Creating a serverless function is basically as straightforward as creating a JavaScript file.
+
+```jsx
+// In Next.js, this would be ./pages/api/get-data.ts
+
+export default function handler (request, response) {
+  // fetch stuff from Xata
+  const data = await xata.db.myDb.getMany();
+  response.end(data.records);
+}
+```
+
+To understand how to create one, and how to design your API, we have a [Vercel Serverless Function Sample](https://github.com/xataio/examples/tree/main/apps/starter-vercel-serverless-functions) in our example repository. Do not forget to create and add your API Keys to the deployment routines within your dashboard, otherwise the Xata Client will not have a key to fire requests with.
+
+For a more involved example, refer to the [Quickstart in our documentation](https://xata.io/docs/quickstart/updating-data-with-xata).
+
+## Conclusion
+
+We hope this has made it clearer how to interact with your Xata database from within and outside your apps. Please feel free to create an issue in our [examples repository](https://github.com/xataio/examples) if there is a specific use-case that you would like us to prioritize in showing how to address.
+
+Additionally, we cannot stress it enough that **we love open-source** and there is some swag waiting for everyone who ships a community sample app, or creates a PR to contribute to any of our projects (examples included!).
