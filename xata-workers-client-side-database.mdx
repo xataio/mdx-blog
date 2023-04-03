@@ -10,8 +10,6 @@ published: true
 slug: xata-workers
 ---
 
-![Cover image](https://blog.cloudflare.com/content/images/2022/11/Customer-Story_-Xata_light.png)
-
 In the last few years, there's been a rise of Jamstack, and new ways of thinking about the cloud that some people call serverless or edge computing. Instead of maintaining dedicated servers to run a single service, these architectures split applications in smaller services or functions.
 
 By simplifying the state and context of our applications, we can benefit from external providers deploying these functions in dozens of servers across the globe. This architecture benefits the developer and user experience alike. Developers don't have to manage servers, and users don't have to experience latency. Your application simply scales, even if you receive hundreds of thousands of unexpected visitors.
@@ -79,7 +77,6 @@ As you can see a Xata Worker is a function that wraps any user-defined code and 
 When using a Xata Worker in TypeScript, our command line tool also generates custom types based on your schema. These types offer type-safety for your queries or mutations, and improve your developer experience by adding extra intellisense to your IDE.
 
 <ArticleImage src="https://blog.cloudflare.com/content/images/2022/11/Untitled.png" width="923" height="455" alt="Intellisense" caption="Intellisense" position="center" />
-![SDK Intellisense](https://blog.cloudflare.com/content/images/2022/11/Untitled.png)
 
 A Xata Worker, like any other function, can receive additional parameters that pass application state, context or user tokens. The code you write in the function can either return an object that will be serialized over the network with a superset of JSON to support dates and other non-primitive data types, or a full response with a custom status code and headers.
 
