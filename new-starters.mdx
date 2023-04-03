@@ -1,0 +1,50 @@
+---
+title: "New starters"
+description: "To help in your journey with Xata, we are providing more and more starters! Today will be about SolidStart, Astro, and SvelteKit. Have fun!"
+image:
+  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  alt: Winnders
+author: Fabien Bernard
+date: 12-12-2022
+published: true
+slug: new-starters-solidstart-sveltekit-astro
+---
+
+Diversity is one of the most important aspects of Xata’s culture. You'll see it in everything we build. Which is why we continue to add new JavaScript frameworks to our [examples repo](https://github.com/xataio/examples). Here are a few more to help you along on your frontend journey.
+
+Please keep in mind that whatever framework you pick, it needs to support server-side rendering and/or endpoints support. Indeed, any call to Xata needs to be server-side to avoid leaking credentials.
+
+Let's take a quick tour of our new options for starters
+
+## SolidStart
+
+[SolidStart](https://start.solidjs.com/getting-started/what-is-solidstart) is the meta-framework on top of SolidJS and Solid router. You can use Xata in any server-side function. In the SolidStart world, you can use Xata inside `createServerData$` and `createServerAction$` functions.
+
+To try out easily, you can use the SolidStart starter: `npx degit xataio/examples/apps/starter-solidstart solidstart-sample-app`
+
+## Astro
+
+[Astro](https://astro.build/) works a lot of JavaScript frameworks out-of-the-box as React, SolidJS or VueJS. Astro also has an SSR built-in feature, and this is precisely what we need to be able to query Xata securely!
+
+This is the starter for Astro: `npx degit xataio/examples/apps/starter-astro astro-sample-app`
+
+A few highlights, the server is set in SSR mode, and you will need a specific adapter depending on where you want to deploy application.
+
+For example, if I want to deploy to netlify, I can run `npx astro add netlify`. Please note that if you don’t want to setup Astro in SSR mode, you can, but you will need to rebuild your application whenever you want new data. Indeed, without SSR mode enabled, the data are requested and injected at build time!
+
+## SvelteKit
+
+Last but not least, from the new starers list -- [SvelteKit](https://kit.svelte.dev/)! Another great option is to have SSR support with TypeSafety between your frontend and backend (and database if you are using Xata!).
+Please note that you need to have the dev server running to generate some types (I figured this the hard way).
+All your database calls need to be in `+page.server.ts` to stay server-side. You can load any data in `load` and react to any action in `actions` ; very straight forward!
+
+As always, this is the command to let you play by yourself:
+`npx degit xataio/examples/apps/starter-sveltekit sveltekit-sample-app`
+
+## Final note
+
+What ever flavor you are choosing, my advice (and this is just my point of view), is to check if you have a end to end type safety. This is important because when you will run `xata codegen`, TypeScript will compile or not, telling you what needs to be adjust in your application.
+
+Therefore, you are more confident that your application doesn’t consume stale data, so no bugs, and happy customer at the end :)
+
+If you encounter any issues or you just want to talk, please join us on [discord](https://xata.io/discord)
