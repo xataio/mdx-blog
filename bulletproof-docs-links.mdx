@@ -1,0 +1,539 @@
+---
+title: "A journey to bulletproof links in documentation"
+description: "How we permanently fixed the problem of broken internal links in our documentation."
+image:
+  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  alt: Xata
+author: Fabien Bernard
+date: 09-05-2022
+published: true
+slug: bulletproof-docs-links
+---
+
+At Xata, we are currently in closed beta. To support this, we want to have the best documentation we can. This, of course, is easier said than done, so we are experimenting by moving things around, listening to user feedback, and so on.
+
+Our documentation is written in [Markdown](https://www.notion.so/A-Journey-to-Bulletproof-Links-in-Documentation-f108c0ed0acd464bb1e6310519d19e37), served by [Next.js](https://www.notion.so/A-Journey-to-Bulletproof-Links-in-Documentation-f108c0ed0acd464bb1e6310519d19e37). This has a few advantages:
+
+- we have total freedom in the design,
+- we can fetch Markdown documents from GitHub to keep the documentation of a given product close to its code,
+- we can have custom components: graphs, Twitter cards, etc.
+
+So far, we had no way to make sure that links between pages were working and that they didn’t just 404. After moving things around, even after checking and rechecking everything manually… **we had 28 broken links in our production documentation.**
+
+<ArticleImage src="https://xata.io/images/blog/bulletproof-docs-links/Untitled.png" width="500" height="582" alt="This is fine meme" caption="This is fine" position="center" />
+
+This is fine, we all make mistakes, but let’s learn from this together!
+
+## The Plan
+
+The first step is to list our requirements so we have our goal well defined. We want quick feedback if something gets broken, so we can fix it before merging to production. For that, we need to be able to run the docs consistently in different environments:
+   - local
+   - preview/ staging
+   - production
+
+With this in mind, one constraint immediately becomes clear to us: this would be way easier if we don’t have a link checker that needs to run on a server.
+
+If we want to avoid a server, we need to extract the information:
+
+- the internal links in my markdown files
+- the directory structure.
+
+## The Proof of Concept
+
+To achieve our final goal, we need a reliable way to extract links from our existing documentation and see if the link *actually goes somewhere*. This is a lot of files, with a lot of links. To simplify our problem, let’s omit the real markdown documents for now and focus on the link extraction part.
+
+> Our docs are at https://xata.io/docs by the way, if you’d like to explore them and use Xata yourself.
+>
+
+1. First, we need to read, parse, and understand a Markdown document. Our parser of choice is  `unified`. It returns an **Abstract Syntax Tree (AST)**. Let’s give it a Markdown document and see what happens.
+
+```tsx
+import { describe, expect, it } from "vitest";
+
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkStringify from "remark-stringify";
+
+describe("markdown link checker", () => {
+  it("should extract all links from a given document", async () => {
+    const document = `
+# Title
+
+this is a paragraph with [a link](/rest-api/get)
+
+## Another title
+
+and another [link](/rest-api/delete)
+`;
+
+    await unified()
+      .use(remarkParse)
+      .use(() => {
+        return function transform(tree) {
+          console.log(tree);
+        };
+      })
+      .use(remarkStringify)
+      .process(document);
+
+    expect(true).toEqual(false);
+  });
+});
+```
+
+When we `console.log` the output, we get this:
+
+
+<ArticleImage src="https://xata.io/images/blog/bulletproof-docs-links/Untitled%201.png" width="1246" height="588" alt="Console output" caption="Console output" position="center" />
+
+And just like this, we can see our markdown content in a structured way, cool no? (we can also use [https://astexplorer.net/](https://astexplorer.net/) to see explore our AST)
+
+2. Extract the links
+
+To do this, we can use `unist-util-visit`, which gives us a very convenient and type-safe way to “visit” our AST.
+
+What does “visit our AST” mean? Every time we have a node with  `type === "link"`, even very deep inside `children`, a function is called with this node as argument! This function is called a **visitor function**. Good news, this is exactly what we want! 😀
+
+Instead of using our previous raw  `tree` object and iterating through every node looking for those `link` objects, we can write this:
+
+```tsx
+import { describe, expect, it } from "vitest";
+
+import { unified } from "unified";
+import { visit } from "unist-util-visit";
+import remarkParse from "remark-parse";
+import remarkStringify from "remark-stringify";
+
+describe("markdown link checker", () => {
+  it("should extract all links from a given document", async () => {
+    const document = `
+# Title
+
+this is a paragraph with [a link](/rest-api/get)
+
+## Another title
+
+and another [link](/rest-api/delete)
+`;
+
+    const links: string[] = [];
+
+    await unified()
+      .use(remarkParse)
+      .use(() => {
+        return function transform(tree) {
+					// Let's extract every link!
+          visit(tree, "link", (linkNode) => {
+            links.push(linkNode.url);
+          });
+        };
+      })
+      .use(remarkStringify)
+      .process(document);
+
+    expect(links).toEqual(["/rest-api/get", "/rest-api/delete"]);
+  });
+});
+```
+
+That’s essentially all we need for a proof of concept (POC), we are now more confident that we should be able to extract every link from our documentation. Let’s try with some real data!
+
+## The Real Deal
+
+First, we need a way to load all our Markdown files. Luckily, [npm](https://www.notion.so/A-Journey-to-Bulletproof-Links-in-Documentation-f108c0ed0acd464bb1e6310519d19e37) already has a solution for us. 😀
+
+```tsx
+import { describe, expect, it } from "vitest";
+
+import { unified } from "unified";
+import { visit } from "unist-util-visit";
+import remarkParse from "remark-parse";
+import remarkStringify from "remark-stringify";
+import { getAllFiles } from "get-all-files";
+import { readFile } from "fs/promises";
+
+describe("markdown link checker", async () => {
+  for await (const filename of getAllFiles("./content")) {
+    if (!filename.endsWith(".md")) continue;
+    it(filename, async () => {
+      const document = await readFile(filename, "utf-8");
+      const links: string[] = [];
+
+      await unified()
+        .use(remarkParse)
+        .use(() => {
+          return function transform(tree) {
+            visit(tree, "link", (linkNode) => {
+              links.push(linkNode.url);
+            });
+          };
+        })
+        .use(remarkStringify)
+        .process(document);
+
+      expect(links).toEqual([]);
+    });
+  }
+});
+```
+
+We are iterating on every file from the `/content` directory and reusing our previous logic, replacing the `document` with our actual markdown content!
+
+And… it works! Not useful yet, but we are going in the right direction!
+
+<ArticleImage src="https://xata.io/images/blog/platforms/captain-data-platform.jpg" width="1038" height="464" alt="Errors output" caption="Error are now output" position="center" />
+
+This is also a nice opportunity for us to see what links we actually have! And we can already spot some patterns that we need to deal with as external links (example: [`https://stackoverflow.com/questions/4423061/how-can-i-view-http-headers-in-google-chrome`](https://stackoverflow.com/questions/4423061/how-can-i-view-http-headers-in-google-chrome)) and links with anchors (example: `/cli/getting-started#code-generation`)
+
+First, let’s exclude external links, they are out of our scope since we’re not interested in *other people’s 404s.* We may add this later since we don’t want to link to broken content in the longer term, but for now **scope hammering keeps us focused**.
+
+```tsx
+if (linkNode.url.startsWith("/")) {
+  links.push(linkNode.url);
+}
+```
+
+Let’s improve the output of our test: we want one `describe` per Markdown document, and one `it` per link. This is our target output (for now):
+
+<ArticleImage src="https://xata.io/images/blog/bulletproof-docs-links/Untitled%203.png" width="901" height="719" alt="Test runner" caption="Test runner" position="center" />
+
+So we have:
+
+```tsx
+describe(filename, async () => {
+	// ...
+	links.forEach((link) => {
+        it(`should have "${link}" defined`, () => {
+          expect("todo").toBe("done");
+        });
+      });
+	})
+})
+```
+
+And to finish this part, we need to check if the file exists, `fs.existsSync` will do the job:
+
+```tsx
+import { describe, expect, it } from "vitest";
+
+import { unified } from "unified";
+import { visit } from "unist-util-visit";
+import remarkParse from "remark-parse";
+import remarkStringify from "remark-stringify";
+import { getAllFiles } from "get-all-files";
+import { readFile } from "fs/promises";
+import { existsSync } from "fs";
+
+describe("markdown link checker", async () => {
+  for await (const filename of getAllFiles("./content")) {
+    if (!filename.endsWith(".md")) continue;
+    describe(filename, async () => {
+      const document = await readFile(filename, "utf-8");
+      const links: string[] = [];
+
+      await unified()
+        .use(remarkParse)
+        .use(() => {
+          return function transform(tree) {
+            visit(tree, "link", (linkNode) => {
+              if (linkNode.url.startsWith("/")) {
+                links.push(linkNode.url);
+              }
+            });
+          };
+        })
+        .use(remarkStringify)
+        .process(document);
+
+      links.forEach((link) => {
+        it(`should have "${link}" define`, () => {
+          expect(existsSync(`./content${link}.md`)).toBeTruthy();
+        });
+      });
+    });
+  }
+});
+```
+
+### Dealing with Anchors
+
+Now, this is where, personally, I started by removing the anchor and called this done.
+
+```tsx
+it(`should have "${link}" define`, () => {
+  const [path] = link.split("#");
+  expect(existsSync(`./content${path}.md`)).toBeTruthy();
+});
+```
+
+After a coffee and some time to think, I realized—we can do better! And also, I’m sure we have some broken anchors. (Spoiler alert, I found one 😅)
+
+The first problem is that we need to have a dictionary of all anchors per document. So far, our AST logic is in middle of my unit test. Time to refactor!
+
+Let’s extract our current logic into a function:
+
+```tsx
+/**
+ * Retrieve useful information from a markdown file.
+ *
+ * @param path file path
+ */
+async function parseMarkdown(path: string) {
+  const document = await readFile(path, "utf-8");
+  const links = new Set<string>();
+
+  await unified()
+    .use(remarkParse)
+    .use(() => {
+      return function transform(tree) {
+        visit(tree, "link", (linkNode) => {
+          if (linkNode.url.startsWith("/")) {
+            links.add(linkNode.url);
+          }
+        });
+      };
+    })
+    .use(remarkStringify)
+    .process(document);
+
+  return {
+    links,
+  };
+}
+```
+
+Let’s analyze what this method is doing in plain English:
+
+- We’re taking a `path: string` as input
+- We’re reading the content of the file that has this `path`
+- We’re instatiating a `links` set, ready to be filled
+- We have our AST visitor that:
+    - on each node that fulfills the condition `type === "link"`
+    - if the url starts with `/` (so it’s an internal link), we add it to `links`
+- We return the consolidated `links` in an object
+
+Now, we can extract the `anchors` following the same pattern
+
+```tsx {4,16-20,27}
+async function parseMarkdown(path: string) {
+   const document = await readFile(path, "utf-8");
+   const links = new Set<string>();
+   const anchors = new Set<string>();
+
+   await unified()
+     .use(remarkParse)
+		 .use(() => {
+		     return function transform(tree) {
+		       visit(tree, "link", (linkNode) => {
+		          if (linkNode.url.startsWith("/")) {
+		            links.add(linkNode.url);
+		          }
+		        });
+         });
+         visit(tree, "heading", (headingNode) => {
+           if (headingNode.children[0].type === "text") {
+             anchors.add(kebab(headingNode.children[0].value));
+           }
+         });
+       };
+     })
+     .use(remarkStringify)
+     .process(document);
+
+   return {
+     anchors,
+     links,
+   };
+ }
+```
+
+In Markdown, an anchor is any title converted to kebab case. For example, if I have a title `## Create Table` in `/getting-started`, I can point to `/getting-started#create-table`
+
+Time to try our brand new function! Remember, we are just doing small steps—no need to run.
+
+```tsx
+import slash from "slash";
+
+type FilePath = string;
+
+describe("markdown link checker", async () => {
+  // Collect all the data
+  const pages = new Map<
+    FilePath,
+    { anchors: Set<string>; links: Set<string> }
+  >();
+
+  for await (const filename of getAllFiles("./content")) {
+    if (!filename.endsWith(".md")) continue;
+
+    pages.set(
+      slash(filename)
+        .replace(/^\.\/content/, "") // remove `/content`
+        .slice(0, -3), // remove `.md`
+      await parseMarkdown(filename)
+    );
+  }
+
+  console.log(pages);
+});
+```
+
+This test yields this output:
+
+<ArticleImage src="https://xata.io/images/blog/bulletproof-docs-links/Untitled%204.png" width="763" height="499" alt="Test output" caption="Test output" position="center" />
+
+Again, since we’re not worried about the entire problem, we can take our time to clean and prepare our object for the next step:
+
+- Use `slash` so we don’t have those nasty backslashes (windows… my old friend…)
+- Remove the `/content` and `.md` from my `path` so we have the same pattern as `anchor`
+
+We can also spot a little problem here, did you see it? The `sidebar-position-5\nsidebar-label-api-keys` entry is not a heading! It’s a `yaml` node and needs to be parsed with the `remarkFrontmatter` plugin!
+
+The source:
+
+```tsx
+---
+sidebar_position: 5
+sidebar_label: API Keys
+---
+# API Keys
+```
+
+We need to add `remarkFrontmatter` to the stack:
+
+```tsx
+import remarkFrontmatter from "remark-frontmatter";
+
+// ...
+await unified()
+    .use(remarkParse)
+    .use(remarkFrontmatter) // <- Just here
+    .use(() => { /* ... */ } )
+```
+
+## The Wrap Up
+
+This is the final version (the one used in our actual documentation repository!)
+
+```tsx
+import { describe, expect, it } from "vitest";
+import { readFile } from "fs/promises";
+import { unified } from "unified";
+import { visit } from "unist-util-visit";
+import remarkParse from "remark-parse";
+import remarkStringify from "remark-stringify";
+import remarkFrontmatter from "remark-frontmatter";
+import { getAllFiles } from "get-all-files";
+import { kebab } from "case";
+import slash from "slash";
+
+type FilePath = string;
+
+describe("markdown link checker", async () => {
+  // 1. Collect data from `/content`
+  const pages = new Map<
+    FilePath,
+    { anchors: Set<string>; links: Set<string>; isRef: boolean }
+  >();
+
+  for await (const filename of getAllFiles("./content")) {
+    if (!filename.endsWith(".md")) continue;
+
+    pages.set(
+      slash(filename)
+        .replace(/^\.\/content/, "") // remove `/content`
+        .slice(0, -3), // remove `.md`
+      await parseMarkdown(filename)
+    );
+  }
+
+  // 2. Generate unit tests
+  Array.from(pages.entries()).forEach(([page, def]) => {
+    if (def.links.size === 0) return;
+    describe(page, async () => {
+      Array.from(def.links.values()).forEach((link) => {
+        it(`should have ${link} define`, async () => {
+          const [path, anchor] = link.split("#");
+          expect(pages.has(path)).toBeTruthy();
+          if (anchor && !pages.get(path).isRef) {
+            expect(pages.get(path).anchors.has(anchor)).toBeTruthy();
+          }
+        });
+      });
+    });
+  });
+});
+
+/**
+ * Retrieve useful information from a markdown file.
+ *
+ * @param path file path
+ */
+async function parseMarkdown(path: string) {
+  const document = await readFile(path, "utf-8");
+  const links = new Set<string>();
+  const anchors = new Set<string>();
+  let isRef = false; // `true` if the markdown content is `See …`
+
+  await unified()
+    .use(remarkParse)
+    .use(remarkFrontmatter)
+    .use(() => {
+      return function transform(tree) {
+        visit(tree, "link", (linkNode) => {
+          if (
+            linkNode.url.startsWith("/") &&
+            !linkNode.url.startsWith("/api-reference")
+          ) {
+            links.add(linkNode.url);
+          }
+        });
+
+        visit(tree, "heading", (headingNode) => {
+          if (headingNode.children[0].type === "text") {
+            anchors.add(kebab(headingNode.children[0].value));
+          }
+        });
+
+        visit(tree, "paragraph", (paragraphNode) => {
+          if (
+            paragraphNode.children.length === 1 &&
+            paragraphNode.children[0].type === "text" &&
+            paragraphNode.children[0].value.startsWith("See ")
+          ) {
+            isRef = true;
+          }
+        });
+      };
+    })
+    .use(remarkStringify)
+    .process(document);
+
+  return {
+    anchors,
+    links,
+    isRef,
+  };
+}
+```
+
+Few highlights:
+
+- We don’t need `fs.existsSync` anymore, we already have everything we need!
+- We ignore `/api-reference` links, they are generated from our an external document at build time, so it’s out of our current scope.
+- We added a last concept of `isRef`. This is again a very specific edge case that I don’t want to deal with, we have a part of our documentation fetched from GitHub with the following pattern:
+
+    ```markdown
+    See [link]
+    ```
+
+
+During this journey, I spotted 1 broken link and 1 broken anchor, but more importantly, I’m way more confident that we will not ship broken links in our documentation anymore.
+
+**This is what’s most important to us as developers: confidence in our code.** Through these tests and this approach, we have a little more of that with our documentation.
+
+## The Conclusion
+
+I hope you learned as much as I did! Please borrow ideas & code from this article and iterate from this. Unit tests are sometimes seen as something that slows us down or a boring thing to do, but I personally had a lot of fun playing with `unified` and Markdown’s AST, and I’m 100% convinced that this was not a waste of time—you can’t imagine how much time I spent on the documentation clicking every link, *and I still missed 2 of them!* This 100-line implementation is way more efficient than my manual QA 😅.
+
+Happy hacking!
