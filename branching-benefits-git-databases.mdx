@@ -1,0 +1,57 @@
+---
+title: "How branching brings predictability to web development"
+description: "Let's explore the benefits of branching in developer workflows, and how Xata brings these benefits to data infrastructure."
+image:
+  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  alt: Xata
+author: Anjalee Sudasinghe
+date: 03-21-2022
+published: true
+slug: branching-benefits-git-databases
+---
+
+[Git](https://git-scm.com/) has become a tool that developers can't live without today. It has evolved beyond its initial role as just a version control system to support workflows throughout the entire development process. Part of this progression is purely a result of Git's inherent robustness. Another part of this success, though, is credited to the vast ecosystem that has been built around Git.
+
+One of the Git features that enables and inspires this type of large-scale integration is its amazing branching mechanism. It has allowed a large number of contributors to collaborate on a single project while using automated workflows to guarantee error-free delivery.
+
+At the same time, Git branching has given software development a layer of predictability. What else would you call being able to test and preview how your code changes affect the system _before_ making them permanent after all? That's why even though it's a simple concept, branching creates such a huge difference in the way we approach a development process.
+
+## How does branching work?
+
+Git branches are not that different from their namesake, tree branches. They stem from the main body of the codebase to follow a development path independent from the direction of the rest of the codebase. They give you an environment to work on new features, fixes, or any other task, isolated from the changes made by other developers or ongoing implementations. Often, branching is used to maintain the production/staging code in the main branch while the development is carried out in feature branches.
+
+![Feature Branches in Git](https://c-v.sh/elmysurfperch.png)
+
+Unlike tree branches, though, Git branches are capable of merging with another branch after a while in isolated development. It allows you to add fully-implemented features in another branch to the production branch, after separately running tests to evaluate their functionality and performance.
+
+![Merging Feature Branches into a Main Branch in Git](https://c-v.sh/unforgeddiddlers.png)
+
+### Branching & Pull Requests
+
+Another Git feature that goes hand-in-hand with branching to enhance the predictability of the development process is _pull requests_. It's especially powerful today because of how some tools in the Git ecosystem—like [GitHub](https://github.com/), [Bitbucket](https://bitbucket.org/product), and [GitLab](https://about.gitlab.com/)—have built additional functionality around pull requests to promote better collaboration among developers and continuous integration.
+
+With pull requests, or PRs as they are often called, you can send a request to merge a branch in your own repository with a branch in another repository. Usually, this mechanism is used to merge the changes made in a feature branch of a forked repository with the parent's production branch.
+
+You can use PRs to not only review the code that is being pushed to the main branch but also run automated workflows to test or preview the incoming changes. It helps you ensure that these changes won't cause any unexpected behavior in the application or trigger errors. By combining the right branching and PR strategies, you can collaboratively develop applications that operate just as you want, leaving little room for unpredictable outcomes, especially while they are in production.
+
+[Vercel](https://vercel.com/)'s [deploy preview](https://vercel.com/features/previews) feature is one of the latest tools that takes advantage of the branching and pull request mechanisms to extend the predictability Git offers beyond the code level.
+
+### Deployment Previews with Vercel
+
+Vercel allows deploying websites directly from a Git repository hosted on GitHub, GitLab, or Bitbucket. Once you declare the repository's production branch, every time you commit changes to it through merging pull requests, Vercel automatically rebuilds and deploys the website to its platform.
+
+Besides these regular deployment capabilities, however, Vercel contains a special feature that allows you to preview how the site will function with the incoming changes _before_ committing them. Vercel integrations with Git-based platforms automatically deploy PR or merge requests onto a temporary preview domain, where you can test whether the modifications are behaving as expected without exceptions. These are called **preview deployments**.
+
+Once you are satisfied with the modified functionality, you can trigger a production deployment in the production branch with the new commits.
+
+## Branching meets databases–is it a reality?
+
+Git branching gives developers a lot of freedom to make changes to a codebase during an ongoing development process. Vercel has extended this freedom to the deployment level with its Git integrations. But does the luxury of branching extend to the database level? The answer to this question would have been a resounding no a couple of years ago. But with the product we are now developing at Xata, a database that supports Git-like branching and merging mechanisms is no longer just a wishful thought.
+
+Xata is a serverless database delivered as a simple REST API ideal for developing web apps. More importantly, it allows you to create separate branches to isolate new feature implementations from the rest of the database and merge them back whenever you're ready to deploy the changes. Naturally, data is not copied between branches for security.
+
+With Xata's support for creating database branches, you no longer have to maintain several databases at a time for testing and development purposes. All the development and testing processes can be carried out via a single database, without changes in one branch affecting the state of production or other existing environments. It gives you the chance to employ an end-to-end branch management system in your development process.
+
+[Xata branches](https://docs.xata.io/concepts/branches) enable you to modify and create schemas, test how well they perform, use Vercel deployment-like previews before merging the changes, and finally, migrate the updated schemas to deploy them to your application. It executes all these tasks as rolling migrations with zero downtime.
+
+With Xata added to your Git-powered development stack, you can foresee how your development decisions affect the entire product before making irreversible changes. It gives more predictability to your development process, from beginning to the end, without leaving much room for costly mistakes.

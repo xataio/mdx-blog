@@ -1,0 +1,47 @@
+---
+title: "Hello, world! Xata raises $5M for a new type of serverless database"
+description: "If you haven't heard of us before, it's because we haven't launched yet. We're busy building the product, but we don't believe in stealth mode, so we'd rather talk to you about what we're building and why."
+image:
+  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  alt: Xata
+author: Monica Sarbu
+date: 09-13-2021
+published: true
+slug: hello-world
+---
+
+If you haven't heard of us before, it's because we haven't launched yet. We're busy building the product, but we don't believe in stealth mode, so we'd rather talk to you about what we're building and why.
+
+Databases today are still too complicated and they leave too much for the developer to worry about. Even with the managed databases services offered by the big Cloud providers, as a developer, you still need to worry about things like:
+
+- maintenance windows and downtime for security upgrades
+- configuration of nodes/instances, replication, and scaling
+- replicating the data into a different analytics or search engine
+- caching with an external system, and dealing with cache invalidation
+- applying schema migrations and avoiding downtime during migrations
+- setting up a monitoring system for basic things like disk usage
+- implementing access controls in the application code
+- working around the lack of transactions, or joins in the application code
+- polling for changes
+- dealing with the lack of schemas or the lack of rich types, like arrays, nested objects, or attachments
+- dealing with clumsy admin interfaces and no easy way to add test data
+
+The list is so long, and each item on the list is its own deep rabbit hole, that it is even hard to grasp the complexity.
+
+Granted, not all of these problems apply at the same time. Some existing services are good at solving a subset of the above. For example, DynamoDB is fully serverless so you don't have to worry about upgrades, nodes, scaling, or security patches. But it has a very rigid data model that doesn't support flexible queries so you often have to pay for the convenience by making your application code more complex.
+
+A service like AWS Aurora for PostgreSQL/MySQL, on the other hand, brings you the flexibility of the SQL language and the rich open-source ecosystem of ORMs. While it is a huge leap over running MySQL or Postgres yourself, Aurora is not truly serverless, which means that you still have to worry about how many replicas you need, upgrading between major versions, downtime while patches are applied, and so on. Then, if you need to sync your data in an analytics or search engine, you need to learn about logical replication, you're probably going to need a queuing system, which requires its own monitoring system. Not to mention having to choose a migration tool, an admin UI, a connection pooler, etc.
+
+This is way too complex for beginners. And while more experienced developers have dealt with these things for a long time, many would rather outsource these concerns. For these reasons, developers sometimes pick No-Code/Low-Code tools like Airtable to store their data. Airtable's intuitive and rich data types and the excellent UI make it easy to add data and visualize it in different ways. It has search and analytics and views built-in. A simple RESTful API makes it easy to query and filter your data. Oh, and it's free if you don't have a lot of data.
+
+But Airtable wasn't built to be consumed by applications. For example, its rate-limiting hits very quickly, at just five requests per second as of today. It also has limitations in terms of the number of rows in a table and lacks consistency tools that simplify the code, like transactions and constraints.
+
+**Is it possible to make a database service that is as simple to use as Airtable, yet scalable, robust, and safe as the traditional databases?** Yes, there is really no reason why this can't exist. But it will require us to think differently about how we define the database. We’ll need a more holistic view from the client libraries and the admin UI to the transactional engine and the search engine. It will require a team that is emphatic to the needs of non-developers and developers and at the same time be able to dive deep into the complexities of distributed systems.
+
+To give an example, Xata is deeply integrated into the development flow. This means that database branches are a native concept, just like Git has branches. You create database branches for your new features. These branches enable you and everyone in your team to preview, test, and collaborate. When you are ready to merge, the Xata UI guides you through the migrations needed in such a way that your application’s performance and uptime are not affected. This git-based deploy workflow is popularized by platforms like Netlify and Vercel and it is time for databases to join in.
+
+When designing such a feature, we want to make it so simple that non-developers can be successful with it. We are aiming to expose No-Code users to developer concepts like branches and pull requests with a soft touch, so they can reach their goals today and at the same time be prepared for their application to grow tomorrow.
+
+Today we're super excited to announce that we have raised $5M led by **Index Ventures**, with participation from **Operator Collective**, **X-Factor**, and **Firstminute**, alongside well-known tech founders, **Shay Banon and Uri Boness from Elastic**, **Neha Narkhede from Confluent**, **Guillermo Rauch from Vercel**, **Elad Gil from Color Genomics** and **Christian Bach and Mathias Biilmann from Netlify** among others.
+
+If you'd like to be part of the team that makes this happen, please don't hesitate to reach out. We'd love to speak to you!
