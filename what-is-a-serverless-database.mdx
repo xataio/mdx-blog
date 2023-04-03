@@ -1,0 +1,86 @@
+---
+title: "What we talk about when we talk about serverless databases"
+description: "What is a Serverless Database? There isn't a definitive definition that everyone agrees to, so this post documents our own definition, in an attempt to bring a bit of clarity to the world."
+image:
+  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  alt: Xata
+author: Tudor Golubenco
+date: 02-06-2013
+published: true
+slug: what-is-a-serverless-database
+---
+
+When showing [Xata.io](http://xata.io) (currently in private Beta) to people and saying that it is a “serverless database”, we occasionally get confused looks: how can a database be serverless? Doesn’t it need to store the data _somewhere_? This is a fair question because “serverless”, being the buzzword that it is, doesn’t have a definition that everyone agrees on.
+
+This is why we thought it’d be worth writing a blog post to document _our_ definition of a serverless database using straightforward language, in an attempt to bring a bit of clarity to the world.
+
+First of all, hat tip to SQLite who was using the [term](https://www.sqlite.org/serverless.html) “serverless database” since before it was a buzzword, to mean something quite different: a database engine that runs in the process of the application. Rest assured, we’re talking about the buzzword serverless here. We’re Venture Capital (VC) funded after all. This version of “serverless” means a service–which _definitely_ uses servers–but those servers are abstracted away as much as possible by the said service.
+
+## No Servers (to manage)
+
+Yes, there are servers involved in our service. No, you don’t need to know about them. You don’t need to care how many of them there are, how much RAM they have, or if there are any low disk-space alerts raised recently, because those are totally and solely our problem (ugh).
+
+We’re taking the definition further than that to also include that you shouldn’t have to configure things like clusters, instances, nodes, backups, availability zones, monitoring, or what have you. Again, **those are our things to worry about**.
+
+As a user, what you get is series of API endpoints that you can use to insert and update data, plus a set of APIs for querying, searching, and aggregating data. That’s it. Is there a fine print that comes with that? Oh yes, of course there is, and we’ll talk about that in the rest of the blog post.
+
+Small side note: while not necessarily important for the definition of a serverless database, our API speaks HTTP and is therefore connectionless, it’s a lot easier to use from serverless functions because there’s no connection management to worry about.
+
+## No Upgrades (that you have to worry about)
+
+Databases, like most software, need occasional upgrading. The upgrading of databases in particular is usually annoying, dangerous, and can cause downtime. Some DBaaS (Databases as a Service) will take care of at least minor version upgrades for you, sometimes at the cost of having a maintenance window.
+
+In our definition of serverless, there are no upgrades. Scratch that—just like with servers, there _are_ upgrades–it’s just that _we_ are the ones that do them. We do both minor and major upgrades in such a way that there’s no observable downtime to your users.
+
+On the other hand, there might be versions of our APIs that you might want to upgrade to so you’re not _totally_ off the hook, but that tends to be a lot simpler by comparison.
+
+## Durability and Availability (and SLAs)
+
+When you send data to a cloud service like AWS’s S3 (Simple Storage Service), you don’t expect it to get lost with any sort of reasonable probability. That means that the service is highly durable. You also expect to be able to read the data at any time. That means that the service is highly available. Behind the scenes, in order to provide high-durability and high-availability, the service needs to store the data in multiple copies on different hard drives, and run servers in multiple availability zones. This also applies to databases.
+
+If the database service is serverless, you shouldn’t have to worry about how many replicas and in which availability zones they are. Instead, as a user, you get an SLA (Service Layer Agreement) which details the durability and availability guarantees the service gives you, and what happens if those guarantees are not held. Usually, you get some money back.
+
+We think high-durability and high-availability are important aspects of a serverless database service, so we include them in our definition and in all pricing plans, including the free tier.
+
+We’re still working on documenting our limits and SLAs, that’s part of why we’re still in closed beta.
+
+## Performance and Scalability (and how they relate to pricing)
+
+This is the part where we’d claim inter-planetary scale (to one-up our perceived competition) and “blazing-fast” performance for any query. And you’d just skip to the next headline because *of course we’d claim that*.
+
+Instead, let’s have a discussion: what happens if a user sends a series of very inefficient queries quickly and in parallel?
+
+There are database services out there that just don’t allow any queries that *can* be inefficient. That’s great from a service point of view, but their data model tends to be quite restrictive, usually restricted to some sort of key-value store.
+
+Ours is not one of those. We have a pretty rich [data model](https://docs.xata.io/concepts/data-model) which allows complex queries and relations and everything, so there can be inefficient queries simply because they have to check a lot of data. Those inefficient queries are expensive for us to run, which is kind of a problem. In this case, there are two options:
+
+- make the price per query proportionate to the work the query has done
+- throttle queries and degrade the service predictably to the agreed capacity
+
+We think both are valid strategies for a serverless database service, but in both cases you need to pay attention to the details. A drawback of the former is that it can become very expensive very quickly when you have a bad query. Some services allow you to set cost budgets, which are ideally checked in real-time. This replaces the risk of surprise bills with the risk of downtime when the budget limit is hit.
+
+We are trying the second approach, which has its own challenges, but we think it’s ultimately the better model for the users. This model is less used today, but DynamoDB, one of the first serverless DBs, works like that. You can reserve a certain capacity, and you get throttled if you surpass it. In a way, it simulates what you would get from a “serverful” setup: if you haven’t allocated enough capacity, your performance will be degraded, but it won’t suddenly break on you. The difference is that we can make it a lot easier to add capacity or configure auto-scaling.
+
+## Scaling to Zero (mostly)
+
+A very cool aspect of the original serverless service, AWS Lambda, is that it scales down to zero in terms of pricing. That means that if a function is not used, it takes (next to) no resources and therefore costs nothing. This is great for personal projects but also for particular use cases even in the enterprise. This concept mostly translates to databases, but not quite–because even if the database receives no requests at all, it still needs to store the data.
+
+In our definition of a serverless database, the compute costs should scale down to zero and costs should be incurred only if a lot of data is stored.
+
+But there’s one more aspect to it: the infamous cold starts. Databases are typically not as quick to provision and boot as lambda functions. Some DBaaS will even suspend your instances after a few days of inactivity and you need to manually bring them up.
+
+In our definition, cold starts are very small and databases don’t get suspended after a period of inactivity that is measured in days. We’re hedging here a bit because we might have to eventually suspend databases as well, but we’d only do it after a very long period of inactivity: think years, not days.
+
+## Summary (and no silver bullet)
+
+Our definition of serverless databases can be summarised like this: **we take care of as many hard problems as possible so you don’t have to**.
+
+That includes scaling, upgrades, replication, schema migrations, backups, monitoring, and so on. But you don’t have to pity us for all those problems, we kind of like this type of work, and to be fair, we’re charging you for it–just less than what it would cost you to hire your own DB experts.
+
+That’s the value proposition of serverless databases as we see it, and we think it’s worth the hype: you’ll be able to run a business the scale of the next Airbnb, Uber, or Netflix, without DB experts and with a lot fewer “platform engineers” in general.
+
+Is it a silver bullet, though? Do we take care of _all the problems_ that you can have with a database? Nope and nope.
+
+For example, a bad data model or code that produces very inefficient queries will be either expensive for you or will feel sluggish for your users. Or maybe both. So it’s much better to fix the code. Also, our service, like any other, has various limitations, restrictions, and SLAs. What we promise is to document these clearly and explain them in plain language.
+
+Being a serverless database and taking care of all of these problems for you is actually only half of Xata’s value proposition. The other half is about providing a top-notch developer experience and simpler developer workflows. But we’ll need to talk about that later, when we’re out of the closed beta. Until then, you can register for early access or follow us on [twitter](https://twitter.com/xata_io) for good vibes and so we can keep you in the loop.
