@@ -2,7 +2,7 @@
 title: "What we talk about when we talk about serverless databases"
 description: "What is a Serverless Database? There isn't a definitive definition that everyone agrees to, so this post documents our own definition, in an attempt to bring a bit of clarity to the world."
 image:
-  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/what-is-a-serverless-database.png
   alt: Xata
 author: Tudor Golubenco
 date: 02-06-2022
@@ -46,11 +46,11 @@ We’re still working on documenting our limits and SLAs, that’s part of why w
 
 ## Performance and Scalability (and how they relate to pricing)
 
-This is the part where we’d claim inter-planetary scale (to one-up our perceived competition) and “blazing-fast” performance for any query. And you’d just skip to the next headline because *of course we’d claim that*.
+This is the part where we’d claim inter-planetary scale (to one-up our perceived competition) and “blazing-fast” performance for any query. And you’d just skip to the next headline because _of course we’d claim that_.
 
 Instead, let’s have a discussion: what happens if a user sends a series of very inefficient queries quickly and in parallel?
 
-There are database services out there that just don’t allow any queries that *can* be inefficient. That’s great from a service point of view, but their data model tends to be quite restrictive, usually restricted to some sort of key-value store.
+There are database services out there that just don’t allow any queries that _can_ be inefficient. That’s great from a service point of view, but their data model tends to be quite restrictive, usually restricted to some sort of key-value store.
 
 Ours is not one of those. We have a pretty rich [data model](https://docs.xata.io/concepts/data-model) which allows complex queries and relations and everything, so there can be inefficient queries simply because they have to check a lot of data. Those inefficient queries are expensive for us to run, which is kind of a problem. In this case, there are two options:
 

@@ -2,14 +2,13 @@
 title: "Searching for retro games with Xata & Next.js 13"
 description: "A post detailing how an app was built on Xata with Next.js 13 using its powerful features."
 image:
-  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/search-retro-games.png
   alt: Data platforms
 author: Anjana Vakil
 date: 11-02-2022
 published: true
 slug: search-retro-games
 ---
-
 
 _Long ago, in the beautiful kingdom of JavaScript surrounded by cascades and DOM trees..._
 _legends told of an omnipotent and omniscient Gaming Power that resided in a hidden app._
@@ -22,6 +21,7 @@ _And the time of destiny for Princess ~~Zelda~~ You is drawing near._
 In this tutorial we'll build a fullstack web app that allows us to search a collection of retro games data to find the old-school console games of our dreams. And I hope you like adventure, Princess, for this will be a treacherous journey through the bleeding edge of recently released web technologies!
 
 We'll learn how to:
+
 - Use [Xata](https://xata.io)'s serverless platform to store & retrieve data without needing a database
 - Build an app with React Server & Client Components using [Next.js 13](https://nextjs.org/blog/next-13) and its `app/` directory
 - Implement full-text search with boosting via the Xata SDK
@@ -35,7 +35,6 @@ The games may be old, but the tech is brand spankin' new - so let's play!
 My friend & avid retro gamer [Sara Vieira](https://github.com/saravieira) had compiled a great collection of retro games data for her awesome site [letsplayretro.games](https://letsplayretro.games), a Next [app](https://github.com/SaraVieira/lets-play-retro-games) which already had a ton of great features. But one feature Sara still wished for was full-text search over not just games' names, but all their metadata, with the ability to prioritize (aka "boost") the highest-rated games in the search results.
 
 Since every minute spent coding is one less minute spent playing NES, neither of us wanted to waste a lot of time on making this happen. That's when it dawned on me that I knew of a way to easily implement full-text, boosted search over her tabular data: [Xata](https://xata.io) provides it out of the box!
-
 
 ## It's-a me, Xata!
 
@@ -74,7 +73,14 @@ xata browse
 
 This brings us to a spreadsheet-like view of our games data in the Xata dashboard. We can use the dashboard to browse, query, edit, and search our data, view and edit our databases, tables and schemas, and more.
 
-<ArticleImage src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/2crkp9sh3uh2samer67j.png" width="1210" height="766" alt="Xata dashboard" caption="Xata dashboard" position="center" />
+<ArticleImage
+  src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/2crkp9sh3uh2samer67j.png"
+  width="1210"
+  height="766"
+  alt="Xata dashboard"
+  caption="Xata dashboard"
+  position="center"
+/>
 
 For our app's purposes, these columns of the data are going to be particularly useful:
 
@@ -87,18 +93,27 @@ For our app's purposes, these columns of the data are going to be particularly u
 
 The "Search" tab lets us try out Xata's built-in full text search capabilities. Whatever search term we enter will be matched against any of the text-based columns in our database; each result is assigned a relevance score, with most relevant results appearing first.
 
-
-
-<ArticleImage src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/561ehd0wid9iols3xnls.png" width="1097" height="765" alt="Xata search" caption="Xata search" position="center" />
+<ArticleImage
+  src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/561ehd0wid9iols3xnls.png"
+  width="1097"
+  height="765"
+  alt="Xata search"
+  caption="Xata search"
+  position="center"
+/>
 
 Using Xata's "Boost" feature, we can increase the relevance score of certain results by telling Xata which information we care most about. For example, we can add a numeric booster based on `totalRating` to have the highest-rated games appear higher in the search results.
 
-
-<ArticleImage src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qn1wez6pjugnftdd85ql.png" width="1090" height="760" alt="Xata search with boosting" caption="Xata search with boosting" position="center" />
-
+<ArticleImage
+  src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qn1wez6pjugnftdd85ql.png"
+  width="1090"
+  height="760"
+  alt="Xata search with boosting"
+  caption="Xata search with boosting"
+  position="center"
+/>
 
 To deliver this awesome, customized search experience to our users, we'll use Xata's SDK to interact with our database from our app. On the Search page in the dashboard, click "Get code snippet" to reveal the SDK code for performing that search, including any boosters applied:
-
 
 ```tsx
 // Generated with CLI
@@ -119,13 +134,11 @@ const records = await xata.search.all("demon", {
 console.log(records);
 ```
 
-
 We'll use this code later to search our Xata data from our web app. But that app doesn't exist yet, so first we'll need to create it!
 
 ## Next.js 13, fresh on the scene
 
 Because life is full of contradictions, we're going to serve up our super vintage games data with the newest, most cutting-edge fullstack web framework we know: [Next.js 13](https://nextjs.org/blog/next-13), which is only about a week old at the time of writing.
-
 
 Next.js is beloved by React developers for its server-side rendering capabilities, which make apps more performant by letting us pre-load data and render React components on the server when we can, rather sending all that JS over the wire and making the client to do the heavy lifting on each request.
 
@@ -154,9 +167,10 @@ pages/
     hello.ts (or .js)
 ```
 
-This represents a partial [migration](https://beta.nextjs.org/docs/upgrade-guide#migrating-from-pages-to-app) to the new `app/` directory architecture, in which `app/page.tsx`  will be rendered at our app's `/` route, using the default layout `app/layout.tsx`. However, the new `app/` directory doesn't yet support API routes, so we're still using the old structure `pages/api/hello.ts` to create the [API route](https://nextjs.org/docs/api-routes/introduction) `/api/hello`. See the [Next.js 13](https://beta.nextjs.org/docs/routing/fundamentals#) documentation for more details.
+This represents a partial [migration](https://beta.nextjs.org/docs/upgrade-guide#migrating-from-pages-to-app) to the new `app/` directory architecture, in which `app/page.tsx` will be rendered at our app's `/` route, using the default layout `app/layout.tsx`. However, the new `app/` directory doesn't yet support API routes, so we're still using the old structure `pages/api/hello.ts` to create the [API route](https://nextjs.org/docs/api-routes/introduction) `/api/hello`. See the [Next.js 13](https://beta.nextjs.org/docs/routing/fundamentals#) documentation for more details.
 
 To build our search app, we'll need to write all three of these:
+
 - Server Components
 - Client Components
 - API routes
@@ -173,9 +187,7 @@ xata init
 
 In the prompts that follow, select the database you created earlier, and choose to generate TypeScript code (or JS code with ESM if you chose not to use TS) for the Xata client. This will create a `xata.ts` file at the path you specify; you can use the default path `src/xata.ts` or change it to e.g. `util/xata.ts` as I did.
 
-
 After running the init script, you'll have a `.env` file with the environment variables the Xata client needs to run, and a `xata.ts` file which exports a `getXataClient()` function we can now use to create a client object that can read our database on Xata.
-
 
 ### Create a Server Component
 
@@ -183,8 +195,14 @@ By default, components in the `app/` directory (like `app/page.jsx`) are [Server
 
 Let's try writing our first server component to load & display data about a certain game. We'll make the route for this page `/games/[gameID]`, where `[gameID]` is a [dynamic route segment](https://beta.nextjs.org/docs/routing/defining-routes#dynamic-segments) matching the ID of a game in our dataset, e.g. `/games/123` will show info for "Clash at Demonhead".
 
-
-<ArticleImage src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dlqtt3lr259otxnfzrnj.png" width="995" height="543" alt="Info page for 'The Clash at Demonhead' at route /games/123" caption="A game page" position="center" />
+<ArticleImage
+  src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dlqtt3lr259otxnfzrnj.png"
+  width="995"
+  height="543"
+  alt="Info page for 'The Clash at Demonhead' at route /games/123"
+  caption="A game page"
+  position="center"
+/>
 
 To make the new route, create a new file at the path `app/games/[gameID]/page.tsx`. Now, we need to flesh out that file to load data from Xata into a Server Component.
 
@@ -203,7 +221,7 @@ Now, we can query our data with the Xata SDK by calling methods on `xata.db[tabl
 To retrieve a game by its ID, for example, we can use [`.read()`](https://xata.io/docs/sdk/reference#reading-records):
 
 ```tsx
-const clashAtDemonhead = await xata.db.games.read('123')
+const clashAtDemonhead = await xata.db.games.read("123");
 ```
 
 Unlike with previous versions of Next, when fetching data in `app/` Server Components we don't need anything fancy tricks like `getServerSideProps`. We can `await` our data-fetching functions like we would anywhere else!
@@ -284,8 +302,14 @@ export default function Home() {
 
 Navigate to `localhost:3000/` and you'll see the `Search` Client Component successfully rendered within the `Home` Server Component and default layout!
 
-
-<ArticleImage src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/94mjf7erpggcl2pyrjhn.png" width="995" height="543" alt="Search component at / route" caption="Search component at / route" position="center" />
+<ArticleImage
+  src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/94mjf7erpggcl2pyrjhn.png"
+  width="995"
+  height="543"
+  alt="Search component at / route"
+  caption="Search component at / route"
+  position="center"
+/>
 
 Now let's capture what the user types into the search input as state, so that we can later use it to dynamically search our Xata database. Editing `app/search.tsx`, use the `useState()` React hook to connect the value of the search input to a piece of state called something like `searchTerm`:
 
@@ -304,7 +328,7 @@ export default function Search() {
       <input
         type="search"
         value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
+        onChange={(e) => setSearchTerm(e.target.value)}
       />
     </div>
   );
@@ -323,17 +347,17 @@ The new `app/` directory will eventually support API routes, but as of the time 
 // pages/api/hello.ts (generated by create-next-app)
 
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
-  name: string
-}
+  name: string;
+};
 
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  res.status(200).json({ name: 'John Doe' })
+  res.status(200).json({ name: "John Doe" });
 }
 ```
 
@@ -378,7 +402,7 @@ export default async function handler(
   });
 
   // Extract the `record` property from the { table, record } objects returned by the search
-  res.status(200).json(records.map(r => r.record));
+  res.status(200).json(records.map((r) => r.record));
 }
 ```
 
@@ -418,7 +442,7 @@ export default function Search() {
   useEffect(() => {
     if (searchTerm) {
       // Update the games array once data has loaded
-      getData(searchTerm).then(results => setGames(results));
+      getData(searchTerm).then((results) => setGames(results));
     } else {
       // Reset games if the search term has been cleared
       setGames([]);
@@ -431,7 +455,7 @@ export default function Search() {
         <input
           type="search"
           value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
       {games.map(({ id, name }) => {
@@ -451,12 +475,19 @@ export default function Search() {
 
 Now our search app, while basic, is complete! Reload the home page at `localhost:3000/` and enjoy searching through thousands of retro games.
 
-
-<ArticleImage src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/xochn30o7qgpvjr681xw.png" width="995" height="543" alt="Search page" caption="Search page" position="center" />
+<ArticleImage
+  src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/xochn30o7qgpvjr681xw.png"
+  width="995"
+  height="543"
+  alt="Search page"
+  caption="Search page"
+  position="center"
+/>
 
 ## Recap & next steps
 
 In the process of building our app to search retro games data, we've covered a lot of ground! We learned how to:
+
 - Import CSV data into Xata
 - Set up the Xata SDK in a Next project
 - Use the new `app/` directory in Next.js 13
@@ -465,6 +496,7 @@ In the process of building our app to search retro games data, we've covered a l
 - (Almost) use the new `use()` hook to fetch data from Client Components
 
 There is still a lot more Xata functionality we haven't had time to explore. Check out [search-retro-games.vercel.app](https://search-retro-games.vercel.app) for an enhanced version of this [project](https://github.com/vakila/search-retro-games) featuring:
+
 - [Filtering](https://xata.io/docs/api-guide/filtering) search results by console
 - [Aggregating](https://xata.io/docs/api-guide/aggregate) to count the total number of games
 - Debounced search input to avoid over-fetching

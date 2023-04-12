@@ -2,7 +2,7 @@
 title: "Semantic search with Xata, OpenAI, TypeScript, and Deno"
 description: "A tutorial showing how to implement semantic search, using Xata, the OpenAI embeddings API, TypeScript, and Deno."
 image:
-  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/semantic-search-openai-typescript-deno.png
   alt: Xata and ChatGPT logos
 author: Tudor Golubenco
 date: 03-02-2023
@@ -34,7 +34,14 @@ Similarly, if you search for “the kitty hissed at the puppy”, semantic searc
 
 From a data point of view, embeddings are simply arrays of floats. They are the output of ML models, where the input can be a word, a sentence, a paragraph of text, an image, an audio file, a video file, and so on.
 
-<ArticleImage src="https://xata.io/images/blog/semantic-search/embeddings_diagram.png" width="1630" height="368" alt="ML model for search" caption="Breaking down the model" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/semantic-search/embeddings_diagram.png"
+  width="1630"
+  height="368"
+  alt="ML model for search"
+  caption="Breaking down the model"
+  position="center"
+/>
 
 Each number in the array of floats represents the input text on a particular dimension, which depends on the model. This means that the more similar the embeddings are, the more “similar” the input objects are. I’ve put “similar” in quotes because it depends on the model what kind of similar it means. When it comes to text, it’s usually about “similar in meaning”, even if different words, expressions, or languages are used.
 
@@ -44,18 +51,32 @@ Reducing complex data to an array of numbers representing its qualities turns ou
 
 If you want to follow along, start with steps:
 
-* Sign up or sign into Xata [here](https://app.xata.io/signin) (the usage from this tutorial fits well within the free tier, so you don’t need to set up billing)
-* Create a database named `vectors`
-* Create a table named `Sentences`
-* Add two columns:
-   * `sentence` of type string
-   * `embedding` of type vector. Use 1536 as the dimension
+- Sign up or sign into Xata [here](https://app.xata.io/signin) (the usage from this tutorial fits well within the free tier, so you don’t need to set up billing)
+- Create a database named `vectors`
+- Create a table named `Sentences`
+- Add two columns:
+  - `sentence` of type string
+  - `embedding` of type vector. Use 1536 as the dimension
 
-<ArticleImage src="https://xata.io/images/blog/semantic-search/add_vector_type_screenshot.png" width="450" height="505" alt="Adding vector search" caption="Adding vector search" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/semantic-search/add_vector_type_screenshot.png"
+  width="450"
+  height="505"
+  alt="Adding vector search"
+  caption="Adding vector search"
+  position="center"
+/>
 
 When you are done, the schema should look like this:
 
-<ArticleImage src="https://xata.io/images/blog/semantic-search/view_schema_screenshot.png" width="450" height="344" alt="Vector search in our schema" caption="Vector search in our schema" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/semantic-search/view_schema_screenshot.png"
+  width="450"
+  height="344"
+  alt="Vector search in our schema"
+  caption="Vector search in our schema"
+  position="center"
+/>
 
 ## Initialize the Xata project
 
@@ -86,7 +107,14 @@ xata init
 
 The Xata CLI will ask you to select the database and then ask you how to generate the types. Select **Generate TypeScript code with Deno imports**. Use default settings for the rest of the questions.
 
-<ArticleImage src="https://xata.io/images/blog/semantic-search/xata_init_install_screenshot.png" width="1342" height="862" alt="Running xata init" caption="Running xata init" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/semantic-search/xata_init_install_screenshot.png"
+  width="1342"
+  height="862"
+  alt="Running xata init"
+  caption="Running xata init"
+  position="center"
+/>
 
 ## Prepare OpenAI and Deno
 
@@ -159,10 +187,17 @@ Execute the script like this:
 ```sh
 deno run --allow-net --allow-env --allow-read --allow-run ./loadWithEmbeddings.ts
 ```
+
 If you visit the Xata UI now, you should see the data loaded, together with the embeddings.
 
-
-<ArticleImage src="https://xata.io/images/blog/semantic-search/view_data_screenshot.png" width="2310" height="1448" alt="Content in the UI" caption="Content in the UI" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/semantic-search/view_data_screenshot.png"
+  width="2310"
+  height="1448"
+  alt="Content in the UI"
+  caption="Content in the UI"
+  position="center"
+/>
 
 ## Run search queries
 
@@ -287,5 +322,3 @@ Again, the sentence with the same meaning shows up at the top with a score close
 The large-language-models are powerful tools that open up new use cases. Semantic search is one of these use cases, and we’ve seen how the Xata vector search can be used to implement it. You can also use it to build recommendation engines, or finding similar entries in a knowledge-base, or questions in a Q&A website.
 
 If you’re running this tutorial, please join us on the Xata [Discord](https://xata.io/discord) and let us know what you are building!
-
-

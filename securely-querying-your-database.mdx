@@ -2,7 +2,7 @@
 title: "Securely querying Your database with Xata"
 description: "Creating a secure connection between an application and a Xata database. How to fetch data from pure client-side apps without exposing your security keys."
 image:
-  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/securely-querying-your-database-on-xata.png
   alt: Xata
 author: Atila Fassina
 date: 10-24-2022
@@ -14,7 +14,14 @@ With a database access key being sent out from the browser, your database is rea
 
 When building an app, a common pattern is to build an API (Application Program Interface) that will work as a bridge between your database and the client-side app. Said API will expose a certain number of endpoints depending on how it is designed. For example:
 
-<ArticleImage src="https://i.imgur.com/NgpZvIp.jpg" width="2083" height="1386" alt="Diagram of App-API-DB architecture" caption="Diagram of App-API-DB architecture" position="center" />
+<ArticleImage
+  src="https://i.imgur.com/NgpZvIp.jpg"
+  width="2083"
+  height="1386"
+  alt="Diagram of App-API-DB architecture"
+  caption="Diagram of App-API-DB architecture"
+  position="center"
+/>
 
 This architecture is not only common, it's a requirement. It happens because a database requires **access keys**. As anything valuable, user data must be stored behind locked doors. Wherever the query originates from, must add these **access keys** (often referred to as **access tokens** as well) to the request. This is why any communication with a database must happen in a **private connection**.
 
@@ -40,7 +47,7 @@ XATA_API_KEY=my_api_key
 
 When deploying your app, you must find out how to define Environment Variables to the deployment script. Each PaaS (Platform as a Service) has a different way of doing that. Have a look for examples at [CircleCI](https://circleci.com/docs/env-vars/), [Cloudflare Workers](https://developers.cloudflare.com/workers/platform/environment-variables/), [Netlify](https://docs.netlify.com/configure-builds/environment-variables/), or [Vercel](https://vercel.com/docs/concepts/projects/environment-variables).
 
-The `process.env` namespace is not available in browser environments so if using the SDK, you will experience *friction* when attempting to query your Xata database from the browser. **This is intentional and by design.** Essentially, `process.env.XATA_API_KEY` will be `undefined`,  and the SDK will not be able to fire your request (thus preventing you from leaking access to your database), and you will see a runtime error like:
+The `process.env` namespace is not available in browser environments so if using the SDK, you will experience _friction_ when attempting to query your Xata database from the browser. **This is intentional and by design.** Essentially, `process.env.XATA_API_KEY` will be `undefined`, and the SDK will not be able to fire your request (thus preventing you from leaking access to your database), and you will see a runtime error like:
 
 ```bash
 error Error: Option apiKey is required
@@ -54,11 +61,11 @@ error Error: Option apiKey is required
 
 If on a Node.js environment, this means the SDK cannot read your API key. You can solve this by using one of the methods mentioned above to expose your access key to your runtime. If using the `.env` approach, you may need a package like [dotenv](https://www.npmjs.com/package/dotenv) to read those values.
 
-If on a browser environment, this error **********************************************should not be “fixed”**********************************************. As explained in the first section of this article: exposing your Xata API keys to a client-side runtime like a browser is a huge security issue. For more information, read our documentation about [Securely Talking to Xata](https://xata.io/docs/quickstart/updating-data-with-xata#securely-talking-to-xata).
+If on a browser environment, this error ****\*\*****\*\*****\*\*****\*\*****\*\*****\*\*****\*\*****should not be “fixed”****\*\*****\*\*****\*\*****\*\*****\*\*****\*\*****\*\*****. As explained in the first section of this article: exposing your Xata API keys to a client-side runtime like a browser is a huge security issue. For more information, read our documentation about [Securely Talking to Xata](https://xata.io/docs/quickstart/updating-data-with-xata#securely-talking-to-xata).
 
 ## Creating Apps and Connecting to Xata
 
-The path of least resistance to create an app and connect it to Xata is to use a full-stack framework such as [Next.js](https://nextjs.org/docs), [Remix](https://remix.run/docs/en/v1), [Nuxt](https://nuxtjs.org), [Gatsby](https://www.gatsbyjs.com/docs/), and others. Such apps offer a way of creating **serverless functions** within them. In Next.js for example, any files in `./pages/api` contain these functions. But what are they? In a nutshell serverless functions are pieces of code that will run only on the server, allowing developers to query their database there and thus remaining close to the app logic and more importantly, ***out of the unsafe browser environment.***
+The path of least resistance to create an app and connect it to Xata is to use a full-stack framework such as [Next.js](https://nextjs.org/docs), [Remix](https://remix.run/docs/en/v1), [Nuxt](https://nuxtjs.org), [Gatsby](https://www.gatsbyjs.com/docs/), and others. Such apps offer a way of creating **serverless functions** within them. In Next.js for example, any files in `./pages/api` contain these functions. But what are they? In a nutshell serverless functions are pieces of code that will run only on the server, allowing developers to query their database there and thus remaining close to the app logic and more importantly, **_out of the unsafe browser environment._**
 
 When creating a pure client-side app ([Astro](http://astro.build), [Eleventy](https://www.11ty.dev/), [Qwik](https://qwik.builder.io/), [React](https://beta.reactjs.org/), [Solid](https://www.solidjs.com/), [Svelte](https://svelte.dev/), [Vue](https://vuejs.org/), etc.), the database request will not be able to originate from the app. Instead, refer to the initial architecture we outlined in this post: first hit an API, then the API connects to the Database. This keeps your API keys secret.
 

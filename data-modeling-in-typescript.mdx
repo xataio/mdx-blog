@@ -2,13 +2,14 @@
 title: "The importance of data modeling in TypeScript"
 description: "A deep dive into TypeScript to demonstrate the importance of data modeling"
 image:
-  src: https://images.unsplash.com/photo-1503387837-b154d5074bd2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2531&q=80
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/the-importance-of-data-modeling-in-typescript.png
   alt: "The importance of data modeling in TypeScript"
 author: Fabien Bernard
 date: 03-28-2023
 published: true
 slug: the-importance-of-data-modeling-in-typescript
 ---
+
 ## Introduction
 
 Hey folks! Today we will deep dive into TypeScript to demonstrate the importance of data modeling.
@@ -19,7 +20,14 @@ Welcome to my journey of implementing a “strategy pattern” in TypeScript!
 
 What’s this?! It’s a “computer science term” to describe that you need to choose a strategy on runtime. Still don’t get it? Let’s jump into an example to see what we are trying to solve here.
 
-<ArticleImage src="https://xata.io/images/blog/the-importance-of-data-modeling-in-typescript/settings-example.gif" width="368" height="588" alt="Settings example in XataForm" caption="Selecting types" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/the-importance-of-data-modeling-in-typescript/settings-example.gif"
+  width="368"
+  height="588"
+  alt="Settings example in XataForm"
+  caption="Selecting types"
+  position="center"
+/>
 
 We need to build this `Settings` component, this component will take a `question` as input, and… this question can be 1 of 18 question types.
 
@@ -34,20 +42,20 @@ Also, to help me implement all those `{questionType}Settings` components, I wa
 In code, this is what I want:
 
 ```tsx
-function Settings(props: {question: Question}) {
-  switch(question.type) {
-		case "contact":
-			return <SettingsContact question={question} />
-		case "number":
-			return <SettingsNumber question={question} />
-	}
+function Settings(props: { question: Question }) {
+  switch (question.type) {
+    case "contact":
+      return <SettingsContact question={question} />;
+    case "number":
+      return <SettingsNumber question={question} />;
+  }
 }
 
-function SettingContact(props: {question: ContactQuestion}) {
- /* I just have the context of the question of type === `contact` */
+function SettingContact(props: { question: ContactQuestion }) {
+  /* I just have the context of the question of type === `contact` */
 }
-function SettingNumber(props: {question: NumberQuestion}) {
-/* I just have the context of the question of type === `number` */
+function SettingNumber(props: { question: NumberQuestion }) {
+  /* I just have the context of the question of type === `number` */
 }
 ```
 
@@ -117,7 +125,14 @@ Please note that we are using string literals here (`”date”` and `"number"`)
 
 Let’s try!
 
-<ArticleImage src="https://xata.io/images/blog/the-importance-of-data-modeling-in-typescript/intellisense-sad.png" width="651" height="232" alt="Settings example in XataForm" caption="Intellisense not working as we'd expect" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/the-importance-of-data-modeling-in-typescript/intellisense-sad.png"
+  width="651"
+  height="232"
+  alt="Settings example in XataForm"
+  caption="Intellisense not working as we'd expect"
+  position="center"
+/>
 
 Yes… I know… Disappointing… if you have this, out-of-box, TypeScript will still not help you, so there are two choices:
 
@@ -148,7 +163,14 @@ type Question =
     };
 ```
 
-<ArticleImage src="https://xata.io/images/blog/the-importance-of-data-modeling-in-typescript/intellisense-victory.png" width="568" height="345" alt="Working intellisense" caption="Intellisense now works" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/the-importance-of-data-modeling-in-typescript/intellisense-victory.png"
+  width="568"
+  height="345"
+  alt="Working intellisense"
+  caption="Intellisense now works"
+  position="center"
+/>
 
 And voilà! Without any TypeScript guru skills required, you have exactly what you want!
 
@@ -210,7 +232,9 @@ If the type `U` extends `{ type: T }`, returns `U`; otherwise, returns `never` .
 Let’s try to use this new helper in our component
 
 ```tsx
-export default function SettingsDate(props: {question: QuestionOfType<"date">}){}
+export default function SettingsDate(props: {
+  question: QuestionOfType<"date">;
+}) {}
 ```
 
 Both approaches are totally valid. But the second one brings us something interesting, and we can use the `question.type` as generic.
@@ -231,11 +255,18 @@ I now have a simple and robust way to share props across all our components
 export default function SettingsDate({
   questionId,
   formId,
-  question
+  question,
 }: SettingsProps<"date">) {}
 ```
 
-<ArticleImage src="https://xata.io/images/blog/the-importance-of-data-modeling-in-typescript/settings-date.gif" width="950" height="694" alt="Intellisense for date" caption="Intellisense for dates" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/the-importance-of-data-modeling-in-typescript/settings-date.gif"
+  width="950"
+  height="694"
+  alt="Intellisense for date"
+  caption="Intellisense for dates"
+  position="center"
+/>
 
 How beautiful is this? 😍 No guessing, no type assertion, and this without writing (and maintaining) 18 type guards!
 

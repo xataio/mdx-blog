@@ -2,7 +2,7 @@
 title: "How to fuzzy search with Xata"
 description: "Xata is a serverless database built on PostgreSQL with data automatically replicated to Elasticsearch. This opens a whole new world of possibilities when it comes to free text search. Deep dive into Queen Raae's favorite Xata feature, fuzzy search."
 image:
-  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/how-to-fuzzy-search-with-xata.png
   alt: How to Fuzzy Search with Xata
 author: Benedicte Raae
 date: 02-13-2023
@@ -17,7 +17,14 @@ these days, though, often expect a more forgiving search, one that will match
 
 Fuzzy search to the rescue! 💪
 
-<ArticleImage src="https://xata.io/images/blog/fuzzy_search/xata-fuzzy-search-on-off.gif" width="1920" height="1080" alt="The difference in results with fuzzy search enabled and disabled" caption="Fuzzy search enabled and disabled" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/fuzzy_search/xata-fuzzy-search-on-off.gif"
+  width="1920"
+  height="1080"
+  alt="The difference in results with fuzzy search enabled and disabled"
+  caption="Fuzzy search enabled and disabled"
+  position="center"
+/>
 
 > **FYI:** The example code uses a Xata Worker using the Xata SDK + a React component using ReactQuery. However, you may use any type of server-side + client-side setup you are comfortable with.
 
@@ -33,38 +40,41 @@ Nonetheless I do like to explicitly state the fuzziness level in the Code,
 together with the configuration for partially matching words.
 
 ```tsx
-import React, {useState} from "react";
-import {useDebounce} from "usehooks-ts";
-import {useQuery} from "@tanstack/react-query";
-import {xataWorker} from "./xata";
+import React, { useState } from "react";
+import { useDebounce } from "usehooks-ts";
+import { useQuery } from "@tanstack/react-query";
+import { xataWorker } from "./xata";
 
 // Code executed on the server as a Cloudflare Worker
-const searchAccount = xataWorker("searchAccount", async ({xata}, {term}) => {
-  const results = await xata.search.all(term, {
-    tables: [
-      {
-        table: "accounts",
-        target: ["name", "username"],
-      },
-    ],
-    // Fuzziness level
-    fuzziness: 1,
-    // Partially matching words
-    prefix: "phrase",
-  });
+const searchAccount = xataWorker(
+  "searchAccount",
+  async ({ xata }, { term }) => {
+    const results = await xata.search.all(term, {
+      tables: [
+        {
+          table: "accounts",
+          target: ["name", "username"],
+        },
+      ],
+      // Fuzziness level
+      fuzziness: 1,
+      // Partially matching words
+      prefix: "phrase",
+    });
 
-  return results;
-});
+    return results;
+  }
+);
 
 // Code executed in the browser
 export default function App() {
   const [term, setTerm] = useState("");
   const debouncedTerm = useDebounce(term, 300);
 
-  const {data: results} = useQuery({
+  const { data: results } = useQuery({
     queryKey: ["search", debouncedTerm],
     queryFn: () => {
-      return searchAccount({term: debouncedTerm});
+      return searchAccount({ term: debouncedTerm });
     },
     enabled: Boolean(debouncedTerm),
     placeholderData: [],
@@ -86,7 +96,7 @@ export default function App() {
       </form>
 
       <ul>
-        {results.map(({record}) => {
+        {results.map(({ record }) => {
           return (
             <li key={record.username}>
               <a href={`http://twitter.com/${record.username}`}>
@@ -125,51 +135,61 @@ crucial, as it can lead to some unexpected matches.
 When your mind thinks "oslo" but you wrote "olso", the "Espen Olson" results
 might feel strange when not highlighted.
 
-<ArticleImage src="https://xata.io/images/blog/fuzzy_search/xata-fuzzy-search-on-off.gif" width="1920" height="1080" alt="The difference between results with and withuot highlighting" caption="With and without highlighting" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/fuzzy_search/xata-fuzzy-search-on-off.gif"
+  width="1920"
+  height="1080"
+  alt="The difference between results with and withuot highlighting"
+  caption="With and without highlighting"
+  position="center"
+/>
 
 Luckily, Xata generates ready-to-use HTML, wrapping the relevant matching text
 in `<em>` for us. However, you need to use `getMetadata` on each record to get
 access to it.
 
 ```tsx
-import React, {useState} from "react";
-import {useDebounce} from "usehooks-ts";
-import {useQuery} from "@tanstack/react-query";
-import {xataWorker} from "./xata";
+import React, { useState } from "react";
+import { useDebounce } from "usehooks-ts";
+import { useQuery } from "@tanstack/react-query";
+import { xataWorker } from "./xata";
 
 // Code executed on the server as a Cloudflare Worker
-const searchAccount = xataWorker("searchAccount", async ({xata}, {term}) => {
-  const results = await xata.search.all(term, {
-    tables: [
-      {
-        table: "accounts",
-        target: ["name", "username"],
-      },
-    ],
-    fuzziness: 1,
-    prefix: "phrase",
-  });
+const searchAccount = xataWorker(
+  "searchAccount",
+  async ({ xata }, { term }) => {
+    const results = await xata.search.all(term, {
+      tables: [
+        {
+          table: "accounts",
+          target: ["name", "username"],
+        },
+      ],
+      fuzziness: 1,
+      prefix: "phrase",
+    });
 
-  // Getting the highlights (and more)
-  const enrichedResults = results.map((result) => {
-    return {
-      ...result,
-      ...result.record.getMetadata(),
-    };
-  });
+    // Getting the highlights (and more)
+    const enrichedResults = results.map((result) => {
+      return {
+        ...result,
+        ...result.record.getMetadata(),
+      };
+    });
 
-  return enrichedResults;
-});
+    return enrichedResults;
+  }
+);
 
 //Code executed in the browser
 export default function App() {
   const [term, setTerm] = useState("");
   const debouncedTerm = useDebounce(term, 300);
 
-  const {data: results} = useQuery({
+  const { data: results } = useQuery({
     queryKey: ["search", debouncedTerm],
     queryFn: () => {
-      return searchAccount({term: debouncedTerm});
+      return searchAccount({ term: debouncedTerm });
     },
     enabled: Boolean(debouncedTerm),
     placeholderData: [],
@@ -191,7 +211,7 @@ export default function App() {
       </form>
 
       <ul>
-        {results.map(({record, highlight}) => {
+        {results.map(({ record, highlight }) => {
           return (
             <li key={record.username}>
               <a href={`http://twitter.com/${record.username}`}>
@@ -226,7 +246,14 @@ Engine Playground.
 **Pro tip:** Use the "Get Code Snippet" feature to get a head start while
 coding.
 
-<ArticleImage src="https://xata.io/images/blog/fuzzy_search/xata-search-engine-playground.png" width="1920" height="1080" alt="Xata Playground showing similar code as this article" caption="Xata Playground showing similar code as this article" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/fuzzy_search/xata-search-engine-playground.png"
+  width="1920"
+  height="1080"
+  alt="Xata Playground showing similar code as this article"
+  caption="Xata Playground showing similar code as this article"
+  position="center"
+/>
 
 ## Where To Go From Here?
 

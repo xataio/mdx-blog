@@ -2,7 +2,7 @@
 title: "Xata Workers: client-side database access without client-side secrets"
 description: "Xata Workers act as middleware to simplify database access and allow their developers to deploy functions that sit in front of their databases."
 image:
-  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-workers.png
   alt: Winnders
 author: Alexis Rico
 date: 01-01-2023
@@ -49,15 +49,15 @@ The main difference with other alternatives is that Xata Workers are, by design,
 With our command line tool, we handle the build and deployment process. When the function is invoked, the Xata Worker actually makes a request to a serverless function over the network.
 
 ```tsx
-import { useQuery } from '@tanstack/react-query';
-import { xataWorker } from '~/xata';
+import { useQuery } from "@tanstack/react-query";
+import { xataWorker } from "~/xata";
 
-const listProducts = xataWorker('listProducts', async ({ xata }) => {
-  return await xata.db.products.sort('popularity', 'desc').getMany();
+const listProducts = xataWorker("listProducts", async ({ xata }) => {
+  return await xata.db.products.sort("popularity", "desc").getMany();
 });
 
 export const Home = () => {
-  const { data = [] } = useQuery(['products'], listProducts);
+  const { data = [] } = useQuery(["products"], listProducts);
 
   return (
     <Grid>
@@ -75,7 +75,14 @@ As you can see a Xata Worker is a function that wraps any user-defined code and 
 
 When using a Xata Worker in TypeScript, our command line tool also generates custom types based on your schema. These types offer type-safety for your queries or mutations, and improve your developer experience by adding extra intellisense to your IDE.
 
-<ArticleImage src="https://blog.cloudflare.com/content/images/2022/11/Untitled.png" width="923" height="455" alt="Intellisense" caption="Intellisense" position="center" />
+<ArticleImage
+  src="https://blog.cloudflare.com/content/images/2022/11/Untitled.png"
+  width="923"
+  height="455"
+  alt="Intellisense"
+  caption="Intellisense"
+  position="center"
+/>
 
 A Xata Worker, like any other function, can receive additional parameters that pass application state, context or user tokens. The code you write in the function can either return an object that will be serialized over the network with a superset of JSON to support dates and other non-primitive data types, or a full response with a custom status code and headers.
 
@@ -95,16 +102,23 @@ During the compilation, we inject the database connection details and the databa
 
 When the client-side application runs a Xata Worker, it calls a Dispatcher function that processes the request and calls the correct Worker Script. The dispatcher function is also responsible for configuring the CORS headers and the log drain that can be used by the developer to debug their functions.
 
-<ArticleImage src="https://blog.cloudflare.com/content/images/2022/11/Untitled--1-.png" width="1600" height="883" alt="A diagram featuring Xata worker workflow with Cloudflare" caption="Xata workers with Cloudflare" position="center" />
+<ArticleImage
+  src="https://blog.cloudflare.com/content/images/2022/11/Untitled--1-.png"
+  width="1600"
+  height="883"
+  alt="A diagram featuring Xata worker workflow with Cloudflare"
+  caption="Xata workers with Cloudflare"
+  position="center"
+/>
 
 By using Cloudflare, we are also able to benefit from other products in the Workers ecosystem. For example, we can provide an easy way to cache the results of a query in Cloudflare's global network. That way, we can serve the results for read-only queries directly from locations closer to the end users, without having to call the database again and again for every Worker invocation. For the developer, it's only a matter of adding a "cache" parameter to their query with the number of milliseconds they want to cache the results in a KV Namespace.
 
 ```tsx
-import { xataWorker } from '~/xata';
+import { xataWorker } from "~/xata";
 
-const listProducts = xataWorker('listProducts', async ({ xata }) => {
-  return await xata.db.products.sort('popularity', 'desc').getMany({
-    cache: 15 * 60 * 1000 // TTL
+const listProducts = xataWorker("listProducts", async ({ xata }) => {
+  return await xata.db.products.sort("popularity", "desc").getMany({
+    cache: 15 * 60 * 1000, // TTL
   });
 });
 ```

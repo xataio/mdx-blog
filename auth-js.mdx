@@ -2,7 +2,7 @@
 title: "Xata and Auth․js on two Next․js apps: app directory and pages directory"
 description: "Let's build Next.js apps with JWT authentication, with Auth.js and Xata. With app directory and React Server Components, or with the traditional pages routing system."
 image:
-  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-authjs-nextjs.png
   alt: Xata and ChatGPT logos
 author: Attila Fassina
 date: 03-23-2023
@@ -23,16 +23,24 @@ Before going into the Next.js specifics, let's first understand our goals with t
 
 A diagram is probably the fastest way to visualizing a process. This is important to see if there aren't any redundant calls, or if any of those requests are chained in some condition. Chained requests are the grim reapers of perceived performance, we need to get those out of the way as soon as possible.
 
-<ArticleImage src="https://xata.io/images/blog/auth_js/diagram.png" width="954" height="420" alt="Diagram mapping how authentication will work in our app" caption="Our auth architecture" variant="crystalRiver" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/auth_js/diagram.png"
+  width="954"
+  height="420"
+  alt="Diagram mapping how authentication will work in our app"
+  caption="Our auth architecture"
+  variant="crystalRiver"
+  position="center"
+/>
 
 In the above graph, we have “Frontend” and “Backend” that are both handled by Next.js. We have the “auth provider” which our app is connected to via Auth.js (within a Next.js endpoint), and we have Xata as our database, connecting as well via Next.js’ backend layer. We can examine and translate the flow of that diagram into 3 steps:
 
 1. **Authentication**
-Provider performs user authentication, the library creates a `session` and the app receives that as a `payload` from the auth request.
+   Provider performs user authentication, the library creates a `session` and the app receives that as a `payload` from the auth request.
 2. **Resource Request**
-Authenticated User performs request with `resourceId`, app takes `userId` from `session`
+   Authenticated User performs request with `resourceId`, app takes `userId` from `session`
 3. **Granting Access**
-Xata filters all resources from table to only the ones owned by `userId` and returns (if exists) the one with `resourceId`
+   Xata filters all resources from table to only the ones owned by `userId` and returns (if exists) the one with `resourceId`
 
 Now that we aligned ourselves about the target implementation, it's time to roll up our sleeves and start writing some code. First, let's prepare the authentication endpoint.
 
@@ -49,12 +57,12 @@ When working with Auth.js and Next.js, everything starts with a very special API
 Our Serverless Route will then import `NextAuth` as a high order function, this will handle the necessary routes the library will need to implement and we will only pass the configuration object to it. Xata has an adapter, which means once the authentication is done, Auth.js will itself create an entry into a Xata database for that user, so the authentication provider will only be used for registering the user and sign-in. Auth.js has a big number of authentication providers, for this example we will use GitHub. Your `/pages/api/auth/[...nextauth].ts` will then look like this:
 
 ```tsx
-import NextAuth from 'next-auth'
-import GitHubProvider from 'next-auth/providers/github'
-import { XataAdapter } from '@next-auth/xata-adapter'
-import { XataClient } from '~/shared/xata.codegen'
+import NextAuth from "next-auth";
+import GitHubProvider from "next-auth/providers/github";
+import { XataAdapter } from "@next-auth/xata-adapter";
+import { XataClient } from "~/shared/xata.codegen";
 
-const client = new XataClient()
+const client = new XataClient();
 
 export const authConfig = {
   adapter: XataAdapter(client),
@@ -64,9 +72,9 @@ export const authConfig = {
       clientSecret: process.env.GITHUB_SECRET,
     }),
   ],
-}
+};
 
-export default NextAuth(authConfig)
+export default NextAuth(authConfig);
 ```
 
 With that, Auth.js is ready to authenticate and provide our app with a valid session to fetch user specific data. Now it's time to setup our database our app can communicate to Xata, it is important to setup a workspace and push our schema to it. First ,take the following `json` and save it somewhere:
@@ -226,7 +234,7 @@ With that, Auth.js is ready to authenticate and provide our app with a valid ses
 }
 ```
 
-And now if you have our CLI installed, you can use the  `xata` namespace, otherwise `npx @xata.io/cli@latest` will also work:
+And now if you have our CLI installed, you can use the `xata` namespace, otherwise `npx @xata.io/cli@latest` will also work:
 
 ```bash
 xata init --schema="path/to/schema.json"
@@ -302,9 +310,9 @@ In the above example, we are using the user's email as their unique identifier (
 
 ```tsx
 // the file generated via our CLI
-import { getXataClient } from '~/lib/xata.codegen.server'
+import { getXataClient } from "~/lib/xata.codegen.server";
 
-const xata = getXataClient()
+const xata = getXataClient();
 
 export const fetchUserData = async (email: string) => {
   const userData = await xata.db.itemList
@@ -313,11 +321,11 @@ export const fetchUserData = async (email: string) => {
         email,
       },
     })
-    .sort('created_at', 'desc')
-    .getPaginated({ pagination: { size: 100, offset: 0 }})
+    .sort("created_at", "desc")
+    .getPaginated({ pagination: { size: 100, offset: 0 } });
 
-  return userData
-}
+  return userData;
+};
 ```
 
 Remember, this method may **only** be accessed from the server-side. In Next.js this means:
@@ -330,24 +338,24 @@ To retrieve data from the client-side, we would need a different method that sen
 
 ```tsx
 export const fetchData = async (userEmail: string) => {
-  const response = await fetch('/api/fetch-data', {
-    method: 'post',
+  const response = await fetch("/api/fetch-data", {
+    method: "post",
     body: JSON.stringify({
       userEmail,
     }),
-  })
+  });
 
   if (response.ok) {
-    return response
+    return response;
   } else {
-    const err = await response.json()
+    const err = await response.json();
     throw new Error(
       `ERROR [${response.status}]: ${
-        err.message ?? 'The server returned an error'
+        err.message ?? "The server returned an error"
       }`
-    )
+    );
   }
-}
+};
 ```
 
 ## Working Code

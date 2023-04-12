@@ -2,7 +2,7 @@
 title: "The future of data fetching with Next.Js 13"
 description: "Next.js 13 is the latest version of the popular full-stack framework based on React. In this post, we'll take a look at the new data fetching features and how Xata can be seamlessly used with their next big version."
 image:
-  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/nextjs-13-future-of-data-fetching.png
   alt: Next JS
 author: Alexis Rico
 date: 10-26-2022
@@ -10,7 +10,7 @@ published: true
 slug: nextjs-13-future-of-data-fetching
 ---
 
-Next.js 13 is the latest version of the popular full-stack framework based on React. In this post, we'll take a look at the new data fetching features and how Xata can be seamlessly used with their *next* big version.
+Next.js 13 is the latest version of the popular full-stack framework based on React. In this post, we'll take a look at the new data fetching features and how Xata can be seamlessly used with their _next_ big version.
 
 As announced at the Next.js Conf, Next.js 13 offers a completely new solution for file-system routing, nested layouts, incrementally streamed rendering, and component-level data fetching with React Server Components (RSC). You can find out more in [the Next.js blog announcement](https://nextjs.org/blog/next-13) or replay the keynote from Next.js Conf 2022.
 
@@ -40,7 +40,9 @@ export default async function Blog() {
     <div>
       <h1>Blog posts</h1>
 
-      {data.map((post) => (<h2>{post.title}</h2>))}
+      {data.map((post) => (
+        <h2>{post.title}</h2>
+      ))}
     </div>
   );
 }
