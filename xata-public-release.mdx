@@ -2,7 +2,7 @@
 title: "Xata is now Live"
 description: "Starting today, Xata is out of private Beta! After more than a year of work, receiving and addressing feedback from over 700 developers, and stretching our designers thin in the past weeks, we are very excited to show you what we’ve been up to."
 image:
-  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-public-release.png
   alt: Winners
 author: Monica Sarbu
 date: 11-02-2022
@@ -24,9 +24,16 @@ Our mission is to take the hard data problems, solve them using the industry's b
 
 The hard data problems include running PostgreSQL at scale and with high availability, replicating the data into Elasticsearch for search and analytics, edge caching, major-version upgrades, data migrations, observability, and so on. For more details around how we abstract away this complexity, see the How it Works documentation page.
 
-<ArticleImage src="https://xata.io/images/docs/xata-cell.png" width="688" height="411" alt="Technical overview" caption="Technical overview" position="center" />
+<ArticleImage
+  src="https://xata.io/images/docs/xata-cell.png"
+  width="688"
+  height="411"
+  alt="Technical overview"
+  caption="Technical overview"
+  position="center"
+/>
 
-We call the type of service we’re building at Xata a [Serverless Data Platform](https://xata.io/docs/intro/serverless-data-platform), and we think it’s the next logical evolution after Database as a Service (DBaaS).  Similar to how platforms like Vercel, Netlify, or Cloudflare Pages leverage CDNs, serverless and edge functions, to host your app globally and give you a simple developer experience, Xata does the same for the data infrastructure.
+We call the type of service we’re building at Xata a [Serverless Data Platform](https://xata.io/docs/intro/serverless-data-platform), and we think it’s the next logical evolution after Database as a Service (DBaaS). Similar to how platforms like Vercel, Netlify, or Cloudflare Pages leverage CDNs, serverless and edge functions, to host your app globally and give you a simple developer experience, Xata does the same for the data infrastructure.
 
 When we say that we offer them to you in the most easy-to-use way possible, we mean things like:
 
@@ -51,13 +58,18 @@ A record in Xata can look something like this:
     "city": "New York"
   },
   "labels": ["admin", "user"],
-	"team": "rec_cdcp6a98ru583kilecog"
+  "team": "rec_cdcp6a98ru583kilecog"
 }
 ```
 
 The above shows a column of type object (`address`) with two sub-keys (`street` and `city`). It also shows a column of type email and an array-like column (`labels` of type `multiple`).
 
-<ArticleVideo platform="html" src="https://xata.io/images/blog/launch/schema-editor.mp4" autoplay loop />
+<ArticleVideo
+  platform="html"
+  src="https://xata.io/images/blog/launch/schema-editor.mp4"
+  autoplay
+  loop
+/>
 
 The `team` column is a **link column**, pointing to a record in another table, similar to a foreign key. Link columns make it easy to represent relationships, see more in our [Data model](https://xata.io/docs/concepts/data-model) docs.
 
@@ -65,8 +77,8 @@ With the TypeScript/Javascript SDK, you can query the above record with somethin
 
 ```tsx
 const users = await xata.db.Users.select(["*", "team.*"])
-    .filter({ "address.city": "New York" })
-    .getMany();
+  .filter({ "address.city": "New York" })
+  .getMany();
 ```
 
 In the above, because `team.*` was explicitly requested, the results will return all the columns from the linked `Teams` table as well. Behind the scene, Xata is doing a JOIN, but we expose it in a simpler way in our APIs.
@@ -75,11 +87,16 @@ You know what’s the best part about the above? If you’re using TypeScript, b
 
 You can see a lot more examples of how to use both the API and the TypeScript SDK in our [API Guide](https://xata.io/docs/api-guide/get).
 
-*Psst, there’s an easier way!*
+_Psst, there’s an easier way!_
 
 You **can** read the API guide to see all the query options, but the truth is you don’t really have to 😀. Instead, you can configure your query in the UI and then hit the “Get code snippet” button. It will give you the exact query that was executed to get the results that you see on the screen. We believe that our code snippets are not only the fastest way to develop on top of Xata but also the best way to learn Xata.
 
-<ArticleVideo platform="html" src="https://xata.io/images/blog/launch/get-code-snippet.mp4" autoplay loop />
+<ArticleVideo
+  platform="html"
+  src="https://xata.io/images/blog/launch/get-code-snippet.mp4"
+  autoplay
+  loop
+/>
 
 ## Branches and Zero-Downtime Migrations
 
@@ -111,7 +128,12 @@ This allows you to build the perfect search experience for your users, without h
 
 Since relevancy tuning can be tricky business, we provide a UI so you can do it visually, see the results of it in real-time, then hit the Get Code Snippet to get the code that you need in your app.
 
-<ArticleVideo platform="html" src="https://xata.io/images/blog/launch/search.mp4" autoplay loop />
+<ArticleVideo
+  platform="html"
+  src="https://xata.io/images/blog/launch/search.mp4"
+  autoplay
+  loop
+/>
 
 ### Summaries and Aggregations
 
@@ -151,7 +173,7 @@ You can find more examples in the [API guide](https://xata.io/docs/api-guide/agg
 
 With today’s public launch, it is day 0 at Xata. Our mission to simplify the way developers work with data gives us a strong focus on what features to add to the product. We believe that Xata, as a [serverless data platform](https://xata.io/docs/intro/serverless-data-platform), is the perfect companion for full-stack frameworks like Next.js, Remix.run, SvelteKit and others.
 
-We’re very excited about upcoming features like Edge Functions and Caching (currently in private Beta, see more here),  integrations into Vercel and Netlify, global data replication, and many others. [Stay tuned](https://twitter.com/xata), there’s so much more to come.
+We’re very excited about upcoming features like Edge Functions and Caching (currently in private Beta, see more here), integrations into Vercel and Netlify, global data replication, and many others. [Stay tuned](https://twitter.com/xata), there’s so much more to come.
 
 ### How free is free?
 

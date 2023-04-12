@@ -2,7 +2,7 @@
 title: "Xata, tRPC, and Clerk: the killer combo"
 description: "Let’s build a fully typed application, using Clerk as an authentication layer and tRPC to help us having a robust and easy to maintain stack."
 image:
-  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/nextjs-trpc-clerk.png
   alt: Data platforms
 author: Fabien Bernard
 date: 01-13-2023
@@ -118,7 +118,14 @@ Here are using `protectedProcedure` since we need the user information for our d
 
 Looking at `pages/index.ts`, we can look at how to use this route in our application.
 
-<ArticleImage src="https://user-images.githubusercontent.com/1761469/209673800-d4915411-53a4-4b08-9553-31e5e592496d.png" width="909" height="293" alt="Typings" caption="Typings coming from tRPC" position="center" />
+<ArticleImage
+  src="https://user-images.githubusercontent.com/1761469/209673800-d4915411-53a4-4b08-9553-31e5e592496d.png"
+  width="909"
+  height="293"
+  alt="Typings"
+  caption="Typings coming from tRPC"
+  position="center"
+/>
 
 Here, everything is type-safe, serialized through the tRPC layer, and ready to be consumed.
 

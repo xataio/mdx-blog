@@ -2,7 +2,7 @@
 title: "Building a datetime picker for a database"
 description: "How we built a next-gen datetime picker for a next-gen database."
 image:
-  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/date-time-picker-for-databases.png
   alt: Xata
 author: Richard Gill
 date: 04-05-2023
@@ -61,6 +61,7 @@ This might be with a precision of:
 - Millisecond: e.g. `2000-01-01T01:02:03.123`
 
 ### Pasting
+
 They’re pasting a datetime from another source
 
 - e.g. `25/01/2000` pasted from Excel
@@ -78,13 +79,25 @@ They’re pasting a datetime from another source
 
 Here is the new date timer picker Dave Snider and I built. In glorious UTC.
 
-<ArticleImage src="https://xata.io/images/blog/date-time-picker/dateTimePicker.png" width="1240" height="894" alt="UTC" caption="In glorious UTC" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/date-time-picker/dateTimePicker.png"
+  width="1240"
+  height="894"
+  alt="UTC"
+  caption="In glorious UTC"
+  position="center"
+/>
 
 ## Opening the date picker
 
 The datetimes in Xata are shown inside an `<input />`. As soon as the input is focused, we pop up the picker.
 
-<ArticleVideo platform="html" src="https://xata.io/videos/blog/dateTimePicker/dateTime1PopupAndClose.mp4" width="820" height="590" />
+<ArticleVideo
+  platform="html"
+  src="https://xata.io/videos/blog/dateTimePicker/dateTime1PopupAndClose.mp4"
+  width="820"
+  height="590"
+/>
 
 We close the the picker when focus moves away from the picker and input.
 
@@ -92,7 +105,12 @@ We close the the picker when focus moves away from the picker and input.
 
 Selecting a date in our datetime picker is easy and straightforward. Users can jump back months or select the month and year from the dropdowns.
 
-<ArticleVideo platform="html" src="https://xata.io/videos/blog/dateTimePicker/dateTime2SetDate.mp4"  width="820" height="590" />
+<ArticleVideo
+  platform="html"
+  src="https://xata.io/videos/blog/dateTimePicker/dateTime2SetDate.mp4"
+  width="820"
+  height="590"
+/>
 
 Notice that when a user selects the date, the value of the input changes to the new date.
 
@@ -104,28 +122,47 @@ As the user completes each input, focus automatically shifts to the next one.
 
 Here the user is typing: `1 2 3 4 5 6 7 8 9`
 
-<ArticleVideo platform="html" src="https://xata.io/videos/blog/dateTimePicker/dateTime3SetTime.mp4"  width="820" height="590" />
+<ArticleVideo
+  platform="html"
+  src="https://xata.io/videos/blog/dateTimePicker/dateTime3SetTime.mp4"
+  width="820"
+  height="590"
+/>
 
 When a user focuses on an input, all of the text in the input is selected. This means that as soon as they start typing, they will overwrite the existing value in the input.
 
 These inputs have strict validation, which makes it impossible to enter an invalid time. Leaving an input empty sets it to `00`.
 
-<ArticleVideo platform="html" src="https://xata.io/videos/blog/dateTimePicker/dateTime4TimeValidation.mp4"  width="820" height="590" />
+<ArticleVideo
+  platform="html"
+  src="https://xata.io/videos/blog/dateTimePicker/dateTime4TimeValidation.mp4"
+  width="820"
+  height="590"
+/>
 ![](/videos/blog/dateTimePicker/dateTime4TimeValidation.mp4)
 
 Users can navigate between inputs using the tab key as expected.
 
-<ArticleVideo platform="html" src="https://xata.io/videos/blog/dateTimePicker/dateTime5TimeTabbing.mp4"  width="820" height="590" />
+<ArticleVideo
+  platform="html"
+  src="https://xata.io/videos/blog/dateTimePicker/dateTime5TimeTabbing.mp4"
+  width="820"
+  height="590"
+/>
 ![](/videos/blog/dateTimePicker/dateTime5TimeTabbing.mp4)
 
 As the user enters their time, the value of the input with the datetime updates as well.
-
 
 ## Typing in the input
 
 If users prefer, they can use the main input to edit their datetime directly.
 
-<ArticleVideo platform="html" src="https://xata.io/videos/blog/dateTimePicker/dateTime62Way.mp4"  width="820" height="590" />
+<ArticleVideo
+  platform="html"
+  src="https://xata.io/videos/blog/dateTimePicker/dateTime62Way.mp4"
+  width="820"
+  height="590"
+/>
 ![](/videos/blog/dateTimePicker/dateTime62Way.mp4)
 
 As they type text the datetime picker components update to show the correct values - it’s two-way connected.
@@ -153,7 +190,12 @@ We also support human readable formats:
 - `next wednesday at 15:00`
 - `now`
 
-<ArticleVideo platform="html" src="https://xata.io/videos/blog/dateTimePicker/dateTime7FreeText.mp4"  width="820" height="590" />
+<ArticleVideo
+  platform="html"
+  src="https://xata.io/videos/blog/dateTimePicker/dateTime7FreeText.mp4"
+  width="820"
+  height="590"
+/>
 
 When you type the custom format you’ll see the date and time update automatically. When the date picker loses focus the input displays the UTC time again: `2000-05-15T14:00:00.000Z`
 
@@ -184,7 +226,7 @@ export const isValidHour = (hours: string) => {
 };
 
 export const isValidPartialHour = (hours: string) => {
-  if (hours === '') {
+  if (hours === "") {
     return true;
   }
   if (hours.length === 1) {
@@ -198,16 +240,16 @@ Here is the code that decides whether to update the value and moves the focus to
 
 ```tsx
 <Input
-	onChange={(e) => {
-	  const newValue = e.target.value;
-	  const cursorIndex = e.target.selectionStart ?? 0;
-	  if (isValidPartialHour(newValue)) {
-	    onChange(newValue);
-	    if (newValue.length === 2 && cursorIndex === 2) {
-	      jumpToNextInput()
-	    }
-	  }
-	}}
+  onChange={(e) => {
+    const newValue = e.target.value;
+    const cursorIndex = e.target.selectionStart ?? 0;
+    if (isValidPartialHour(newValue)) {
+      onChange(newValue);
+      if (newValue.length === 2 && cursorIndex === 2) {
+        jumpToNextInput();
+      }
+    }
+  }}
 />
 ```
 
@@ -216,18 +258,18 @@ Here is the code that decides whether to update the value and moves the focus to
 We use [Chrono](https://github.com/wanasit/chrono), which makes it easy to parse almost any datetime.
 
 ```tsx
-import * as chrono from 'chrono-node';
+import * as chrono from "chrono-node";
 
-chrono.parseDate('tomorrow at 3pm');
+chrono.parseDate("tomorrow at 3pm");
 // => Fri March 30 2023 15:00:00
-chrono.parseDate('Fri March 30 2023 15:00:00');
+chrono.parseDate("Fri March 30 2023 15:00:00");
 // => Fri March 30 2023 15:00:00
 ```
 
 One modification we made to the default Chrono behaviour is to throw away any time information that is implied and only keep known values:
 
 ```tsx
-chrono.parse('tomorrow')[0].start
+chrono.parse("tomorrow")[0].start;
 // => {
 //  date: '2023-03-24T01:02:03.123Z,
 //	knownValues: {day: 24, month: 3: year 2023},
@@ -242,7 +284,7 @@ In this example, the user said "tomorrow" without specifying any time informatio
 One difficulty throughout this project is that timezones are hard. There is no timezone silver bullet, but here’s some advice:
 
 - Unit test!
-    - Run your unit tests manually with `TZ="Europe/Berlin" pnpm test` to verify they still pass.
+  - Run your unit tests manually with `TZ="Europe/Berlin" pnpm test` to verify they still pass.
 - Manually test by setting your system clock to a different timezone.
 - Test daylight savings by setting dates in your picker that are after the clocks change.
 

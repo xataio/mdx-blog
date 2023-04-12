@@ -2,7 +2,7 @@
 title: "A journey to bulletproof links in documentation"
 description: "How we permanently fixed the problem of broken internal links in our documentation."
 image:
-  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/bulletproof-docs-links.png
   alt: Xata
 author: Fabien Bernard
 date: 09-05-2022
@@ -20,16 +20,24 @@ Our documentation is written in [Markdown](https://www.notion.so/A-Journey-to-Bu
 
 So far, we had no way to make sure that links between pages were working and that they didn’t just 404. After moving things around, even after checking and rechecking everything manually… **we had 28 broken links in our production documentation.**
 
-<ArticleImage src="https://xata.io/images/blog/bulletproof-docs-links/Untitled.png" width="1820" height="1213" alt="This is fine meme" caption="This is fine" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/bulletproof-docs-links/Untitled.png"
+  width="1820"
+  height="1213"
+  alt="This is fine meme"
+  caption="This is fine"
+  position="center"
+/>
 
 This is fine, we all make mistakes, but let’s learn from this together!
 
 ## The Plan
 
 The first step is to list our requirements so we have our goal well defined. We want quick feedback if something gets broken, so we can fix it before merging to production. For that, we need to be able to run the docs consistently in different environments:
-   - local
-   - preview/ staging
-   - production
+
+- local
+- preview/ staging
+- production
 
 With this in mind, one constraint immediately becomes clear to us: this would be way easier if we don’t have a link checker that needs to run on a server.
 
@@ -40,12 +48,11 @@ If we want to avoid a server, we need to extract the information:
 
 ## The Proof of Concept
 
-To achieve our final goal, we need a reliable way to extract links from our existing documentation and see if the link *actually goes somewhere*. This is a lot of files, with a lot of links. To simplify our problem, let’s omit the real markdown documents for now and focus on the link extraction part.
+To achieve our final goal, we need a reliable way to extract links from our existing documentation and see if the link _actually goes somewhere_. This is a lot of files, with a lot of links. To simplify our problem, let’s omit the real markdown documents for now and focus on the link extraction part.
 
 > Our docs are at https://xata.io/docs by the way, if you’d like to explore them and use Xata yourself.
->
 
-1. First, we need to read, parse, and understand a Markdown document. Our parser of choice is  `unified`. It returns an **Abstract Syntax Tree (AST)**. Let’s give it a Markdown document and see what happens.
+1. First, we need to read, parse, and understand a Markdown document. Our parser of choice is `unified`. It returns an **Abstract Syntax Tree (AST)**. Let’s give it a Markdown document and see what happens.
 
 ```tsx
 import { describe, expect, it } from "vitest";
@@ -83,8 +90,14 @@ and another [link](/rest-api/delete)
 
 When we `console.log` the output, we get this:
 
-
-<ArticleImage src="https://xata.io/images/blog/bulletproof-docs-links/Untitled%201.png" width="1246" height="588" alt="Console output" caption="Console output" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/bulletproof-docs-links/Untitled%201.png"
+  width="1246"
+  height="588"
+  alt="Console output"
+  caption="Console output"
+  position="center"
+/>
 
 And just like this, we can see our markdown content in a structured way, cool no? (we can also use [https://astexplorer.net/](https://astexplorer.net/) to see explore our AST)
 
@@ -92,9 +105,9 @@ And just like this, we can see our markdown content in a structured way, cool no
 
 To do this, we can use `unist-util-visit`, which gives us a very convenient and type-safe way to “visit” our AST.
 
-What does “visit our AST” mean? Every time we have a node with  `type === "link"`, even very deep inside `children`, a function is called with this node as argument! This function is called a **visitor function**. Good news, this is exactly what we want! 😀
+What does “visit our AST” mean? Every time we have a node with `type === "link"`, even very deep inside `children`, a function is called with this node as argument! This function is called a **visitor function**. Good news, this is exactly what we want! 😀
 
-Instead of using our previous raw  `tree` object and iterating through every node looking for those `link` objects, we can write this:
+Instead of using our previous raw `tree` object and iterating through every node looking for those `link` objects, we can write this:
 
 ```tsx
 import { describe, expect, it } from "vitest";
@@ -122,7 +135,7 @@ and another [link](/rest-api/delete)
       .use(remarkParse)
       .use(() => {
         return function transform(tree) {
-					// Let's extract every link!
+          // Let's extract every link!
           visit(tree, "link", (linkNode) => {
             links.push(linkNode.url);
           });
@@ -181,11 +194,18 @@ We are iterating on every file from the `/content` directory and reusing our pre
 
 And… it works! Not useful yet, but we are going in the right direction!
 
-<ArticleImage src="https://xata.io/images/blog/bulletproof-docs-links/Untitled%202.png" width="1038" height="464" alt="Errors output" caption="Error are now output" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/bulletproof-docs-links/Untitled%202.png"
+  width="1038"
+  height="464"
+  alt="Errors output"
+  caption="Error are now output"
+  position="center"
+/>
 
 This is also a nice opportunity for us to see what links we actually have! And we can already spot some patterns that we need to deal with as external links (example: [`https://stackoverflow.com/questions/4423061/how-can-i-view-http-headers-in-google-chrome`](https://stackoverflow.com/questions/4423061/how-can-i-view-http-headers-in-google-chrome)) and links with anchors (example: `/cli/getting-started#code-generation`)
 
-First, let’s exclude external links, they are out of our scope since we’re not interested in *other people’s 404s.* We may add this later since we don’t want to link to broken content in the longer term, but for now **scope hammering keeps us focused**.
+First, let’s exclude external links, they are out of our scope since we’re not interested in _other people’s 404s._ We may add this later since we don’t want to link to broken content in the longer term, but for now **scope hammering keeps us focused**.
 
 ```tsx
 if (linkNode.url.startsWith("/")) {
@@ -195,7 +215,14 @@ if (linkNode.url.startsWith("/")) {
 
 Let’s improve the output of our test: we want one `describe` per Markdown document, and one `it` per link. This is our target output (for now):
 
-<ArticleImage src="https://xata.io/images/blog/bulletproof-docs-links/Untitled%203.png" width="901" height="719" alt="Test runner" caption="Test runner" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/bulletproof-docs-links/Untitled%203.png"
+  width="901"
+  height="719"
+  alt="Test runner"
+  caption="Test runner"
+  position="center"
+/>
 
 So we have:
 
@@ -308,8 +335,8 @@ Let’s analyze what this method is doing in plain English:
 - We’re reading the content of the file that has this `path`
 - We’re instatiating a `links` set, ready to be filled
 - We have our AST visitor that:
-    - on each node that fulfills the condition `type === "link"`
-    - if the url starts with `/` (so it’s an internal link), we add it to `links`
+  - on each node that fulfills the condition `type === "link"`
+  - if the url starts with `/` (so it’s an internal link), we add it to `links`
 - We return the consolidated `links` in an object
 
 Now, we can extract the `anchors` following the same pattern
@@ -380,7 +407,14 @@ describe("markdown link checker", async () => {
 
 This test yields this output:
 
-<ArticleImage src="https://xata.io/images/blog/bulletproof-docs-links/Untitled%204.png" width="763" height="499" alt="Test output" caption="Test output" position="center" />
+<ArticleImage
+  src="https://xata.io/images/blog/bulletproof-docs-links/Untitled%204.png"
+  width="763"
+  height="499"
+  alt="Test output"
+  caption="Test output"
+  position="center"
+/>
 
 Again, since we’re not worried about the entire problem, we can take our time to clean and prepare our object for the next step:
 
@@ -406,9 +440,11 @@ import remarkFrontmatter from "remark-frontmatter";
 
 // ...
 await unified()
-    .use(remarkParse)
-    .use(remarkFrontmatter) // <- Just here
-    .use(() => { /* ... */ } )
+  .use(remarkParse)
+  .use(remarkFrontmatter) // <- Just here
+  .use(() => {
+    /* ... */
+  });
 ```
 
 ## The Wrap Up
@@ -523,10 +559,9 @@ Few highlights:
 - We ignore `/api-reference` links, they are generated from our an external document at build time, so it’s out of our current scope.
 - We added a last concept of `isRef`. This is again a very specific edge case that I don’t want to deal with, we have a part of our documentation fetched from GitHub with the following pattern:
 
-    ```markdown
-    See [link]
-    ```
-
+  ```markdown
+  See [link]
+  ```
 
 During this journey, I spotted 1 broken link and 1 broken anchor, but more importantly, I’m way more confident that we will not ship broken links in our documentation anymore.
 
@@ -534,6 +569,6 @@ During this journey, I spotted 1 broken link and 1 broken anchor, but more impor
 
 ## The Conclusion
 
-I hope you learned as much as I did! Please borrow ideas & code from this article and iterate from this. Unit tests are sometimes seen as something that slows us down or a boring thing to do, but I personally had a lot of fun playing with `unified` and Markdown’s AST, and I’m 100% convinced that this was not a waste of time—you can’t imagine how much time I spent on the documentation clicking every link, *and I still missed 2 of them!* This 100-line implementation is way more efficient than my manual QA 😅.
+I hope you learned as much as I did! Please borrow ideas & code from this article and iterate from this. Unit tests are sometimes seen as something that slows us down or a boring thing to do, but I personally had a lot of fun playing with `unified` and Markdown’s AST, and I’m 100% convinced that this was not a waste of time—you can’t imagine how much time I spent on the documentation clicking every link, _and I still missed 2 of them!_ This 100-line implementation is way more efficient than my manual QA 😅.
 
 Happy hacking!

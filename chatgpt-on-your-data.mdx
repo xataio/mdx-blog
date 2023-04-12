@@ -2,7 +2,7 @@
 title: "Xata & OpenAI: ChatGPT for your data"
 description: Xata now lets you ask your data questions.
 image:
-  src: https://snid.es/2023MAR/rDRJ6ZyueODopkcK.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/chatgpt-on-your-data.png
   alt: Xata and ChatGPT logos
 author: Daniel Everts
 date: 03-02-2023
@@ -18,14 +18,27 @@ With their APIs, we now have tools to help you analyze, reshape, and reframe tex
 
 This isn’t a teary-eyed post about OpenAI though. We’re wanting to show you something we’ve had brewing over the last few weeks. Let’s begin with a screenshot taken a couple of days ago, from ChatGPT.
 
-<ArticleImage src="https://snid.es/2023MAR/jHo8oeWB-7CLpr0d.png" width="1360" height="894" alt="ChatGPT answering a question about Xata wrongly" caption="Do you notice anything weird?" position="center" />
-
+<ArticleImage
+  src="https://snid.es/2023MAR/jHo8oeWB-7CLpr0d.png"
+  width="1360"
+  height="894"
+  alt="ChatGPT answering a question about Xata wrongly"
+  caption="Do you notice anything weird?"
+  position="center"
+/>
 
 For those familiar with Xata, you'll see that this not correct. ChatGPT has confidently given us a wrong answer. We can’t blame it though, the model has a documented cutoff date for its data in 2021 and unfortunately for us, Xata’s documentation was published after this date.
 
 Let’s take a look at once more image. I’ll ask the same question again.
 
-<ArticleImage src="https://snid.es/2023MAR/j5qMZE8Zx7UaAe4v.png" width="1536" height="1101" alt="DanGPT answering the question correctly" caption="How’s that look to you? Hopefully familiar?" position="center" />
+<ArticleImage
+  src="https://snid.es/2023MAR/j5qMZE8Zx7UaAe4v.png"
+  width="1536"
+  height="1101"
+  alt="DanGPT answering the question correctly"
+  caption="How’s that look to you? Hopefully familiar?"
+  position="center"
+/>
 
 We’ve been working on integrating OpenAI into our data platform. Xata now lets you ask your data questions. It relies fully on the data you have inside Xata. No waiting for OpenAI, Google, or any other company to index your changes. It’s your data, and you’re fully in control of it. You choose when to add information, remove information, modify information. Xata takes these changes and makes them available nearly instantly. It requires no work from you, and comes with options for both free and pro users.
 
@@ -57,35 +70,35 @@ Here’s the API call our docs make to retrieve data from our docs table.
 // POST https://xata-uq2d57.eu-west-1.xata.sh/db/docs:main/tables/search/ask
 // Accept: text/event-stream
 {
-    "question": "How do a retrieve a single record?",
-    "rules": [
-      "Do not answer questions about pricing or the free tier. Respond that Xata has several options available, please check https://xata.io/pricing for more information.",
-      "When you give an example, this example must exist exactly in the context given.",
-      "Only answer questions that are relating to the defined context or are general technical questions. If asked about a question outside of the context, you can respond with \"It doesn't look like I have enough information to answer that. Check the documentation or contact support.\"",
-      "Your name is DanGPT"
+  "question": "How do a retrieve a single record?",
+  "rules": [
+    "Do not answer questions about pricing or the free tier. Respond that Xata has several options available, please check https://xata.io/pricing for more information.",
+    "When you give an example, this example must exist exactly in the context given.",
+    "Only answer questions that are relating to the defined context or are general technical questions. If asked about a question outside of the context, you can respond with \"It doesn't look like I have enough information to answer that. Check the documentation or contact support.\"",
+    "Your name is DanGPT"
+  ],
+  "searchType": "keyword",
+  "search": {
+    "fuzziness": 2,
+    "prefix": "phrase",
+    "target": [
+      "slug",
+      { "column": "title", "weight": 4 },
+      "content",
+      "section",
+      { "column": "keywords", "weight": 4 }
     ],
-    "searchType": "keyword",
-    "search": {
-      "fuzziness": 2,
-      "prefix": "phrase",
-      "target": [
-        "slug",
-        { "column": "title", "weight": 4 },
-        "content",
-        "section",
-        { "column": "keywords", "weight": 4 }
-      ],
-      "boosters": [
-        {
-          "valueBooster": {
-            "column": "section",
-            "value": "guide",
-            "factor": 18
-          }
+    "boosters": [
+      {
+        "valueBooster": {
+          "column": "section",
+          "value": "guide",
+          "factor": 18
         }
-      ]
-    }
+      }
+    ]
   }
+}
 ```
 
 [Sign up](https://app.xata.io) to add ChatGPT to your data today and get started with this new [sample app](https://github.com/xataio/examples/tree/main/apps/sample-chatgpt). Come say hi on our [Discord](https://xata.io/discord) if you have any questions.
