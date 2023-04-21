@@ -1,6 +1,6 @@
 ---
-title: "Modernizing database workflows with GitHub, Vercel, Netlify and Xata"
-description: "With this release, Xata is the first solution to complete the end-to-end developer workflow for a database."
+title: "Modern database workflows with GitHub, Vercel, Netlify and Xata"
+description: "Finally a database with a complete end-to-end developer workflow."
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/database-platforms-trend.png
   alt: Need a workflow cover image
@@ -9,7 +9,7 @@ date: 04-26-2023
 published: true
 slug: workflow-github-vercel-netlify-xata
 ---
-We’re excited to announce a brand new workflow for developing with databases and preview deployments! With todays announcement, Xata is releasing an [application for GitHub](https://github.com/apps/xata-app), an [integration for Vercel](https://vercel.com/integrations/xata), an [integration for Netlify](https://www.netlify.com/integrations/xata/), git-like commands for our [CLI](https://xata.io/docs/getting-started/cli) and [preview branches](https://xata.io/workflow). The combination of these features create the ideal workflow for modern application development.
+We’re excited to announce a brand new workflow for developing with databases and preview deployments! With todays announcement, Xata is releasing an [application for GitHub](https://github.com/apps/xata-app), an [integration for Vercel](https://vercel.com/integrations/xata), an [integration for Netlify](https://www.netlify.com/integrations/xata/), git-like commands for our [CLI](https://xata.io/docs/getting-started/cli) and [preview branches](https://xata.io/docs/workflow). The combination of these features create the ideal workflow for modern application development.
 
 ## The X is for extended
 
@@ -27,44 +27,44 @@ In the last few years with innovations from companies like [Vercel](https://verc
 
 ## Introducing preview branches
 
-As scalability and availability in the cloud become solved problems, focus is now turning towards user and developer experience. A number of solutions (Xata included) have began introducing [git-like branching](https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell) to your database. Making it easy to diverge from your main database and merge any changes back in. This workflow is very similar to the [git](https://git-scm.com/), a version control system nearly every developer is familiar with.
+As scalability and availability in the cloud become solved problems, focus is now turning towards user and developer experience. A number of solutions (Xata included) have began introducing [git-like branching](https://xata.io/docs/getting-started/cli#branch) to your database. Making it easy to diverge from your main database and merge any changes back in. This workflow is very similar to the git, a version control system nearly every developer is familiar with.
 
-With preview branches now available in Xata, every pull request will be paired with a `preview-{branch_name}` of your database. The data from your main database will be copied over. This unlocks a new way to work and has a number of benefits:
+With preview branches now available in Xata, every pull request will be paired with a `preview-{owner}-{branch_name}` of your database. The data from your main database will be copied over. This unlocks a new way to work and has a number of benefits:
 
-- Safely iterate on your application with production data knowing you won’t impact your production environment and end users
-- Freely modify schema and code changes alongside your application in an isolated preview environment
-- Obfuscate sensitive data for individual developers who do not have the appropriate permissions (coming soon)
+- Safely iterate on your application with production data knowing you won’t impact your production environment and end users.
+- Freely modify schema and code changes alongside your application in an isolated preview environment.
+- Obfuscate sensitive data for individual developers who do not have the appropriate permissions ([coming soon](https://xata.io/roadmap))
 
 While these advantages are great, they are only useful if you can actually use them. Which is why the team at Xata focused heavily on a developer experience optimized for efficiency and security.
 
 ## A database that meets you where you are, in git and GitHub
 
-With this release, Xata is the first solution to complete the end-to-end developer workflow for a database.
-
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/preview_01_workflow.png"
-  alt="Developer workflow"
-  caption="Developer workflow"
+  alt="A diagram representing the end-to-end developer workflow"
+  caption="End-to-end developer workflow"
   position="center"
-  variant="crystalRiver"
+  variant="spikyNaga"
   width="1660"
   height="338"
 />
 
-- Schema and migrations exist as code in git, where they are stored as files in your repository and can be reviewed like any other code change
-- A new preview database branch is created automatically for each pull request and copies the data from the main branch
-- When a pull request is opened and on every push to the branch, a comment in GitHub provides the current status and any failures that occur are presented in a comment
-- When the pull request is merged in GitHub, Xata simultaneously merges the database branch to the main database branch
-- If there are migration failures detected, Xata will block the promotion of the build and avoid breaking the application
+With this release, Xata is the first solution to complete the end-to-end developer workflow for a database.
+
+- Schema and migrations exist as code in git, where they are stored as files in your repository and can be reviewed like any other code change.
+- A new preview database branch is created automatically for each pull request and copies the data from the main branch.
+- When a pull request is opened and on every push to the branch, a comment in GitHub provides the current status and any failures that occur are shared in a new comment.
+- When the pull request is merged in GitHub, Xata simultaneously merges the database branch to the main database branch.
+- If there are migration failures detected, Xata will block the promotion of the build to avoid breaking the application until the failures are resolved.
 
 In order to take advantage of this new workflow, you’ll need to install the [Xata App for GitHub](https://github.com/apps/xata-app). 
 
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/preview_02_integrations.png"
-  alt="Xata integrations"
-  caption="Xata integrations"
+  alt="A screenshot of the in-app Xata integrations view"
+  caption="GitHub, Netlify and Vercel integrations"
   position="center"
-  variant="crystalRiver"
+  variant="spikyNaga"
   width="1439"
   height="814"
 />
@@ -73,10 +73,10 @@ Once you have successfully installed the GitHub app, you can connect your databa
 
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/preview_03_choose_repo.png"
-  alt="Choose your repository"
-  caption="Choose your repository"
+  alt="A screenshot of a list of GitHub repositories in Xata"
+  caption="Choose your GitHub repository"
   position="center"
-  variant="crystalRiver"
+  variant="spikyNaga"
   width="1439"
   height="814"
 />
@@ -91,35 +91,34 @@ xata pull review_stars
 git add .
 git commit -m 'add rating column to db and stars'
 git push --set-upstream origin review_stars
-
 ```
 
 `xata branch`, `xata pull` , `git commit` and `git push` will automatically create a preview branch with data from your production database for your new pull request.
 
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/preview_04_preview.png"
-  alt="Preview branch with every pull request"
-  caption="Preview branch with every pull request"
+  alt="A screenshot of GitHub and Xata representing preview branches"
+  caption="A preview branch with every pull request"
   position="center"
-  variant="crystalRiver"
+  variant="spikyNaga"
   width="1439"
   height="873"
 />
 
-Each pull request will have a comment with the latest status of your preview branch. If you’re not making changes to the database, you can confidently build without impacting your end users. If you are making changes to the database, the PR will be blocked from merging until all checks have passed ensuring a seamless migration.
+Each pull request will have a comment with the latest status of your preview branch. If you’re not making changes to the database, you can confidently build without impacting your end users. If you are making changes to the database, the pull request will be blocked from merging until all checks have passed ensuring a seamless migration.
 
 ## Completing the preview deployment with Vercel and Netlify
 
 Similar to GitHub, Xata is also releasing an integration for both [Vercel](https://vercel.com/integrations/xata) and [Netlify](https://www.netlify.com/integrations/xata/). Integrating with either of these platforms will result in a Xata preview branch paired with each preview deployment.
 
-For more details on how to get set up, check out [our documentation](https://xata.io/docs/getting-started/workflow#install-the-xata-integration-for-vercel-or-netlify).
+For more details on how to get these set up, check out [our documentation](https://xata.io/docs/getting-started/workflow#install-the-xata-integration-for-vercel-or-netlify).
 
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/preview_05_github_integrations.png"
-  alt="Vercel & Netlify integrations"
-  caption="Vercel & Netlify integrations"
+  alt="A screenshot of Vercel & Netlify integrations in GitHub"
+  caption="Easily integrate with Vercel & Netlify"
   position="center"
-  variant="crystalRiver"
+  variant="spikyNaga"
   width="1439"
   height="873"
 />
