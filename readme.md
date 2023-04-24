@@ -2,6 +2,10 @@
 
 This repository holds the source documents used to power our blog in [website-next][0]
 
+## Images
+
+For now, images need to be absolute URLs that point to their raw URL on Github. In a future build of the website, relative images will be pushed to Xata directly.
+
 ## Stylistic rules
 
 - Use sentence case
