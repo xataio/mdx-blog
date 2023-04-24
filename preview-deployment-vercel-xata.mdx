@@ -10,7 +10,6 @@ published: true
 slug: preview-deployment-vercel-xata
 ---
 
-
 [Vercel](https://vercel.com/) is a complete paradigm shift in how modern developers build applications. Together with an integrated GitHub app, the efficient workflows unlocked by preview deployments are redefining how teams build products. The one missing piece? The data layer.
 
 At Xata, we believe that previews will replace pre-production environments completely. With [our latest release](https://xata.io/blog/workflow-github-vercel-netlify-xata), we are introducing [preview branches](https://xata.io/docs/getting-started/workflow), a [Vercel integration](https://vercel.com/integrations/xata) and an [application for GitHub](https://github.com/apps/xata-app). The combination of these features complete the workflow Vercel has made so popular by pairing each pull request and Vercel preview with a preview branch of your production database.
@@ -23,6 +22,8 @@ In Xata, a preview branch is a branch of your `main` database that is automatica
 - Freely modify schema and code changes alongside your application in an isolated preview environment.
 - Obfuscate sensitive data for individual developers who do not have the appropriate permissions ([coming soon](https://xata.io/roadmap)).
 
+Let’s walk through adding a one out of five star rating to each product review in an ecommerce application. Here’s what the full end-to-end workflow would look like.
+
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/vercel_blog_01.png"
   alt="A screenshot of a preview branch and GitHub comment"
@@ -32,8 +33,6 @@ In Xata, a preview branch is a branch of your `main` database that is automatica
   width="2878"
   height="1746"
 />
-
-Let’s walk through adding a one out of five star rating to each product review in an ecommerce application. Here’s what the full end-to-end workflow would look like.
 
 ### Create branches for local development
 
