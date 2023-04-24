@@ -21,15 +21,15 @@ While we plan to continue to invest in new types of data stores for our [multi-m
 
 ## Previews will replace pre-production environments
 
-There is one thing that every engineering team, at companies big or small, has in common: pre-production environments. Dev, QA, staging, or whatever code name you’ve landed on — there typically is an environment for daily builds and another for flagged features. This is a great way to build and collaborate with your team, but comes with its own downsides as well. Not only are these environments another piece of infrastructure to manage, if they go down, they impact tens, hundreds, or even thousands of developers trying to ship.
+There is one thing that every engineering team, in companies big or small, has in common: pre-production environments. Dev, QA, staging, or whatever code name you’ve landed on — there typically is an environment for daily builds and another with all the feature flagged turned on. This is a great way to build and collaborate with your team, but comes with its own set of downsides. Not only are these environments another piece of infrastructure to manage, if they go down, they impact tens, hundreds, or even thousands of developers shipping code.
 
-In the last few years with innovations from companies like [Vercel](https://vercel.com/) and [Netlify](https://netlify.com/), preview deployments of your application have empowered the individual developer to ship fast and collaborate with their team before pushing to production. Over time, we expect this workflow to negate the need for pre-production environments entirely. The one missing piece? The data layer.
+In the last few years with innovations from companies like [Vercel](https://vercel.com/) and [Netlify](https://netlify.com/), preview deployments of your application have empowered the individual developer to ship fast and collaborate with their team before pushing to production. Over time, we expect this workflow to negate the need for pre-production environments entirely. Until very recently, there has been a gap in this workflow at the data layer.
 
 ## Introducing preview branches
 
 As scalability and availability in the cloud become solved problems, focus is now turning towards user and developer experience. A number of solutions (Xata included) have began introducing [git-like branching](https://xata.io/docs/getting-started/cli#branch) to your database. Making it easy to diverge from your main database and merge any changes back in. This workflow is very similar to the git, a version control system nearly every developer is familiar with.
 
-With preview branches now available in Xata, every pull request will be paired with a `preview-{owner}-{branch_name}` of your database. The data from your main database will be copied over. This unlocks a new way to work and has a number of benefits:
+With preview branches now available in Xata, every pull request will be paired with a `preview-{owner}-{branch_name}` branch of your database. The data from your main database will be copied over. This unlocks a new way to work and has a number of benefits:
 
 - Safely iterate on your application with production data knowing you won’t impact your production environment and end users.
 - Freely modify schema and code changes alongside your application in an isolated preview environment.
@@ -128,4 +128,6 @@ While we’ve decided to focus on these two platforms first, we have all the fou
 
 At Xata, we are empowering a new age of developers to build more advanced applications without needing to think about the data layer. We are excited about what this new workflow unlocks and the capabilities we plan to build on top of it. You can view our [publicly available roadmap](https://xata.io/roadmap) to see what’s on the horizon and come chat with us on [Discord](http://xata.io/discord) if you have any questions.
 
-If you’re interested in using this new workflow for your next project, [sign up today](https://app.xata.io/signin) to take advantage of our production ready-free tier (no credit card required). For those that are already using Xata, simply update your SDK and CLI to the latest version to take advantage of this new workflow. There are templates available in both Netlify and Vercel to help you get started and [documentation](https://xata.io/docs/getting-started/workflow) to learn more.
+If you’re interested in using this new workflow for your next project, [sign up today](https://app.xata.io/signin) to take advantage of our production ready-free tier (no credit card required). For those that are already using Xata, simply update your SDK and CLI to the latest version to take advantage of this new workflow. Our[documentation](https://xata.io/docs/getting-started/workflow) is the best place to get set up.
+
+We can’t wait to see what you build 🦋
