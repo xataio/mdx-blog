@@ -17,6 +17,12 @@ At Xata, we believe that previews will replace pre-production environments compl
 
 ## Working with preview branches and Vercel
 
+In Xata, a preview branch is a branch of your `main` database that is automatically populated with data from it. A preview branch is created with each pull request in GitHub, which results in a number of benefits to your development workflow.
+
+- Safely iterate on your application with production data knowing you won’t impact your production environment and end users.
+- Freely modify schema and code changes alongside your application in an isolated preview environment.
+- Obfuscate sensitive data for individual developers who do not have the appropriate permissions ([coming soon](https://xata.io/roadmap)).
+
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/vercel_blog_01.png"
   alt="A screenshot of a preview branch and GitHub comment"
@@ -27,15 +33,9 @@ At Xata, we believe that previews will replace pre-production environments compl
   height="1746"
 />
 
-In Xata, a preview branch is a branch of your `main` database that is automatically populated with data from it. A preview branch is created with each pull request in GitHub, which results in a number of benefits to your development workflow.
-
-- Safely iterate on your application with production data knowing you won’t impact your production environment and end users.
-- Freely modify schema and code changes alongside your application in an isolated preview environment.
-- Obfuscate sensitive data for individual developers who do not have the appropriate permissions ([coming soon](https://xata.io/roadmap)).
-
 Let’s walk through adding a one out of five star rating to each product review in an ecommerce application. Here’s what the full end-to-end workflow would look like.
 
-**Create branches for local development**
+### Create branches for local development
 
 ```bash
 git checkout -b review_stars
@@ -62,7 +62,7 @@ xata pull review_stars
 
 `xata pull` will pull the changes locally, along with a ledger and migration file to make sure the branch can stay in sync with any changes made to `main`. This mirrors the typical `git` workflows.
 
-**Create a pull request with your changes**
+### Create a pull request with your changes
 
 ```bash
 git add .
@@ -82,9 +82,11 @@ Following your typical development workflow, push the changes up to your remote 
   height="1480"
 />
 
-Each preview branch will be automatically populated with data from `main`. In this example, our preview branch would include an empty column for `review_ratings`. With our [integration with Vercel](https://vercel.com/integrations/xata), every preview will automatically use the preview branch from Xata. This provides a secure and isolated environment to iterate and ship for every pull request. 
+Each preview branch will be automatically populated with data from `main`. In this example, our preview branch would include an empty column for `review_ratings`. With our [Vercel integration](https://vercel.com/integrations/xata), every preview will automatically use the preview branch from Xata. This provides a secure and isolated environment to iterate and ship for every pull request. 
 
-**Merge the pull request to main**
+### Merge the pull request to main
+
+Alright, code changes are in and it’s time to turn that pull request purple.
 
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/vercel_blog_04.png"
@@ -95,8 +97,6 @@ Each preview branch will be automatically populated with data from `main`. In th
   width="2880"
   height="1480"
 />
-
-Alright, code changes are in and it’s time to turn that pull request purple.
 
 If you are not making changes to your database, you’ve benefited from having your own personal staging environment for your pull request and don’t need to worry about migrating any changes in your database.
 
