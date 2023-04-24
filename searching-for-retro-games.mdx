@@ -74,7 +74,7 @@ xata browse
 This brings us to a spreadsheet-like view of our games data in the Xata dashboard. We can use the dashboard to browse, query, edit, and search our data, view and edit our databases, tables and schemas, and more.
 
 <ArticleImage
-  src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/2crkp9sh3uh2samer67j.png"
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/games-table.png"
   width="1210"
   height="766"
   alt="Xata dashboard"
@@ -94,7 +94,7 @@ For our app's purposes, these columns of the data are going to be particularly u
 The "Search" tab lets us try out Xata's built-in full text search capabilities. Whatever search term we enter will be matched against any of the text-based columns in our database; each result is assigned a relevance score, with most relevant results appearing first.
 
 <ArticleImage
-  src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/561ehd0wid9iols3xnls.png"
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/games-engine.png"
   width="1097"
   height="765"
   alt="Xata search"
@@ -105,7 +105,7 @@ The "Search" tab lets us try out Xata's built-in full text search capabilities. 
 Using Xata's "Boost" feature, we can increase the relevance score of certain results by telling Xata which information we care most about. For example, we can add a numeric booster based on `totalRating` to have the highest-rated games appear higher in the search results.
 
 <ArticleImage
-  src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qn1wez6pjugnftdd85ql.png"
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/games-boost.png"
   width="1090"
   height="760"
   alt="Xata search with boosting"
@@ -196,7 +196,7 @@ By default, components in the `app/` directory (like `app/page.jsx`) are [Server
 Let's try writing our first server component to load & display data about a certain game. We'll make the route for this page `/games/[gameID]`, where `[gameID]` is a [dynamic route segment](https://beta.nextjs.org/docs/routing/defining-routes#dynamic-segments) matching the ID of a game in our dataset, e.g. `/games/123` will show info for "Clash at Demonhead".
 
 <ArticleImage
-  src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dlqtt3lr259otxnfzrnj.png"
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/clash-at-demonhead.png"
   width="995"
   height="543"
   alt="Info page for 'The Clash at Demonhead' at route /games/123"
@@ -303,7 +303,7 @@ export default function Home() {
 Navigate to `localhost:3000/` and you'll see the `Search` Client Component successfully rendered within the `Home` Server Component and default layout!
 
 <ArticleImage
-  src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/94mjf7erpggcl2pyrjhn.png"
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/search-retro-games-screen2.png"
   width="995"
   height="543"
   alt="Search component at / route"
@@ -476,7 +476,7 @@ export default function Search() {
 Now our search app, while basic, is complete! Reload the home page at `localhost:3000/` and enjoy searching through thousands of retro games.
 
 <ArticleImage
-  src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/xochn30o7qgpvjr681xw.png"
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/search-retro-games-screen.png"
   width="995"
   height="543"
   alt="Search page"

@@ -21,7 +21,7 @@ Our documentation is written in [Markdown](https://www.notion.so/A-Journey-to-Bu
 So far, we had no way to make sure that links between pages were working and that they didn’t just 404. After moving things around, even after checking and rechecking everything manually… **we had 28 broken links in our production documentation.**
 
 <ArticleImage
-  src="https://xata.io/images/blog/bulletproof-docs-links/Untitled.png"
+  src="https://github.com/xataio/mdx-blog/raw/main/images/this-is-fine.png"
   width="1820"
   height="1213"
   alt="This is fine meme"
@@ -91,7 +91,7 @@ and another [link](/rest-api/delete)
 When we `console.log` the output, we get this:
 
 <ArticleImage
-  src="https://xata.io/images/blog/bulletproof-docs-links/Untitled%201.png"
+  src="https://github.com/xataio/mdx-blog/raw/main/images/console-output.png"
   width="1246"
   height="588"
   alt="Console output"
@@ -195,7 +195,7 @@ We are iterating on every file from the `/content` directory and reusing our pre
 And… it works! Not useful yet, but we are going in the right direction!
 
 <ArticleImage
-  src="https://xata.io/images/blog/bulletproof-docs-links/Untitled%202.png"
+  src="https://github.com/xataio/mdx-blog/raw/main/images/docs-error.png"
   width="1038"
   height="464"
   alt="Errors output"
@@ -216,7 +216,7 @@ if (linkNode.url.startsWith("/")) {
 Let’s improve the output of our test: we want one `describe` per Markdown document, and one `it` per link. This is our target output (for now):
 
 <ArticleImage
-  src="https://xata.io/images/blog/bulletproof-docs-links/Untitled%203.png"
+  src="https://github.com/xataio/mdx-blog/raw/main/images/test-output.png"
   width="901"
   height="719"
   alt="Test runner"
@@ -408,7 +408,7 @@ describe("markdown link checker", async () => {
 This test yields this output:
 
 <ArticleImage
-  src="https://xata.io/images/blog/bulletproof-docs-links/Untitled%204.png"
+  src="https://github.com/xataio/mdx-blog/raw/main/images/docs-test.png"
   width="763"
   height="499"
   alt="Test output"
