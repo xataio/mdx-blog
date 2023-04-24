@@ -84,8 +84,7 @@ Once you have successfully installed the GitHub app, you can connect your databa
 After you’ve paired your GitHub repository with your Xata database, working with preview branches is only a few commands away. 
 
 ```bash
-git branch review_stars
-git switch review_stars
+git checkout -b review_stars
 xata branch review_stars
 xata pull review_stars
 git add .
