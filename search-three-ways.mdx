@@ -21,7 +21,7 @@ In this example, we’ll walk you through three different ways you can search yo
 
 The first method available is [partial match search](https://xata.io/docs/typescript-client/filtering#partial-match). This involves grabbing a search term from a request and then using Xata to grab the first N accounts with either name, username, description, or location containing the search term. In the code below, a helper function is created to replace every instance of the search term with the same term enclosed in an `<em>` tag. This helper function is then used to add a highlighted version of the name and other values to create partial match search with highlighting.
 
-```jsx
+```tsx
 import { contains } from "@xata.io/client";
 import { getXataClient } from "../../xata";
 
@@ -64,7 +64,7 @@ export default async function handler(req, res) {
 
 The second method Xata provides is [fuzzy full-text search](https://xata.io/docs/typescript-client/search). Fuzzy search involves grabbing the search term from the request and then using Xata to search for the term in the accounts table. This method is different from partial match search in that it also matches words that are not identical to the search term. In the code below use Xata's helper function, `getMetadata()`, to access a highlighted version of the record.
 
-```jsx
+```tsx
 import { getXataClient } from "../../xata";
 
 const xata = getXataClient();
