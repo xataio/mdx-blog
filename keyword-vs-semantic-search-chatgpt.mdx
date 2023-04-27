@@ -13,9 +13,16 @@ slug: keyword-vs-semantic-search-chatgpt
 Last week we’ve added a Q&A bot that answers questions from 
 [our documentation](https://xata.io/docs/overview?show-chat). This leverages 
 the ChatGPT tech to answer questions from the Xata documentation, even though 
-the OpenAI GPT model was never trained on the Xata docs. 
+the OpenAI GPT model was never trained on the Xata docs.
 
-![GIF of the Xata bot answering a question](https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-bot-preview.gif)
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-bot-preview.gif"
+  width="786"
+  height="475"
+  alt="GIF of the Xata bot answering a question"
+  caption="Xata chat bot answering a question"
+  position="center"
+/>
 
 The way we do this is by using an approach suggested by Simon Willison 
 in this [blog post](https://simonwillison.net/2023/Jan/13/semantic-search-answers/). 
@@ -83,15 +90,46 @@ I ran each question 2-3 times and picked what looked to me like the best result.
 
 ## Question: How do I install the Xata CLI?
 
+<ArticleImage
+  src="https://github.com/xataio/mdx-blog/raw/main/images/xata-fuzzy-search-on-off.gif"
+  width="1920"
+  height="1080"
+  alt="The difference in results with fuzzy search enabled and disabled"
+  caption="Fuzzy search enabled and disabled"
+  position="center"
+/>
+
 **Answer with vector search:**
 
 ![Question for the Xata bot: How do I install the Xata CLI](https://raw.githubusercontent.com/xataio/mdx-blog/main/images/install_question_vector.png)
+
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/install_question_vector.png"
+  width="1531"
+  height="1577"
+  alt="Question for the Xata bot: How do I install the Xata CLI"
+  caption="Vector search response"
+  position="center"
+/>
 
 **Answer with keyword search:**
 
 ![Question for the Xata bot: How do I install the Xata CLI](https://raw.githubusercontent.com/xataio/mdx-blog/main/images/install_question_keyword.png)
 
-*Verdict*: Both versions provided the correct answer, however the vector search one is a bit more complete. They both found the correct docs page for it, but I think our highlights-based heuristic selected a shorter chunk of text in case of the keyword strategy. Winner: vector search. 
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/install_question_keyword.png"
+  width="1531"
+  height="1450"
+  alt="Question for the Xata bot: How do I install the Xata CLI"
+  caption="Keyword search response"
+  position="center"
+/>
+
+
+*Verdict*: Both versions provided the correct answer, however the vector 
+search one is a bit more complete. They both found the correct docs page 
+for it, but I think our highlights-based heuristic selected a shorter 
+chunk of text in case of the keyword strategy. Winner: vector search. 
 
 Score: 1-0
 
@@ -99,13 +137,31 @@ Score: 1-0
 
 **Answer with vector search:**
 
-![Question for the Xata bot: How do you use Xata with Deno?](https://raw.githubusercontent.com/xataio/mdx-blog/main/images/deno_question_vector.png)
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/deno_question_vector.png"
+  width="1528"
+  height="658"
+  alt="Question for the Xata bot: How do you use Xata with Deno?"
+  caption="Vector search response"
+  position="center"
+/>
 
 **Answer with keyword search:**
 
 ![Question for the Xata bot: How do you use Xata with Deno?](https://raw.githubusercontent.com/xataio/mdx-blog/main/images/deno_question_keyword.png)
 
-**Verdict:** Disappointing result for vector search, who somehow missed the dedicated Deno page in our docs. It did find some other Deno relevant content, but not the page that contained the very useful example. Winner: keyword search.
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/deno_question_keyword.png"
+  width="1523"
+  height="1453"
+  alt="Question for the Xata bot: How do you use Xata with Deno?"
+  caption="Keyword search response"
+  position="center"
+/>
+
+**Verdict:** Disappointing result for vector search, who somehow missed the 
+dedicated Deno page in our docs. It did find some other Deno relevant content, 
+but not the page that contained the very useful example. Winner: keyword search.
 
 Score: 1-1
 
@@ -113,13 +169,31 @@ Score: 1-1
 
 **With vector search:**
 
-![Question for the Xata bot: How can I import a CSV file with custom column types?](https://raw.githubusercontent.com/xataio/mdx-blog/main/images/import_csv_question_vector.png)
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/import_csv_question_vector.png"
+  width="1518"
+  height="723"
+  alt="Question for the Xata bot: How can I import a CSV file with custom column types?"
+  caption="Vector search response"
+  position="center"
+/>
 
 **With keyword search:**
 
-![Question for the Xata bot: How can I import a CSV file with custom column types?](https://raw.githubusercontent.com/xataio/mdx-blog/main/images/import_csv_question_keyword.png)
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/import_csv_question_keyword.png"
+  width="1516"
+  height="1052"
+  alt="Question for the Xata bot: How can I import a CSV file with custom column types?"
+  caption="Keyword search response"
+  position="center"
+/>
 
-**Verdict:** Both have found the right page (”Import a CSV file”), but the keyword search version managed to get a more complete answer. I did run this multiple times to make sure it’s not a fluke. I think the difference comes from how the text fragment is selected (neighbouring the keywords in case of keyword search, from the beginning of the page in case of vector search). Winner: keyword search.
+**Verdict:** Both have found the right page (”Import a CSV file”), but the 
+keyword search version managed to get a more complete answer. I did run this
+multiple times to make sure it’s not a fluke. I think the difference comes 
+from how the text fragment is selected (neighbouring the keywords in case of 
+keyword search, from the beginning of the page in case of vector search). Winner: keyword search.
 
 Score: 1-2
 
@@ -127,13 +201,31 @@ Score: 1-2
 
 **With vector search:**
 
-![Question for the Xata bot: How can I filter a table named Users by the email column?](https://raw.githubusercontent.com/xataio/mdx-blog/main/images/filter_question_vector.png)
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/filter_question_vector.png"
+  width="1521"
+  height="993"
+  alt="Question for the Xata bot: How can I filter a table named Users by the email column?"
+  caption="Vector search response"
+  position="center"
+/>
 
 **With keyword search:**
 
-![Question for the Xata bot: How can I filter a table named Users by the email column?](https://raw.githubusercontent.com/xataio/mdx-blog/main/images/filter_question_keyword.png)
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/filter_question_keyword.png"
+  width="1518"
+  height="1052"
+  alt="Question for the Xata bot: How can I filter a table named Users by the email column?"
+  caption="Keyword search response"
+  position="center"
+/>
 
-*Verdict:* The vector search did better on this one, because it found the “Filtering” page on which there were more examples that ChatGPT could use to compose the answer. The keyword search answer is subtly broken, because it uses “query” instead of “filter” for the method name. Winner: vector search.
+
+*Verdict:* The vector search did better on this one, because it found the 
+“Filtering” page on which there were more examples that ChatGPT could use 
+to compose the answer. The keyword search answer is subtly broken, because 
+it uses “query” instead of “filter” for the method name. Winner: vector search.
 
 Score: 2-2
 
@@ -141,13 +233,28 @@ Score: 2-2
 
 **With vector search:**
 
-![Question for the Xata bot: What is Xata?](https://raw.githubusercontent.com/xataio/mdx-blog/main/images/what_is_xata_vector.png)
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/what_is_xata_vector.png"
+  width="1523"
+  height="1001"
+  alt="Question for the Xata bot: What is Xata?"
+  caption="Vector search response"
+  position="center"
+/>
 
 **With keyword search:**
 
-![Question for the Xata bot: What is Xata?](https://raw.githubusercontent.com/xataio/mdx-blog/main/images/what_is_xata_keyword.png)
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/what_is_xata_keyword.png"
+  width="1524"
+  height="1048"
+  alt="Question for the Xata bot: What is Xata?"
+  caption="Keyword search response"
+  position="center"
+/>
 
-**Verdict:** This one is a draw, because both answers are quite good. The two picked different pages to summarize in an answer, but both did a good job and I can’t pick a winner.
+**Verdict:** This one is a draw, because both answers are quite good. The two picked different pages to 
+summarize in an answer, but both did a good job and I can’t pick a winner.
 
 Score: 3-3
 
@@ -222,11 +329,19 @@ And this what we use for vector search:
 }
 ```
 
-As you can see, the keyword search version has more settings, configuring fuzziness and boosters and column weights. The vector search only uses a filter. I would call this a plus for keyword search: you have more dials to tune the search and therefore get better answers. But it’s also more work, and the results from vector search are quite good without this tuning. 
+As you can see, the keyword search version has more settings, configuring fuzziness and boosters and column weights. 
+The vector search only uses a filter. I would call this a plus for keyword search: you have more dials to tune the search 
+and therefore get better answers. But it’s also more work, and the results from vector search are quite good without this tuning. 
 
-In our case, we already have tuned the keyword search for our, well, docs search functionality. So it wasn’t necessarily extra work, and while playing with ChatGPT we discovered improvements to our docs and search as well. Also, Xata just happens to have a very nice UI for tuning your keyword search, so the work wasn’t hard to begin with (planning a separate blog post about that).
+In our case, we already have tuned the keyword search for our, well, docs search functionality. 
+So it wasn’t necessarily extra work, and while playing with ChatGPT we discovered improvements 
+to our docs and search as well. Also, Xata just happens to have a very nice UI for tuning your
+ keyword search, so the work wasn’t hard to begin with (planning a separate blog post about that).
 
-There is no reason for which vector search couldn’t also have boosters and column weights and the like, but we don’t have it yet in Xata and I don’t know of any other solution that makes that as easy as we make keyword search tuning. And, in general, there is more prior art to keyword search, but it is quite possible that vector search will catch up.
+There is no reason for which vector search couldn’t also have boosters and column weights 
+and the like, but we don’t have it yet in Xata and I don’t know of any other solution that 
+makes that as easy as we make keyword search tuning. And, in general, there is more 
+prior art to keyword search, but it is quite possible that vector search will catch up.
 
 For now, I’m going to call keyword search a winner on this one.
 
@@ -234,21 +349,40 @@ Score: 3-4
 
 ## Convenience
 
-Our documentation already had a search function, dog-fooding Xata, so that was quite simple to extend to a chat bot. Xata now also supports vector search natively, but using it required adding embeddings for all the documentation pages and figuring out a good chunking strategy. We have used the OpenAI embeddings API for producing the text embeddings, which had a minimal cost. Winner: Keyword search 
+Our documentation already had a search function, dog-fooding Xata, so that was quite simple 
+to extend to a chat bot. Xata now also supports vector search natively, but using it required adding embeddings 
+for all the documentation pages and figuring out a good chunking strategy. We have used the OpenAI embeddings 
+API for producing the text embeddings, which had a minimal cost. Winner: Keyword search 
 
 Score 3-5
 
 ## Latency
 
-The keyword search approach needs an extra round-trip to the ChatGPT API. This adds in terms of latency to the result started to be streamed in the UI. By my measurements, this adds around 1.8s extra time 
+The keyword search approach needs an extra round-trip to the ChatGPT API. This adds in terms of 
+latency to the result started to be streamed in the UI. By my measurements, 
+this adds around 1.8s extra time 
 
 **With vector search:**
 
-![Xata bot request timing with vector search](https://raw.githubusercontent.com/xataio/mdx-blog/main/images/request_timing_vector.png)
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/request_timing_vector.png"
+  width="1228"
+  height="300"
+  alt="Xata bot request timing with vector search"
+  caption="Request timing with vector search"
+  position="center"
+/>
 
 **With keyword search:**
 
-![Xata bot request timing with keyword search](https://raw.githubusercontent.com/xataio/mdx-blog/main/images/request_timing_keyword.png)
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/request_timing_keyword.png"
+  width="1228"
+  height="302"
+  alt="Xata bot request timing with keyword search"
+  caption="Request timing with keyword search"
+  position="center"
+/>
 
 Note: The total and the content download times here are not relevant, because they mostly depend on how long the generated response is. Look at the “Waiting for server response” bar (the green one) to compare.
 
