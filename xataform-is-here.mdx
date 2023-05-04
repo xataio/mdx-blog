@@ -6,7 +6,7 @@ image:
   alt: Xata
 author: Fabien Bernard
 date: 02-05-2023
-published: false
+published: true
 slug: xataform-is-here
 ---
 
@@ -14,9 +14,9 @@ slug: xataform-is-here
 
 This is it! Finally! After few months of crafting this new product/example/playground, XataForm made it and is now open-source and ready to be used by you!
 
-Wait… What is XataForm🤔? I’m glad you asked!
+Wait… What is XataForm? 🤔 I’m glad you asked!
 
-You probably know the amazing [https://www.typeform.com/](https://www.typeform.com/), if you don’t, please have a look, it’s product to create forms. Why do we need them?
+You probably know the amazing [Typeform](https://www.typeform.com/), if you don’t, please have a look, it’s product to create forms. Why do we need them?
 
 - Creating survey to understand your customer
 - Organizing your next crêpes party
@@ -81,19 +81,17 @@ This is to ensure we are never losing any data and everything is in sync. Here i
 
 We are using a separate database called `xataform-answers` with generated table following this pattern: `{formId}-v{version}`
 
-The published form is cached for better performance, and if somebody is submitting an old form, his answer will go to the proper version, as simple as this.
+The published form is cached for better performance, and if somebody is submitting an old form, their answer will go to the proper version, as simple as that.
 
-With this in mind, you should try to publish as less as possible, this will make your life harder to analyze the results. Changing a survey in the middle of its lifetime is a bad practice as this will spoil your results! Not a big deal for our crêpes party, but if I’m asking one more question, the previous version will not have this question!
+With this in mind, you should try to publish as little as possible, because doing it often will make your life harder to analyze the results. Changing a survey in the middle of its lifetime is a bad practice as this will spoil your results! Not a big deal for our crêpes party, but if I’m asking one more question, the previous version will not have this question!
 
-I guess that’s it for the tour! No illustration yet, neither logic between questions, but this is coming! I can’t wait to see what you will do with this new tool! Time for you to play!
-
-[https://xataform.com/](https://xataform.com/)
+I guess that’s it for the tour! No illustration yet, neither logic between questions, but those is coming! I can’t wait to see what you will do with this new tool! Time for you to play!
 
 ## How do I play?
 
 You have two options:
 
-- Use the hosted version, but just so you know, we will have access to all the answers, questions, and so on. This is for demo purposes only
-- Clone and host the tool yourself
+- Use the [hosted version](https://xataform.com/), but just so you know, we will have access to all the answers, questions, and so on. This is for demo purposes only.
+- Clone and host the tool yourself. It's easy to deploy on Vercel/Netlify + Xata.
 
 All the instructions are inside the Readme of the [GitHub repository](https://github.com/xataio/xataform). If you encounter any problems, or have any questions or features requests, just open an issue or go to our [discord](https://xata.io/discord)
