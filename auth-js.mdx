@@ -1,6 +1,6 @@
 ---
-title: "Xata and Auth․js on two Next․js apps: app directory and pages directory"
-description: "Let's build Next.js apps with JWT authentication, Auth.js, and Xata."
+title: "Build Next.js apps with JWT authentication, Auth.js, and Xata"
+description: "Use Xata and Auth․js on two Next․js apps: app directory and pages directory"
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-authjs-nextjs.png
   alt: Xata and ChatGPT logos
@@ -19,7 +19,7 @@ Working the conditions and conventions of each directory can get you with any ro
 
 Before going into the Next.js specifics, let's first understand our goals with this project. Visualizing the mental model is an important step to ensure your user's data is switching hands as little as possible.
 
-## Defining a Mental Model
+## Defining a mental model
 
 A diagram is probably the fastest way to visualizing a process. This is important to see if there aren't any redundant calls, or if any of those requests are chained in some condition. Chained requests are the grim reapers of perceived performance, we need to get those out of the way as soon as possible.
 
@@ -249,7 +249,7 @@ Finally, all code is in place to:
 
 What we need now is a set of keys to effectively connect to those services in a secure way.
 
-## Setup Environment Variables
+## Configure environment variables
 
 The environment variables `GITHUB_ID` and `GITHUB_SECRET` are provided by GitHub once you register an [OAuth App](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app). For your code to run properly you will need to have a `.env` (or `.env.local`) file looking like:
 
@@ -269,7 +269,7 @@ NEXTAUTH_SECRET=<a random secret string>
 
 Finally, it's time to manage some data.
 
-## Fetching User Data
+## Fetching user data
 
 There are a few ways with which you can provide secure access to routes in your Auth.js app. One is via the Auth.js middleware, this will redirect anyone without a `session` automatically to the login route you set up. This approach should work in both App Directory and Pages Directory.
 
@@ -279,7 +279,7 @@ Lastly, in the app directory, the best way is to use `getServerSession` method, 
 
 When working with React Server components, don't worry about firing multiple requests, it always hit the same endpoint and therefore Next.js will be able to deduplicate it, so there will only be one fetch request.
 
-## Accessing User Specific Data
+## Accessing user specific data
 
 Once we got Auth setup, we can treat Row-Level Security (RLS) as an if/else statement. For example, take this contrived profile page:
 
@@ -306,7 +306,7 @@ export const getServerSideProps = async ({
 }
 ```
 
-In the above example, we are using the user's email as their unique identifier (or Primary Key). And we implemented a getter in a file named `db.server.ts`. Let's see how that looks like using the Xata SDK.
+In the above example, we are using the user's email as their unique identifier (or primary key). And we implemented a getter in a file named `db.server.ts`. Let's see how that looks like using the Xata SDK.
 
 ```tsx
 // the file generated via our CLI
@@ -358,7 +358,7 @@ export const fetchData = async (userEmail: string) => {
 };
 ```
 
-## Working Code
+## Working code
 
 Now that we are done, you can compare your code or check the components that we wrote to use this logic in our examples repository:
 

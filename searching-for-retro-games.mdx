@@ -1,6 +1,6 @@
 ---
 title: "Searching for retro games with Xata & Next.js 13"
-description: "A post detailing how an app was built on Xata with Next.js 13 using its powerful features."
+description: "Creating a full-stack web app to search retro games data and prioritize highly-rated games in the results."
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/search-retro-games.png
   alt: Data platforms
@@ -18,13 +18,13 @@ _And the time of destiny for Princess ~~Zelda~~ You is drawing near._
 
 ## An epic quest
 
-In this tutorial we'll build a fullstack web app that allows us to search a collection of retro games data to find the old-school console games of our dreams. And I hope you like adventure, Princess, for this will be a treacherous journey through the bleeding edge of recently released web technologies!
+In this tutorial we'll build a full-stack web app that allows us to search a collection of retro games data to find the old-school console games of our dreams. And I hope you like adventure - for this will be a treacherous journey through the bleeding edge of recently released web technologies!
 
 We'll learn how to:
 
-- Use [Xata](https://xata.io)'s serverless platform to store & retrieve data without needing a database
-- Build an app with React Server & Client Components using [Next.js 13](https://nextjs.org/blog/next-13) and its `app/` directory
-- Implement full-text search with boosting via the Xata SDK
+- use [Xata](https://xata.io)'s serverless platform to store & retrieve data without needing a database
+- build an app with React Server & Client Components using [Next.js 13](https://nextjs.org/blog/next-13) and its `app/` directory
+- implement full-text search with boosting via the Xata SDK
 
 Before we begin, make sure you have [Node/npm](https://nodejs.org/en/) installed, and download the [games.csv](https://github.com/vakila/search-xata-next13/raw/main/util/games.csv) data we'll be working with. You can optionally check out the [completed tutorial code](https://github.com/vakila/search-xata-next13) for reference.
 
@@ -38,7 +38,7 @@ Since every minute spent coding is one less minute spent playing NES, neither of
 
 ## It's-a me, Xata!
 
-Xata is a serverless data platform that's new on the Jamstack scene, and aims to make life easier for developers to build fullstack apps need without worrying about the details of a scalable, performant backend database. Let's give it a whirl.
+Xata is a serverless data platform that's new on the Jamstack scene, and aims to make life easier for developers to build full-stack apps need without worrying about the details of a scalable, performant backend database. Let's give it a whirl.
 
 ### Set up Xata CLI
 
@@ -91,7 +91,7 @@ For our app's purposes, these columns of the data are going to be particularly u
 
 ### Search all the things!
 
-The "Search" tab lets us try out Xata's built-in full text search capabilities. Whatever search term we enter will be matched against any of the text-based columns in our database; each result is assigned a relevance score, with most relevant results appearing first.
+The "Search" tab lets us try out Xata's built-in full-text search capabilities. Whatever search term we enter will be matched against any of the text-based columns in our database; each result is assigned a relevance score, with most relevant results appearing first.
 
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/games-engine.png"

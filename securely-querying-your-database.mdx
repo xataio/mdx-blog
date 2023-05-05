@@ -1,6 +1,6 @@
 ---
-title: "Securely querying Your database with Xata"
-description: "Creating a secure connection between an application and a Xata database. How to fetch data from pure client-side apps without exposing your security keys."
+title: "Securely querying your database with Xata"
+description: "Connect to a Xata database and fetch data from client-side apps without exposing security keys."
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/securely-querying-your-database-on-xata.png
   alt: Xata
@@ -63,13 +63,13 @@ If on a Node.js environment, this means the SDK cannot read your API key. You ca
 
 If on a browser environment, this error ****\*\*****\*\*****\*\*****\*\*****\*\*****\*\*****\*\*****should not be “fixed”****\*\*****\*\*****\*\*****\*\*****\*\*****\*\*****\*\*****. As explained in the first section of this article: exposing your Xata API keys to a client-side runtime like a browser is a huge security issue. For more information, read our documentation about [Securely Talking to Xata](https://xata.io/docs/quickstart/updating-data-with-xata#securely-talking-to-xata).
 
-## Creating Apps and Connecting to Xata
+## Creating apps and connecting to Xata
 
 The path of least resistance to create an app and connect it to Xata is to use a full-stack framework such as [Next.js](https://nextjs.org/docs), [Remix](https://remix.run/docs/en/v1), [Nuxt](https://nuxtjs.org), [Gatsby](https://www.gatsbyjs.com/docs/), and others. Such apps offer a way of creating **serverless functions** within them. In Next.js for example, any files in `./pages/api` contain these functions. But what are they? In a nutshell serverless functions are pieces of code that will run only on the server, allowing developers to query their database there and thus remaining close to the app logic and more importantly, **_out of the unsafe browser environment._**
 
 When creating a pure client-side app ([Astro](http://astro.build), [Eleventy](https://www.11ty.dev/), [Qwik](https://qwik.builder.io/), [React](https://beta.reactjs.org/), [Solid](https://www.solidjs.com/), [Svelte](https://svelte.dev/), [Vue](https://vuejs.org/), etc.), the database request will not be able to originate from the app. Instead, refer to the initial architecture we outlined in this post: first hit an API, then the API connects to the Database. This keeps your API keys secret.
 
-### What are Serverless Functions?
+### What are serverless functions?
 
 Different than a long-standing server that will continue to run even when there are no requests coming in or out, a serverless function will cease activity and go into “sleep” whenever its execution is finished. This makes serverless functions a perfect use-case to bridge connections between your app and your database.
 

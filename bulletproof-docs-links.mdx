@@ -1,6 +1,6 @@
 ---
 title: "A journey to bulletproof links in documentation"
-description: "How we permanently fixed the problem of broken internal links in our documentation."
+description: "Learn how we solved the issue of broken internal links in our documentation, once and for all."
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/bulletproof-docs-links.png
   alt: Xata
@@ -29,9 +29,9 @@ So far, we had no way to make sure that links between pages were working and tha
   position="center"
 />
 
-This is fine, we all make mistakes, but let’s learn from this together!
+This is fine! We all make mistakes, but let’s learn from this together!
 
-## The Plan
+## The plan
 
 The first step is to list our requirements so we have our goal well defined. We want quick feedback if something gets broken, so we can fix it before merging to production. For that, we need to be able to run the docs consistently in different environments:
 
@@ -151,7 +151,7 @@ and another [link](/rest-api/delete)
 
 That’s essentially all we need for a proof of concept (POC), we are now more confident that we should be able to extract every link from our documentation. Let’s try with some real data!
 
-## The Real Deal
+## The real deal
 
 First, we need a way to load all our Markdown files. Luckily, [npm](https://www.notion.so/A-Journey-to-Bulletproof-Links-in-Documentation-f108c0ed0acd464bb1e6310519d19e37) already has a solution for us. 😀
 
@@ -203,7 +203,7 @@ And… it works! Not useful yet, but we are going in the right direction!
   position="center"
 />
 
-This is also a nice opportunity for us to see what links we actually have! And we can already spot some patterns that we need to deal with as external links (example: [`https://stackoverflow.com/questions/4423061/how-can-i-view-http-headers-in-google-chrome`](https://stackoverflow.com/questions/4423061/how-can-i-view-http-headers-in-google-chrome)) and links with anchors (example: `/cli/getting-started#code-generation`)
+This is also a nice opportunity for us to see what links we actually have! We can already spot some patterns that we need to deal with as external links (example: [`https://stackoverflow.com/questions/4423061/how-can-i-view-http-headers-in-google-chrome`](https://stackoverflow.com/questions/4423061/how-can-i-view-http-headers-in-google-chrome)) and links with anchors (example: `/cli/getting-started#code-generation`)
 
 First, let’s exclude external links, they are out of our scope since we’re not interested in _other people’s 404s._ We may add this later since we don’t want to link to broken content in the longer term, but for now **scope hammering keeps us focused**.
 
@@ -447,7 +447,7 @@ await unified()
   });
 ```
 
-## The Wrap Up
+## The wrap-up
 
 This is the final version (the one used in our actual documentation repository!)
 

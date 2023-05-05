@@ -1,6 +1,6 @@
 ---
 title: "Xata Workers: client-side database access without client-side secrets"
-description: "Xata Workers act as middleware to simplify database access and allow their developers to deploy functions that sit in front of their databases."
+description: "Xata Workers act as middleware to simplify database access and deploy front-end functions on databases."
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-workers.png
   alt: Winnders
@@ -16,7 +16,7 @@ By simplifying the state and context of our applications, we can benefit from ex
 
 When it comes to databases though, we still struggle with the complexity of orchestrating replication, failover and high availability. Traditional databases are difficult to scale horizontally and usually require a lot of infrastructure maintenance or learning complex database optimization concepts.
 
-At Xata we are building a modern data platform designed for scalable applications. It allows you to focus on your application logic, instead of having to worry about how the data is stored.
+At Xata, we are building a modern data platform designed for scalable applications. It allows you to focus on your application logic, instead of having to worry about how the data is stored.
 
 ## Making databases accessible to everyone
 
@@ -36,7 +36,7 @@ It was a hard problem to solve, and after plenty of brainstorming, we agreed on 
 
 Row-level access rules are a good way to solve this, but they would have required us to define our own opinionated language. For our users, it would have been hard to migrate away when they outgrow this solution. Instead, we preferred to focus on making serverless functions easier for our users.
 
-Typically, serverless functions require you to either choose a full stack framework or manually write, compile, deploy and use them. This generally adds a lot of cognitive overhead even to choose the right solution. We wanted to simplify accessing the database from the frontend without sacrificing flexibility for developers. This is why we decided to build Xata Workers.
+Typically, serverless functions require you to either choose a full-stack framework or manually write, compile, deploy and use them. This generally adds a lot of cognitive overhead even to choose the right solution. We wanted to simplify accessing the database from the frontend without sacrificing flexibility for developers. This is why we decided to build Xata Workers.
 
 ## Xata Workers
 
@@ -44,7 +44,7 @@ A Xata Worker is a function that a developer can write in JavaScript or TypeScri
 
 You can think of a Xata Worker as a `getServerSideProps` function in Next.js or a `loader` function in Remix. You write your server logic in a function and our tooling takes care of deploying and running it server-side for you (yes, it's that easy).
 
-The main difference with other alternatives is that Xata Workers are, by design, agnostic to a framework or hosting provider. You can use them to build any kind of application or website, and even upload it as static HTML in a service like GitHub Pages or S3. You don't need a full stack web framework to use Xata Workers.
+The main difference with other alternatives is that Xata Workers are, by design, agnostic to a framework or hosting provider. You can use them to build any kind of application or website, and even upload it as static HTML in a service like GitHub Pages or S3. You don't need a full-stack web framework to use Xata Workers.
 
 With our command line tool, we handle the build and deployment process. When the function is invoked, the Xata Worker actually makes a request to a serverless function over the network.
 
@@ -127,10 +127,10 @@ In development mode, we provide a command to run the functions locally and test 
 
 ## Conclusion
 
-Xata is now out of beta and available for everyone. We offer a generous free tier that allows you to build and deploy your applications and only pay to scale them when you actually need it.
+Xata is no longer in Beta and is now in General Availablility for all to use! We offer a generous free tier that allows you to build and deploy your applications and only pay to scale them when you actually need it.
 
-You can [sign up for free](https://app.xata.io/), create a database in seconds and enjoy features such as branching with zero downtime migrations, search and analytics, transactions, and many others. Check out our [website](https://xata.io/) to learn more!
+You can [sign up for free](https://app.xata.io/), create a database in seconds, and enjoy features such as branching with zero downtime migrations, search and analytics, transactions, and many others. Check out our [website](https://xata.io/) to learn more!
 
-Xata Workers are currently in private beta. If you are interested in trying them out, you can sign up for the [waitlist](https://xata.io/beta/workers) and talk us through your use case. We are looking for developers that are willing to provide feedback and shape this new feature for our serverless data platform.
+Xata Workers are currently in private Beta. If you are interested in trying them out, you can sign up for the [waitlist](https://xata.io/beta/workers) and talk us through your use case. We are looking for developers that are willing to provide feedback and shape this new feature for our serverless data platform.
 
 We are very proud of our collaboration with Cloudflare for this new feature. Processing data closer to where it's being requested is the future of computing and we are excited to be part of this movement. We look forward to seeing what you build with Xata Workers.
