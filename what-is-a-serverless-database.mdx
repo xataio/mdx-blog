@@ -1,6 +1,6 @@
 ---
-title: "What we talk about when we talk about serverless databases"
-description: "What is a Serverless Database? There isn't a definitive definition that everyone agrees to, so this post documents our own definition, in an attempt to bring a bit of clarity to the world."
+title: "Talking about serverless databases"
+description: "Proposing a definition for serverless databases and adding some clarity to the discussion." 
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/what-is-a-serverless-database.png
   alt: Xata
@@ -16,7 +16,7 @@ This is why we thought it’d be worth writing a blog post to document _our_ def
 
 First of all, hat tip to SQLite who was using the [term](https://www.sqlite.org/serverless.html) “serverless database” since before it was a buzzword, to mean something quite different: a database engine that runs in the process of the application. Rest assured, we’re talking about the buzzword serverless here. We’re Venture Capital (VC) funded after all. This version of “serverless” means a service–which _definitely_ uses servers–but those servers are abstracted away as much as possible by the said service.
 
-## No Servers (to manage)
+## No servers to manage
 
 Yes, there are servers involved in our service. No, you don’t need to know about them. You don’t need to care how many of them there are, how much RAM they have, or if there are any low disk-space alerts raised recently, because those are totally and solely our problem (ugh).
 
@@ -26,7 +26,7 @@ As a user, what you get is series of API endpoints that you can use to insert an
 
 Small side note: while not necessarily important for the definition of a serverless database, our API speaks HTTP and is therefore connectionless, it’s a lot easier to use from serverless functions because there’s no connection management to worry about.
 
-## No Upgrades (that you have to worry about)
+## No upgrades (that you have to worry about)
 
 Databases, like most software, need occasional upgrading. The upgrading of databases in particular is usually annoying, dangerous, and can cause downtime. Some DBaaS (Databases as a Service) will take care of at least minor version upgrades for you, sometimes at the cost of having a maintenance window.
 
@@ -34,7 +34,7 @@ In our definition of serverless, there are no upgrades. Scratch that—just like
 
 On the other hand, there might be versions of our APIs that you might want to upgrade to so you’re not _totally_ off the hook, but that tends to be a lot simpler by comparison.
 
-## Durability and Availability (and SLAs)
+## Durability, availability, and SLAs
 
 When you send data to a cloud service like AWS’s S3 (Simple Storage Service), you don’t expect it to get lost with any sort of reasonable probability. That means that the service is highly durable. You also expect to be able to read the data at any time. That means that the service is highly available. Behind the scenes, in order to provide high-durability and high-availability, the service needs to store the data in multiple copies on different hard drives, and run servers in multiple availability zones. This also applies to databases.
 
@@ -44,7 +44,7 @@ We think high-durability and high-availability are important aspects of a server
 
 We’re still working on documenting our limits and SLAs, that’s part of why we’re still in closed beta.
 
-## Performance and Scalability (and how they relate to pricing)
+## Performance and scalability 
 
 This is the part where we’d claim inter-planetary scale (to one-up our perceived competition) and “blazing-fast” performance for any query. And you’d just skip to the next headline because _of course we’d claim that_.
 
@@ -61,7 +61,7 @@ We think both are valid strategies for a serverless database service, but in bot
 
 We are trying the second approach, which has its own challenges, but we think it’s ultimately the better model for the users. This model is less used today, but DynamoDB, one of the first serverless DBs, works like that. You can reserve a certain capacity, and you get throttled if you surpass it. In a way, it simulates what you would get from a “serverful” setup: if you haven’t allocated enough capacity, your performance will be degraded, but it won’t suddenly break on you. The difference is that we can make it a lot easier to add capacity or configure auto-scaling.
 
-## Scaling to Zero (mostly)
+## Scaling to zero (mostly)
 
 A very cool aspect of the original serverless service, AWS Lambda, is that it scales down to zero in terms of pricing. That means that if a function is not used, it takes (next to) no resources and therefore costs nothing. This is great for personal projects but also for particular use cases even in the enterprise. This concept mostly translates to databases, but not quite–because even if the database receives no requests at all, it still needs to store the data.
 
@@ -71,7 +71,7 @@ But there’s one more aspect to it: the infamous cold starts. Databases are typ
 
 In our definition, cold starts are very small and databases don’t get suspended after a period of inactivity that is measured in days. We’re hedging here a bit because we might have to eventually suspend databases as well, but we’d only do it after a very long period of inactivity: think years, not days.
 
-## Summary (and no silver bullet)
+## Summary
 
 Our definition of serverless databases can be summarised like this: **we take care of as many hard problems as possible so you don’t have to**.
 

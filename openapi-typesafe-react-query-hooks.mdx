@@ -1,6 +1,6 @@
 ---
 title: "From OpenAPI to type safe react-query hooks"
-description: "The Xata engineering team values predictability at all levels of our codebase. This blog post is about how we handle API communications in a predictable way."
+description: "Learn how we build predictable API communications with the OpenAPI codegen."
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/openapi-typesafe-react-query-hooks.png
   alt: Xata
@@ -14,22 +14,22 @@ The Xata engineering team values predictability at all levels of our codebase. T
 
 ## Motivation
 
-To us at Xata engineering, we consider spending time reverse engineering APIs just to know what kind of data is available to be neither fun nor valuable. Instead, through [OpenAPI](https://www.openapis.org/) we get some insights into the possibilities exposed by some APIs. However, why stop there? Reading an OpenAPI spec and manually writing code is… let's say, also not our thing.
+To us, at Xata engineering, we do not consider spending time reverse engineering APIs just to know what kind of data is available to be either fun or valuable. Instead, through [OpenAPI](https://www.openapis.org/) we get some insights into the possibilities exposed by some APIs. However, why stop there? Reading an OpenAPI spec and manually writing code is… let's say, also not our thing.
 
 Of course, [some](https://www.npmjs.com/package/openapi-to-ts) [libraries](https://github.com/swagger-api/swagger-js) exist to generate types from OpenAPI, but then we'd still need to manually connect them to [react-query](https://react-query.tanstack.com/) or similar fetchers, all while the generated types aren't very thorough in most cases. Even worse, in case of circular dependencies in a given OpenAPI spec, this becomes less of an option for us.
 
-Given these constraints, we saw potential for innovation. _We had to do something!_ And this is why we started to craft [openapi-codegen](https://github.com/fabien0102/openapi-codegen).
+Given these constraints, we saw potential for innovation. _We had to do something!_ And this is why we crafted [openapi-codegen](https://github.com/fabien0102/openapi-codegen).
 
 The goals were clear:
 
 1. Generate human-readable types, so we can review TypesScript files instead of a large OpenAPI YAML file.
 1. Embed all possible documentation, so we can have access to the documentation directly through [IntelliSense](https://code.visualstudio.com/docs/editor/intellisense#:~:text=IntelliSense%20is%20a%20general%20term,%2C%20and%20%22code%20hinting.%22).
 1. Generate ready-to-use React Hooks, with `url` and `types` baked into the component to avoid any human mistakes.
-1. Be as flexible as possible: so far we can generate fetchers & react-query hooks, but let's not restrict the possibilities.
+1. Be as flexible as possible - so far we can generate fetchers & react-query hooks, but let's not restrict the possibilities.
 
-## Let's Play
+## Let's play
 
-To understand some of the superpowers this generator gives you, let's create a React application that consumes the Github API.
+To understand some of the superpowers this generator gives you, let's create a React application that consumes the GitHub API.
 
 ### Initialize the Project
 
@@ -56,7 +56,7 @@ $ npx openapi-codegen init
 
 Execute `npx openapi-codegen gen github` and voilà!
 
-### Inspect What We Have
+### Inspect what we have
 
 Let's take a bit of time to inspect what we have in `./src/github`. The more interesting file is `GithubComponents.ts`, this is where all our react-query components and fetchers are generated and also our entry point. We have some generated types in `Github{Parameters,Schemas,Responses}`. These are a 1-1 mapping with what we have in the OpenAPI spec.
 
@@ -106,7 +106,7 @@ export default App;
 
 We can run `yarn dev` and see a white page with \"todo\".
 
-### Start Fetching!
+### Start fetching
 
 Let's try to fetch some users!
 
@@ -156,7 +156,7 @@ export default App;
 
 And voilà! Without knowing the API, just playing with the autocompletion, I'm able to fetch a list a users! 🥳 The types even give us a hint that `error.documentation_url` was a thing, quite cool, but let's see if this is actually working!
 
-### Error Management
+### Error management
 
 Let's refresh the page many times, until we reach the API rate limit 😅 Eventually, we don't see the error message, nor the documentation link.
 
@@ -192,7 +192,7 @@ This is where `GithubFetcher.ts` needs to be tweaked! Errors are indeed a bit tr
 
 Here we need to make sure to validate the error format, since everything is optional in `BasicError` GitHub API and `BasicError` have a `message: string` property, I can safely throw an `Error`. And just like this, we have nice and type-safe error handling.
 
-### Adding Some States
+### Adding some states
 
 Of course, [React is all about state](https://twitter.com/TejasKumar_/status/1513123801994866689) isn't it? So… let's try!
 
@@ -363,7 +363,7 @@ and inject the `token` in `GithubContext.ts`
 
 And that's it! Now we have everything in place to create an amazing application around github API.
 
-How is this working? Let's have a look of the generated `useSearchUsers` to understand.
+How is this working? Let's have a look at the generated `useSearchUsers`:
 
 ```ts
 export const useSearchUsers = (
@@ -404,7 +404,7 @@ export const useSearchUsers = (
 };
 ```
 
-## What About Query Caching?
+## What about query caching?
 
 One of the key features of react-query, is to have a query cache. By default, openapi-codegen provides you with a key cache that fits the URL scheme.
 
@@ -430,7 +430,7 @@ const MyComp = () => {
 
 Note: This is just a default behavior, if you have more specific needs, you can always tweak `GithubContext#queryKeyFn`.
 
-## Help & Feedback
+## Help & feedback
 
 This project is still relatively early stage (but it strictly follows semver, so if we break the API, you will know it!). We're always happy to have feedback and help you if you have any questions. If you'd like to browse the code or take it for a spin, be sure to check out the [repo on GitHub](https://github.com/fabien0102/openapi-codegen).
 

@@ -1,6 +1,6 @@
 ---
 title: "How to fuzzy search with Xata"
-description: "Xata is a serverless database built on PostgreSQL with data automatically replicated to Elasticsearch. This opens a whole new world of possibilities when it comes to free text search. Deep dive into Queen Raae's favorite Xata feature, fuzzy search."
+description: "Explore the world of free text search possibilities with Xata and take a deep dive into fuzzy search."
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/how-to-fuzzy-search-with-xata.png
   alt: How to Fuzzy Search with Xata
@@ -28,7 +28,7 @@ Fuzzy search to the rescue! 💪
 
 > **FYI:** The example code uses a Xata Worker using the Xata SDK + a React component using ReactQuery. However, you may use any type of server-side + client-side setup you are comfortable with.
 
-## Fuzzy Search Is Enabled by Default
+## Fuzzy search is enabled by default
 
 Xata search functionality comes with the `fuzziness` param set to `1` by
 default, letting the user make one typo, such as one wrong character
@@ -126,7 +126,7 @@ export default function App() {
 Other possible levels of `fuzziness` are `0`, to disable it altogether, and `2`
 to extend the allowed typo tolerance. Higher than `2` is not supported.
 
-## Highlight the Relevant Text
+## Highlight the relevant text
 
 In addition to expecting a more forgiving search, users expect to know precisely
 _why_ a result matches their search term. With a fuzzy search, that is even more
@@ -238,7 +238,7 @@ export default function App() {
 }
 ```
 
-## Search Playground
+## Search playground
 
 Xata even allows you to play around with search—no code needed—using the Search
 Engine Playground.
@@ -255,7 +255,7 @@ coding.
   position="center"
 />
 
-## Where To Go From Here?
+## Where to go from here?
 
 I hope you are excited to dig into fuzzy search with Xata:
 
