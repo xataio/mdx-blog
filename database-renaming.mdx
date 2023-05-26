@@ -77,6 +77,6 @@ Another missing piece from the regional DynamoDB tables was the database ID for 
 
 Lastly, we migrated customer metadata in Stripe. During this process, we changed the name to the database ID. As a result, Stripe now uses the database ID in the callback to our backend, allowing us to update the number of units associated with the corresponding database branch. We can perform a lookup using a local secondary index and proceed to update the usage plan for the relevant branches whenever a customer purchases additional units.
 
-That is the tale of database renaming. Let us know if you find any issues either on Github or [Discord](https://xata.io/discord). If you don't have a Xata account yet, s[ign up for free!](https://app.xata.io/signin) We have a very generous free plan.
+That is the tale of database renaming. Let us know if you find any issues either on Github or [Discord](https://xata.io/discord). If you don't have a Xata account yet, [sign up for free!](https://app.xata.io/signin) We have a very generous free plan.
 
 Thank you for sticking around and happy database renaming!
