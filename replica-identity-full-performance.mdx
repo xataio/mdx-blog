@@ -1,6 +1,6 @@
 ---
 title: "On the performance of REPLICA IDENTITY FULL in Postgres"
-description: "The blog post analyses the performance impact of REPLICA IDENTITY FULL by looking at the source code and performing benchmarks."
+description: "Analyzing the performance impact of REPLICA IDENTITY FULL by looking at the source code and performing benchmarks."
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/performance-of-replica-identity-full.png
   alt: Performance of REPLICA IDENTITY FULL
@@ -224,8 +224,8 @@ Here are the result of running the benchmark test before and after enabling REPL
 
 <ArticleImage
   src="https://github.com/xataio/mdx-blog/raw/main/images/cpu_time_before_after.png"
-  width="1240"
-  height="550"
+  width="1024"
+  height="478"
   alt="CPU time before and after"
   caption="CPU time before and after"
   position="center"
@@ -233,7 +233,7 @@ Here are the result of running the benchmark test before and after enabling REPL
 
 <ArticleImage
   src="https://github.com/xataio/mdx-blog/raw/main/images/replication_slot_before_after.png"
-  width="1240"
+  width="1024"
   height="550"
   alt="Replication slot lag before and after"
   caption="Replication slot lag before and after"
@@ -250,4 +250,4 @@ In any case, there will be impact in the amount of data written to the WAL and s
 
 If you find the above interesting and want to work on similar challenges, make sure to check out the [Xata careers](https://xata.io/careers) page.
 
-Comment on [Hacker News](http://news.ycombinator.com/submitlink?u=https://xata.io/blog/replica-identity-full-performance&t=On%20the%20performance%20of%20REPLICA%20IDENTITY%20FULL%20in%20Postgres)
+Comment on [Hacker News](http://news.ycombinator.com/submitlink?u=https://xata.io/blog/replica-identity-full-performance&t=On%20the%20performance%20of%20REPLICA%20IDENTITY%20FULL%20in%20Postgres).
