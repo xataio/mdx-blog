@@ -52,7 +52,7 @@ To illustrate the above, let’s look at an example, using [wal2json](https://gi
 
 ```json
 {
-	 "kind": "update",
+   "kind": "update",
    "schema": "xata",
    "table": "foo",
    "columnnames": ["id", "name", "age"],
@@ -91,7 +91,7 @@ The event for the same UPDATE command above looks like this:
 
 ```json
 {
-		"kind": "update",
+    "kind": "update",
     "schema": "xata",
     "table": "foo",
     "columnnames": ["id", "name", "age"],
@@ -148,32 +148,32 @@ This is good news because it means that the “very inefficient” case is only 
 With Postgres 16, the “very inefficient” case is reduced even further, because now Postgres can use other indexes beyond the PK, even if they are not explicitly set in the REPLICA IDENTITY. The patch for this change can be found [here](https://www.postgresql.org/message-id/CACawEhVLqmAAyPXdHEPv1ssU2c=dqOniiGz7G73HfyS7+nGV4w@mail.gmail.com). After the patch, the `GetRelationIdentityOrPK` function stays the same, but the caller routine makes another effort into finding a suitable index to use:
 
 ```c
-  /*
-	 * Simple case, we already have a primary key or a replica identity index.
-	 */
-	idxoid = GetRelationIdentityOrPK(localrel);
-	if (OidIsValid(idxoid))
-		return idxoid;
+    /*
+     * Simple case, we already have a primary key or a replica identity index.
+     */
+    idxoid = GetRelationIdentityOrPK(localrel);
+    if (OidIsValid(idxoid))
+    return idxoid;
 
-	if (remoterel->replident == REPLICA_IDENTITY_FULL)
-	{
-		/*
-		 * We are looking for one more opportunity for using an index. If
-		 * there are any indexes defined on the local relation, try to pick a
-		 * suitable index.
-		 *
-		 * The index selection safely assumes that all the columns are going
-		 * to be available for the index scan given that remote relation has
-		 * replica identity full.
-		 *
-		 * Note that we are not using the planner to find the cheapest method
-		 * to scan the relation as that would require us to either use lower
-		 * level planner functions which would be a maintenance burden in the
-		 * long run or use the full-fledged planner which could cause
-		 * overhead.
-		 */
-		return FindUsableIndexForReplicaIdentityFull(localrel, attrMap);
-	}
+    if (remoterel->replident == REPLICA_IDENTITY_FULL)
+    {
+    /*
+        * We are looking for one more opportunity for using an index. If
+        * there are any indexes defined on the local relation, try to pick a
+        * suitable index.
+        *
+        * The index selection safely assumes that all the columns are going
+        * to be available for the index scan given that remote relation has
+        * replica identity full.
+        *
+        * Note that we are not using the planner to find the cheapest method
+        * to scan the relation as that would require us to either use lower
+        * level planner functions which would be a maintenance burden in the
+        * long run or use the full-fledged planner which could cause
+        * overhead.
+        */
+    return FindUsableIndexForReplicaIdentityFull(localrel, attrMap);
+    }
 ```
 
 # Impact on the size of the WAL events
@@ -195,7 +195,7 @@ If REPLICA IDENTITY is set to FULL, Postgres needs to keep the old values for al
 If there are TOAST values in the row, they need to be loaded in memory, decompressed, and then logged to the WAL. The relevant code that loads them to the memory is this, with most of the hard work happening in `toast_flatten_tuple`.
 
 ```c
-if (replident == REPLICA_IDENTITY_FULL)
+    if (replident == REPLICA_IDENTITY_FULL)
 	{
 		/*
 		 * When logging the entire old tuple, it very well could contain
