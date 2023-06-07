@@ -1,0 +1,251 @@
+---
+title: "On the performance of REPLICA IDENTITY FULL in Postgres"
+description: "The blog post analyses the performance impact of REPLICA IDENTITY FULL by looking at the source code and performing benchmarks."
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/performance-of-replica-identity-full.png
+  alt: Performance of REPLICA IDENTITY FULL
+author: Tudor Golubenco
+date: 06-07-2023
+published: true
+slug: replica-identity-full-performance
+---
+
+At [Xata](https://xata.io/), we’re relying on the Postgres logical replication
+events quite a bit. Having a reliable stream with everything that has changed
+in the database is really useful in a number of cases, including data syncing
+to Elasticsearch, web-hooks, attachments clean-up, and more. One of the
+configuration parameters for logical replication is the so called “replica
+identity”:
+
+> A published table must have a “replica identity” configured in order to be
+> able to replicate `UPDATE` and `DELETE` operations, so that appropriate rows
+> to update or delete can be identified on the subscriber side. By default, this
+> is the primary key, if there is one.
+
+
+You’d typically want to use the primary key or an index as the “replica 
+identity” and avoid setting the “replica identity” to full. The reason is this
+quote from the [Postgres docs](https://www.postgresql.org/docs/current/logical-replication-publication.html) (emphasis mine):
+
+
+> If the table does not have any suitable key, then it can be set to replica identity “full”, which means the entire row becomes the key. This, however, **is very inefficient and should only be used as a fallback if no other solution is possible**.
+> 
+
+That sounds quite discouraging, however, there are some good reasons for which you might still want to consider enabling it (see next section), so it’s worth digging a bit deeper and analyzing what exactly happens when you enable it and how it affects performance. This is what this blog post is about.
+
+<ArticleImage
+  src="https://github.com/xataio/mdx-blog/raw/main/images/replica-identity-full-meme.jpg"
+  width="653"
+  height="382"
+  alt="Replica identity full meme"
+  position="center"
+/>
+
+# Ok, but why would you enable it?
+
+In our case there were two things that convinced us that we might want to consider REPLICA IDENTITY FULL:
+
+- On UPDATEs and DELETEs, Postgres only includes the old values of the “identity columns”. So if you want to get the values ******after****** the change as well as the values ************before************ the change, setting replica identity to “full” tricks Postgres into passing the old values as well.
+- UPDATE WAL events don’t include [TOASTed columns](https://www.postgresql.org/docs/current/storage-toast.html), unless that column has changed in the current operation. In practice this means that if you have column values over 8KB, you will miss them from the update events. Again, by setting the replica identity to FULL, we make sure they are always in the WAL event.
+
+To illustrate the above, let’s look at an example, using [wal2json](https://github.com/eulerto/wal2json) for convenience. An update event looks something like this:
+
+```json
+{
+	 "kind": "update",
+   "schema": "xata",
+   "table": "foo",
+   "columnnames": ["id", "name", "age"],
+   "columntypes": ["text", "text", "integer"],
+   "columnvalues": ["michael", "Michael Scott", 42],
+   "oldkeys": {
+     "keynames": ["id"],
+     "keytypes": ["text"],
+     "keyvalues": ["michael"]
+   }
+}
+```
+
+The above was generated after a command like this one:
+
+```sql
+UPDATE foo SET age=age+1 WHERE id='michael';
+```
+
+The table has a primary key (the `id` column) and that is used as the replica identity.
+
+Things to note:
+
+- Under `columnvalues` the new values for the `id`, `name`, and `age`columns are included.
+- Under `oldkeys` only the `id` column is included, because that’s what the REPLICA IDENTITY is set to.
+
+The table, however, has another column, named `description` which is not included at all in the event. Why? Because the value of it is large and it is TOASTed. If the UPDATE command would have changed the description, then it would have been in the `columnvalues` but because it was not touched, it is skipped.
+
+Now let’s compare it with the same event generated with REPLICA IDENTITY FULL:
+
+```sql
+ALTER TABLE foo REPLICA IDENTITY FULL;
+```
+
+The event for the same UPDATE command above looks like this:
+
+```json
+{
+		"kind": "update",
+    "schema": "xata",
+    "table": "foo",
+    "columnnames": ["id", "name", "age"],
+    "columntypes": ["text", "text", "integer"],
+    "columnvalues": ["michael", "Michael Scott", 43],
+    "oldkeys": {
+	    "keynames": ["id", "name", "age", "description"],
+      "keytypes": ["text", "text", "integer", "text"],
+      "keyvalues": ["michael", "Michael Scott", 42, "<redacted very large description>"]
+    }
+}
+```
+
+Things to note:
+
+- The `columnvalues` looks the same. It contains all the columns and their new values, but not the TOASTed column/value pairs.
+- The `oldkeys` now contains really all the columns with their values ************before************ the update, including the TOAST value for `description`.
+
+It should be said that with the replica identity set to the primary key or another unique index, you get enough data out in the replication stream to completely sync a Postgres replica in sync. This means that you can overcome the limitations by keeping state outside of Postgres. However, the amount of work that you need to do outside of Postgres might become significant both in terms of resources needed and added code (compared to a single ALTER TABLE statement).
+
+# Impact on the replica and changes in Postgres 16
+
+The quote from the beginning of the  blog post with the “very inefficient” wording is actually from the — currently stable — Postgres 15 docs , but it was changed in the [Postgres 16 docs](https://www.postgresql.org/docs/16/logical-replication-publication.html) — currently under development:
+
+> If the table does not have any suitable key, then it can be set to replica identity `FULL`, which means the entire row becomes the key. When replica identity `FULL` is specified, indexes can be used on the subscriber side for searching the rows. […] **If there are no such suitable indexes, the search on the subscriber side can be very inefficient,** therefore replica identity `FULL` should only be used as a fallback if no other solution is possible.
+> 
+
+The above hints that the “very inefficient” part refers to the subscriber that needs to identify the rows that were updated / deleted, and that this is being improved in version 16 so that it’s able to use indexed columns even if they are not set explicitly in the replica identity.
+
+What is not clear from the docs above is that also in previous versions of Postgres, if the table has a primary key, it is used by the subscriber to find the affected row. You can see the code [here](https://github.com/postgres/postgres/blob/REL_14_STABLE/src/backend/replication/logical/worker.c#L1225-L1235), it looks for a replica index, and if it’s not found, it uses the PK instead.
+
+```c
+/*
+ * Get replica identity index or if it is not defined a primary key.
+ *
+ * If neither is defined, returns InvalidOid
+ */
+static Oid
+GetRelationIdentityOrPK(Relation rel)
+{
+	Oid			idxoid;
+
+	idxoid = RelationGetReplicaIndex(rel);
+
+	if (!OidIsValid(idxoid))
+		idxoid = RelationGetPrimaryKeyIndex(rel);
+
+	return idxoid;
+}
+```
+
+This is good news because it means that the “very inefficient” case is only relevant to tables that have no primary key.
+
+With Postgres 16, the “very inefficient” case is reduced even further, because now Postgres can use other indexes beyond the PK, even if they are not explicitly set in the REPLICA IDENTITY. The patch for this change can be found [here](https://www.postgresql.org/message-id/CACawEhVLqmAAyPXdHEPv1ssU2c=dqOniiGz7G73HfyS7+nGV4w@mail.gmail.com). After the patch, the `GetRelationIdentityOrPK` function stays the same, but the caller routine makes another effort into finding a suitable index to use:
+
+```c
+  /*
+	 * Simple case, we already have a primary key or a replica identity index.
+	 */
+	idxoid = GetRelationIdentityOrPK(localrel);
+	if (OidIsValid(idxoid))
+		return idxoid;
+
+	if (remoterel->replident == REPLICA_IDENTITY_FULL)
+	{
+		/*
+		 * We are looking for one more opportunity for using an index. If
+		 * there are any indexes defined on the local relation, try to pick a
+		 * suitable index.
+		 *
+		 * The index selection safely assumes that all the columns are going
+		 * to be available for the index scan given that remote relation has
+		 * replica identity full.
+		 *
+		 * Note that we are not using the planner to find the cheapest method
+		 * to scan the relation as that would require us to either use lower
+		 * level planner functions which would be a maintenance burden in the
+		 * long run or use the full-fledged planner which could cause
+		 * overhead.
+		 */
+		return FindUsableIndexForReplicaIdentityFull(localrel, attrMap);
+	}
+```
+
+# Impact on the size of the WAL events
+
+While the worst potential impact of REPLICA IDENTITY FULL is on the replica, as we’ve seen above, it does also impact the primary because it requires more data to be stored in the WAL and it causes it to send more data over the network to the subscribers. This means more IO bandwidth consumed, more CPU usage, and more RAM usage.
+
+How much more? It depends on the type of write traffic you have and how many large values you have, as well as how often they are updated.
+
+Let’s look at it by the event type:
+
+### Inserts
+
+Inserts are not impacted at all, because there are no “old values” and the large values are included regardless of the REPLICA IDENTITY setting. Easy.
+
+### Updates
+
+If REPLICA IDENTITY is set to FULL, Postgres needs to keep the old values for all columns while executing the transaction and then write them to the WAL.
+
+If there are TOAST values in the row, they need to be loaded in memory, decompressed, and then logged to the WAL. The relevant code that loads them to the memory is this, with most of the hard work happening in `toast_flatten_tuple`.
+
+```c
+if (replident == REPLICA_IDENTITY_FULL)
+	{
+		/*
+		 * When logging the entire old tuple, it very well could contain
+		 * toasted columns. If so, force them to be inlined.
+		 */
+		if (HeapTupleHasExternal(tp))
+		{
+			*copy = true;
+			tp = toast_flatten_tuple(tp, desc);
+		}
+		return tp;
+	}
+```
+
+In conclusion, the size of the WAL events for updates is ~doubled if there are no TOASTed values, and potentially way more than doubled if there are TOASTed values. 
+
+### Deletes
+
+For deletes normally only the key is logged in the WAL, and by enabling REPLICA IDENTITY FULL, all columns become part of the key, meaning that the whole row is logged and sent over the wire on delete.
+
+# Benchmarking
+
+Based on the analysis above, we were guessing that the cost of REPLICA IDENTITY FULL would be worth it in our case, so decided to put it to test. We wanted to simulate something close to the worst case scenario but still realistic, so we have extended our benchmarking test suite to have a test with a lot of large values and performing a lot of updates. The test didn’t push the resources to the limit but was heavy enough for us to measure the impact.
+
+Here are the result of running the benchmark test before and after enabling REPLICA IDENTITY FULL.
+
+<ArticleImage
+  src="https://github.com/xataio/mdx-blog/raw/main/images/cpu_time_before_after.png"
+  width="1240"
+  height="550"
+  alt="CPU time before and after"
+  caption="CPU time before and after"
+  position="center"
+/>
+
+<ArticleImage
+  src="https://github.com/xataio/mdx-blog/raw/main/images/replication_slot_before_after.png"
+  width="1240"
+  height="550"
+  alt="Replication slot lag before and after"
+  caption="Replication slot lag before and after"
+  position="center"
+/>
+
+The CPU time showed a modest increase in peak times from 30% to about 35%. There was a similar modest increase in the peak replication slot lag.
+
+# Summary
+
+If you’re using logical replication between instances, the impact from REPLICA IDENTITY FULL will likely be manageable as long as the replicated tables have a Primary Key. If you are on Postgres 16 already, having no Primary Key but another unique index might also be ok.
+
+In any case, there will be impact in the amount of data written to the WAL and sent over the network. The more UPDATE and DELETE traffic that you have, the more significant this impact will be.
+
+If you find the above interesting and want to work on similar challenges, make sure to check out the [Xata careers](https://xata.io/careers) page.
