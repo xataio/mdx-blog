@@ -25,7 +25,7 @@ You’d typically use the primary key or an index as the “replica
 identity” and avoid setting the “replica identity” to full. This recommendation is supported by the following quote from the [Postgres docs](https://www.postgresql.org/docs/current/logical-replication-publication.html):
 
 > If the table does not have any suitable key, then it can be set to replica identity “full”, which means the entire row becomes the key. This, however, **is very inefficient and should only be used as a fallback if no other solution is possible**.
-> 
+>
 
 While the recommendation to avoid setting the "replica identity" to full may seem discouraging at first, there are valid reasons to explore its potential benefits. In this blog, we'll delve deeper into why enabling it could be advantageous. By examining the inner workings and performance implications, this blog post aims to provide a comprehensive analysis of the impact of enabling `REPLICA IDENTITY FULL`.
 
@@ -88,17 +88,17 @@ The event for the same `UPDATE` command above looks like this:
 
 ```json
 {
-    "kind": "update",
-    "schema": "xata",
-    "table": "foo",
-    "columnnames": ["id", "name", "age"],
-    "columntypes": ["text", "text", "integer"],
-    "columnvalues": ["michael", "Michael Scott", 43],
-    "oldkeys": {
-	  "keynames": ["id", "name", "age", "description"],
-      "keytypes": ["text", "text", "integer", "text"],
-      "keyvalues": ["michael", "Michael Scott", 42, "<redacted very large description>"]
-    }
+  "kind": "update",
+  "schema": "xata",
+  "table": "foo",
+  "columnnames": ["id", "name", "age"],
+  "columntypes": ["text", "text", "integer"],
+  "columnvalues": ["michael", "Michael Scott", 43],
+  "oldkeys": {
+  "keynames": ["id", "name", "age", "description"],
+    "keytypes": ["text", "text", "integer", "text"],
+    "keyvalues": ["michael", "Michael Scott", 42, "<redacted very large description>"]
+  }
 }
 ```
 
@@ -114,7 +114,7 @@ It is worth noting that by setting the replica identity to the primary key or an
 The quote mentioned at the beginning of the blog post, containing the phrase "very inefficient," was originally sourced from the currently stable Postgres 15 documentation. However, it is important to note that this wording has been altered in the currently under-development [Postgres 16 docs](https://www.postgresql.org/docs/16/logical-replication-publication.html):
 
 > If the table does not have any suitable key, then it can be set to replica identity `FULL`, which means the entire row becomes the key. When replica identity `FULL` is specified, indexes can be used on the subscriber side for searching the rows. […] **If there are no such suitable indexes, the search on the subscriber side can be very inefficient,** therefore replica identity `FULL` should only be used as a fallback if no other solution is possible.
-> 
+>
 
 The above hints that the “very inefficient” part refers to the subscriber that needs to identify the rows that were updated/deleted, and that this is being improved in version 16 so that it’s able to use indexed columns even if they are not set explicitly in the replica identity.
 
@@ -147,32 +147,32 @@ This is good news because it means that the “very inefficient” case is only 
 With Postgres 16, the “very inefficient” case is reduced even further, because now Postgres can use other indexes beyond the PK, even if they are not explicitly set in the `REPLICA IDENTITY`. The patch for this change can be found [here](https://www.postgresql.org/message-id/CACawEhVLqmAAyPXdHEPv1ssU2c=dqOniiGz7G73HfyS7+nGV4w@mail.gmail.com). After the patch, the `GetRelationIdentityOrPK` function stays the same, but the caller routine makes another effort into finding a suitable index to use:
 
 ```c
-    /*
-     * Simple case, we already have a primary key or a replica identity index.
-     */
-    idxoid = GetRelationIdentityOrPK(localrel);
-    if (OidIsValid(idxoid))
-    return idxoid;
+/*
+ * Simple case, we already have a primary key or a replica identity index.
+ */
+idxoid = GetRelationIdentityOrPK(localrel);
+if (OidIsValid(idxoid))
+return idxoid;
 
-    if (remoterel->replident == REPLICA_IDENTITY_FULL)
-    {
-       /*
-        * We are looking for one more opportunity for using an index. If
-        * there are any indexes defined on the local relation, try to pick a
-        * suitable index.
-        *
-        * The index selection safely assumes that all the columns are going
-        * to be available for the index scan given that remote relation has
-        * replica identity full.
-        *
-        * Note that we are not using the planner to find the cheapest method
-        * to scan the relation as that would require us to either use lower
-        * level planner functions which would be a maintenance burden in the
-        * long run or use the full-fledged planner which could cause
-        * overhead.
-        */
-        return FindUsableIndexForReplicaIdentityFull(localrel, attrMap);
-    }
+if (remoterel->replident == REPLICA_IDENTITY_FULL)
+{
+ /*
+  * We are looking for one more opportunity for using an index. If
+  * there are any indexes defined on the local relation, try to pick a
+  * suitable index.
+  *
+  * The index selection safely assumes that all the columns are going
+  * to be available for the index scan given that remote relation has
+  * replica identity full.
+  *
+  * Note that we are not using the planner to find the cheapest method
+  * to scan the relation as that would require us to either use lower
+  * level planner functions which would be a maintenance burden in the
+  * long run or use the full-fledged planner which could cause
+  * overhead.
+  */
+  return FindUsableIndexForReplicaIdentityFull(localrel, attrMap);
+}
 ```
 
 # Impact on the size of the WAL events
@@ -194,22 +194,23 @@ If `REPLICA IDENTITY` is set to `FULL`, Postgres needs to keep the old values fo
 If there are TOAST values in the row, they need to be loaded in memory, decompressed, and then logged to the WAL. The relevant code that loads them to the memory is this, with most of the hard work happening in `toast_flatten_tuple`.
 
 ```c
-    if (replident == REPLICA_IDENTITY_FULL)
-	{
-		/*
-		 * When logging the entire old tuple, it very well could contain
-		 * toasted columns. If so, force them to be inlined.
-		 */
-		if (HeapTupleHasExternal(tp))
-		{
-			*copy = true;
-			tp = toast_flatten_tuple(tp, desc);
-		}
-		return tp;
-	}
+if (replident == REPLICA_IDENTITY_FULL)
+{
+  /*
+   * When logging the entire old tuple, it very well could contain
+   * toasted columns. If so, force them to be inlined.
+   */
+  if (HeapTupleHasExternal(tp))
+  {
+    *copy = true;
+    tp = toast_flatten_tuple(tp, desc);
+  }
+  return tp;
+}
 ```
 
 In conclusion, the size of the WAL events for updates is nearly doubled if there are no TOASTed values, and potentially way more than doubled if there are TOASTed values. 
+
 
 ### Deletes
 
