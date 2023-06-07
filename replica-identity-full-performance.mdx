@@ -45,7 +45,7 @@ That sounds quite discouraging, however, there are some good reasons for which y
 
 In our case there were two things that convinced us that we might want to consider REPLICA IDENTITY FULL:
 
-- On UPDATEs and DELETEs, Postgres only includes the old values of the “identity columns”. So if you want to get the values ******after****** the change as well as the values ************before************ the change, setting replica identity to “full” tricks Postgres into passing the old values as well.
+- On UPDATEs and DELETEs, Postgres only includes the old values of the “identity columns”. So if you want to get the values **after** the change as well as the values **before** the change, setting replica identity to “full” tricks Postgres into passing the old values as well.
 - UPDATE WAL events don’t include [TOASTed columns](https://www.postgresql.org/docs/current/storage-toast.html), unless that column has changed in the current operation. In practice this means that if you have column values over 8KB, you will miss them from the update events. Again, by setting the replica identity to FULL, we make sure they are always in the WAL event.
 
 To illustrate the above, let’s look at an example, using [wal2json](https://github.com/eulerto/wal2json) for convenience. An update event looks something like this:
@@ -98,7 +98,7 @@ The event for the same UPDATE command above looks like this:
     "columntypes": ["text", "text", "integer"],
     "columnvalues": ["michael", "Michael Scott", 43],
     "oldkeys": {
-	    "keynames": ["id", "name", "age", "description"],
+	  "keynames": ["id", "name", "age", "description"],
       "keytypes": ["text", "text", "integer", "text"],
       "keyvalues": ["michael", "Michael Scott", 42, "<redacted very large description>"]
     }
@@ -108,7 +108,7 @@ The event for the same UPDATE command above looks like this:
 Things to note:
 
 - The `columnvalues` looks the same. It contains all the columns and their new values, but not the TOASTed column/value pairs.
-- The `oldkeys` now contains really all the columns with their values ************before************ the update, including the TOAST value for `description`.
+- The `oldkeys` now contains really all the columns with their values **before** the update, including the TOAST value for `description`.
 
 It should be said that with the replica identity set to the primary key or another unique index, you get enough data out in the replication stream to completely sync a Postgres replica in sync. This means that you can overcome the limitations by keeping state outside of Postgres. However, the amount of work that you need to do outside of Postgres might become significant both in terms of resources needed and added code (compared to a single ALTER TABLE statement).
 
@@ -157,7 +157,7 @@ With Postgres 16, the “very inefficient” case is reduced even further, becau
 
     if (remoterel->replident == REPLICA_IDENTITY_FULL)
     {
-    /*
+       /*
         * We are looking for one more opportunity for using an index. If
         * there are any indexes defined on the local relation, try to pick a
         * suitable index.
@@ -172,7 +172,7 @@ With Postgres 16, the “very inefficient” case is reduced even further, becau
         * long run or use the full-fledged planner which could cause
         * overhead.
         */
-    return FindUsableIndexForReplicaIdentityFull(localrel, attrMap);
+        return FindUsableIndexForReplicaIdentityFull(localrel, attrMap);
     }
 ```
 
