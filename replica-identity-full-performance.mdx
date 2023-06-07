@@ -1,5 +1,5 @@
 ---
-title: "On the performance of REPLICA IDENTITY FULL in Postgres"
+title: "Unveiling the impact of REPLICA IDENTITY FULL on PostgreSQL's performance"
 description: "Analyzing the performance impact of REPLICA IDENTITY FULL by looking at the PostgreSQL source code and performing benchmarks."
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/performance-of-replica-identity-full.png
@@ -10,28 +10,27 @@ published: true
 slug: replica-identity-full-performance
 ---
 
-At [Xata](https://xata.io/), we’re relying on the Postgres logical replication
-events quite a bit. Having a reliable stream with everything that has changed
-in the database is really useful in a number of cases, including data syncing
-to Elasticsearch, web-hooks, attachments clean-up, and more. One of the
-configuration parameters for logical replication is the so called “replica
-identity”:
+At [Xata](https://xata.io/), we've come to rely on the magic of Postgres logical replication 
+events. Why? Because they provide us with a dependable stream of information about
+every single change that occurs within our database. This stream of data is incredibly 
+valuable in various situations, such as when we need to synchronize data with Elasticsearch, use web-hooks, or even tidy up attachments.
+
+Now, let's dive into one important aspect of logical replication: the "replica identity." 
 
 > A published table must have a “replica identity” configured in order to be
 > able to replicate `UPDATE` and `DELETE` operations, so that appropriate rows
 > to update or delete can be identified on the subscriber side. By default, this
 > is the primary key, if there is one.
 
+This configuration parameter plays a crucial role in shaping the replication process, allowing us to fine-tune and optimize our data synchronization.
 
-You’d typically want to use the primary key or an index as the “replica 
-identity” and avoid setting the “replica identity” to full. The reason is this
-quote from the [Postgres docs](https://www.postgresql.org/docs/current/logical-replication-publication.html) (emphasis mine):
-
+You’d typically use the primary key or an index as the “replica 
+identity” and avoid setting the “replica identity” to full. This recommendation is supported by the following quote from the [Postgres docs](https://www.postgresql.org/docs/current/logical-replication-publication.html):
 
 > If the table does not have any suitable key, then it can be set to replica identity “full”, which means the entire row becomes the key. This, however, **is very inefficient and should only be used as a fallback if no other solution is possible**.
 > 
 
-That sounds quite discouraging, however, there are some good reasons for which you might still want to consider enabling it (see next section), so it’s worth digging a bit deeper and analyzing what exactly happens when you enable it and how it affects performance. This is what this blog post is about.
+While the recommendation to avoid setting the "replica identity" to full may seem discouraging at first, there are valid reasons to explore its potential benefits. In this blog, we'll delve deeper into why enabling it could be advantageous. By examining the inner workings and performance implications, this blog post aims to provide a comprehensive analysis of the impact of enabling `REPLICA IDENTITY FULL`.
 
 <ArticleImage
   src="https://github.com/xataio/mdx-blog/raw/main/images/replica-identity-full-meme.jpg"
@@ -41,14 +40,14 @@ That sounds quite discouraging, however, there are some good reasons for which y
   position="center"
 />
 
-# Ok, but why would you enable it?
+# Okay, but why enable REPLICA IDENTITY FULL?
 
-In our case there were two things that convinced us that we might want to consider REPLICA IDENTITY FULL:
+In our specific case, we discovered two compelling reasons that convinced us to consider enabling `REPLICA IDENTITY FULL`:
 
-- On UPDATEs and DELETEs, Postgres only includes the old values of the “identity columns”. So if you want to get the values **after** the change as well as the values **before** the change, setting replica identity to “full” tricks Postgres into passing the old values as well.
-- UPDATE WAL events don’t include [TOASTed columns](https://www.postgresql.org/docs/current/storage-toast.html), unless that column has changed in the current operation. In practice this means that if you have column values over 8KB, you will miss them from the update events. Again, by setting the replica identity to FULL, we make sure they are always in the WAL event.
+* **Complete Before and After Values**: By default, when performing `UPDATE` and `DELETE` in Postgres, only the old values of the "identity columns" are included. However, if you require both the values before the change and the values after the change, setting the replica identity to "full" tricks Postgres into providing the old values as well.
+* **Ensuring Inclusion of TOASTed Columns**: The UPDATE WAL events in Postgres do not include [TOASTed columns](https://www.postgresql.org/docs/current/storage-toast.html), unless those columns have been modified in the current operation. In practical terms, this means that if you have column values larger than 8KB, they will be excluded from the update events. However, by setting the replica identity to FULL, we guarantee that these TOASTed columns are always included in the Write-Ahead Log (WAL) events.
 
-To illustrate the above, let’s look at an example, using [wal2json](https://github.com/eulerto/wal2json) for convenience. An update event looks something like this:
+To illustrate the above, let’s look at an example, using [wal2json](https://github.com/eulerto/wal2json). An update event looks something to the following:
 
 ```json
 {
@@ -66,7 +65,7 @@ To illustrate the above, let’s look at an example, using [wal2json](https://gi
 }
 ```
 
-The above was generated after a command like this one:
+The above was generated after executing a command like the following:
 
 ```sql
 UPDATE foo SET age=age+1 WHERE id='michael';
@@ -79,15 +78,15 @@ Things to note:
 - Under `columnvalues` the new values for the `id`, `name`, and `age`columns are included.
 - Under `oldkeys` only the `id` column is included, because that’s what the REPLICA IDENTITY is set to.
 
-The table, however, has another column, named `description` which is not included at all in the event. Why? Because the value of it is large and it is TOASTed. If the UPDATE command would have changed the description, then it would have been in the `columnvalues` but because it was not touched, it is skipped.
+The table, however, contains an additional column called `description`. Unfortunately, this column is entirely excluded from the event. Why? The reason is that the value of the `description` column is large and stored as a TOASTed value. Unless the `UPDATE` command modifies the `description` column directly, it is entirely skipped and not included in the `columnvalues`.
 
-Now let’s compare it with the same event generated with REPLICA IDENTITY FULL:
+Now let’s compare it with the same event generated with `REPLICA IDENTITY FULL`:
 
 ```sql
 ALTER TABLE foo REPLICA IDENTITY FULL;
 ```
 
-The event for the same UPDATE command above looks like this:
+The event for the same `UPDATE` command above looks like this:
 
 ```json
 {
@@ -108,7 +107,7 @@ The event for the same UPDATE command above looks like this:
 Things to note:
 
 - The `columnvalues` looks the same. It contains all the columns and their new values, but not the TOASTed column/value pairs.
-- The `oldkeys` now contains really all the columns with their values **before** the update, including the TOAST value for `description`.
+- The `oldkeys` section includes all the columns and their respective values **before the update**, including the TOAST value for the `description` column.
 
 It should be said that with the replica identity set to the primary key or another unique index, you get enough data out in the replication stream to completely sync a Postgres replica in sync. This means that you can overcome the limitations by keeping state outside of Postgres. However, the amount of work that you need to do outside of Postgres might become significant both in terms of resources needed and added code (compared to a single ALTER TABLE statement).
 
