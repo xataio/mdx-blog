@@ -144,7 +144,7 @@ GetRelationIdentityOrPK(Relation rel)
 
 This is good news because it means that the “very inefficient” case is only relevant to tables that have no primary key.
 
-With Postgres 16, the “very inefficient” case is reduced even further, because now Postgres can use other indexes beyond the PK, even if they are not explicitly set in the `REPLICA IDENTITY`. The patch for this change can be found [here](https://www.postgresql.org/message-id/CACawEhVLqmAAyPXdHEPv1ssU2c=dqOniiGz7G73HfyS7+nGV4w@mail.gmail.com). After the patch, the `GetRelationIdentityOrPK` function stays the same, but the caller routine makes another effort into finding a suitable index to use:
+With Postgres 16, the “very inefficient” case is reduced even further, because now Postgres can use other indexes beyond the PK, even if they are not explicitly set in the `REPLICA IDENTITY`. The patch for this change can be found [here](https://www.postgresql.org/message-id/CACawEhVLqmAAyPXdHEPv1ssU2c=dqOniiGz7G73HfyS7+nGV4w@mail.gmail.com). After the patch, the `GetRelationIdentityOrPK` function stays the same, but the caller routine makes another effort to find a suitable index to use:
 
 ```c
 /*
