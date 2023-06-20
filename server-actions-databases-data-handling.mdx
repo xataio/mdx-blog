@@ -3,7 +3,7 @@ title: "Server Actions, databases, and the future of data handling"
 description: "Check out how Xata is improving data handling in modern apps using React advancements"
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-rename.png
-  alt: "Server Actions, Databases, and the Future of Data Handling
+  alt: "Server Actions, Databases, and the Future of Data Handling"
 author: Atila Fassina
 date: 06-20-2023
 published: true
@@ -124,13 +124,13 @@ So now, the search component, that has interactivity like a regular Client Compo
 
 ```tsx
 'use client';
- 
+
 import { useTransition } from 'react';
 import { addUser } from '~/db/actions';
- 
+
 function SaveSomeData() {
   let [isPending, startTransition] = useTransition();
- 
+
   return (
     <>
     ...
@@ -145,7 +145,7 @@ Our action will receive that data straight from the event callback and push it t
 
 ```tsx
 'use server';
- 
+
 export async function addUser(data) {
   const user = await xata.db.users.create(data)
 
@@ -153,7 +153,7 @@ export async function addUser(data) {
 }
 ```
 
-There's plenty to go around and a lot is still under experimental flags, but the future looks bright for our data stories. It's even possible to implement optimistic transitions within your component with a `useOptimistic` hook. 
+There's plenty to go around and a lot is still under experimental flags, but the future looks bright for our data stories. It's even possible to implement optimistic transitions within your component with a `useOptimistic` hook.
 
 ## Querying inside components
 
