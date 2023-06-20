@@ -132,12 +132,12 @@ function SaveSomeData() {
   let [isPending, startTransition] = useTransition();
  
   return (
-		<>
-		...
-	    <button onClick={() => startTransition(() => addUser(data))}>
-	      Save!
-	    </button>
-		</>
+    <>
+    ...
+      <button onClick={() => startTransition(() => addUser(data))}>
+	Save!
+      </button>
+    </>
   );
 }
 ```
@@ -163,7 +163,7 @@ https://twitter.com/sebmarkbage/status/1655291879682867202?s=20
 
 We have another tool at our disposal and this is going to free up a lot more mental real estate to think about user-centric experiences. Querying the database from within your component's logic won't magically make your app better or faster by itself, but it will allow you to be more efficient, productive, and intentional about the time you spend building features and value to your users. And, isn't that what the Developer Experience is all about? Empowering developers to build better features by facilitating solutions!
 
-## Fullstack Solutions and then Some
+## Full-stack solutions and then some
 
 So now that we can jump in and out of our servers from within our components, and we can move the network boundary (the line between server and client) as it suits us - it's time to start leveraging those solution into unblocking more complex use-cases.
 
