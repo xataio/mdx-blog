@@ -2,7 +2,7 @@
 title: "Server Actions, databases, and the future of data handling"
 description: "Check out how Xata is improving data handling in modern apps using React advancements"
 image:
-  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-rename.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/server-actions-data-handling.png
   alt: "Server Actions, Databases, and the Future of Data Handling"
 author: Atila Fassina
 date: 06-20-2023
@@ -18,7 +18,7 @@ Notice we're querying the database straight from the component rendering functio
 
 ```tsx
 export async function Movie({ slug }) {
-  const movie = await xata.db.movies.filter({ id: slug }).getFirst()
+  const movie = await xata.db.movies.filter({ id: slug }).getFirst();
 
   return (
     <>
@@ -36,7 +36,7 @@ export async function Movie({ slug }) {
         <p>{movie.overview} </p>
       </article>
     </>
-  )
+  );
 }
 ```
 
@@ -58,7 +58,6 @@ async function SERP() {
 ```
 
 While inside `SearchResult`, we can fetch, await, and render. Additionally, we can even pass the pending promise as a `prop`. The [data-fetching story](https://nextjs.org/docs/app/building-your-application/data-fetching/fetching#static-data-fetching) is extremely versatile and can adapt to business logic instead of writing logic to contort framework specific rules, abstractions, and conventions. We write our logic and we can make it perform in the best way possible without much of a workaround.
-
 
 ## Acting on server
 
@@ -116,6 +115,7 @@ const Task: TaskComponent = ({ id, title, url, description }) => {
   );
 };
 ```
+
 Check out the official Xata template in [this Remix example](https://github.com/remix-run/examples/tree/main/xata).
 
 React Server Components take it a step further by introducing a higher level of granularity. Next.js leverages the `user server` directive to define Server Action methods within a component's body. This enables the definition of almost any server-exclusive logic.
@@ -123,33 +123,34 @@ React Server Components take it a step further by introducing a higher level of 
 So now, the search component, that has interactivity like a regular Client Component can import a database query and fire from within its body.
 
 ```tsx
-'use client';
+"use client";
 
-import { useTransition } from 'react';
-import { addUser } from '~/db/actions';
+import { useTransition } from "react";
+import { addUser } from "~/db/actions";
 
 function SaveSomeData() {
   let [isPending, startTransition] = useTransition();
 
   return (
     <>
-    ...
+      ...
       <button onClick={() => startTransition(() => addUser(data))}>
-	Save!
+        Save!
       </button>
     </>
   );
 }
 ```
+
 Our action will receive that data straight from the event callback and push it to our server, just like that:
 
 ```tsx
-'use server';
+"use server";
 
 export async function addUser(data) {
-  const user = await xata.db.users.create(data)
+  const user = await xata.db.users.create(data);
 
-	return Boolean(user) ? 'great success' : 'oops'
+  return Boolean(user) ? "great success" : "oops";
 }
 ```
 
@@ -169,7 +170,7 @@ So now that we can jump in and out of our servers from within our components, an
 
 As the needle moves away from unblocking user queries, at Xata we immediately started thinking about making developers more productive, now. That's why our latest launch has been around the **Development Workflow**.
 
-If a project is connected to a database, once the schema is branched out, it will match  the Xata Branch to the GitHub Branch, if they have the same name, and thus creating a Preview Deployment that connects directly to that migration. Once your Pull Request is merged, Xata will automatically trigger a schema migration (with zero downtime!) and make sure your schema is consistent with the code.
+If a project is connected to a database, once the schema is branched out, it will match the Xata Branch to the GitHub Branch, if they have the same name, and thus creating a Preview Deployment that connects directly to that migration. Once your Pull Request is merged, Xata will automatically trigger a schema migration (with zero downtime!) and make sure your schema is consistent with the code.
 
 ## An exciting future
 
