@@ -2,14 +2,14 @@
 title: "Modern database workflows with GitHub, Vercel, Netlify, and Xata"
 description: "Finally, a database with a complete end-to-end developer workflow."
 image:
-  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/database-platforms-trend.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-workflow.png
   alt: Need a workflow cover image
 author: Alex Francoeur
 date: 04-26-2023
 published: true
 slug: workflow-github-vercel-netlify-xata
 ---
-We’re excited to announce a brand new workflow for developing with databases and preview deployments! With todays announcement, Xata is releasing an [application for GitHub](https://github.com/apps/xata-app), an [integration for Vercel](https://vercel.com/integrations/xata), an [integration for Netlify](https://www.netlify.com/integrations/xata/), git-like commands for our [CLI](https://xata.io/docs/getting-started/cli) and [preview branches](https://xata.io/docs/workflow). The combination of these features create the ideal workflow for modern application development.
+We’re excited to announce a brand new workflow for developing with databases and preview deployments! With todays announcement, Xata is releasing an [application for GitHub](https://github.com/apps/xata-app), an [integration for Vercel](https://vercel.com/integrations/xata), an [integration for Netlify](https://www.netlify.com/integrations/xata/), git-like commands for our [CLI](https://xata.io/docs/getting-started/cli) and [preview branches](https://xata.io/docs/getting-started/workflow). The combination of these features create the ideal workflow for modern application development.
 
 ## The X is for extended
 
@@ -17,7 +17,7 @@ Before we dive in, let’s quickly recap what Xata is. The X in Xata stands for 
 
 In support of that goal, it is our mission to radically simplify how developers work with data. The Xata platform includes a relational database, a search and analytics engine, a vector database, and AI capabilities. All of these features are built on industry best practices, ensuring a reliable and scalable solution that can be accessed through a RESTful API and type-safe SDKs.
 
-While we plan to continue to invest in new types of data stores for our [multi-model data platform](https://xata.io/docs/concepts/serverless-data-platform), today’s announcement is focused on our new workflow and improvements to the developer experience when working with your data.  
+While we plan to continue to invest in new types of data stores for our [multi-model data platform](https://xata.io/docs/concepts/serverless-data-platform), today’s announcement is focused on our new workflow and improvements to the developer experience when working with your data.
 
 ## Previews will replace pre-production environments
 
@@ -33,7 +33,7 @@ With preview branches now available in Xata, every pull request will be paired w
 
 - Safely iterate on your application with production data knowing you won’t impact your production environment and end users.
 - Freely modify schema and code changes alongside your application in an isolated preview environment.
-- Obfuscate sensitive data for individual developers who do not have the appropriate permissions ([coming soon](https://xata.io/roadmap))
+- Obfuscate sensitive data and PII for individual developers who do not have the appropriate permissions (this is [coming soon](https://xata.io/roadmap)).
 
 While these advantages are great, they are only useful if you can actually use them. Which is why the team at Xata focused heavily on a developer experience optimized for efficiency and security.
 
@@ -57,7 +57,7 @@ With this release, Xata is the first solution to complete the end-to-end develop
 - When the pull request is merged in GitHub, Xata simultaneously merges the database branch to the main database branch.
 - If there are migration failures detected, Xata will block the promotion of the build to avoid breaking the application until the failures are resolved.
 
-In order to take advantage of this new workflow, you’ll need to install the [Xata App for GitHub](https://github.com/apps/xata-app). 
+In order to take advantage of this new workflow, you’ll need to install the [Xata App for GitHub](https://github.com/apps/xata-app).
 
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/preview_02_integrations.png"
@@ -81,11 +81,11 @@ Once you have successfully installed the GitHub app, you can connect your databa
   height="814"
 />
 
-After you’ve paired your GitHub repository with your Xata database, working with preview branches is only a few commands away. 
+After you’ve paired your GitHub repository with your Xata database, working with preview branches is only a few commands away.
 
 ```bash
 git checkout -b review_stars
-xata branch review_stars
+xata branch create review_stars
 xata pull review_stars
 git add .
 git commit -m 'add rating column to db and stars'
@@ -128,6 +128,6 @@ While we’ve decided to focus on these two platforms first, we have all the fou
 
 At Xata, we are empowering a new age of developers to build more advanced applications without needing to think about the data layer. We are excited about what this new workflow unlocks and the capabilities we plan to build on top of it. You can view our [publicly available roadmap](https://xata.io/roadmap) to see what’s on the horizon and come chat with us on [Discord](http://xata.io/discord) if you have any questions.
 
-If you’re interested in using this new workflow for your next project, [sign up today](https://app.xata.io/signin) to take advantage of our production ready-free tier (no credit card required). For those that are already using Xata, simply update your SDK and CLI to the latest version to take advantage of this new workflow. Our[documentation](https://xata.io/docs/getting-started/workflow) is the best place to get set up.
+If you’re interested in using this new workflow for your next project, [sign up today](https://app.xata.io/signin) to take advantage of our production ready-free tier (no credit card required). For those that are already using Xata, simply update your SDK and CLI to the latest version to take advantage of this new workflow. Our [documentation](https://xata.io/docs/getting-started/workflow) is the best place to get set up.
 
 We can’t wait to see what you build 🦋

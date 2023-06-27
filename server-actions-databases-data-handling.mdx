@@ -1,0 +1,181 @@
+---
+title: "Server Actions, databases, and the future of data handling"
+description: "Check out how Xata is improving data handling in modern apps using React advancements"
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/server-actions-data-handling.png
+  alt: "Server Actions, databases, and the future of data handling"
+author: Atila Fassina
+date: 06-21-2023
+published: true
+slug: server-actions-data-handling
+---
+
+At Xata we're focused on improving how modern applications handle data. So naturally, we're excited about the future of React. As a result of Concurrency in React gaining momentum and React Server Components becoming more widely understood, the data fetching story has made significant strides in terms of improvement.
+
+As developers, we're experiencing an exciting shift in how data integrates into our applications. Using the "Fetching then Rendering" pattern in our components provides a more enjoyable experience for developers and makes it easier to bring data into an application, resulting in a smoother overall experience.
+
+Notice we're querying the database straight from the component rendering function. That's amazing! On top of that, we can even wrap our components into a [suspense boundary](https://react.dev/reference/react/Suspense#usage) and let data stream as necessary.
+
+```tsx
+export async function Movie({ slug }) {
+  const movie = await xata.db.movies.filter({ id: slug }).getFirst();
+
+  return (
+    <>
+      <header className="grid place-items-center">
+        <Image
+          className="rounded-br-2xl rounded-tl-2xl"
+          src={movie.poster}
+          width={600}
+          height={300}
+          alt={movie.title}
+        />
+        <h1 className="text-6xl text-center py-8 ">{movie.title}</h1>
+      </header>
+      <article className="max-w-prose w-full mx-auto prose">
+        <p>{movie.overview} </p>
+      </article>
+    </>
+  );
+}
+```
+
+Check out the above code snippet in our [XMDB template](https://xata.io/docs/examples/xmdb)
+
+```tsx
+// app/page.tsx
+async function SERP() {
+  searchParams
+}) => {
+  return (
+    <main>
+      <Suspense fallback={<Loader />}>
+        <SearchResult searchTerm={searchParams.search} />
+      </Suspense>
+    </main>
+  )
+}
+```
+
+While inside `SearchResult`, we can fetch, await, and render. Additionally, we can even pass the pending promise as a `prop`. The [data-fetching story](https://nextjs.org/docs/app/building-your-application/data-fetching/fetching#static-data-fetching) is extremely versatile and can adapt to business logic instead of writing logic to contort framework specific rules, abstractions, and conventions. We write our logic and we can make it perform in the best way possible without much of a workaround.
+
+## Acting on server
+
+One could argue that apart from the granularity of performing data-fetching on a per-component basis, the story was well defined before. We had similar capabilities previously (albeit with the integration of additional libraries or tools), but we could achieve the same results. The missing piece, however, was having this functionality within the framework, which unlocks the mutation story. This aspect has varied greatly between different tech stacks and poses an important decision that teams must make, with plenty of room for mistakes.
+
+Remix tackles the mutation story on a per-view basis, using action functions that allow for the co-location of fetching and posting data with the render logic like never seen before. The framework astutely determines user intentions based on the HTTP method (usually `GET` or `POST`, but it also fully supports others). All we need to do is export the appropriate method in our page and set the correct method within our `<form>` element.
+
+```tsx
+export const action = async ({ request }: ActionArgs) => {
+  const xata = getXataClient();
+  const { intent, id } = Object.fromEntries(await request.formData());
+
+  if (intent === "delete" && typeof id === "string") {
+    await xata.db.remix_with_xata_example.delete(id);
+
+    return json({
+      message: "delete: success",
+      data: null,
+    });
+  }
+
+  if (intent === "create") {
+    const newItem = await xata.db.remix_with_xata_example.create(LINKS);
+
+    return json({
+      message: "create: success",
+      data: newItem,
+    });
+  }
+
+  return json({
+    message: "no action performed",
+    data: null,
+  });
+};
+
+const Task: TaskComponent = ({ id, title, url, description }) => {
+  const fetcher = useFetcher();
+
+  return fetcher.submission ? null : (
+    <li key={url}>
+      <a href={url ?? ""} rel="noopener noreferrer" target="_blank">
+        {title}
+      </a>
+      <p>{description}</p>
+      <fetcher.Form method="post">
+        <input type="hidden" name="id" value={id} />
+        <button type="submit" name="intent" value="delete">
+          <span role="img" aria-label="delete item">
+            🗑
+          </span>
+        </button>
+      </fetcher.Form>
+    </li>
+  );
+};
+```
+
+Check out the official Xata template in [this Remix example](https://github.com/remix-run/examples/tree/main/xata).
+
+React Server Components take it a step further by introducing a higher level of granularity. Next.js leverages the `use server` directive to define Server Action methods within a component's body. This enables the definition of almost any server-exclusive logic.
+
+So now, the search component, that has interactivity like a regular Client Component can import a database query and fire from within its body.
+
+```tsx
+"use client";
+
+import { useTransition } from "react";
+import { addUser } from "~/db/actions";
+
+function SaveSomeData() {
+  let [isPending, startTransition] = useTransition();
+
+  return (
+    <>
+      ...
+      <button onClick={() => startTransition(() => addUser(data))}>
+        Save!
+      </button>
+    </>
+  );
+}
+```
+
+Our action will receive that data straight from the event callback and push it to our server, just like that:
+
+```tsx
+"use server";
+
+export async function addUser(data) {
+  const user = await xata.db.users.create(data);
+
+  return Boolean(user) ? "great success" : "oops";
+}
+```
+
+There's plenty to go around and a lot is still under experimental flags, but the future looks bright for our data stories. It's even possible to implement optimistic transitions within your component with a `useOptimistic` hook.
+
+## Querying inside components
+
+Of course, this is not a silver bullet, and while we are celebrating with **we can**, we still need to be aware and conscious about whether (and when) we should or should not use this. As Sebastian Markbåge himself said:
+
+["DB queries in your components/actions isn't really meant to be how the whole industry does everything, but I think we forgot how much it helps for prototyping"](https://twitter.com/sebmarkbage/status/1655291879682867202?s=20)
+
+We have another tool at our disposal and this is going to free up a lot more mental real estate to think about user-centric experiences. Querying the database from within your component's logic won't magically make your app better or faster by itself, but it will allow you to be more efficient, productive, and intentional about the time you spend building features and value to your users. And, isn't that what the Developer Experience is all about? Empowering developers to build better features by facilitating solutions!
+
+## Full-stack solutions and then some
+
+So now that we can jump in and out of our servers from within our components, and we can move the network boundary (the line between server and client) as it suits us - it's time to start leveraging those solution into unblocking more complex use-cases.
+
+As the needle moves away from unblocking user queries, at Xata we immediately started thinking about making developers more productive, now. That's why our latest launch has been around the **Development Workflow**.
+
+If a project is connected to a database, once the schema is branched out, it will match the Xata Branch to the GitHub Branch, if they have the same name, and thus creating a Preview Deployment that connects directly to that migration. Once your Pull Request is merged, Xata will automatically trigger a schema migration (with zero downtime!) and make sure your schema is consistent with the code.
+
+## An exciting future
+
+As our data story sits front and center within our favorite framework's development, we can look ahead and brainstorm new ideas and features. Branch out our data, create quick proof-of-concepts, test, iterate, and merge everything in levels of efficiency that weren't possible before.
+
+The future is exciting for web development and serverless, and we are absolutely here for it!
+
+How about you? What makes you the most excited about all these upcoming changes to our stack landscape? Let us know on [Twitter](http://twitter.com/xata), or join us on [Discord](xata.io/discord)!

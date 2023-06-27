@@ -1,8 +1,8 @@
 ---
 title: "End-to-end preview deployment workflows with Xata and Vercel"
-description: "Data. Deploy. Preview. Ship. Xata provides the missing data layer in Vercel’s preview deployment workflows."
+description: "Preview deployments have changed the way we work. Xata's integration with Vercel brings the data layer directly into that workflow."
 image:
-  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/database-platforms-trend.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-vercel.png
   alt: Need a workflow cover image
 author: Alex Francoeur
 date: 04-26-2023
@@ -20,7 +20,7 @@ In Xata, a preview branch is a branch of your `main` database that is automatica
 
 - Safely iterate on your application with production data knowing you won’t impact your production environment and end users.
 - Freely modify schema and code changes alongside your application in an isolated preview environment.
-- Obfuscate sensitive data for individual developers who do not have the appropriate permissions ([coming soon](https://xata.io/roadmap)).
+- Obfuscate sensitive data and PII for individual developers who do not have the appropriate permissions (this is [coming soon](https://xata.io/roadmap)).
 
 Let’s walk through adding a one out of five star rating to each product review in an ecommerce application. Here’s what the full end-to-end workflow would look like.
 
@@ -38,7 +38,7 @@ Let’s walk through adding a one out of five star rating to each product review
 
 ```bash
 git checkout -b review_stars
-xata branch review_stars
+xata branch create review_stars
 ```
 
 Create a branch for local development as you normally would. `xata branch` will create a new branch off of your `main` database in Xata.
@@ -69,7 +69,7 @@ git commit -m 'add rating column to db'
 git push --set-upstream origin review_stars
 ```
 
-Following your typical development workflow, push the changes up to your remote branch and create a pull request. When this pull request has been created, you’ll see a comment with the current state of your preview branch alongside the Vercel comment. 
+Following your typical development workflow, push the changes up to your remote branch and create a pull request. When this pull request has been created, you’ll see a comment with the current state of your preview branch alongside the Vercel comment.
 
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/vercel_blog_03.png"
@@ -81,7 +81,7 @@ Following your typical development workflow, push the changes up to your remote 
   height="1480"
 />
 
-Each preview branch will be automatically populated with data from `main`. In this example, our preview branch would include an empty column for `review_ratings`. With our [Vercel integration](https://vercel.com/integrations/xata), every preview will automatically use the preview branch from Xata. This provides a secure and isolated environment to iterate and ship for every pull request. 
+Each preview branch will be automatically populated with data from `main`. In this example, our preview branch would include an empty column for `review_ratings`. With our [Vercel integration](https://vercel.com/integrations/xata), every preview will automatically use the preview branch from Xata. This provides a secure and isolated environment to iterate and ship for every pull request.
 
 ### Merge the pull request to main
 
@@ -99,7 +99,7 @@ Alright, code changes are in and it’s time to turn that pull request purple.
 
 If you are not making changes to your database, you’ve benefited from having your own personal staging environment for your pull request and don’t need to worry about migrating any changes in your database.
 
-If you are making changes to your database, you still don’t need to worry about migrating any changes. Xata will perform a number of checks with each commit to ensure your pull request does not have any migration errors. In case errors are detected, Xata will provide a comment with details and block the merging of the pull request until the migration failures have been addressed. 
+If you are making changes to your database, you still don’t need to worry about migrating any changes. Xata will perform a number of checks with each commit to ensure your pull request does not have any migration errors. In case errors are detected, Xata will provide a comment with details and block the merging of the pull request until the migration failures have been addressed.
 
 With the simple addition of a column in this example, there are no errors. On merge, Xata will migrate the schema changes from the preview branch into the `main` database with zero downtime. The preview branch will automatically be deleted along with the Vercel preview deployment.
 
