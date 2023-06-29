@@ -1,6 +1,6 @@
 ---
-title: "From OpenAPI to type safe react-query hooks"
-description: "Learn how we build predictable API communications with the OpenAPI codegen."
+title: 'From OpenAPI to type safe react-query hooks'
+description: 'Learn how we build predictable API communications with the OpenAPI codegen.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/openapi-typesafe-react-query-hooks.png
   alt: Xata
@@ -22,10 +22,10 @@ Given these constraints, we saw potential for innovation. _We had to do somethin
 
 The goals were clear:
 
-1. Generate human-readable types, so we can review TypesScript files instead of a large OpenAPI YAML file.
-1. Embed all possible documentation, so we can have access to the documentation directly through [IntelliSense](https://code.visualstudio.com/docs/editor/intellisense#:~:text=IntelliSense%20is%20a%20general%20term,%2C%20and%20%22code%20hinting.%22).
-1. Generate ready-to-use React Hooks, with `url` and `types` baked into the component to avoid any human mistakes.
-1. Be as flexible as possible - so far we can generate fetchers & react-query hooks, but let's not restrict the possibilities.
+1.  Generate human-readable types, so we can review TypesScript files instead of a large OpenAPI YAML file.
+2.  Embed all possible documentation, so we can have access to the documentation directly through [IntelliSense](https://code.visualstudio.com/docs/editor/intellisense#:~:text=IntelliSense%20is%20a%20general%20term,%2C%20and%20%22code%20hinting.%22).
+3.  Generate ready-to-use React Hooks, with `url` and `types` baked into the component to avoid any human mistakes.
+4.  Be as flexible as possible - so far we can generate fetchers & react-query hooks, but let's not restrict the possibilities.
 
 ## Let's play
 
@@ -36,7 +36,7 @@ To understand some of the superpowers this generator gives you, let's create a R
 For simplicity, let's use [`vitejs`](https://vitejs.dev/) to bootstrap our project!
 
 ```sh
-$ npm create vite@latest
+npm create vite@latest
 ```
 
 We'll select the framework `react` with the variant `react-ts`, this should give us a quick working environment for our application.
@@ -44,8 +44,8 @@ We'll select the framework `react` with the variant `react-ts`, this should give
 Now, let's start the magic!
 
 ```sh
-$ npm i -D @openapi-codegen/{cli,typescript}
-$ npx openapi-codegen init
+npm i -D @openapi-codegen/{cli,typescript}
+npx openapi-codegen init
 ```
 
 - Select `Url`
@@ -62,7 +62,7 @@ Let's take a bit of time to inspect what we have in `./src/github`. The more int
 
 To finish, we have two special files: `GithubFetcher.ts` and `GithubContext.ts`. These files are generated only once and can be modified/extended to fit your needs.
 
-In `GithubFetcher.ts` you can:
+In `GithubFetcher.ts` you can:
 
 - inject the `baseUrl` (a default is provided)
 - deal with authentication
@@ -79,7 +79,7 @@ and in `GithubContext.ts` you can:
 Of course, so far, we don't even have react-query installed, let's do this and setup our application.
 
 ```sh
-$ npm i react-query
+npm i react-query
 ```
 
 Add the `queryClient`
@@ -104,7 +104,7 @@ function Users() {
 export default App;
 ```
 
-We can run `yarn dev` and see a white page with \"todo\".
+We can run `yarn dev` and see a white page with "todo".
 
 ### Start fetching
 

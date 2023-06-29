@@ -1,6 +1,6 @@
 ---
-title: "How we reduced our API Latency by 50% using Cloudflare"
-description: "Discover how we boosted speeds by switching to Cloudflare and get insights into our migration journey."
+title: 'How we reduced our API Latency by 50% using Cloudflare'
+description: 'Discover how we boosted speeds by switching to Cloudflare and get insights into our migration journey.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/reduced-api-latency-with-cloudflare.png
   alt: Xata and ChatGPT logos
@@ -89,13 +89,13 @@ Our load testing results demonstrate that using Cloudflare in front of our API a
   position="center"
 />
 
-### Benefits:
+### Benefits
 
 - Cloudflare's globally distributed DNS network improves DNS lookup times.
 - Cloudflare can provide an appreciable improvement in response times when there is consistent traffic routed to our servers.
 - Cloudflare offers us different features that we can activate eventually, such as Argo Smart Routing. Argo optimizes network transit time, can reduce Internet latency on average by 30%, and can dynamically select the best path for each request based on factors such as network congestion, latency, and available capacity.
 
-### Drawbacks:
+### Drawbacks
 
 - Cloudflare does not always improve Time To First Byte (TTFB) of cold connections, especially when traffic is low.
 - When the request originates near the servers, the improvement in response time may not be noticeable.

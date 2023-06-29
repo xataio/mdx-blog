@@ -1,0 +1,72 @@
+name: Docs preview
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Website branch to build from'
+        default: 'main'
+        type: string
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout website repo
+        uses: actions/checkout@v3
+        with:
+          repository: xataio/website
+          # TODO: Change branch to "main" once we have a stable release
+          ref: ${{ inputs.branch || 'missing-mdx-compile' }}
+          token: ${{ secrets.GIT_TOKEN }}
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - run: npm i -g vercel@latest
+
+      - id: deploy
+        name: Deploy to Vercel
+        run: |
+          vercel deploy \
+            --token ${{ secrets.VERCEL_TOKEN }} \
+            --build-env MDX_BLOG_BRANCH='${{ github.head_ref || github.ref_name }}' \
+            --env MDX_BLOG_BRANCH='${{ github.head_ref || github.ref_name }}' \
+            --build-env XATA_PREVIEW=none \
+            --env XATA_PREVIEW=none \
+            --build-env XATA_BRANCH=docs_migration \
+            --env XATA_BRANCH=docs_migration \
+            > deploy_url.txt
+        env:
+          VERCEL_ORG_ID: team_lMj2cFnO13wwm6LWz3X5kulx
+          VERCEL_PROJECT_ID: prj_7fENPf4qHhMCnz6j2IGYWDUkJ9wU
+
+      - name: Get deployment URL
+        id: get-url
+        run: |
+          echo "URL=$(cat deploy_url.txt)" >> $GITHUB_OUTPUT
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        if: github.event_name == 'pull_request'
+        id: find-comment
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'xata-bot'
+          body-includes: Check out the preview at
+
+      - name: Create or update comment of npm release
+        uses: peter-evans/create-or-update-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          edit-mode: replace
+          body: |
+            Check out the preview at ${{ steps.get-url.outputs.URL }}

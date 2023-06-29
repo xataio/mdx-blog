@@ -1,9 +1,9 @@
 ---
 title: How we implemented database renaming
-description: "Starting today, you can now rename your Xata database"
+description: 'Starting today, you can now rename your Xata database'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-rename.png
-  alt: "How we implemented database renaming"
+  alt: 'How we implemented database renaming'
 author: Noémi Ványi
 date: 05-26-2023
 published: true
@@ -31,11 +31,11 @@ Renaming databases is a fundamental feature that every database should support -
 
 After you have built an application on top of your database, it’s less likely that you will change its name. This is because the database name is usually incorporated into the REST API URL. It's comparable to renaming a GitHub organization. When you rename an organization or transfer repositories, you need to update the URLs in your local git configuration to ensure everything functions correctly.
 
-So we are optimizing for renaming the database several times at the beginning of the schema creation, when you only have one or two database branches. Later in the database life when you integrated it into your application, you are less likely to change it as it requires  greater effort to update the URLs accessing your database.
+So we are optimizing for renaming the database several times at the beginning of the schema creation, when you only have one or two database branches. Later in the database life when you integrated it into your application, you are less likely to change it as it requires greater effort to update the URLs accessing your database.
 
 ### Technical details
 
-In Xata there are two planes, the control plane for routing and regions for storing user data and metadata. We store database metadata including the database name and branch names in DynamoDB. When you rename your database, we must update both the database entry on the control plane and  database and its branch entries in the region.
+In Xata there are two planes, the control plane for routing and regions for storing user data and metadata. We store database metadata including the database name and branch names in DynamoDB. When you rename your database, we must update both the database entry on the control plane and database and its branch entries in the region.
 
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/db-rename.png"

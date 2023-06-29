@@ -1,6 +1,6 @@
 ---
-title: "Xata is now live"
-description: "After more than a year of hard work and addressing feedback from developers, Xata is now available!"
+title: 'Xata is now live'
+description: 'After more than a year of hard work and addressing feedback from developers, Xata is now available!'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-public-release.png
   alt: Winners
@@ -76,9 +76,7 @@ The `team` column is a **link column**, pointing to a record in another table, s
 With the TypeScript/Javascript SDK, you can query the above record with something like this:
 
 ```tsx
-const users = await xata.db.Users.select(["*", "team.*"])
-  .filter({ "address.city": "New York" })
-  .getMany();
+const users = await xata.db.Users.select(['*', 'team.*']).filter({ 'address.city': 'New York' }).getMany();
 ```
 
 In the above, because `team.*` was explicitly requested, the results will return all the columns from the linked `Teams` table as well. Behind the scene, Xata is doing a JOIN, but we expose it in a simpler way in our APIs.
@@ -128,12 +126,7 @@ This allows you to build the perfect search experience for your users, without h
 
 Since relevancy tuning can be tricky business, we provide a UI so you can do it visually, see the results of it in real-time, then hit the Get Code Snippet to get the code that you need in your app.
 
-<ArticleVideo
-  platform="html"
-  src="https://github.com/xataio/mdx-blog/raw/main/videos/search.mp4"
-  autoplay
-  loop
-/>
+<ArticleVideo platform="html" src="https://github.com/xataio/mdx-blog/raw/main/videos/search.mp4" autoplay loop />
 
 ### Summaries and Aggregations
 

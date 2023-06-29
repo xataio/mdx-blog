@@ -1,6 +1,6 @@
 ---
-title: "A journey to bulletproof links in documentation"
-description: "Learn how we solved the issue of broken internal links in our documentation, once and for all."
+title: 'A journey to bulletproof links in documentation'
+description: 'Learn how we solved the issue of broken internal links in our documentation, once and for all.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/bulletproof-docs-links.png
   alt: Xata
@@ -52,17 +52,17 @@ To achieve our final goal, we need a reliable way to extract links from our exis
 
 > Our docs are at https://xata.io/docs by the way, if you’d like to explore them and use Xata yourself.
 
-1. First, we need to read, parse, and understand a Markdown document. Our parser of choice is `unified`. It returns an **Abstract Syntax Tree (AST)**. Let’s give it a Markdown document and see what happens.
+1.  First, we need to read, parse, and understand a Markdown document. Our parser of choice is `unified`. It returns an **Abstract Syntax Tree (AST)**. Let’s give it a Markdown document and see what happens.
 
 ```tsx
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkStringify from "remark-stringify";
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkStringify from 'remark-stringify';
 
-describe("markdown link checker", () => {
-  it("should extract all links from a given document", async () => {
+describe('markdown link checker', () => {
+  it('should extract all links from a given document', async () => {
     const document = `
 # Title
 
@@ -101,7 +101,7 @@ When we `console.log` the output, we get this:
 
 And just like this, we can see our markdown content in a structured way, cool no? (we can also use [https://astexplorer.net/](https://astexplorer.net/) to see explore our AST)
 
-2. Extract the links
+2.  Extract the links
 
 To do this, we can use `unist-util-visit`, which gives us a very convenient and type-safe way to “visit” our AST.
 
@@ -110,15 +110,15 @@ What does “visit our AST” mean? Every time we have a node with `type === "li
 Instead of using our previous raw `tree` object and iterating through every node looking for those `link` objects, we can write this:
 
 ```tsx
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 
-import { unified } from "unified";
-import { visit } from "unist-util-visit";
-import remarkParse from "remark-parse";
-import remarkStringify from "remark-stringify";
+import { unified } from 'unified';
+import { visit } from 'unist-util-visit';
+import remarkParse from 'remark-parse';
+import remarkStringify from 'remark-stringify';
 
-describe("markdown link checker", () => {
-  it("should extract all links from a given document", async () => {
+describe('markdown link checker', () => {
+  it('should extract all links from a given document', async () => {
     const document = `
 # Title
 
@@ -136,7 +136,7 @@ and another [link](/rest-api/delete)
       .use(() => {
         return function transform(tree) {
           // Let's extract every link!
-          visit(tree, "link", (linkNode) => {
+          visit(tree, 'link', (linkNode) => {
             links.push(linkNode.url);
           });
         };
@@ -144,7 +144,7 @@ and another [link](/rest-api/delete)
       .use(remarkStringify)
       .process(document);
 
-    expect(links).toEqual(["/rest-api/get", "/rest-api/delete"]);
+    expect(links).toEqual(['/rest-api/get', '/rest-api/delete']);
   });
 });
 ```
@@ -156,27 +156,27 @@ That’s essentially all we need for a proof of concept (POC), we are now more c
 First, we need a way to load all our Markdown files. Luckily, [npm](https://www.notion.so/A-Journey-to-Bulletproof-Links-in-Documentation-f108c0ed0acd464bb1e6310519d19e37) already has a solution for us. 😀
 
 ```tsx
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 
-import { unified } from "unified";
-import { visit } from "unist-util-visit";
-import remarkParse from "remark-parse";
-import remarkStringify from "remark-stringify";
-import { getAllFiles } from "get-all-files";
-import { readFile } from "fs/promises";
+import { unified } from 'unified';
+import { visit } from 'unist-util-visit';
+import remarkParse from 'remark-parse';
+import remarkStringify from 'remark-stringify';
+import { getAllFiles } from 'get-all-files';
+import { readFile } from 'fs/promises';
 
-describe("markdown link checker", async () => {
-  for await (const filename of getAllFiles("./content")) {
-    if (!filename.endsWith(".md")) continue;
+describe('markdown link checker', async () => {
+  for await (const filename of getAllFiles('./content')) {
+    if (!filename.endsWith('.md')) continue;
     it(filename, async () => {
-      const document = await readFile(filename, "utf-8");
+      const document = await readFile(filename, 'utf-8');
       const links: string[] = [];
 
       await unified()
         .use(remarkParse)
         .use(() => {
           return function transform(tree) {
-            visit(tree, "link", (linkNode) => {
+            visit(tree, 'link', (linkNode) => {
               links.push(linkNode.url);
             });
           };
@@ -208,7 +208,7 @@ This is also a nice opportunity for us to see what links we actually have! We ca
 First, let’s exclude external links, they are out of our scope since we’re not interested in _other people’s 404s._ We may add this later since we don’t want to link to broken content in the longer term, but for now **scope hammering keeps us focused**.
 
 ```tsx
-if (linkNode.url.startsWith("/")) {
+if (linkNode.url.startsWith('/')) {
   links.push(linkNode.url);
 }
 ```
@@ -241,29 +241,29 @@ describe(filename, async () => {
 And to finish this part, we need to check if the file exists, `fs.existsSync` will do the job:
 
 ```tsx
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 
-import { unified } from "unified";
-import { visit } from "unist-util-visit";
-import remarkParse from "remark-parse";
-import remarkStringify from "remark-stringify";
-import { getAllFiles } from "get-all-files";
-import { readFile } from "fs/promises";
-import { existsSync } from "fs";
+import { unified } from 'unified';
+import { visit } from 'unist-util-visit';
+import remarkParse from 'remark-parse';
+import remarkStringify from 'remark-stringify';
+import { getAllFiles } from 'get-all-files';
+import { readFile } from 'fs/promises';
+import { existsSync } from 'fs';
 
-describe("markdown link checker", async () => {
-  for await (const filename of getAllFiles("./content")) {
-    if (!filename.endsWith(".md")) continue;
+describe('markdown link checker', async () => {
+  for await (const filename of getAllFiles('./content')) {
+    if (!filename.endsWith('.md')) continue;
     describe(filename, async () => {
-      const document = await readFile(filename, "utf-8");
+      const document = await readFile(filename, 'utf-8');
       const links: string[] = [];
 
       await unified()
         .use(remarkParse)
         .use(() => {
           return function transform(tree) {
-            visit(tree, "link", (linkNode) => {
-              if (linkNode.url.startsWith("/")) {
+            visit(tree, 'link', (linkNode) => {
+              if (linkNode.url.startsWith('/')) {
                 links.push(linkNode.url);
               }
             });
@@ -288,7 +288,7 @@ Now, this is where, personally, I started by removing the anchor and called this
 
 ```tsx
 it(`should have "${link}" define`, () => {
-  const [path] = link.split("#");
+  const [path] = link.split('#');
   expect(existsSync(`./content${path}.md`)).toBeTruthy();
 });
 ```
@@ -306,15 +306,15 @@ Let’s extract our current logic into a function:
  * @param path file path
  */
 async function parseMarkdown(path: string) {
-  const document = await readFile(path, "utf-8");
+  const document = await readFile(path, 'utf-8');
   const links = new Set<string>();
 
   await unified()
     .use(remarkParse)
     .use(() => {
       return function transform(tree) {
-        visit(tree, "link", (linkNode) => {
-          if (linkNode.url.startsWith("/")) {
+        visit(tree, 'link', (linkNode) => {
+          if (linkNode.url.startsWith('/')) {
             links.add(linkNode.url);
           }
         });
@@ -324,7 +324,7 @@ async function parseMarkdown(path: string) {
     .process(document);
 
   return {
-    links,
+    links
   };
 }
 ```
@@ -379,23 +379,20 @@ In Markdown, an anchor is any title converted to kebab case. For example, if I h
 Time to try our brand new function! Remember, we are just doing small steps—no need to run.
 
 ```tsx
-import slash from "slash";
+import slash from 'slash';
 
 type FilePath = string;
 
-describe("markdown link checker", async () => {
+describe('markdown link checker', async () => {
   // Collect all the data
-  const pages = new Map<
-    FilePath,
-    { anchors: Set<string>; links: Set<string> }
-  >();
+  const pages = new Map<FilePath, { anchors: Set<string>; links: Set<string> }>();
 
-  for await (const filename of getAllFiles("./content")) {
-    if (!filename.endsWith(".md")) continue;
+  for await (const filename of getAllFiles('./content')) {
+    if (!filename.endsWith('.md')) continue;
 
     pages.set(
       slash(filename)
-        .replace(/^\.\/content/, "") // remove `/content`
+        .replace(/^\.\/content/, '') // remove `/content`
         .slice(0, -3), // remove `.md`
       await parseMarkdown(filename)
     );
@@ -436,7 +433,7 @@ sidebar_label: API Keys
 We need to add `remarkFrontmatter` to the stack:
 
 ```tsx
-import remarkFrontmatter from "remark-frontmatter";
+import remarkFrontmatter from 'remark-frontmatter';
 
 // ...
 await unified()
@@ -452,32 +449,29 @@ await unified()
 This is the final version (the one used in our actual documentation repository!)
 
 ```tsx
-import { describe, expect, it } from "vitest";
-import { readFile } from "fs/promises";
-import { unified } from "unified";
-import { visit } from "unist-util-visit";
-import remarkParse from "remark-parse";
-import remarkStringify from "remark-stringify";
-import remarkFrontmatter from "remark-frontmatter";
-import { getAllFiles } from "get-all-files";
-import { kebab } from "case";
-import slash from "slash";
+import { describe, expect, it } from 'vitest';
+import { readFile } from 'fs/promises';
+import { unified } from 'unified';
+import { visit } from 'unist-util-visit';
+import remarkParse from 'remark-parse';
+import remarkStringify from 'remark-stringify';
+import remarkFrontmatter from 'remark-frontmatter';
+import { getAllFiles } from 'get-all-files';
+import { kebab } from 'case';
+import slash from 'slash';
 
 type FilePath = string;
 
-describe("markdown link checker", async () => {
+describe('markdown link checker', async () => {
   // 1. Collect data from `/content`
-  const pages = new Map<
-    FilePath,
-    { anchors: Set<string>; links: Set<string>; isRef: boolean }
-  >();
+  const pages = new Map<FilePath, { anchors: Set<string>; links: Set<string>; isRef: boolean }>();
 
-  for await (const filename of getAllFiles("./content")) {
-    if (!filename.endsWith(".md")) continue;
+  for await (const filename of getAllFiles('./content')) {
+    if (!filename.endsWith('.md')) continue;
 
     pages.set(
       slash(filename)
-        .replace(/^\.\/content/, "") // remove `/content`
+        .replace(/^\.\/content/, '') // remove `/content`
         .slice(0, -3), // remove `.md`
       await parseMarkdown(filename)
     );
@@ -489,7 +483,7 @@ describe("markdown link checker", async () => {
     describe(page, async () => {
       Array.from(def.links.values()).forEach((link) => {
         it(`should have ${link} define`, async () => {
-          const [path, anchor] = link.split("#");
+          const [path, anchor] = link.split('#');
           expect(pages.has(path)).toBeTruthy();
           if (anchor && !pages.get(path).isRef) {
             expect(pages.get(path).anchors.has(anchor)).toBeTruthy();
@@ -506,7 +500,7 @@ describe("markdown link checker", async () => {
  * @param path file path
  */
 async function parseMarkdown(path: string) {
-  const document = await readFile(path, "utf-8");
+  const document = await readFile(path, 'utf-8');
   const links = new Set<string>();
   const anchors = new Set<string>();
   let isRef = false; // `true` if the markdown content is `See …`
@@ -516,26 +510,23 @@ async function parseMarkdown(path: string) {
     .use(remarkFrontmatter)
     .use(() => {
       return function transform(tree) {
-        visit(tree, "link", (linkNode) => {
-          if (
-            linkNode.url.startsWith("/") &&
-            !linkNode.url.startsWith("/api-reference")
-          ) {
+        visit(tree, 'link', (linkNode) => {
+          if (linkNode.url.startsWith('/') && !linkNode.url.startsWith('/api-reference')) {
             links.add(linkNode.url);
           }
         });
 
-        visit(tree, "heading", (headingNode) => {
-          if (headingNode.children[0].type === "text") {
+        visit(tree, 'heading', (headingNode) => {
+          if (headingNode.children[0].type === 'text') {
             anchors.add(kebab(headingNode.children[0].value));
           }
         });
 
-        visit(tree, "paragraph", (paragraphNode) => {
+        visit(tree, 'paragraph', (paragraphNode) => {
           if (
             paragraphNode.children.length === 1 &&
-            paragraphNode.children[0].type === "text" &&
-            paragraphNode.children[0].value.startsWith("See ")
+            paragraphNode.children[0].type === 'text' &&
+            paragraphNode.children[0].value.startsWith('See ')
           ) {
             isRef = true;
           }
@@ -548,7 +539,7 @@ async function parseMarkdown(path: string) {
   return {
     anchors,
     links,
-    isRef,
+    isRef
   };
 }
 ```
@@ -560,7 +551,7 @@ Few highlights:
 - We added a last concept of `isRef`. This is again a very specific edge case that I don’t want to deal with, we have a part of our documentation fetched from GitHub with the following pattern:
 
   ```markdown
-  See [link]
+  See \[link]
   ```
 
 During this journey, I spotted 1 broken link and 1 broken anchor, but more importantly, I’m way more confident that we will not ship broken links in our documentation anymore.

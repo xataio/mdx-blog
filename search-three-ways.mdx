@@ -1,6 +1,6 @@
 ---
-title: "Search three ways with Xata"
-description: "There comes a time in every project where the next feature on the roadmap is search. In this example, we’ll walk you through three different ways you can search your Xata database."
+title: 'Search three ways with Xata'
+description: 'There comes a time in every project where the next feature on the roadmap is search. In this example, we’ll walk you through three different ways you can search your Xata database.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/three-ways-to-search.png
   alt: Searching with Xata
@@ -14,15 +14,15 @@ slug: xata-partial-fuzzy-semantic-search
 
 > There comes a time in every project where the next feature on the roadmap is search
 
-In this example, we’ll walk you through three different ways you can search your Xata database.  The code examples are written with Gatsby Functions but are transferrable to any framework and can be viewed in [this repository.](https://github.com/queen-raae/xata-search-three-ways-demo)
+In this example, we’ll walk you through three different ways you can search your Xata database. The code examples are written with Gatsby Functions but are transferrable to any framework and can be viewed in [this repository.](https://github.com/queen-raae/xata-search-three-ways-demo)
 
 ## Partial Match Search
 
 The first method available is [partial match search](https://xata.io/docs/typescript-client/filtering#partial-match). This involves grabbing a search term from a request and then using Xata to grab the first N accounts with either name, username, description, or location containing the search term. In the code below, a helper function is created to replace every instance of the search term with the same term enclosed in an `<em>` tag. This helper function is then used to add a highlighted version of the name and other values to create partial match search with highlighting.
 
 ```tsx
-import { contains } from "@xata.io/client";
-import { getXataClient } from "../../xata";
+import { contains } from '@xata.io/client';
+import { getXataClient } from '../../xata';
 
 const xata = getXataClient();
 
@@ -33,10 +33,10 @@ export default async function handler(req, res) {
 
   const records = await accounts
     .any(
-      accounts.filter("name", contains(term)),
-      accounts.filter("username", contains(term)),
-      accounts.filter("meta.description", contains(term)),
-      accounts.filter("meta.location", contains(term))
+      accounts.filter('name', contains(term)),
+      accounts.filter('username', contains(term)),
+      accounts.filter('meta.description', contains(term)),
+      accounts.filter('meta.location', contains(term))
     )
     .getMany({ pagination: { size: 40 } });
 
@@ -49,9 +49,9 @@ export default async function handler(req, res) {
         username: record.username?.replace(term, highlight),
         meta: {
           description: record.meta.description?.replace(term, highlight),
-          location: record.meta.location?.replace(term, highlight),
-        },
-      },
+          location: record.meta.location?.replace(term, highlight)
+        }
+      }
     };
   });
 
@@ -64,7 +64,7 @@ export default async function handler(req, res) {
 The second method Xata provides is [fuzzy full-text search](https://xata.io/docs/typescript-client/search). Fuzzy search involves grabbing the search term from the request and then using Xata to search for the term in the accounts table. This method is different from partial match search in that it also matches words that are not identical to the search term. In the code below use Xata's helper function, `getMetadata()`, to access a highlighted version of the record.
 
 ```tsx
-import { getXataClient } from "../../xata";
+import { getXataClient } from '../../xata';
 
 const xata = getXataClient();
 
@@ -74,18 +74,18 @@ export default async function handler(req, res) {
   const results = await xata.search.all(term, {
     tables: [
       {
-        table: "accounts",
-        target: ["name", "username", "meta.description", "meta.location"],
-      },
+        table: 'accounts',
+        target: ['name', 'username', 'meta.description', 'meta.location']
+      }
     ],
     fuzziness: 1,
-    prefix: "phrase",
+    prefix: 'phrase'
   });
 
   const enrichedResults = results.map((result) => {
     return {
       ...result,
-      ...result.record.getMetadata(),
+      ...result.record.getMetadata()
     };
   });
 
@@ -98,13 +98,13 @@ export default async function handler(req, res) {
 Last but certainly not least, the final method is [semantic (AI) search](https://xata.io/docs/typescript-client/vector-search). Semantic search involves grabbing the search term from the request and transforming it into an embedding using OpenAI. Xata can then perform a vector search with the search term embedding against the embedding for each account. The embeddings are vectors of floating-point numbers, and the distance between two vectors measures their relatedness. This allows you to search for terms like the search term from the request and receive responses that are related.
 
 ```jsx
-import { Configuration, OpenAIApi } from "openai";
-import { getXataClient } from "../../xata";
+import { Configuration, OpenAIApi } from 'openai';
+import { getXataClient } from '../../xata';
 
 const xata = getXataClient();
 
 const openAIConfig = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY
 });
 const openAI = new OpenAIApi(openAIConfig);
 
@@ -113,18 +113,18 @@ export default async function handler(req, res) {
 
   const response = await openAI.createEmbedding({
     input: term,
-    model: "text-embedding-ada-002",
+    model: 'text-embedding-ada-002'
   });
   const [{ embedding }] = response.data.data;
 
-  const records = await xata.db.accounts.vectorSearch("embedding", embedding, {
-    size: 20,
+  const records = await xata.db.accounts.vectorSearch('embedding', embedding, {
+    size: 20
   });
 
   const enrichedResults = records.map((record) => {
     return {
       record: record,
-      ...record.getMetadata(),
+      ...record.getMetadata()
     };
   });
 

@@ -1,9 +1,9 @@
 ---
-title: "Server Actions, databases, and the future of data handling"
-description: "Check out how Xata is improving data handling in modern apps using React advancements"
+title: 'Server Actions, databases, and the future of data handling'
+description: 'Check out how Xata is improving data handling in modern apps using React advancements'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/server-actions-data-handling.png
-  alt: "Server Actions, databases, and the future of data handling"
+  alt: 'Server Actions, databases, and the future of data handling'
 author: Atila Fassina
 date: 06-21-2023
 published: true
@@ -70,27 +70,27 @@ export const action = async ({ request }: ActionArgs) => {
   const xata = getXataClient();
   const { intent, id } = Object.fromEntries(await request.formData());
 
-  if (intent === "delete" && typeof id === "string") {
+  if (intent === 'delete' && typeof id === 'string') {
     await xata.db.remix_with_xata_example.delete(id);
 
     return json({
-      message: "delete: success",
-      data: null,
+      message: 'delete: success',
+      data: null
     });
   }
 
-  if (intent === "create") {
+  if (intent === 'create') {
     const newItem = await xata.db.remix_with_xata_example.create(LINKS);
 
     return json({
-      message: "create: success",
-      data: newItem,
+      message: 'create: success',
+      data: newItem
     });
   }
 
   return json({
-    message: "no action performed",
-    data: null,
+    message: 'no action performed',
+    data: null
   });
 };
 
@@ -99,7 +99,7 @@ const Task: TaskComponent = ({ id, title, url, description }) => {
 
   return fetcher.submission ? null : (
     <li key={url}>
-      <a href={url ?? ""} rel="noopener noreferrer" target="_blank">
+      <a href={url ?? ''} rel="noopener noreferrer" target="_blank">
         {title}
       </a>
       <p>{description}</p>
@@ -123,10 +123,10 @@ React Server Components take it a step further by introducing a higher level of 
 So now, the search component, that has interactivity like a regular Client Component can import a database query and fire from within its body.
 
 ```tsx
-"use client";
+'use client';
 
-import { useTransition } from "react";
-import { addUser } from "~/db/actions";
+import { useTransition } from 'react';
+import { addUser } from '~/db/actions';
 
 function SaveSomeData() {
   let [isPending, startTransition] = useTransition();
@@ -134,9 +134,7 @@ function SaveSomeData() {
   return (
     <>
       ...
-      <button onClick={() => startTransition(() => addUser(data))}>
-        Save!
-      </button>
+      <button onClick={() => startTransition(() => addUser(data))}>Save!</button>
     </>
   );
 }
@@ -145,12 +143,12 @@ function SaveSomeData() {
 Our action will receive that data straight from the event callback and push it to our server, just like that:
 
 ```tsx
-"use server";
+'use server';
 
 export async function addUser(data) {
   const user = await xata.db.users.create(data);
 
-  return Boolean(user) ? "great success" : "oops";
+  return Boolean(user) ? 'great success' : 'oops';
 }
 ```
 

@@ -1,6 +1,6 @@
 ---
-title: "Build Next.js apps with JWT authentication, Auth.js, and Xata"
-description: "Use Xata and Auth․js on two Next․js apps: app directory and pages directory."
+title: 'Build Next.js apps with JWT authentication, Auth.js, and Xata'
+description: 'Use Xata and Auth․js on two Next․js apps: app directory and pages directory.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-authjs-nextjs.png
   alt: Xata and ChatGPT logos
@@ -35,12 +35,12 @@ A diagram is probably the fastest way to visualizing a process. This is importan
 
 In the above graph, we have “Frontend” and “Backend” that are both handled by Next.js. We have the “auth provider” which our app is connected to via Auth.js (within a Next.js endpoint), and we have Xata as our database, connecting as well via Next.js’ backend layer. We can examine and translate the flow of that diagram into 3 steps:
 
-1. **Authentication**
-   Provider performs user authentication, the library creates a `session` and the app receives that as a `payload` from the auth request.
-2. **Resource Request**
-   Authenticated User performs request with `resourceId`, app takes `userId` from `session`
-3. **Granting Access**
-   Xata filters all resources from table to only the ones owned by `userId` and returns (if exists) the one with `resourceId`
+1.  **Authentication**
+    Provider performs user authentication, the library creates a `session` and the app receives that as a `payload` from the auth request.
+2.  **Resource Request**
+    Authenticated User performs request with `resourceId`, app takes `userId` from `session`
+3.  **Granting Access**
+    Xata filters all resources from table to only the ones owned by `userId` and returns (if exists) the one with `resourceId`
 
 Now that we aligned ourselves about the target implementation, it's time to roll up our sleeves and start writing some code. First, let's prepare the authentication endpoint.
 
@@ -57,10 +57,10 @@ When working with Auth.js and Next.js, everything starts with a very special API
 Our Serverless Route will then import `NextAuth` as a high order function, this will handle the necessary routes the library will need to implement and we will only pass the configuration object to it. Xata has an adapter, which means once the authentication is done, Auth.js will itself create an entry into a Xata database for that user, so the authentication provider will only be used for registering the user and sign-in. Auth.js has a big number of authentication providers, for this example we will use GitHub. Your `/pages/api/auth/[...nextauth].ts` will then look like this:
 
 ```tsx
-import NextAuth from "next-auth";
-import GitHubProvider from "next-auth/providers/github";
-import { XataAdapter } from "@next-auth/xata-adapter";
-import { XataClient } from "~/shared/xata.codegen";
+import NextAuth from 'next-auth';
+import GitHubProvider from 'next-auth/providers/github';
+import { XataAdapter } from '@next-auth/xata-adapter';
+import { XataClient } from '~/shared/xata.codegen';
 
 const client = new XataClient();
 
@@ -69,9 +69,9 @@ export const authConfig = {
   providers: [
     GitHubProvider({
       clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
-    }),
-  ],
+      clientSecret: process.env.GITHUB_SECRET
+    })
+  ]
 };
 
 export default NextAuth(authConfig);
@@ -243,9 +243,9 @@ xata init --schema="path/to/schema.json"
 
 Finally, all code is in place to:
 
-1. Connect to GitHub OAuth
-2. Create a session within our Next.js app
-3. Push user registration to our Xata database
+1.  Connect to GitHub OAuth
+2.  Create a session within our Next.js app
+3.  Push user registration to our Xata database
 
 What we need now is a set of keys to effectively connect to those services in a secure way.
 
@@ -310,7 +310,7 @@ In the above example, we are using the user's email as their unique identifier (
 
 ```tsx
 // the file generated via our CLI
-import { getXataClient } from "~/lib/xata.codegen.server";
+import { getXataClient } from '~/lib/xata.codegen.server';
 
 const xata = getXataClient();
 
@@ -318,10 +318,10 @@ export const fetchUserData = async (email: string) => {
   const userData = await xata.db.itemList
     .filter({
       user: {
-        email,
-      },
+        email
+      }
     })
-    .sort("created_at", "desc")
+    .sort('created_at', 'desc')
     .getPaginated({ pagination: { size: 100, offset: 0 } });
 
   return userData;
@@ -338,22 +338,18 @@ To retrieve data from the client-side, we would need a different method that sen
 
 ```tsx
 export const fetchData = async (userEmail: string) => {
-  const response = await fetch("/api/fetch-data", {
-    method: "post",
+  const response = await fetch('/api/fetch-data', {
+    method: 'post',
     body: JSON.stringify({
-      userEmail,
-    }),
+      userEmail
+    })
   });
 
   if (response.ok) {
     return response;
   } else {
     const err = await response.json();
-    throw new Error(
-      `ERROR [${response.status}]: ${
-        err.message ?? "The server returned an error"
-      }`
-    );
+    throw new Error(`ERROR [${response.status}]: ${err.message ?? 'The server returned an error'}`);
   }
 };
 ```

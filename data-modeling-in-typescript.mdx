@@ -1,9 +1,9 @@
 ---
-title: "The importance of data modeling in TypeScript"
-description: "Take a deep dive into TypeScript to explore the importance of data modeling."
+title: 'The importance of data modeling in TypeScript'
+description: 'Take a deep dive into TypeScript to explore the importance of data modeling.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/the-importance-of-data-modeling-in-typescript.png
-  alt: "The importance of data modeling in TypeScript"
+  alt: 'The importance of data modeling in TypeScript'
 author: Fabien Bernard
 date: 03-28-2023
 published: true
@@ -14,7 +14,7 @@ slug: the-importance-of-data-modeling-in-typescript
 
 Hey folks! Today we will deep dive into TypeScript to demonstrate the importance of data modeling.
 
-Quite often, I found myself having to come up with very fancy solutions for solving what I thought was a simple problem. Even if it’s good practice (and sometimes quite fun), most of the time, this is a sign that the data modeling can be improved!
+Quite often, I found myself having to come up with very fancy solutions for solving what I thought was a simple problem. Even if it’s good practice (and sometimes quite fun), most of the time, this is a sign that the data modeling can be improved!
 
 Welcome to my journey of implementing a “strategy pattern” in TypeScript!
 
@@ -29,33 +29,33 @@ What’s this?! It’s a “computer science term” to describe that you need t
   position="center"
 />
 
-We need to build this `Settings` component, this component will take a `question` as input, and… this question can be 1 of 18 question types.
+We need to build this `Settings` component, this component will take a `question` as input, and… this question can be 1 of 18 question types.
 
 To make this a bit more challenging, every question type has its own set of settings.
 
 This is where the “strategy pattern” comes in. Depending on the question type, at runtime, I will choose a different strategy/component to display. So if I pass a `ContactInfoQuestion` I will render `ContactInfoSettings`, if I pass a `NumberQuestion` I want `NumberSettings`, and so on.
 
-Also, to help me implement all those `{questionType}Settings` components, I want to have the most precise type I can. For example, `NumberSettings` will take a `NumberQuestion` as props, so I only have the relevant information about in the context of `NumberSettings`.
+Also, to help me implement all those `{questionType}Settings` components, I want to have the most precise type I can. For example, `NumberSettings` will take a `NumberQuestion` as props, so I only have the relevant information about in the context of `NumberSettings`.
 
 ## Let’s Summarize
 
-In code, this is what I want:
+In code, this is what I want:
 
 ```tsx
 function Settings(props: { question: Question }) {
   switch (question.type) {
-    case "contact":
+    case 'contact':
       return <SettingsContact question={question} />;
-    case "number":
+    case 'number':
       return <SettingsNumber question={question} />;
   }
 }
 
 function SettingContact(props: { question: ContactQuestion }) {
-  /* I just have the context of the question of type === `contact` */
+  /* I just have the context of the question of type === `contact` */
 }
 function SettingNumber(props: { question: NumberQuestion }) {
-  /* I just have the context of the question of type === `number` */
+  /* I just have the context of the question of type === `number` */
 }
 ```
 
@@ -65,7 +65,7 @@ Indeed, the shape of `Question` will define everything here, between a hardcore 
 
 ## Without Discriminator
 
-Let’s start with the naive approach without any discriminator. Don’t you know what a discriminator is? Perfect, we are not using them! (don’t worry, I will come back to it 😅)
+Let’s start with the naive approach without any discriminator. Don’t you know what a discriminator is? Perfect, we are not using them! (don’t worry, I will come back to it 😅)
 
 Here is our first iteration of the type `Question`:
 
@@ -85,19 +85,19 @@ type Question =
     };
 ```
 
-This is how to start a painful journey with TypeScript, just because you don’t have any discriminator! Indeed, how do I  know what is what? And if I don’t know, how does TypeScript know? I have no explicit value to know that our first option is `QuestionNumber` and our second is a `QuestionDate`
+This is how to start a painful journey with TypeScript, just because you don’t have any discriminator! Indeed, how do I know what is what? And if I don’t know, how does TypeScript know? I have no explicit value to know that our first option is `QuestionNumber` and our second is a `QuestionDate`
 
 But, this is solvable with TypeScript, using type guards like this:
 
 ```tsx
 function isQuestionNumber(question: Question): question is QuestionNumber {
-  return "min" in question && "max" in question;
+  return 'min' in question && 'max' in question;
 }
 ```
 
 My advice is if you have this from your backend team, talk to them and fix the problem at the source! Really, you don’t want to do this to yourself!
 
-Now let’s add this famous “discriminator”, but for some reason, in a `metadata` object (you know, to “keep this clean”, and yes, I made this mistake before 😓)
+Now let’s add this famous “discriminator”, but for some reason, in a `metadata` object (you know, to “keep this clean”, and yes, I made this mistake before 😓)
 
 ```tsx
 type Question =
@@ -107,7 +107,7 @@ type Question =
       min?: number;
       max?: number;
       metadata: {
-        type: "number";
+        type: 'number';
       };
     }
   | {
@@ -116,7 +116,7 @@ type Question =
       format: string;
       separator: string;
       metadata: {
-        type: "date";
+        type: 'date';
       };
     };
 ```
@@ -148,14 +148,14 @@ The fix is actually quite easy, we just need to move the `type` (our discriminat
 ```tsx
 type Question =
   | {
-      type: "number";
+      type: 'number';
       title: string;
       required: boolean;
       min?: number;
       max?: number;
     }
   | {
-      type: "date";
+      type: 'date';
       title: string;
       required: boolean;
       format: string;
@@ -209,7 +209,7 @@ Doing so, we can use `NumberQuestion` type as props in my component, which is si
 But wait! we can be smarter! So we don’t have to extract every union subtype (because, yes, we always realize this after writing everything in line 🙃). Let’s use a type helper 🪄
 
 ```tsx
-export type QuestionType = Question["type"];
+export type QuestionType = Question['type'];
 export type QuestionOfType<T extends QuestionType, U = Question> = U extends {
   type: T;
 }
@@ -232,9 +232,7 @@ If the type `U` extends `{ type: T }`, returns `U`; otherwise, returns `never` .
 Let’s try to use this new helper in our component
 
 ```tsx
-export default function SettingsDate(props: {
-  question: QuestionOfType<"date">;
-}) {}
+export default function SettingsDate(props: { question: QuestionOfType<'date'> }) {}
 ```
 
 Both approaches are totally valid. But the second one brings us something interesting, and we can use the `question.type` as generic.
@@ -252,11 +250,7 @@ export type SettingsProps<T extends QuestionType> = {
 I now have a simple and robust way to share props across all our components
 
 ```tsx
-export default function SettingsDate({
-  questionId,
-  formId,
-  question,
-}: SettingsProps<"date">) {}
+export default function SettingsDate({ questionId, formId, question }: SettingsProps<'date'>) {}
 ```
 
 <ArticleImage
