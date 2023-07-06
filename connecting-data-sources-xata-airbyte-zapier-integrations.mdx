@@ -1,0 +1,60 @@
+---
+title: "Connecting data sources to Xata with Airbyte and Zapier integrations"
+description: "Effortlessly automate data ingestion with Xata integrations"
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/zapier-airbyte-xata-integration.png
+  alt: Xata, Airbyte, and Zapier integration 
+author: Kostas Botsas
+date: 07-06-2022
+published: false
+slug: connecting-data-sources-xata-airbyte-zapier-integrations
+---
+
+We are thrilled to announce the release of two new key integrations for Xata with [Airbyte](https://docs.airbyte.com/integrations/destinations/xata) and [Zapier](https://zapier.com/apps/xata/integrations). Alongside the [Typescript](https://xata.io/docs/typescript-client/overview) and [Python](https://xata.io/docs/python-sdk/overview) SDKs, Xata users now have even more convenient ways to connect a vast number of data sources, making it easy to set up seamless workflows and unlock new possibilities for data management.
+
+## Simplifying data ingestion with Airbyte
+
+[Airbyte](https://airbyte.com/), an open-source data integration engine that offers hundreds of connectors with data warehouses and databases, has gained popularity for its seamless integration and data syncing capabilities. Xata's integration with Airbyte offers a streamlined data ingestion process from any Airbyte input source directly into your Xata database.
+
+Whether you want to import data from databases, cloud-based services or APIs, the Airbyte integration simplifies and streamlines the process. In just a few steps, you can configure data connections, replication streams and schedules to effortlessly replicate data into Xata.
+
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/file-csv-json-excel-feather-parquet.png"
+  width="2000"
+  height="684"
+  alt="Replication tab highlighted for file CSV, etc..."
+  caption="Configuration for activating streams to sync"
+  position="center"
+/>
+
+## Empowering automated workflows with Zapier
+
+[Zapier](https://zapier.com/) is a leading automation platform enabling workflows that seamlessly connect a vast number of applications and services. Zapier offers a library of pre-built integrations that enable task automation between different systems, while users can also mix and match Triggers and Actions to create custom workflows that suit their needs.
+
+With Xata's integration, you can set up automated workflows (Zaps) that move data from other apps you use every day into Xata, without writing any code. For example, you can automatically sync content from Google Docs and Sheets, or even replicate Postgres rows. The possibilities are virtually limitless and the setup process is quick and simple because Zapier provides a user-friendly interface for mapping fields from the input app to the corresponding columns in your Xata database.
+
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/zapier-postgres.jpg"
+  width="1210"
+  height="766"
+  alt="Trigger Postgres Trigger to Xata Action"
+  caption="Replicate PostgreSLQL row updates to Xata with Zapier"
+  position="center"
+/>
+
+## How to get started
+
+Xata’s documentation pages cover everything you need to jump right into these new integrations:
+
+- [Airbyte](https://xata.io/docs/integrations/airbyte)
+- [Zapier](https://xata.io/docs/integrations/zapier)
+
+Whether you are a data analyst, a business intelligence professional, or a developer, Xata's Airbyte and Zapier integrations are designed to make your life easier by bringing an automated data management experience. This means less time spent on setting up data feeds, allowing you to focus on the value of Xata’s features for [Querying](https://xata.io/docs/typescript-client/get), [Searching](https://xata.io/docs/typescript-client/search) and [Asking AI](https://xata.io/docs/typescript-client/ask) questions on your own data.
+
+
+## Next steps with data pipelines in Xata
+
+We are constantly expanding Xata’s connectors and SDK ecosystems, so watch this space for new partnerships, integrations, language clients support and tooling to help with moving data in and out of Xata.
+
+**A hint on what’s coming next:** While there is already [CSV import](https://xata.io/docs/recipes/import-data#import-a-csv-file) capability in the Xata CLI, our team is working on an improved version that's fully integrated in the Web UI, which will make the CSV data loading experience even smoother.
+
+To supercharge your data workflows, sign up for [Xata](https://app.xata.io/) today and explore the endless possibilities! If you’d like to chat more or have any questions, come find us on [Discord](https://xata.io/discord) or submit a [Support request](https://support.xata.io/hc/en-us/requests/new).
