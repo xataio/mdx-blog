@@ -1,6 +1,6 @@
 ---
-title: "On the performance impact of REPLICA IDENTITY FULL in Postgres"
-description: "Analyzing the performance impact of REPLICA IDENTITY FULL by looking at the PostgreSQL source code and performing benchmarks."
+title: 'On the performance impact of REPLICA IDENTITY FULL in Postgres'
+description: 'Analyzing the performance impact of REPLICA IDENTITY FULL by looking at the PostgreSQL source code and performing benchmarks.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/performance-of-replica-identity-full.png
   alt: Performance of REPLICA IDENTITY FULL
@@ -12,19 +12,16 @@ slug: replica-identity-full-performance
 
 At [Xata](https://xata.io/), we've come to rely on the Postgres logical replication events quite a bit. Why? Because they provide us with a dependable stream of events about every single change that occurs within the database. We use them for syncing the data to Elasticsearch, web-hooks, deleting attachments after the parent row was deleted, and more. One of the configuration parameters for logical replication is the so called “replica identity”:
 
-> A published table must have a “replica identity” configured in order to be
-> able to replicate `UPDATE` and `DELETE` operations, so that appropriate rows
+> A published table must have a “replica identity” configured in order to be
+> able to replicate `UPDATE` and `DELETE` operations, so that appropriate rows
 > to update or delete can be identified on the subscriber side. By default, this
 > is the primary key, if there is one.
-
 
 You’d typically use the primary key or an index as the “replica
 identity” and avoid setting the “replica identity” to full. The reason is this
 quote from the [Postgres docs](https://www.postgresql.org/docs/current/logical-replication-publication.html) (emphasis mine):
 
-
 > If the table does not have any suitable key, then it can be set to replica identity “full”, which means the entire row becomes the key. This, however, **is very inefficient and should only be used as a fallback if no other solution is possible**.
->
 
 That sounds quite discouraging, however, there are some good reasons for which you might still want to consider enabling it (see next section), so it’s worth digging a bit deeper and analyzing what exactly happens when you enable it and how it affects performance. This is what this blog post is about.
 
@@ -47,17 +44,17 @@ To illustrate the above, let’s look at an example using [wal2json](https://git
 
 ```json
 {
-   "kind": "update",
-   "schema": "xata",
-   "table": "foo",
-   "columnnames": ["id", "name", "age"],
-   "columntypes": ["text", "text", "integer"],
-   "columnvalues": ["michael", "Michael Scott", 42],
-   "oldkeys": {
-     "keynames": ["id"],
-     "keytypes": ["text"],
-     "keyvalues": ["michael"]
-   }
+  "kind": "update",
+  "schema": "xata",
+  "table": "foo",
+  "columnnames": ["id", "name", "age"],
+  "columntypes": ["text", "text", "integer"],
+  "columnvalues": ["michael", "Michael Scott", 42],
+  "oldkeys": {
+    "keynames": ["id"],
+    "keytypes": ["text"],
+    "keyvalues": ["michael"]
+  }
 }
 ```
 
@@ -93,7 +90,7 @@ The event for the same `UPDATE` command above looks like this:
   "columntypes": ["text", "text", "integer"],
   "columnvalues": ["michael", "Michael Scott", 43],
   "oldkeys": {
-  "keynames": ["id", "name", "age", "description"],
+    "keynames": ["id", "name", "age", "description"],
     "keytypes": ["text", "text", "integer", "text"],
     "keyvalues": ["michael", "Michael Scott", 42, "<redacted very large description>"]
   }
@@ -107,12 +104,11 @@ Things to note:
 
 It should be said that with the replica identity set to the primary key or another unique index, you get enough data out in the replication stream to completely sync a Postgres replica in sync. This means that you can overcome the limitations by keeping state outside of Postgres. However, the amount of work that you need to do outside of Postgres might become significant both in terms of resources needed and added code (compared to a single ALTER TABLE statement).
 
-# Impact on the replica and changes in Postgres 16
+## Impact on the replica and changes in Postgres 16
 
-The quote mentioned at the beginning of the  blog post, with the “very inefficient” wording is actually from the — currently stable — Postgres 15 docs , but it was changed in the [Postgres 16 docs](https://www.postgresql.org/docs/16/logical-replication-publication.html) — currently under development:
+The quote mentioned at the beginning of the blog post, with the “very inefficient” wording is actually from the — currently stable — Postgres 15 docs , but it was changed in the [Postgres 16 docs](https://www.postgresql.org/docs/16/logical-replication-publication.html) — currently under development:
 
-> If the table does not have any suitable key, then it can be set to replica identity `FULL`, which means the entire row becomes the key. When replica identity `FULL` is specified, indexes can be used on the subscriber side for searching the rows. […] **If there are no such suitable indexes, the search on the subscriber side can be very inefficient,** therefore replica identity `FULL` should only be used as a fallback if no other solution is possible.
->
+> If the table does not have any suitable key, then it can be set to replica identity `FULL`, which means the entire row becomes the key. When replica identity `FULL` is specified, indexes can be used on the subscriber side for searching the rows. \[…] **If there are no such suitable indexes, the search on the subscriber side can be very inefficient,** therefore replica identity `FULL` should only be used as a fallback if no other solution is possible.
 
 The above hints that the “very inefficient” part refers to the subscriber that needs to identify the rows that were updated or deleted, and that this is being improved in version 16 so that it’s able to use indexed columns even if they are not set explicitly in the replica identity.
 
@@ -171,7 +167,7 @@ if (remoterel->replident == REPLICA_IDENTITY_FULL)
 }
 ```
 
-# Impact on the size of the WAL events
+## Impact on the size of the WAL events
 
 While the worst potential impact of `REPLICA IDENTITY FULL` is on the replica, as we’ve seen above, it does also impact the primary because it requires more data to be stored in the WAL and it causes it to send more data over the network to the subscribers. This leads to increased IO bandwidth consumption, higher CPU usage, and more RAM usage.
 
@@ -211,7 +207,7 @@ In conclusion, the size of the WAL events for updates is approximately doubled i
 
 For deletes, normally only the key is logged in the WAL, and by enabling `REPLICA IDENTITY FULL`, all columns become part of the key, meaning that the whole row is logged and sent over the wire on delete.
 
-# Benchmarking
+## Benchmarking
 
 Based on the analysis above, we were guessing that the cost of `REPLICA IDENTITY FULL` would be worth it in our case, so we decided to put it to test! We wanted to simulate something close to the worst case scenario (but still realistic), so we have extended our benchmarking test suite to have a test with a lot of large values and performing a lot of updates. The test didn’t push the resources to the limit but was heavy enough for us to measure the impact.
 
@@ -237,7 +233,7 @@ Here are the results of running the benchmark test before and after enabling `RE
 
 The CPU time showed a modest increase in peak times from 30% to about 35%. There was a similar modest increase in the peak replication slot lag.
 
-# Summary
+## Summary
 
 If you’re using logical replication between instances, the impact from `REPLICA IDENTITY FULL` will likely be manageable as long as the replicated tables have a primary key. If you are on Postgres 16 already, having no primary key but another unique index might also be okay.
 

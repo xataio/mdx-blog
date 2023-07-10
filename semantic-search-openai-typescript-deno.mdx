@@ -1,6 +1,6 @@
 ---
-title: "Semantic search with Xata, OpenAI, TypeScript, and Deno"
-description: "Reduce complex data and perform similarity search with Xata."
+title: 'Semantic search with Xata, OpenAI, TypeScript, and Deno'
+description: 'Reduce complex data and perform similarity search with Xata.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/semantic-search-openai-typescript-deno.png
   alt: Xata and ChatGPT logos
@@ -140,36 +140,36 @@ brew install deno
 It’s now the time to write a bit of TypeScript code. Create a `loadWithEmbeddings.ts` file top level in your project with the following contents:
 
 ```tsx
-import { Configuration, OpenAIApi } from "npm:openai";
-import { getXataClient } from "./src/xata.ts";
-import { config as dotenvConfig } from "<https://deno.land/x/dotenv@v1.0.1/mod.ts>";
+import { Configuration, OpenAIApi } from 'npm:openai';
+import { getXataClient } from './src/xata.ts';
+import { config as dotenvConfig } from '<https://deno.land/x/dotenv@v1.0.1/mod.ts>';
 
 dotenvConfig({ export: true });
 
 const openAIConfig = new Configuration({
-  apiKey: Deno.env.get("OPENAI_API_KEY"),
+  apiKey: Deno.env.get('OPENAI_API_KEY')
 });
 const openAI = new OpenAIApi(openAIConfig);
 const xata = getXataClient();
 
 const sentences: string[] = [
-  "The quick brown fox jumps over the lazy dog story",
-  "The vehicle collided with the tree",
-  "The cat growled towards the dog",
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-  "The sunset painted the sky with vibrant colors",
+  'The quick brown fox jumps over the lazy dog story',
+  'The vehicle collided with the tree',
+  'The cat growled towards the dog',
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+  'The sunset painted the sky with vibrant colors'
 ];
 
 for (const sentence of sentences) {
   const resp = await openAI.createEmbedding({
     input: sentence,
-    model: "text-embedding-ada-002",
+    model: 'text-embedding-ada-002'
   });
   const [{ embedding }] = resp.data.data;
 
   xata.db.Sentences.create({
     sentence,
-    embedding,
+    embedding
   });
 }
 ```
@@ -204,37 +204,35 @@ If you visit the Xata UI now, you should see the data loaded, together with the 
 Let’s write another simple script that performs a search based on an input query. Name this script `search.ts`.
 
 ```tsx
-import { Configuration, OpenAIApi } from "npm:openai";
-import { getXataClient } from "./src/xata.ts";
-import { config as dotenvConfig } from "<https://deno.land/x/dotenv@v1.0.1/mod.ts>";
+import { Configuration, OpenAIApi } from 'npm:openai';
+import { getXataClient } from './src/xata.ts';
+import { config as dotenvConfig } from '<https://deno.land/x/dotenv@v1.0.1/mod.ts>';
 
 dotenvConfig({ export: true });
 
 const openAIConfig = new Configuration({
-  apiKey: Deno.env.get("OPENAI_API_KEY"),
+  apiKey: Deno.env.get('OPENAI_API_KEY')
 });
 const openAI = new OpenAIApi(openAIConfig);
 const xata = getXataClient();
 
 if (Deno.args.length !== 1) {
-  console.log("Please provide a search query");
-  console.log(
-    "Example: deno run --allow-net --allow-env search.ts 'the quick brown fox'"
-  );
+  console.log('Please provide a search query');
+  console.log("Example: deno run --allow-net --allow-env search.ts 'the quick brown fox'");
   Deno.exit(1);
 }
 
 const query = Deno.args[0];
 const resp = await openAI.createEmbedding({
   input: query,
-  model: "text-embedding-ada-002",
+  model: 'text-embedding-ada-002'
 });
 const [{ embedding }] = resp.data.data;
 
-const results = await xata.db.Sentences.vectorSearch("embedding", embedding);
+const results = await xata.db.Sentences.vectorSearch('embedding', embedding);
 
 for (const result of results) {
-  console.log(result.getMetadata().score, "|", result.sentence);
+  console.log(result.getMetadata().score, '|', result.sentence);
 }
 ```
 
@@ -319,6 +317,6 @@ Again, the sentence with the same meaning shows up at the top with a score close
 
 ## Conclusion
 
-The large-language-models are powerful tools that open up new use cases. Semantic search is one of these use cases, and we’ve seen how the Xata vector search can be used to implement it. You can also use it to build recommendation engines, or finding similar entries in a knowledge-base, or questions in a Q&A website.
+The large-language-models are powerful tools that open up new use cases. Semantic search is one of these use cases, and we’ve seen how the Xata vector search can be used to implement it. You can also use it to build recommendation engines, or finding similar entries in a knowledge-base, or questions in a Q\&A website.
 
 If you’re running this tutorial, please join us on the Xata [Discord](https://xata.io/discord) and let us know what you are building!

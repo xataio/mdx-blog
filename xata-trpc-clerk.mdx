@@ -1,6 +1,6 @@
 ---
-title: "Xata, tRPC, and Clerk: the killer combo"
-description: "Build a fully typed application with Clerk for authentication and tRPC for a robust stack."
+title: 'Xata, tRPC, and Clerk: the killer combo'
+description: 'Build a fully typed application with Clerk for authentication and tRPC for a robust stack.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/nextjs-trpc-clerk.png
   alt: Data platforms
@@ -17,9 +17,9 @@ Building an application is not easy, or to be more accurate, this usually starts
 Every application has users, and this comes with a lot of specific problems:
 
 - How do my users log in?
-- How do I store their password? This is quite sensitive.
+- How do I store their password? This is quite sensitive.
 - What if I want to connect through my Google or GitHub account?
-- But, if a user did connect with an email and after with GitHub. Should I link the accounts?
+- But, if a user did connect with an email and after with GitHub. Should I link the accounts?
 - How can I ban a user?
 - …
 
@@ -61,26 +61,26 @@ $ npm run xata -- auth login # needed only once$ npm run xata:init
 
 Now create an account and a project at [Clerk](https://clerk.dev).
 
-You can then go to [Clerk + Next.js integration documentation](https://clerk.dev/docs/nextjs/set-environment-keys) and copy the credentials to your `.env` file. That’s it! Just run `npm run dev` and you have a working application.
+You can then go to [Clerk + Next.js integration documentation](https://clerk.dev/docs/nextjs/set-environment-keys) and copy the credentials to your `.env` file. That’s it! Just run `npm run dev` and you have a working application.
 
 ## Code Walkthrough
 
 ```tsx
 // server/trpc.ts
-import { initTRPC, TRPCError } from "@trpc/server";
-import { Context } from "./context";
+import { initTRPC, TRPCError } from '@trpc/server';
+import { Context } from './context';
 
 const t = initTRPC.context<Context>().create();
 
 const isAuthed = t.middleware(({ next, ctx }) => {
   if (ctx.user === null) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
   return next({
     ctx: {
-      user: ctx.user,
-    },
+      user: ctx.user
+    }
   });
 });
 
@@ -95,10 +95,10 @@ The idea is quite simple, if Clerk has some information about the user, it’s i
 
 ```tsx
 // server/routers/todo.ts
-import { protectedProcedure, router } from "../trpc";
-import { z } from "zod";
-import { getXataClient } from "../../utils/xata";
-import { TRPCError } from "@trpc/server";
+import { protectedProcedure, router } from '../trpc';
+import { z } from 'zod';
+import { getXataClient } from '../../utils/xata';
+import { TRPCError } from '@trpc/server';
 
 export const todoRouter = router({
   /**
@@ -109,7 +109,7 @@ export const todoRouter = router({
     const xata = getXataClient();
 
     return xata.db.items.filter({ userId }).getAll();
-  }),
+  })
   /* ... */
 });
 ```
@@ -142,16 +142,14 @@ const { mutate: addTodo } = trpc.todo.add.useMutation({
 
     const previousTodos = utils.todo.list.getData();
 
-    const optimisticTodo: RouterOutputs["todo"]["list"][-1] = {
+    const optimisticTodo: RouterOutputs['todo']['list'][-1] = {
       title: newTodo.title,
       createdAt: new Date().toISOString(),
-      userId: "me",
-      id: "optimistic_" + self.crypto.randomUUID(),
-      isCompleted: false,
+      userId: 'me',
+      id: 'optimistic_' + self.crypto.randomUUID(),
+      isCompleted: false
     };
-    utils.todo.list.setData(undefined, (old) =>
-      old ? [...old, optimisticTodo] : [optimisticTodo]
-    );
+    utils.todo.list.setData(undefined, (old) => (old ? [...old, optimisticTodo] : [optimisticTodo]));
 
     return { previousTodos };
   },
@@ -160,7 +158,7 @@ const { mutate: addTodo } = trpc.todo.add.useMutation({
   },
   onSettled: () => {
     utils.todo.list.invalidate();
-  },
+  }
 });
 ```
 

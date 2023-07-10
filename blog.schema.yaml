@@ -1,0 +1,53 @@
+properties:
+  title:
+    title: Title
+    description: Used for page title
+    type: string
+    maxLength: 80
+  description:
+    title: Description
+    description: Used for SEO
+    type: string
+    maxLength: 300
+  author:
+    title: author
+    description: Author of the blog post
+    type: string
+    maxLength: 300
+  date:
+    title: date
+    description: Date of post
+    type: string
+    maxLength: 300
+  keywords:
+    title: Keywords
+    description: Used for SEO
+    type: array
+    maxLength: 300
+  slug:
+    title: slug
+    description: URL without forward slash or "docs" prefix
+    type: string
+    maxLength: 300
+  published:
+    description: Whether to list this doc in the menu and search
+    type: boolean
+  image:
+    type: object
+    required:
+      - src
+      - alt
+    properties:
+      src:
+        type: string
+      alt:
+        type: string
+
+required:
+  - title
+  - description
+  - author
+  - slug
+  - published
+  - image
+  - date

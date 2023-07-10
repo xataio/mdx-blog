@@ -1,6 +1,6 @@
 ---
-title: "Building a datetime picker for a database"
-description: "Learn how we built a next-generation datetime picker for a next-generation database."
+title: 'Building a datetime picker for a database'
+description: 'Learn how we built a next-generation datetime picker for a next-generation database.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/date-time-picker-for-databases.png
   alt: Xata
@@ -34,16 +34,16 @@ All of Xata’s datetimes are saved and returned with the UTC timezone.
 
 Xata has two main personas:
 
-* Developers
-* Low-code users
+- Developers
+- Low-code users
 
-##### Developers
+### Developers
 
 At it’s core, Xata is a database aimed at developers.
 
 Developers are power users: They’re comfortable with not leaving their keyboard, they understand datetime strings, and, most of all, they love and respect the UTC timezone.
 
-##### Low-code users
+### Low-code users
 
 Entrepreneurs, hackers, customer success, you name it.
 
@@ -55,7 +55,7 @@ They might be more likely to prefer using a date picker widget with the mouse or
 
 There are a few scenarios when a user selects a datetime inside our WebUI:
 
-### User has a specific date they’d like to set.
+### User has a specific date they’d like to set
 
 This might be with a precision of:
 
@@ -226,7 +226,7 @@ export const isValidHour = (hours: string) => {
 };
 
 export const isValidPartialHour = (hours: string) => {
-  if (hours === "") {
+  if (hours === '') {
     return true;
   }
   if (hours.length === 1) {
@@ -258,18 +258,18 @@ Here is the code that decides whether to update the value and moves the focus to
 We use [Chrono](https://github.com/wanasit/chrono), which makes it easy to parse almost any datetime.
 
 ```tsx
-import * as chrono from "chrono-node";
+import * as chrono from 'chrono-node';
 
-chrono.parseDate("tomorrow at 3pm");
+chrono.parseDate('tomorrow at 3pm');
 // => Fri March 30 2023 15:00:00
-chrono.parseDate("Fri March 30 2023 15:00:00");
+chrono.parseDate('Fri March 30 2023 15:00:00');
 // => Fri March 30 2023 15:00:00
 ```
 
 One modification we made to the default Chrono behaviour is to throw away any time information that is implied and only keep known values:
 
 ```tsx
-chrono.parse("tomorrow")[0].start;
+chrono.parse('tomorrow')[0].start;
 // => {
 //  date: '2023-03-24T01:02:03.123Z,
 //	knownValues: {day: 24, month: 3: year 2023},

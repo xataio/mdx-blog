@@ -1,6 +1,6 @@
 ---
-title: "Xata & OpenAI: ChatGPT for your data"
-description: "Use Xata to ask your data questions and get the answers that matter most."
+title: 'Xata & OpenAI: ChatGPT for your data'
+description: 'Use Xata to ask your data questions and get the answers that matter most.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/chatgpt-on-your-data.png
   alt: Xata and ChatGPT logos
@@ -81,13 +81,7 @@ Here’s the API call our docs make to retrieve data from our docs table.
   "search": {
     "fuzziness": 2,
     "prefix": "phrase",
-    "target": [
-      "slug",
-      { "column": "title", "weight": 4 },
-      "content",
-      "section",
-      { "column": "keywords", "weight": 4 }
-    ],
+    "target": ["slug", { "column": "title", "weight": 4 }, "content", "section", { "column": "keywords", "weight": 4 }],
     "boosters": [
       {
         "valueBooster": {
