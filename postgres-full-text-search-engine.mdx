@@ -275,7 +275,7 @@ If you want a visual demo of the impact of relevancy tuning, here is a quick 4 m
 
 <ArticleVideo platform="youtube" src="https://www.youtube.com/embed/GfgdQs4WuXM" />
 
-### Numeric, date, and exact value boosters
+## Numeric, date, and exact value boosters
 
 While Postgres doesn't have direct support for boosting based on other columns, the rank is ultimately just a sort expression, so you can add your own signals to it.
 
@@ -347,7 +347,7 @@ FROM movies
 (10 rows)
 ```
 
-### Column weights
+## Column weights
 
 Remember when we talked about the `tsvector` lexemes and that they can have weights attached? Postgres supports 4 weights, named A, B, C, and D. A is the biggest weight while D is the lowest and the default. You can control the weights via the `setweight` function which you would typically call when building the `tsvector` column:
 
