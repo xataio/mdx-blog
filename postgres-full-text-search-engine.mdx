@@ -1,0 +1,538 @@
+---
+title: 'Create an advanced search engine with PostgreSQL'
+description: 'PostgreSQL provides the necessary building blocks for you to combine and create your own search engine for full-text search. Let's see how far we can take it.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-full-text-search.png 
+  alt: Postgres full-text search
+author: Tudor Golubenco
+date: 07-12-2023
+published: true
+slug: postgres-full-text-search-engine
+---
+
+This is part 1 of a blog mini-series, in which we explore the full-text search functionality in PostgreSQL and investigate how much of the typical search engine functionality we can replicate. In part 2, we'll do a comparison between PostgreSQL's full-text search and Elasticsearch.
+
+If you want to follow along and try out the sample queries (which we recommend; it's more fun that way), the code samples are executed against the [Wikipedia Movie Plots](https://www.kaggle.com/datasets/jrobischon/wikipedia-movie-plots) data set from Kaggle. To import it, download the CSV file, then create this table:
+
+```sql
+CREATE TABLE movies(
+	ReleaseYear int,
+	Title text,
+	Origin text,
+	Director text,
+	Casting text,
+	Genre text,
+	WikiPage text,
+	Plot text);
+```
+
+And import the CSV file like this:
+
+```sql
+\COPY movies(ReleaseYear, Title, Origin, Director, Casting, Genre, WikiPage, Plot)
+	FROM 'wiki_movie_plots_deduped.csv' DELIMITER ',' CSV HEADER;
+```
+
+The dataset contains 34,000 movie titles and is about 81 MB in CSV format.
+
+# PostgreSQL full-text search primitives
+
+The Postgres approach to full-text search offers building blocks that you can combine to create your own search engine. This is quite flexible but it also means it generally feels lower-level compared to search engines like Elasticsearch, Typesense, or Mellisearch, for which full-text search is the primary use case.
+
+The main building blocks, which we'll cover via examples, are:
+
+- The `tsvector` and `tsquery` data types
+- The match operator `@@` to check if a `tsquery` matches a `tsvector`
+- Functions to rank each match (`ts_rank`, `ts_rank_cd`)
+- The GIN index type, an inverted index to efficiently query `tsvector`
+
+We'll start by looking at these building blocks and then we'll get into more advanced topics, covering relevancy boosters, typo-tolerance, and faceted search.
+
+## tsvector
+
+The `tsvector` data type stores a sorted list of _lexemes_. A _lexeme_ is a string, just like a token, but it has been _normalized_ so that different forms of the same word are made. For example, normalization almost always includes folding upper-case letters to lower-case, and often involves removal of suffixes (such as `s` or `ing` in English). Here is an example, using the `to_tsvector` function to parse an English phrase into a `tsvector`.
+
+```sql
+SELECT * FROM unnest(to_tsvector('english',
+	'I''m going to make him an offer he can''t refuse. Refusing is not an option.'));
+
+ lexeme | positions | weights
+--------+-----------+---------
+ go     | {3}       | {D}
+ m      | {2}       | {D}
+ make   | {5}       | {D}
+ offer  | {8}       | {D}
+ option | {17}      | {D}
+ refus  | {12,13}   | {D,D}
+(6 rows)
+```
+
+As you can see, stop words like “I”, “to” or “an” are removed, because they are too common to be useful for search. The words are normalized and reduced to their root (e.g. “refuse” and “Refusing” are both transformed into “refus”). The punctuation signs are ignored. For each word, the **positions** in the original phrase are recorded (e.g. “refus” is the 12th and the 13th word in the text) and the **weights** (which are useful for ranking and we'll discuss later).
+
+In the example above, the transformation rules from words to _lexemes_ are based on the `english` search configuration. Running the same query with the `simple` search configuration results in a `tsvector` that includes all the words as they were found in the text:
+
+```sql
+SELECT * FROM unnest(to_tsvector('simple',
+	'I''m going to make him an offer he can''t refuse. Refusing is not an option.'));
+
+  lexeme  | positions | weights
+----------+-----------+---------
+ an       | {7,16}    | {D,D}
+ can      | {10}      | {D}
+ going    | {3}       | {D}
+ he       | {9}       | {D}
+ him      | {6}       | {D}
+ i        | {1}       | {D}
+ is       | {14}      | {D}
+ m        | {2}       | {D}
+ make     | {5}       | {D}
+ not      | {15}      | {D}
+ offer    | {8}       | {D}
+ option   | {17}      | {D}
+ refuse   | {12}      | {D}
+ refusing | {13}      | {D}
+ t        | {11}      | {D}
+ to       | {4}       | {D}
+(16 rows)
+```
+
+As you can see, “refuse” and “refusing” now result in different lexemes. The `simple` configuration is particularly useful when you have columns that contain labels or tags.
+
+PostgreSQL has built-in configurations for a pretty good set of languages. You can see the list by running:
+
+```sql
+SELECT cfgname FROM pg_ts_config;
+```
+
+Notably, however, there is no configuration for CJK (Chinese-Japanese-Korean), which is worth keeping in mind if you need to create a search query in those languages. While the `simple` configuration should work in practice quite well for unsupported languages, I'm not sure if that is enough for CJK.
+
+### tsquery
+
+The `tsquery` data type is used to represent a normalized query. A `tsquery` contains search terms, which must be already-normalized lexemes, and may combine multiple terms using AND, OR, NOT, and FOLLOWED BY operators. There are functions like `to_tsquery`, `plainto_tsquery`, and `websearch_to_tsquery` that are helpful in converting user-written text into a proper `tsquery`, primarily by normalizing words appearing in the text.
+
+To get a feeling of `tsquery`, let's see a few examples using `websearch_to_tsquery`:
+
+```sql
+SELECT websearch_to_tsquery('english', 'the dark vader');
+ websearch_to_tsquery
+----------------------
+'dark' & 'vader'
+```
+
+That is a logical AND, meaning that the document needs to contain both “quick” and “dog” in order to match. You can do logical OR as well:
+
+```sql
+SELECT websearch_to_tsquery('english', 'quick OR dog');
+ websearch_to_tsquery
+----------------------
+ 'dark' | 'vader'
+```
+
+And you can exclude words:
+
+```sql
+SELECT websearch_to_tsquery('english', 'dark vader -wars');
+   websearch_to_tsquery
+---------------------------
+ 'dark' & 'vader' & !'war'
+```
+
+Also, you can represent phrase searches:
+
+```sql
+SELECT websearch_to_tsquery('english', '"the dark vader son"');
+     websearch_to_tsquery
+------------------------------
+ 'dark' <-> 'vader' <-> 'son'
+```
+
+This means: “dark”, followed by “vader”, followed by “son”.
+
+Note, however, that the “the” word is ignored, because it's a stop word as per the `english` search configuration. This can be an issue on phrases like this:
+
+```sql
+SELECT websearch_to_tsquery('english', '"do or do not, there is no try"');
+ websearch_to_tsquery
+----------------------
+ 'tri'
+(1 row)
+```
+
+Oops, almost the entire phrase was lost. Using the `simple` config gives the expected result:
+
+```sql
+SELECT websearch_to_tsquery('simple', '"do or do not, there is no try"');
+                           websearch_to_tsquery
+--------------------------------------------------------------------------
+ 'do' <-> 'or' <-> 'do' <-> 'not' <-> 'there' <-> 'is' <-> 'no' <-> 'try'
+```
+
+You can check whether a `tsquery` matches a `tsvector` by using the match operator `@@`.
+
+```sql
+SELECT websearch_to_tsquery('english', 'dark vader') @@
+	to_tsvector('english',
+		'Dark Vader is my father.');
+
+?column?
+----------
+ t
+```
+
+While the following example doesn't match:
+
+```sql
+SELECT websearch_to_tsquery('english', 'dark vader -father') @@
+	to_tsvector('english',
+		'Dark Vader is my father.');
+
+?column?
+----------
+ f
+```
+
+### GIN
+
+Now that we've seen `tsvector` and `tsquery` at work, let's look at another key building block: the GIN index type is what makes it fast. GIN stands for _Generalized Inverted Index._ GIN is designed for handling cases where the items to be indexed are composite values, and the queries to be handled by the index need to search for element values that appear within the composite items. This means that GIN can be used for more than just text search, notably for JSON querying.
+
+You can create a GIN index on a set of columns, or you can first create a column of type `tsvector`, to include all the searchable columns. Something like this:
+
+```sql
+ALTER TABLE movies ADD search tsvector GENERATED ALWAYS AS
+	(to_tsvector('english', Title) || ' ' ||
+   to_tsvector('english', Plot) || ' ' ||
+   to_tsvector('simple', Director) || ' ' ||
+	 to_tsvector('simple', Genre) || ' ' ||
+   to_tsvector('simple', Origin) || ' ' ||
+   to_tsvector('simple', Casting)
+) STORED;
+```
+
+And then create the actual index:
+
+```sql
+CREATE INDEX idx_search ON movies USING GIN(search);
+```
+
+You can now perform a simple test search like this:
+
+```sql
+SELECT title FROM movies WHERE search @@ websearch_to_tsquery('english','dark vader');
+
+                        title
+--------------------------------------------------
+ Star Wars Episode IV: A New Hope (aka Star Wars)
+ Return of the Jedi
+ Star Wars: Episode III – Revenge of the Sith
+(3 rows)
+```
+
+To see the effects of the index, you can compare the timings of the above query with and without the index. The GIN index takes it from over 200 ms to about 4 ms on my computer.
+
+### ts_rank
+
+So far, we've seen how `ts_vector` and `ts_query` can match search queries. However, for a good search experience, it is important to show the best results first - meaning that the results need to be sorted by _relevancy_.
+
+Taking it directly from the [docs](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-RANKING):
+
+> PostgreSQL provides two predefined ranking functions, which take into account lexical, proximity, and structural information; that is, they consider how often the query terms appear in the document, how close together the terms are in the document, and how important is the part of the document where they occur. However, the concept of relevancy is vague and very application-specific. Different applications might require additional information for ranking, e.g., document modification time. The built-in ranking functions are only examples. You can write your own ranking functions and/or combine their results with additional factors to fit your specific needs.
+
+The two ranking functions mentioned are `ts_rank` and `ts_rank_cd`. The difference between them is that while they both take into account the frequency of the term, `ts_rank_cd` also takes into account the proximity of matching lexemes to each other.
+
+To use them in a query, you can do something like this:
+
+```sql
+SELECT title,
+       ts_rank(search, websearch_to_tsquery('english', 'dark vader')) rank
+  FROM movies
+  WHERE search @@ websearch_to_tsquery('english','dark vader')
+  ORDER BY rank DESC
+  LIMIT 10;
+
+ title                                            |    rank
+--------------------------------------------------+------------
+ Return of the Jedi                               | 0.21563873
+ Star Wars: Episode III – Revenge of the Sith     | 0.12592985
+ Star Wars Episode IV: A New Hope (aka Star Wars) | 0.05174401
+```
+
+One thing to note about `ts_rank` is that it needs to access the `search` column for each result. This means that if the `WHERE` condition matches a lot of rows, PostgreSQL needs to visit them all in order to do the ranking, and that can be slow. To exemplify, the above query returns in 5-7 ms on my computer. If I modify the query to do search for `dark OR vader`, it returns in about 80 ms, because there are now over 1000 matching result that need ranking and sorting.
+
+# Relevancy tuning
+
+While relevancy based on word frequency is a good default for the search sorting, quite often the data contains important indicators that are more relevant than simply the frequency.
+
+Here are some examples for a movies dataset:
+
+- Matches in the title should be given higher importance than matches in the description or plot.
+- More popular movies can be promoted based on ratings and/or the number of votes they receive.
+- Certain categories can be boosted more, considering user preferences. For instance, if a particular user enjoys comedies, those movies can be given a higher priority.
+- When ranking search results, newer titles can be considered more relevant than very old titles.
+
+This is why dedicated search engines typically offer ways to use different columns or fields to influence the ranking. Here are example tuning guides from [Elastic](https://www.elastic.co/guide/en/app-search/current/relevance-tuning-guide.html), [Typesense](https://typesense.org/docs/guide/ranking-and-relevance.html), and [Meilisearch](https://www.meilisearch.com/docs/learn/core_concepts/relevancy).
+
+If you want a visual demo of the impact of relevancy tuning, here is a quick 4 minutes video about it:
+
+<ArticleVideo platform="youtube" src="https://www.youtube.com/embed/GfgdQs4WuXM" />
+
+### Numeric, date, and exact value boosters
+
+While Postgres doesn't have direct support for boosting based on other columns, the rank is ultimately just a sort expression, so you can add your own signals to it.
+
+For example, if you want to add a boost for the number of votes, you can do something like this:
+
+```sql
+SELECT title,
+  ts_rank(search, websearch_to_tsquery('english', 'jedi'))
+    -- numeric booster example
+    + log(NumberOfVotes)*0.01
+ FROM movies
+ WHERE search @@ websearch_to_tsquery('english','jedi')
+ ORDER BY rank DESC LIMIT 10;
+```
+
+The logarithm is there to smoothen the impact, and the 0.01 factor brings the booster to a comparable scale with the ranking score.
+
+You can also design more complex boosters, for example, boost by the rating, but only if the ranking has a certain number of votes. To do this, you can create a function like this:
+
+```sql
+create function numericBooster(rating numeric, votes numeric, voteThreshold numeric)
+	returns numeric as $$
+		select case when votes < voteThreshold then 0 else rating end;
+$$ language sql;
+```
+
+And use it like this:
+
+```sql
+SELECT title,
+  ts_rank(search, websearch_to_tsquery('english', 'jedi'))
+    -- numeric booster example
+    + numericBooster(Rating, NumberOfVotes, 100)*0.005
+ FROM movies
+ WHERE search @@ websearch_to_tsquery('english','jedi')
+ ORDER BY rank DESC LIMIT 10;
+```
+
+Let's take another example. Say we want to boost the ranking of comedies. You can create a `valueBooster` function that looks like this:
+
+```sql
+create function valueBooster (col text, val text, factor integer)
+	returns integer as $$
+		select case when col = val then factor else 0 end;
+$$ language sql;
+```
+
+The function returns a factor if the column matches a particular value and 0 instead. Use it in a query like this:
+
+```sql
+SELECT title, genre,
+   ts_rank(search, websearch_to_tsquery('english', 'jedi'))
+   -- value booster example
+   + valueBooster(Genre, 'comedy', 0.05) rank
+FROM movies
+   WHERE search @@ websearch_to_tsquery('english','jedi')                                                                                                 ORDER BY rank DESC LIMIT 10;
+                      title                       |               genre                |        rank
+--------------------------------------------------+------------------------------------+---------------------
+ The Men Who Stare at Goats                       | comedy                             |  0.1107927106320858
+ Clerks                                           | comedy                             |  0.1107927106320858
+ Star Wars: The Clone Wars                        | animation                          | 0.09513916820287704
+ Star Wars: Episode I – The Phantom Menace 3D     | sci-fi                             | 0.09471701085567474
+ Star Wars: Episode I – The Phantom Menace        | space opera                        | 0.09471701085567474
+ Star Wars: Episode II – Attack of the Clones     | science fiction                    | 0.09285612404346466
+ Star Wars: Episode III – Revenge of the Sith     | science fiction, action            | 0.09285612404346466
+ Star Wars: The Last Jedi                         | action, adventure, fantasy, sci-fi |  0.0889768898487091
+ Return of the Jedi                               | science fiction                    | 0.07599088549613953
+ Star Wars Episode IV: A New Hope (aka Star Wars) | science fiction                    | 0.07599088549613953
+(10 rows)
+```
+
+### Column weights
+
+Remember when we talked about the `tsvector` lexemes and that they can have weights attached? Postgres supports 4 weights, named A, B, C, and D. A is the biggest weight while D is the lowest and the default. You can control the weights via the `setweight` function which you would typically call when building the `tsvector` column:
+
+```sql
+ALTER TABLE movies ADD search tsvector GENERATED ALWAYS AS
+   (setweight(to_tsvector('english', Title), 'A') || ' ' ||
+   to_tsvector('english', Plot) || ' ' ||
+   to_tsvector('simple', Director) || ' ' ||
+   to_tsvector('simple', Genre) || ' ' ||
+   to_tsvector('simple', Origin) || ' ' ||
+   to_tsvector('simple', Casting)
+) STORED;
+```
+
+Let's see the effects of this. Without `setweight`, a search for `dark vader OR jedi` returns:
+
+```sql
+SELECT title, ts_rank(search, websearch_to_tsquery('english', 'jedi')) rank
+   FROM movies
+   WHERE search @@ websearch_to_tsquery('english','jedi')
+   ORDER BY rank DESC;
+                      title                       |    rank
+--------------------------------------------------+-------------
+ Star Wars: The Clone Wars                        |  0.09513917
+ Star Wars: Episode I – The Phantom Menace        |  0.09471701
+ Star Wars: Episode I – The Phantom Menace 3D     |  0.09471701
+ Star Wars: Episode III – Revenge of the Sith     | 0.092856124
+ Star Wars: Episode II – Attack of the Clones     | 0.092856124
+ Star Wars: The Last Jedi                         |  0.08897689
+ Return of the Jedi                               | 0.075990885
+ Star Wars Episode IV: A New Hope (aka Star Wars) | 0.075990885
+ Clerks                                           |  0.06079271
+ The Empire Strikes Back                          |  0.06079271
+ The Men Who Stare at Goats                       |  0.06079271
+ How to Deal                                      |  0.06079271
+(12 rows)
+```
+
+And with the `setweight` on the title column:
+
+```sql
+SELECT title, ts_rank(search, websearch_to_tsquery('english', 'jedi')) rank
+   FROM movies
+   WHERE search @@ websearch_to_tsquery('english','jedi')
+   ORDER BY rank DESC;
+                      title                       |    rank
+--------------------------------------------------+-------------
+ Star Wars: The Last Jedi                         |   0.6361112
+ Return of the Jedi                               |   0.6231253
+ Star Wars: The Clone Wars                        |  0.09513917
+ Star Wars: Episode I – The Phantom Menace        |  0.09471701
+ Star Wars: Episode I – The Phantom Menace 3D     |  0.09471701
+ Star Wars: Episode III – Revenge of the Sith     | 0.092856124
+ Star Wars: Episode II – Attack of the Clones     | 0.092856124
+ Star Wars Episode IV: A New Hope (aka Star Wars) | 0.075990885
+ The Empire Strikes Back                          |  0.06079271
+ Clerks                                           |  0.06079271
+ The Men Who Stare at Goats                       |  0.06079271
+ How to Deal                                      |  0.06079271
+(12 rows)
+```
+
+Note how the movie titles with “jedi” in their name have jumped to the top of the list, and their rank has increased.
+
+It's worth pointing out that having only for weight “classes” is somewhat limiting, and that they need to be applied when computing the `tsvector`.
+
+# Typo-tolerance / fuzzy search
+
+PostgreSQL doesn't support fuzzy search or typo-tolerance directly, when using `tsvector` and `tsquery`. However, working on the assumptions that the typo is in the query part, we can implement the following idea:
+
+- index all _lexemes_ from the content in a separate table
+- for each word in the query, use similarity or Levenshtein distance to search in this table
+- modify the query to include any words that are found
+- perform the search
+
+Here is how it works. First, use `ts_stats` to get all words in a materialized view:
+
+```sql
+CREATE MATERLIAZED VIEW unique_lexeme AS
+   SELECT word FROM ts_stat('SELECT search FROM movies');
+```
+
+Now, for each word in the query, check if it is in the `unique_lexeme` view. If it's not, do a fuzzy-search in that view to find possible misspellings of it:
+
+```sql
+SELECT * FROM unique_lexeme
+   WHERE levenshtein_less_equal(word, 'pregant', 2) < 2;
+
+   word
+----------
+ premant
+ pregrant
+ pregnant
+ paegant
+```
+
+In the above we use the [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) because that's what search engines like Elasticsearch use for fuzzy search.
+
+Once you have the candidate list of words, you need to adjust the query include them all.
+
+# Faceted search
+
+Faceted search is popular especially on e-commerce sites because it helps customers to iteratively narrow their search. Here is an example from amazon.com:
+
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/amazon_faceted_search.png"
+  width="440"
+  height="466"
+  alt="Faceted search on amazon.com"
+  caption="Faceted search on amazon.com"
+  position="center"
+/>
+
+The above can implemented by manually defining categories and then adding them as `WHERE` conditions to the search. Another approach is to create the categories algorithmically based on the existing data. For example, you can use the following to create a “Decade” facet:
+
+```sql
+SELECT ReleaseYear/10*10 decade, count(Title) cnt FROM movies
+  WHERE search @@ websearch_to_tsquery('english','star wars')
+  GROUP BY decade ORDER BY cnt DESC;
+
+decade | cnt
+--------+-----
+   2000 |  39
+   2010 |  31
+   1990 |  29
+   1950 |  28
+   1940 |  26
+   1980 |  22
+   1930 |  13
+   1960 |  11
+   1970 |   7
+   1910 |   3
+   1920 |   3
+(11 rows)
+```
+
+This also gets us counts of matches for each decade, which you can display in brackets.
+
+If you want to get multiple facets in a single query, you can combine them, for example, by using CTEs:
+
+```sql
+WITH releaseYearFacets AS (
+  SELECT 'Decade' facet, (ReleaseYear/10*10)::text val, count(Title) cnt
+  FROM movies
+  WHERE search @@ websearch_to_tsquery('english','star wars')
+  GROUP BY val ORDER BY cnt DESC),
+genreFacets AS (
+  SELECT 'Genre' facet, Genre val, count(Title) cnt FROM movies
+  WHERE search @@ websearch_to_tsquery('english','star wars')
+  GROUP BY val ORDER BY cnt DESC LIMIT 5)
+SELECT * FROM releaseYearFacets UNION SELECT * FROM genreFacets;
+
+ facet  |   val   | cnt
+--------+---------+-----
+ Decade | 1910    |   3
+ Decade | 1920    |   3
+ Decade | 1930    |  13
+ Decade | 1940    |  26
+ Decade | 1950    |  28
+ Decade | 1960    |  11
+ Decade | 1970    |   7
+ Decade | 1980    |  22
+ Decade | 1990    |  29
+ Decade | 2000    |  39
+ Decade | 2010    |  31
+ Genre  | comedy  |  21
+ Genre  | drama   |  35
+ Genre  | musical |   9
+ Genre  | unknown |  13
+ Genre  | war     |  15
+(16 rows)
+```
+
+The above should work quite well on small to medium data sets, however it can become slow on very large data sets.
+
+# Conclusion
+
+We've seen the PostgreSQL full-text search primitives, and how we can we can combine them to create a pretty advanced full-text search engine, which also happens to support things like joins and ACID transactions. In other words, it has functionality that the other search engines typically don't have.
+
+There are more advanced search topics that would be worth covering in detail:
+
+- suggesters / auto-complete
+- exact phrase matching
+- hybrid search (semantic + keyword) by combining with pg-vector
+
+Each of these would be worth their own blog post (coming!), but by now you should have an intuitive feeling about them: they are quite possible using PostgreSQL, but they require you to do the work of combining the primitives and in some cases the performance might suffer on very large datasets.
+
+In part 2, we'll make a detailed comparison with Elasticsearch, looking to answer the question on when is it worth it to implement search into PostgreSQL versus adding Elasticsearch to your infrastructure and syncing the data. If you want to be notified when this gets published, you can follow us on [Twitter](https://twitter.com/xata) or join our [Discord](https://xata.io/discord).
