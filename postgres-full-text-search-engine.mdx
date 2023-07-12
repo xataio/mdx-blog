@@ -1,8 +1,8 @@
 ---
 title: 'Create an advanced search engine with PostgreSQL'
-description: 'PostgreSQL provides the necessary building blocks for you to combine and create your own search engine for full-text search. Let's see how far we can take it.'
+description: "PostgreSQL provides the necessary building blocks for you to combine and create your own search engine for full-text search. Let's see how far we can take it."
 image:
-  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-full-text-search.png 
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-full-text-search.png
   alt: Postgres full-text search
 author: Tudor Golubenco
 date: 07-12-2023
@@ -35,7 +35,7 @@ And import the CSV file like this:
 
 The dataset contains 34,000 movie titles and is about 81 MB in CSV format.
 
-# PostgreSQL full-text search primitives
+## PostgreSQL full-text search primitives
 
 The Postgres approach to full-text search offers building blocks that you can combine to create your own search engine. This is quite flexible but it also means it generally feels lower-level compared to search engines like Elasticsearch, Typesense, or Mellisearch, for which full-text search is the primary use case.
 
@@ -48,7 +48,7 @@ The main building blocks, which we'll cover via examples, are:
 
 We'll start by looking at these building blocks and then we'll get into more advanced topics, covering relevancy boosters, typo-tolerance, and faceted search.
 
-## tsvector
+### tsvector
 
 The `tsvector` data type stores a sorted list of _lexemes_. A _lexeme_ is a string, just like a token, but it has been _normalized_ so that different forms of the same word are made. For example, normalization almost always includes folding upper-case letters to lower-case, and often involves removal of suffixes (such as `s` or `ing` in English). Here is an example, using the `to_tsvector` function to parse an English phrase into a `tsvector`.
 
@@ -414,7 +414,7 @@ Note how the movie titles with “jedi” in their name have jumped to the top o
 
 It's worth pointing out that having only for weight “classes” is somewhat limiting, and that they need to be applied when computing the `tsvector`.
 
-# Typo-tolerance / fuzzy search
+## Typo-tolerance / fuzzy search
 
 PostgreSQL doesn't support fuzzy search or typo-tolerance directly, when using `tsvector` and `tsquery`. However, working on the assumptions that the typo is in the query part, we can implement the following idea:
 
@@ -448,7 +448,7 @@ In the above we use the [Levenshtein distance](https://en.wikipedia.org/wiki/Lev
 
 Once you have the candidate list of words, you need to adjust the query include them all.
 
-# Faceted search
+## Faceted search
 
 Faceted search is popular especially on e-commerce sites because it helps customers to iteratively narrow their search. Here is an example from amazon.com:
 
@@ -523,7 +523,7 @@ SELECT * FROM releaseYearFacets UNION SELECT * FROM genreFacets;
 
 The above should work quite well on small to medium data sets, however it can become slow on very large data sets.
 
-# Conclusion
+## Conclusion
 
 We've seen the PostgreSQL full-text search primitives, and how we can we can combine them to create a pretty advanced full-text search engine, which also happens to support things like joins and ACID transactions. In other words, it has functionality that the other search engines typically don't have.
 
