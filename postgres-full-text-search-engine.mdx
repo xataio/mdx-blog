@@ -412,7 +412,7 @@ SELECT title, ts_rank(search, websearch_to_tsquery('english', 'jedi')) rank
 
 Note how the movie titles with “jedi” in their name have jumped to the top of the list, and their rank has increased.
 
-It's worth pointing out that having only for weight “classes” is somewhat limiting, and that they need to be applied when computing the `tsvector`.
+It's worth pointing out that having only four weight “classes” is somewhat limiting, and that they need to be applied when computing the `tsvector`.
 
 ## Typo-tolerance / fuzzy search
 
