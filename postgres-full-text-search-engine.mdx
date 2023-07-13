@@ -113,40 +113,40 @@ The `tsquery` data type is used to represent a normalized query. A `tsquery` con
 To get a feeling of `tsquery`, let's see a few examples using `websearch_to_tsquery`:
 
 ```sql
-SELECT websearch_to_tsquery('english', 'the dark vader');
+SELECT websearch_to_tsquery('english', 'the darth vader');
  websearch_to_tsquery
 ----------------------
-'dark' & 'vader'
+'darth' & 'vader'
 ```
 
-That is a logical AND, meaning that the document needs to contain both “quick” and “dog” in order to match. You can do logical OR as well:
+That is a logical AND, meaning that the document needs to contain both "darth" and "vader" in order to match. You can do logical OR as well:
 
 ```sql
-SELECT websearch_to_tsquery('english', 'quick OR dog');
+SELECT websearch_to_tsquery('english', 'darth OR vader');
  websearch_to_tsquery
 ----------------------
- 'dark' | 'vader'
+ 'darth' | 'vader'
 ```
 
 And you can exclude words:
 
 ```sql
-SELECT websearch_to_tsquery('english', 'dark vader -wars');
+SELECT websearch_to_tsquery('english', 'darth vader -wars');
    websearch_to_tsquery
 ---------------------------
- 'dark' & 'vader' & !'war'
+ 'darth' & 'vader' & !'war'
 ```
 
 Also, you can represent phrase searches:
 
 ```sql
-SELECT websearch_to_tsquery('english', '"the dark vader son"');
+SELECT websearch_to_tsquery('english', '"the darth vader son"');
      websearch_to_tsquery
 ------------------------------
- 'dark' <-> 'vader' <-> 'son'
+ 'darth' <-> 'vader' <-> 'son'
 ```
 
-This means: “dark”, followed by “vader”, followed by “son”.
+This means: “darth”, followed by “vader”, followed by “son”.
 
 Note, however, that the “the” word is ignored, because it's a stop word as per the `english` search configuration. This can be an issue on phrases like this:
 
@@ -170,9 +170,9 @@ SELECT websearch_to_tsquery('simple', '"do or do not, there is no try"');
 You can check whether a `tsquery` matches a `tsvector` by using the match operator `@@`.
 
 ```sql
-SELECT websearch_to_tsquery('english', 'dark vader') @@
+SELECT websearch_to_tsquery('english', 'darth vader') @@
 	to_tsvector('english',
-		'Dark Vader is my father.');
+		'Darth Vader is my father.');
 
 ?column?
 ----------
@@ -182,9 +182,9 @@ SELECT websearch_to_tsquery('english', 'dark vader') @@
 While the following example doesn't match:
 
 ```sql
-SELECT websearch_to_tsquery('english', 'dark vader -father') @@
+SELECT websearch_to_tsquery('english', 'darth vader -father') @@
 	to_tsvector('english',
-		'Dark Vader is my father.');
+		'Darth Vader is my father.');
 
 ?column?
 ----------
@@ -217,7 +217,7 @@ CREATE INDEX idx_search ON movies USING GIN(search);
 You can now perform a simple test search like this:
 
 ```sql
-SELECT title FROM movies WHERE search @@ websearch_to_tsquery('english','dark vader');
+SELECT title FROM movies WHERE search @@ websearch_to_tsquery('english','darth vader');
 
                         title
 --------------------------------------------------
@@ -243,20 +243,23 @@ To use them in a query, you can do something like this:
 
 ```sql
 SELECT title,
-       ts_rank(search, websearch_to_tsquery('english', 'dark vader')) rank
+       ts_rank(search, websearch_to_tsquery('english', 'darth vader')) rank
   FROM movies
-  WHERE search @@ websearch_to_tsquery('english','dark vader')
+  WHERE search @@ websearch_to_tsquery('english','darth vader')
   ORDER BY rank DESC
   LIMIT 10;
 
- title                                            |    rank
---------------------------------------------------+------------
- Return of the Jedi                               | 0.21563873
- Star Wars: Episode III – Revenge of the Sith     | 0.12592985
- Star Wars Episode IV: A New Hope (aka Star Wars) | 0.05174401
+                      title                       |    rank
+--------------------------------------------------+-------------
+ The Empire Strikes Back                          |  0.26263964
+ Star Wars Episode IV: A New Hope (aka Star Wars) |  0.18902963
+ Star Wars: Episode III – Revenge of the Sith     |  0.10292397
+ Rogue One: A Star Wars Story (film)              |  0.10049681
+ Return of the Jedi                               |  0.09910346
+ American Honey                                   |  0.09910322
 ```
 
-One thing to note about `ts_rank` is that it needs to access the `search` column for each result. This means that if the `WHERE` condition matches a lot of rows, PostgreSQL needs to visit them all in order to do the ranking, and that can be slow. To exemplify, the above query returns in 5-7 ms on my computer. If I modify the query to do search for `dark OR vader`, it returns in about 80 ms, because there are now over 1000 matching result that need ranking and sorting.
+One thing to note about `ts_rank` is that it needs to access the `search` column for each result. This means that if the `WHERE` condition matches a lot of rows, PostgreSQL needs to visit them all in order to do the ranking, and that can be slow. To exemplify, the above query returns in 5-7 ms on my computer. If I modify the query to do search for `darth OR vader`, it returns in about 80 ms, because there are now over 1000 matching result that need ranking and sorting.
 
 # Relevancy tuning
 
@@ -362,7 +365,7 @@ ALTER TABLE movies ADD search tsvector GENERATED ALWAYS AS
 ) STORED;
 ```
 
-Let's see the effects of this. Without `setweight`, a search for `dark vader OR jedi` returns:
+Let's see the effects of this. Without `setweight`, a search for `jedi` returns:
 
 ```sql
 SELECT title, ts_rank(search, websearch_to_tsquery('english', 'jedi')) rank
