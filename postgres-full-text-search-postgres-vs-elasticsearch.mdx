@@ -14,7 +14,7 @@ In [Part 1](https://xata.io/blog/postgres-full-text-search-engine), we delved in
 
 First, let's note that Postgres and Elasticsearch are generally not in competition with each other. In fact, it's very common to see them together in architecture diagrams, often in a configuration like this:
 
-![Postgres + Elasticsearch architecture](images/postgres-plus-elasticsearch.png)
+![Typical architecture with PostgreSQL and Elasticsearch](images/postgres-plus-elasticsearch.svg)
 
 In this architecture, the source of truth for the data lives in Postgres, which serves the transactional CRUD operations. The data is continuously synced to Elasticsearch, either via something like Postgres logical replication events (change-data-capture) or by the application itself via custom code. During this data replication, denormalization might be required. The search functionality, including facets and aggregations, is served from Elasticsearch.
 
@@ -94,7 +94,7 @@ Let's start by noting that the two systems couldn't be more different:
 
 All of these impact performance and scalability, and it's no surprise then that the two tend to shine in different areas: PostgreSQL is commonly used as a primary data store, whereas Elasticsearch is usually utilized as a secondary store, particularly for search and analytics on time-series data such as logs. And yet, they do overlap on the use case of full-text search, which is the point of this blog post.
 
-![Postgres and Elasticsearch use-cases](images/postgres-and-elasticsearch-usecases.png)
+![Postgres and Elasticsearch use cases](images/postgres-and-elasticsearch-usecases.svg)
 
 I was curious to know at roughly what amount of data Postgres slows down compared to Elasticsearch. On the movies dataset (34K rows) that we used in part 1, all queries were reasonably fast (\<300 ms). So for the testing here, I chose a larger data set: a recipes dataset from Kaggle, containing [2.3M recipes](https://www.kaggle.com/datasets/wilmerarltstrmberg/recipe-dataset-over-2m?resource=download). The commands to load the CSV file in PostgreSQL can be found in this [gist](https://gist.github.com/tsg/bc64fcea28fca844db11c65b9b1cb4ca). For Elasticsearch, I've loaded the same CSV file using this [tool](https://github.com/ovidiugiorgi/csv2opensearch).
 
