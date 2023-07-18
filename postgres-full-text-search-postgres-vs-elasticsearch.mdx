@@ -130,14 +130,13 @@ I ran each query five times and recorded the best and worst times. Typically, th
 
 Here are the results on a few queries:
 
-| query | Elasticsearch || Postgres ||
-| | worst time (ms) | best time (ms) | worst time (ms) | best time (ms) |
-| --- | --- | --- | --- | --- |
-| darth vader | 52 | 4 | 100 | 3 |
-| chicken nuggets | 85 | 10 | 313 | 13 |
-| pancake | 60 | 4 | 618 | 157 |
-| curacao | 286 | 7 | 230 | 10 |
-| mix | 67 | 5 | 25182 | 8267 |
+| query           | Elasticsearch worst time (ms) | Elasticsearch best time (ms) | Postgres worst time (ms) | Postgres best time (ms) |
+| --------------- | ----------------------------- | ---------------------------- | ------------------------ | ----------------------- |
+| darth vader     | 52                            | 4                            | 100                      | 3                       |
+| chicken nuggets | 85                            | 10                           | 313                      | 13                      |
+| pancake         | 60                            | 4                            | 618                      | 157                     |
+| curacao         | 286                           | 7                            | 230                      | 10                      |
+| mix             | 67                            | 5                            | 25182                    | 8267                    |
 
 As you can see, Postgres performs well on some queries such as "darth vader" or "curacao," responding within milliseconds. However, on other queries like "pancake" or "mix," it performs significantly worse than Elasticsearch, with response times measured in seconds. It gets as bad as 25 seconds latency! What's going on here?
 
@@ -171,14 +170,13 @@ SELECT title, ts_rank(search, websearch_to_tsquery('english', 'mix')) rank
 
 Re-running the tests with this sample approach gives us closer results:
 
-| query | Elasticsearch || Postgres ||
-| | worst time | best time | worst time | best time |
-| --- | --- | --- | --- | --- |
-| darth vader | 52 | 4 | 100 | 3 |
-| chicken nuggets | 85 | 10 | 195 | 14 |
-| pancake | 60 | 4 | 145 | 13 |
-| curacao | 286 | 7 | 225 | 11 |
-| mix | 67 | 5 | 400 | 144 |
+| query           | Elasticsearch worst time (ms) | Elasticsearch best time (ms) | Postgres worst time (ms) | Postgres best time (ms) |
+| --------------- | ----------------------------- | ---------------------------- | ------------------------ | ----------------------- |
+| darth vader     | 52                            | 4                            | 100                      | 3                       |
+| chicken nuggets | 85                            | 10                           | 195                      | 14                      |
+| pancake         | 60                            | 4                            | 145                      | 13                      |
+| curacao         | 286                           | 7                            | 225                      | 11                      |
+| mix             | 67                            | 5                            | 400                      | 144                     |
 
 Much better! Of course, we did sacrifice on the relevancy, which might or might not be ok in your case.
 
