@@ -30,7 +30,7 @@ And yes, a data platform like [Xata](https://xata.io) solves most of points 1 an
 
 That said, if the Postgres full-text search functionality is enough for your use case, making use of it promises to significantly simplify your architecture and application. In this version, Postgres serves both the CRUD app needs and the full-text search needs:
 
-![Postgres-only search architecture](images/postgres-only-search.png)
+![Postgres-only search architecture](images/postgres-only-search.svg)
 
 This means you don't need to operate two types of stores, no more data replication, no more denormalization, no more eventual consistency. The search engine built into Postgres happens to support ACID transactions, joins between tables, constraints (e.g. not null or unique), referential integrity (foreign keys), and all the other Postgres goodies that make application development simpler.
 
