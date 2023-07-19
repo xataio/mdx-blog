@@ -198,7 +198,7 @@ Postgres supports vector search via the [pgvector](https://github.com/pgvector/p
 
 While exciting, it turns out that semantic search alone doesn't really work great on the typical search experiences that we have today - at least not on a majority of datasets. If you are curious, I recently wrote a [comparison between keyword and semantic search](https://xata.io/blog/keyword-vs-semantic-search-chatgpt) for the particular use case of selecting the context for ChatGPT.
 
-For search use case like the recipes one in this blog post, hybrid search might give better results: use a combination of keyword and semantic search to improve the ranking.
+For search use cases like the recipes one in this blog post, hybrid search might give better results: use a combination of keyword and semantic search to improve the ranking.
 
 Elastic has recently announced their “[Elasticsearch Relevance Engine](https://www.elastic.co/blog/may-2023-launch-announcement)”, which includes hybrid search. In Postgres, given that it's all building blocks, you can combine the full-text search functionality and pgvector. I'm looking forward to diving deeper into this topic as well, but I'll leave that for a follow-up blog post.
 
