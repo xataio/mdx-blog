@@ -20,7 +20,7 @@ In this architecture, the source of truth for the data lives in Postgres, which 
 
 While this architecture is as common as it is for very good reasons, it does have a few challenges:
 
-1. Having to deal with two types of stores means more operational burden, and higher infrastructure costs.
+1. Dealing with two types of stores means more operational burden and higher infrastructure costs.
 2. Keeping the data in sync is more challenging than you might think. I'm planning a dedicated blog for this problem, because it's quite interesting. Let's just say, it's pretty hard to get it completely right.
 3. The data replication is, at best, **near** real-time, meaning that there can be consistency issues in the search service.
 
