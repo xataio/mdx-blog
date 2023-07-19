@@ -90,7 +90,7 @@ Let's start by noting that the two systems couldn't be more different:
 - Postgres is relational, supports joining tables, has ACID transactions, and offers constraints, while Elasticsearch is document oriented and offers consistency guarantees only per document.
 - Postgres is row oriented, while Elasticsearch has an internal column store in the form of [doc values](https://www.elastic.co/guide/en/elasticsearch/reference/current/doc-values.html).
 - Postgres is native C code, while Elasticsearch runs on the JVM.
-- Postgres has a connection-oriented wire protocol, while Elasticsearch has a REST-like DSL over HTTP.
+- Postgres has a connection-oriented wire protocol; Elasticsearch has a REST-like DSL over HTTP.
 
 All of these impact performance and scalability, and it's no surprise then that the two tend to shine in different areas: PostgreSQL is commonly used as a primary data store, whereas Elasticsearch is usually utilized as a secondary store, particularly for search and analytics on time-series data such as logs. And yet, they do overlap on the use case of full-text search, which is the point of this blog post.
 
