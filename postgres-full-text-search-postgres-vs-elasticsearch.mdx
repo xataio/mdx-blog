@@ -196,7 +196,7 @@ Semantic search leverages language models to generate embeddings for each docume
 
 Postgres supports vector search via the [pgvector](https://github.com/pgvector/pgvector) extension, while Elasticsearch has it built-in via the [KNN search](https://www.elastic.co/guide/en/elasticsearch/reference/current/knn-search.html). You can find benchmarks on [ann-benchmarks](https://ann-benchmarks.com/index.html) (look for `pgvector` and `luceneknn`) but keep in mind that both implementations are under active development and their performance is being improved.
 
-While exciting, it turns out that semantic search alone doesn't really work great on the typical search experiences that we have today, at least not on a majority of datasets. If you are curious, I recently wrote a [comparison between keyword and semantic search](https://xata.io/blog/keyword-vs-semantic-search-chatgpt) for the particular use case of selecting the context for ChatGPT.
+While exciting, it turns out that semantic search alone doesn't really work great on the typical search experiences that we have today - at least not on a majority of datasets. If you are curious, I recently wrote a [comparison between keyword and semantic search](https://xata.io/blog/keyword-vs-semantic-search-chatgpt) for the particular use case of selecting the context for ChatGPT.
 
 For search use case like the recipes one in this blog post, hybrid search might give better results: use a combination of keyword and semantic search to improve the ranking.
 
