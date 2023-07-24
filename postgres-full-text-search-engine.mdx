@@ -429,7 +429,7 @@ PostgreSQL doesn't support fuzzy search or typo-tolerance directly, when using `
 Here is how it works. First, use `ts_stats` to get all words in a materialized view:
 
 ```sql
-CREATE MATERLIAZED VIEW unique_lexeme AS
+CREATE MATERIALIZED VIEW unique_lexeme AS
    SELECT word FROM ts_stat('SELECT search FROM movies');
 ```
 
