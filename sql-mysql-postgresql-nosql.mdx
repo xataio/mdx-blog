@@ -23,11 +23,11 @@ This blog post provides a straightforward explanation of SQL, MySQL, PostgreSQL,
 
 ## What  is SQL?
 
-[SQL](https://www.notion.so/Navigating-the-database-landscape-Overview-of-SQL-MySQL-PostgreSQL-and-NoSQL-86a05936d79241b1ba5561c34cc656a8?pvs=21), or Structured Query Language, is really the go-to tool for anyone wanting to dig into data. SQL provides a standardized way to interact with databases and perform operations such as querying, inserting, updating, deleting, and indexing data. While it can be used for relational databases and some non-relational databases, it offers way more advantages when working with relational databases. 
-____________________________
+[SQL](), or Structured Query Language, is really the go-to tool for anyone digging into data. SQL provides a standardized way to interact with databases and perform operations such as querying, inserting, updating, deleting, and indexing data. While it can be used for relational databases and some non-relational databases, it offers way more advantages when working with relational databases. 
 
 A relational database stores data in tables made up of rows and columns; each row represents a single record of data. For example, a table of products might have columns for the product name, price, and description.
 
+**Let's take a moment to look at an example of SQL in action.**
 If you want to retrieve information from a table, you can use a SQL `SELECT` statement. For instance, using the table of products with columns for product name, price, and description, here's an example SQL query to retrieve the information:
 
 ```sql
@@ -51,9 +51,7 @@ WHERE price < 100;
 
 This query will return the product name, price, and description for all products whose price is less than 100.
 
-________________________
-
-SQL is not tied to any specific database system but instead acts as a universal language that can be used with different database management systems (DBMS), such as PostgreSQL and MySQL (to name a few). This means that once you learn SQL, you can apply your knowledge to work with a variety of databases.
+All in all, SQL is not tied to any specific database system but instead acts as a universal language that can be used with different database management systems (DBMS), such as PostgreSQL and MySQL (to name a few). This means that once you learn SQL, you can apply your knowledge to work with a variety of databases.
 
 The thing is - learning SQL can be a bit overwhelming. There are different flavors, [dialects](https://learnsql.com/blog/what-sql-dialect-to-learn/), and versions of SQL out there, and it's easy to get lost in the sauce.
 
@@ -67,18 +65,17 @@ NoSQL databases, like MongoDB, Redis, DynamoDB, and Cassandra, usually have thei
 
 Since NoSQL is great for unstructured or semi-structured data, it can handle data like documents, key-value pairs, graphs, and time-series data. However, with this flexibility comes some trade-offs. NoSQL databases usually can’t provide the same level of transactional guarantees or complex querying capabilities as traditional SQL databases. 
 
-Let’s break things down a little more and look into the terms mentioned above as well as the good (and the bad) of a couple databases out there. **You can also [skip ahead](https://www.notion.so/Navigating-the-database-landscape-Overview-of-SQL-MySQL-PostgreSQL-and-NoSQL-86a05936d79241b1ba5561c34cc656a8?pvs=21) if you just want a quick summary.**
+Let’s break things down a little more and look into the terms mentioned above as well as the good (and the bad) of a couple databases out there. **You can also [skip ahead](#summing-it-up-(tl;dr)) if you just want a quick summary.**
 
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/database-platforms-trend.png"
-  width="2083"
-  height="1386"
   alt="Databases comparison"
-  caption= "Data and databases are evolving "
   position="center"
 />
 
 ## What are they?
+
+At thst start of this post, we highlighted the acronyms SQL, NoSQL, PostgreSQL, and MySQL. Now, let's delve into their details.
 
 ### SQL: master of structure
 
@@ -101,7 +98,7 @@ SQL databases, such as MySQL and PostgreSQL work well with data that follows a s
 - **Running a social network:** Using SQL databases are great for social networking. They offer a reliable and scalable solution for managing user profiles, storing user information like names, usernames, and profile pictures. It does a superb job at handling relationships between users, such as managing friend lists, followers, and connections. Plus, it can also organize activity feeds, where user interactions and updates can be effectively stored and retrieved.
 - **Analyzing financial apps:** SQL databases support advanced functions for mathematical operations, aggregations, and data manipulation. SQL databases offer transactional support, which can allow for the processing of financial transactions that adhere to [ACID rules](https://www.databricks.com/glossary/acid-transactions).
 
-### MySQL: the simple solution
+### MySQL: the straightforward solution
 
 MySQL is a widely-used open-source relational DBMS that uses the SQL language for querying. Initially developed in 1979 as UNIREG, MySQL was later acquired by Sun Microsystems in 2008 and then Oracle in 2010. Many popular applications use it because it’s agile, straightforward, easy to set up, and has been around for a while.  
 
@@ -126,8 +123,6 @@ MySQL is known for its simplicity and user-friendly design, which makes it acces
 
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/db-engines-ranking.png"
-  width="2083"
-  height="1386"
   alt="Postgres and MySQL popularity ranking"
   caption= "[DB Engine rankings](https://db-engines.com/en/ranking)"
   position="center"
@@ -156,7 +151,7 @@ Initially developed as [POSTGRES in 1986, it evolved from the INGRES project](ht
 - **Exploring data in financial apps**: PostgreSQL offers various optimization techniques, such as query optimization, indexing, and parallel query execution. These features enhance the efficiency of financial data analysis. PostgreSQL's support for advanced data types, such as numeric, monetary, and timestamp, also ensures accurate representation and manipulation of financial information. Plus, it’s ability to be adapted to your needs through user-defined functions, custom aggregates, and stored procedures gives you the flexibility to implement specialized financial calculations and algorithms.
 - **Powering mobile apps**: PostgreSQL can serve as a reliable backend database for mobile applications, by offering scalable storage and synchronization capabilities. It allows mobile apps to store and retrieve user data, synchronize information across devices, and handle offline data synchronization.
 
-### NoSQL: unlocking the unstructured
+### NoSQL: unraveler of the unstructured
 
 NoSQL, as the name suggests, stands for "Not Only SQL." NoSQL refers to databases that are not based solely on the traditional SQL relational model. These databases are designed to handle unstructured or evolving data.
 
@@ -179,44 +174,40 @@ The history of NoSQL dates back to the [early 2000s](https://en.wikipedia.org/wi
 - **Processing real-time analytics**:  NoSQL databases can be used to analyze streaming data or generate real-time insights. They can handle the velocity and volume of data  as well as log data and time-series data, in which events or data points are associated with timestamps. Examples include monitoring systems, application logging, and financial market data analysis.
 - **Optimizing content caching:** NoSQL databases can store and retrieve frequently accessed data, which can enhance performance and user experiences. For example, caching frequently accessed web pages or session data in a NoSQL database can significantly reduce response times.
 
-### Summing it up (tl;dr)
+
+## Summing it up (tl;dr)
 
 Here's a summary of the main points made in this article, comparing SQL, MySQL, PostgreSQL, and NoSQL:
 
-### Summing it up (tl;dr)
-
-Here's a summary of the main points made in this article, comparing SQL, MySQL, PostgreSQL, and NoSQL:
-
-|  | SQL | MySQL  | PostgreSQL | NoSQL |
+| Descriptor | SQL | MySQL  | PostgreSQL | NoSQL |
 | --- | --- | --- | --- | --- |
 | Overview | A language used to manage and manipulate structured data in relational databases. | An open-source RDBMS that uses SQL as its query language. | An advanced open-source RDBMS that uses SQL as its query language. | A category of databases that diverge from the traditional SQL and relational database model, designed to handle unstructured or evolving data. |
 | History | Initially developed in 1979 | Developed in 1979; released in 1995 | Developed in 1986; released in 1996 | Emerged around 2009 |
-| Data Model | Relational | Relational  | Relational  | Flexible (Document, Key-Value, Columnar, Graph, etc.) |
-| Primary Language | SQL | SQL | SQL | Varies based on the specific NoSQL database |
-| ACID Compliance | Supports ACID  properties  | Supports ACID properties  | Supports ACID properties  | Varies depending on the specific NoSQL database |
+| Data model | Relational | Relational  | Relational  | Flexible (Document, Key-Value, Columnar, Graph, etc.) |
+| Primary language | SQL | SQL | SQL | Varies based on the specific NoSQL database |
+| ACID compliance | Supports ACID  properties  | Supports ACID properties  | Supports ACID properties  | Varies depending on the specific NoSQL database |
 | Schema | Requires predefined schema | Predefined schema (can emulate schema-less) | Predefined schema or flexible schema (can emulate schema-less) | Schema-less or flexible schema |
 | Querying | Supports SQL queries with join, aggregate, and filtering capabilities. | Supports SQL queries. | Supports SQL queries with advanced querying capabilities. | Querying capabilities vary depending on the specific database and its data model. |
-| Scalability | Can scale vertically and horizontally, but horizontal scaling can be challenging for some SQL databases. | Can scale vertically (horizontal scaling/sharding is possible, but difficult). | Can scale vertically
-(horizontal scaling/sharding is possible and third-party extensions address this). | Designed for horizontal scalability and supports vertical scalability. |
-| Use Cases | Ideal for structured data and complex querying, suitable for a wide range of applications such as e-commerce, analytics, and content management systems. | Widely used in web apps, content management systems. | Well-suited for both simple and complex applications, data warehousing, content management systems, financial apps, web apps, geospatial data, and analytical use cases. | Suitable for handling unstructured, evolving, or high-velocity data. Used in IoT applications and content caching. |
+| Scalability | Can scale vertically and horizontally, but horizontal scaling can be challenging for some SQL databases. | Can scale vertically (horizontal scaling/sharding is possible, but difficult). | Can scale vertically (horizontal scaling/sharding is possible and third-party extensions address this). | Designed for horizontal scalability and supports vertical scalability. |
+| Use cases | Ideal for structured data and complex querying, suitable for a wide range of applications such as e-commerce, analytics, and content management systems. | Widely used in web apps, content management systems. | Well-suited for both simple and complex applications, data warehousing, content management systems, financial apps, web apps, geospatial data, and analytical use cases. | Suitable for handling unstructured, evolving, or high-velocity data. Used in IoT applications and content caching. |
 
-The table below provides a concise summary comparing MySQL and PostgreSQL:
+The table below provides a very concise (and basic) summary comparing MySQL and PostgreSQL:
 
 | Comparison | MySQL | PostgreSQL |
 | --- | --- | --- |
 | Pronunciation | “my-ess-queue-el” | “post-gres-queue-el” |
-| Data Model | Relational | Relational / Object-relational |
-| Process Model |  Single process | Multiprocess |
+| Data model | Relational | Relational / Object-relational |
+| Process model |  Single process | Multiprocess |
 | Licensing | Dual-licensing model (commercial and open source editions) | Open Source |
 | Development | Owned by Oracle Corporation | Developed and maintained by the PostgreSQL Global Development Group |
 | Performance | Read performance | Balanced high read/write performance |
 | Indexing | B-tree, hash, full-text indexes | B-tree, hash, full-text, spatial indexes, GiST, SP-GiST, GIN, and BRIN |
-| Supported Data Types | Numeric, date/time, character, spatial, JSON | Numeric, date/time, character, boolean, enumerated, geometric, network address, JSON, XML, HSTORE, arrays, ranges, composite |
+| Supported data types | Numeric, date/time, character, spatial, JSON | Numeric, date/time, character, boolean, enumerated, geometric, network address, JSON, XML, HSTORE, arrays, ranges, composite |
 | Replication | Master-slave replication, Group replication | Asynchronous and synchronous streaming replication |
-| JSON Support | Basic support | Advanced support with JSONB data type |
-| Full-Text Search | Supported (limited) | Fully supported |
-| ACID Compliance | ACID-compliant (only when used with InnoDB and NDB cluster engines) | Always ACID-compliant |
-| Supported Languages | C/C++, Delphi, Erlang, Go, Java, Lisp, Node.js, Perl, PHP, R | C/ C++, Delphi, Erlang, Go, Java, Javascript, JSON, Lisp, .NET, Perl, PHP, Python, R, Tcl, others… |
+| JSON support | Basic support | Advanced support with JSONB data type |
+| Full-text search | Supported (limited) | Fully supported |
+| ACID compliance | ACID-compliant (only when used with InnoDB and NDB cluster engines) | Always ACID-compliant |
+| Supported languages | C/C++, Delphi, Erlang, Go, Java, Lisp, Node.js, Perl, PHP, R | C/ C++, Delphi, Erlang, Go, Java, Javascript, JSON, Lisp, .NET, Perl, PHP, Python, R, Tcl, others… |
 | Triggers | Supported (limited) | Fully supported |
 
 ## Conclusion
@@ -229,30 +220,5 @@ On the other hand, NoSQL databases are good at handling unstructured or semi-str
 
 If you’re seeking the best of both worlds, PostgreSQL emerges as the right choice. It blends the reliability, transaction support, and advanced querying of SQL databases with the flexibility to handle unstructured or semi-structured data. PostgreSQL offers an array of features, support for various data types, and a very active community that is continuously contributing to its development and improvement. Developers can harness PostgreSQL's scalability, security, and comprehensive feature set to build high-performance and future-proof apps.
 
----
 
 Want to add to the database discussions? Reach out to us on Discord or follow us on Twitter. We'd love to hear your thoughts, answer your questions, and keep you updated on the latest at Xata.
-
-### References
-
-https://www.techtarget.com/searchoracle/definition/sharding
-
-https://www.databricks.com/glossary/acid-transactions
-
-https://www.educative.io/blog/what-are-database-schemas-examples
-
-https://www.datastax.com/what-is/nosql
-
-https://docs.digitalocean.com/glossary/acid/
-
-https://db-engines.com/en/ranking/relational+dbms/all
-
-https://www.postgresql.org/docs/current/history.html
-
-https://en.wikipedia.org/wiki/NoSQL#History
-
-[https://www.postgresql.org/docs/15/transaction-iso.html](https://www.postgresql.org/docs/15/transaction-iso.html#XACT-READ-COMMITTED)
-
-https://www.trustradius.com/nosql-databases
-
-https://www.linuxjournal.com/content/postgresql-nosql-database
