@@ -1,6 +1,7 @@
 ---
 title: 'Navigating the database landscape: overview of SQL, MySQL, PostgreSQL, and NoSQL'
 description: 'An exploration of the SQL,MySQL,PostgreSQL, and NoSQL database options and discussion on where and when to use them.'
+tags: ['education']
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/databases-comparison.png
   alt: Comparison of database options
@@ -75,13 +76,13 @@ SQL databases, such as MySQL and PostgreSQL work well with data that follows a s
 
 **Benefits of SQL:**
 
-- **Data integrity**: SQL databases use transactions, constraints, [ACID compliance](https://docs.digitalocean.com/glossary/acid/), as well as logging and recovery to ensure data consistency, accuracy, and reliability.
-- **Strong relationships**: SQL databases can easily handle complex relationships between different tables, which is important for efficient data retrieval. Think of SQL as an expert matchmaker for your data - it effortlessly connects related pieces of information, creating strong relationships between different tables.
-- **Performance: SQL d**atabases are like speedy wizards when it comes to processing queries; they are optimized for handling structured data, resulting in fast and efficient queries.
+- **Data integrity:** SQL databases use transactions, constraints, [ACID compliance](https://docs.digitalocean.com/glossary/acid/), as well as logging and recovery to ensure data consistency, accuracy, and reliability.
+- **Strong relationships:** SQL databases can easily handle complex relationships between different tables, which is important for efficient data retrieval. Think of SQL as an expert matchmaker for your data - it effortlessly connects related pieces of information, creating strong relationships between different tables.
+- **Performance:** SQL databases are like speedy wizards when it comes to processing queries; they are optimized for handling structured data, resulting in fast and efficient queries.
 
 **Drawbacks of SQL:**
 
-- **Rigid structure**: SQL databases usually require a predefined [schema](https://www.educative.io/blog/what-are-database-schemas-examples), which can limit flexibility when dealing with unstructured or evolving data.
+- **Rigid structure:** SQL databases usually require a predefined [schema](https://www.educative.io/blog/what-are-database-schemas-examples), which can limit flexibility when dealing with unstructured or evolving data.
 - **Challenges with scaling**: While SQL databases can handle large amounts of data, scaling them horizontally (across multiple servers) can be challenging. Yet, they can scale horizontally by [sharding](<https://en.wikipedia.org/wiki/Shard_(database_architecture)>).
 
 **Here are a few cases of when to choose SQL**:
@@ -99,19 +100,19 @@ MySQL is known for its simplicity and user-friendly design, which makes it acces
 **Benefits of MySQL:**
 
 - **Reliable:** MySQL is stable and robust. It’s optimized query execution, efficient indexing mechanisms, and caching techniques contribute to it’s speedy processing capabilities and popularity.
-- **Flexible**: MySQL supports various replication methods, which can enable the creation of multiple copies of a database for load balancing and fault tolerance. MySQL's partitioning feature distributes data across multiple servers, making it easy to scale horizontally. This scalability makes MySQL a great fit for both small projects and large enterprises alike.
+- **Flexible:** MySQL supports various replication methods, which can enable the creation of multiple copies of a database for load balancing and fault tolerance. MySQL's partitioning feature distributes data across multiple servers, making it easy to scale horizontally. This scalability makes MySQL a great fit for both small projects and large enterprises alike.
 - **Wide adoption:** MySQL has a vibrant community and has been around for a long time, so there are [resources](https://www.datavail.com/blog/technology/mysql/), [documentation](https://dev.mysql.com/doc/), [forums](https://forums.mysql.com/), and user contributions galore. Also, many applications already use MySQL, so projects that also use it have company.
 
 **Drawbacks of MySQL:**
 
-- **Limited capabilities**: While MySQL is great for some applications, it may not have all the bells and whistles you might find in some other database systems. MySQL generally performs well with large volumes of data, but faces challenges with extremely large datasets or complex queries. For more involved, complex data operations or specialized needs like advanced analytics or spatial capabilities, consider alternative options.
-- **Reduced performance**: MySQL's performance can be affected when dealing with a very large number of concurrent connections or heavy traffic - there is a threat of serious performance degradation. MySQL can handle a significant number of concurrent users, but it's important to carefully monitor and tune the database configuration to ensure optimal performance
+- **Limited capabilities:** While MySQL is great for some applications, it may not have all the bells and whistles you might find in some other database systems. MySQL generally performs well with large volumes of data, but faces challenges with extremely large datasets or complex queries. For more involved, complex data operations or specialized needs like advanced analytics or spatial capabilities, consider alternative options.
+- **Reduced performance:** MySQL's performance can be affected when dealing with a very large number of concurrent connections or heavy traffic - there is a threat of serious performance degradation. MySQL can handle a significant number of concurrent users, but it's important to carefully monitor and tune the database configuration to ensure optimal performance
 
 **Here are a few cases of when to choose MySQL:**
 
-- **Creating a content-based websites**: If you're building a content-based website like an online magazine, or knowledge base, MySQL works well. It excels at efficiently organizing and retrieving articles, media files, and user-generated content. Handling large amounts of content and speedy access to information are easy with MySQL.
+- **Creating a content-based websites:** If you're building a content-based website like an online magazine, or knowledge base, MySQL works well. It excels at efficiently organizing and retrieving articles, media files, and user-generated content. Handling large amounts of content and speedy access to information are easy with MySQL.
 - **Developing a content management systems (CMS)**: MySQL powers the storage and retrieval of articles, media files, and user-generated content in CMS platforms. Many popular CMS platforms, including the beloved WordPress, rely on MySQL. It powers the storage and retrieval of articles, media files, user profiles, and user-generated content.
-- **Analyzing business intelligence BI**: As mentioned earlier, in general SQL is well-suited for online transactions analytics and business intelligence apps, so it’s no surprise MySQL is too. Its performance and scalability make it suitable for facilitating data-driven decision-making.
+- **Analyzing business intelligence BI:** As mentioned earlier, in general SQL is well-suited for online transactions analytics and business intelligence apps, so it’s no surprise MySQL is too. Its performance and scalability make it suitable for facilitating data-driven decision-making.
 
 ![Database engine rankings](/images/DB-engines-ranking.png)
 
@@ -124,19 +125,19 @@ Initially developed as [POSTGRES in 1986, it evolved from the INGRES project](ht
 **Benefits of PostgreSQL:**
 
 - **Advanced features:** PostgreSQL provides a rich set of features, including support for complex queries, full-text search, and even geographical data. It's a versatile database that can handle various data requirements. PostgreSQL offers a robust set of querying capabilities, including support for complex queries, advanced join algorithms, window functions, common table expressions (CTEs), and recursive queries. Also, it has robust options for scaling and replication, including built-in replication mechanisms like [streaming replication](https://www.postgresql.fastware.com/postgresql-insider-ha-str-rep) and logical replication.
-- **Highly customizable**: You can create custom data types, operators, and functions, providing the flexibility to adapt a database to your specific needs. PostgreSQL supports a wide range of advanced data types, such as arrays, JSON, XML, geometric types, and custom types. This allows for more sophisticated data modeling and storage capabilities. It also offers support for concurrent transactions and provides different levels of transaction isolation, including [serializable](https://www.postgresql.org/docs/current/transaction-iso.html), [repeatable read](https://www.postgresql.org/docs/15/transaction-iso.html#XACT-REPEATABLE-READ), and [read committed](https://www.postgresql.org/docs/15/transaction-iso.html#XACT-READ-COMMITTED). This ensures data integrity and consistency in multi-user environments.
+- **Highly customizable:** You can create custom data types, operators, and functions, providing the flexibility to adapt a database to your specific needs. PostgreSQL supports a wide range of advanced data types, such as arrays, JSON, XML, geometric types, and custom types. This allows for more sophisticated data modeling and storage capabilities. It also offers support for concurrent transactions and provides different levels of transaction isolation, including [serializable](https://www.postgresql.org/docs/current/transaction-iso.html), [repeatable read](https://www.postgresql.org/docs/15/transaction-iso.html#XACT-REPEATABLE-READ), and [read committed](https://www.postgresql.org/docs/15/transaction-iso.html#XACT-READ-COMMITTED). This ensures data integrity and consistency in multi-user environments.
 - **Extensible:** PostgreSQL is highly extensible, allowing users to define their own data types, operators, and functions. This feature provides flexibility in customizing the database to suit specific project requirements, making it an excellent choice for complex applications. PostgreSQL offers a robust set of querying capabilities, including support for complex queries, advanced join algorithms, window functions, common table expressions (CTEs), and recursive queries.
 
 **Drawbacks of PostgreSQL:**
 
-- **Not as straightforward**: PostgreSQL has a wider range of features and options, so it can be a bit a more complex to set up and configure. It can have a steeper learning curve for developers who are new to databases or have experience primarily with simpler systems.
-- **Can be resource intensive**: PostgreSQL can consume more system resources, such as memory and CPU, compared to lightweight databases. It is optimized for performance and data integrity, but this can lead to higher resource utilization, particularly in high-volume or high-concurrency scenarios.
+- **Not as straightforward:** PostgreSQL has a wider range of features and options, so it can be a bit a more complex to set up and configure. It can have a steeper learning curve for developers who are new to databases or have experience primarily with simpler systems.
+- **Can be resource intensive:** PostgreSQL can consume more system resources, such as memory and CPU, compared to lightweight databases. It is optimized for performance and data integrity, but this can lead to higher resource utilization, particularly in high-volume or high-concurrency scenarios.
 
 **Here are a few cases of when to choose PostgreSQL:**
 
-- **Building web apps of all sizes**: PostgreSQL is great for web applications of all sizes, whether it's a small personal website or a large-scale enterprise system. You can use it whether you're building an e-commerce platform, a content management system, or a social network. Its reliability, transaction support, and advanced querying capabilities make it very reliable for handling structured data.
-- **Exploring data in financial apps**: PostgreSQL offers various optimization techniques, such as query optimization, indexing, and parallel query execution. These features enhance the efficiency of financial data analysis. PostgreSQL's support for advanced data types, such as numeric, monetary, and timestamp, also ensures accurate representation and manipulation of financial information. Plus, it’s ability to be adapted to your needs through user-defined functions, custom aggregates, and stored procedures gives you the flexibility to implement specialized financial calculations and algorithms.
-- **Powering mobile apps**: PostgreSQL can serve as a reliable backend database for mobile applications, by offering scalable storage and synchronization capabilities. It allows mobile apps to store and retrieve user data, synchronize information across devices, and handle offline data synchronization.
+- **Building web apps of all sizes:** PostgreSQL is great for web applications of all sizes, whether it's a small personal website or a large-scale enterprise system. You can use it whether you're building an e-commerce platform, a content management system, or a social network. Its reliability, transaction support, and advanced querying capabilities make it very reliable for handling structured data.
+- **Exploring data in financial apps:** PostgreSQL offers various optimization techniques, such as query optimization, indexing, and parallel query execution. These features enhance the efficiency of financial data analysis. PostgreSQL's support for advanced data types, such as numeric, monetary, and timestamp, also ensures accurate representation and manipulation of financial information. Plus, it’s ability to be adapted to your needs through user-defined functions, custom aggregates, and stored procedures gives you the flexibility to implement specialized financial calculations and algorithms.
+- **Powering mobile apps:** PostgreSQL can serve as a reliable backend database for mobile applications, by offering scalable storage and synchronization capabilities. It allows mobile apps to store and retrieve user data, synchronize information across devices, and handle offline data synchronization.
 
 ### NoSQL: unraveler of the unstructured
 
@@ -148,7 +149,7 @@ The history of NoSQL dates back to the [early 2000s](https://en.wikipedia.org/wi
 
 - **Versatile:** NoSQL databases can handle unstructured or semi-structured data, making them suitable for projects with changing data requirements. The databases also offer various data models, such as key-value, document, columnar, or graph databases. They can handle unstructured, semi-structured, and diverse data types without the need for predefined schemas., which allows developers to iterate quickly
 - **Scalable:** NoSQL databases are specifically designed for horizontal scaling, so they can handle large volumes of data and high traffic loads. Also, NoSQL databases often have built-in caching mechanisms that enhance performance and reduce the load on underlying storage.
-- **Fault-tolerant**: NoSQL databases can replicate data across multiple nodes, providing fault tolerance during hardware failures or network issues. This replication strategy ensures that data remains accessible even during node failures, offering high availability, improved resilience, and durability.
+- **Fault-tolerant:** NoSQL databases can replicate data across multiple nodes, providing fault tolerance during hardware failures or network issues. This replication strategy ensures that data remains accessible even during node failures, offering high availability, improved resilience, and durability.
 
 **Drawbacks of NoSQL:**
 
@@ -157,8 +158,8 @@ The history of NoSQL dates back to the [early 2000s](https://en.wikipedia.org/wi
 
 **Here are a few cases of when to choose NoSQL:**
 
-- **Handling Internet of Things (IoT) apps**: NoSQL databases are good at storing and processing unstructured or semi-structured data due to their flexible data model and scalability. These databases are adept at storing and handling data from IoT devices, such as managing sensor readings, processing telemetry data, and organizing device logs for IoT app integration.
-- **Processing real-time analytics**: NoSQL databases can be used to analyze streaming data or generate real-time insights. They can handle the velocity and volume of data as well as log data and time-series data, in which events or data points are associated with timestamps. Examples include monitoring systems, application logging, and financial market data analysis.
+- **Handling Internet of Things (IoT) apps:** NoSQL databases are good at storing and processing unstructured or semi-structured data due to their flexible data model and scalability. These databases are adept at storing and handling data from IoT devices, such as managing sensor readings, processing telemetry data, and organizing device logs for IoT app integration.
+- **Processing real-time analytics:** NoSQL databases can be used to analyze streaming data or generate real-time insights. They can handle the velocity and volume of data as well as log data and time-series data, in which events or data points are associated with timestamps. Examples include monitoring systems, application logging, and financial market data analysis.
 - **Optimizing content caching:** NoSQL databases can store and retrieve frequently accessed data, which can enhance performance and user experiences. For example, caching frequently accessed web pages or session data in a NoSQL database can significantly reduce response times.
 
 ## Summing it up
