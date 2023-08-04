@@ -46,8 +46,8 @@ Let's dive a bit deeper into the world of tables and explore how parent-child re
 
 For instance, in a blog database, we can have `Posts` as the parent table and `Comments` as the child table. Using SQL, it might look something like the following:
 
-- Parent Table: `Posts`
-The `Posts` table contains information about the blog posts, such as the post title, content, publication date, and the author of the post.
+- Parent Table: `Posts`  
+  - The `Posts` table contains information about the blog posts, such as the post title, content, publication date, and the author of the post.
 
 ```sql
 CREATE TABLE posts (
@@ -60,7 +60,7 @@ CREATE TABLE posts (
 ```
 
 - Child Table: `Comments`
-The `Comments` table is a child table related to the `Posts` table through the `post_id` column. It stores comments made by users on specific blog posts, along with the name of the commenter and the comment content.
+  - The `Comments` table is a child table related to the `Posts` table through the `post_id` column. It stores comments made by users on specific blog posts, along with the name of the commenter and the comment content.
 
 ```sql
 CREATE TABLE comments (
@@ -117,7 +117,7 @@ There are several types of database models and database schemas, each with its o
 
 Designing a database schema is undeniably one of the most critical tasks you’ll undertake in your project! It helps keep things organized, prevents duplication, and makes data retrieval easy. A well-designed schema keeps data consistent and accurate and reduces errors. Plus, it speeds up data access for applications. A good database schema design can make or break your project.
 
-Here are **10** pointers to consider (in no particular order) for good database schema design:
+Here are **10** pointers (in no particular order) to consider when designing a database schema:
 
 1. **Uphold data integrity**: Set unique labels for each piece of data to avoid mix-ups. Data should be reliable and consistent. By setting rules like primary keys, foreign keys, and unique constraints, you can prevent data errors.
 1. **Champion for normalization:** Sort similar data into different tables to keep things tidy and organized. Organize data into neat tables and reduce repetition. Data normalization helps eliminate data redundancy, by applying defined rules that divide larger tables into smaller tables, link them using relationships and ensure the data appears consistent across all fields and records
@@ -132,7 +132,7 @@ Here are **10** pointers to consider (in no particular order) for good database 
 
 ## How to design a database schema
 
-Now that we have an idea of what goes into designing a database schema, let’s apply  it to an example. We’ll mix it up and move away from the blog example; let’s see how this can apply to a [movie database](https://xmdb.vercel.app) - something like what we built in our [XMDB tutorial](https://xata.io/docs/examples/xmdb) (y*ou can also check out [this blog po](https://xata.io/blog/server-actions-data-handling)st if you want to learn more about how we built XMDB).*
+Now that we have an idea of what goes into designing a database schema, let’s apply  it to an example. We’ll mix it up and move away from the blog example; let’s see how this can apply to a [movie database](https://xmdb.vercel.app) - something like what we built in our [XMDB tutorial](https://xata.io/docs/examples/xmdb) (you can also check out [this blog post](https://xata.io/blog/server-actions-data-handling) if you want to learn more about how we built XMDB).
 
 Consider a movie database with entities such as `Movies`, `Actors`, and `Directors`, and their respective attributes:
 
@@ -166,6 +166,7 @@ CREATE TABLE directors (
 ```
 
 - **Normalize data:** Avoid redundancy. For example, if an actor stars in multiple movies, store the actor details only once in a `actors` table and use the `movie_actor` table to represent their associations.
+
 - **Establish relationships:** Create relationships between `Movies`, `Actors`, and `Directors` to represent their associations.
     - *Many-to-many relationship*: A movie can have multiple actors, and an actor can be associated with multiple movies.
 
