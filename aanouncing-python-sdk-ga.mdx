@@ -1,9 +1,9 @@
 ---
-title: 'Announcing GA of the Xata Python SDK'
+title: 'Announcing GA of our Python SDK'
 description: 'We are excited to ship the first stable version of our Python SDK'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-go-logos.png
-  alt: Xata Python
+  alt: Xata Python SDK
 author: Philip Krauss
 date: 08-28-2023
 published: true
@@ -16,8 +16,9 @@ We are thrilled to announce the [1.0.0](https://pypi.org/project/xata/1.0.0/) re
 
 We changed a couple of things under the hood about how connections are being managed and reused. The refactoring yielded significant performance improvements across the board the most significant ones are, on average:
 
-| Get a single record | 5.95x |
+| Operation | Speedup |
 | --- | --- |
+| Get a single record | 5.95x |
 | Insert a single record | 4.95x |
 | Insert 100 records with transactions | 2.22x |
 
