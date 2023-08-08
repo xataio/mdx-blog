@@ -1,0 +1,57 @@
+---
+title: 'Announcing GA of the Xata Python SDK'
+description: 'We are excited to ship the first stable version of our Python SDK'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-go-logos.png
+  alt: Xata Python
+author: Philip Krauss
+date: 04-12-2023
+published: true
+slug: announcing-the-python-sdk-ga
+---
+
+We are thrilled to announce the [1.0.0](https://pypi.org/project/xata/1.0.0/) release of our Python SDK.
+
+## Speed Improvements
+
+We changed a couple of things under the hood about how connections are being managed and reused. The refactoring yielded significant performance improvements across the board the most significant ones are, on average:
+
+| Get a single record | 5.95x |
+| --- | --- |
+| Insert a single record | 4.95x |
+| Insert 100 records with transactions | 2.22x |
+
+## PEP-8 FTW!
+
+We received the feedback that SDK does not feel pythonic, and couldn’t agree more! Initially, in the `0.x` releases, the API was generated one by one from [our OpenAPI specification](https://xata.io/docs/rest-api/openapi), this resulted in a non-pythonic API. We have aligned as much as possible with the [PEP-8](https://peps.python.org/pep-0008/) standard.
+
+## How do I migrate to 1.x?
+
+Migrating to a new major can be painful to get up to speed on the breaking changes and dropped functionality. With that in mind, we were trying to minimize the impact while still making necessary changes for the good. You can check out the [full migration guide](https://xata.io/docs/python-sdk/migration-guide) in our docs.
+
+The most impactful user-facing change is the renaming of the API surface [[xata-py#93](https://github.com/xataio/xata-py/issues/93)] and considered a breaking change. Additionally, some API endpoint calls were simplified to remove unnecessary code bloat, like creating a database.
+
+Previously in `0.x`, you needed to investigate the payload shape and be specific about what region and the branch name.
+
+```python
+xata.databases().createDatabase("new_db",
+  {
+    "region": "us-east-1",
+    "branchName": "main",
+  }
+)
+```
+
+Since `1.0.*`, we reshaped the API surface, to push the payload options into the method signature and made assumptions to reuse the SDK internal values, like the `region`. This creates a much leaner API and you can simply do this:
+
+```python
+xata.databases().create("new_db")
+```
+
+## What happens to 0.x?
+
+We are going to continue to support the `0.x`  version of SDK with maintenance releases for one more year, meaning a new API and security fixes will be added but no helpers or other improvements will be backported. The `0.x` product line of the SDK will be sunsetted on September 1st, 2024.
+
+## What’s next?
+
+We’d love to hear that from you! If you think something is missing, or found a bug please open a ticket on the [xata-py](https://github.com/xataio/xata-py) repository. Any contributions are welcome!
