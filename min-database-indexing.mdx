@@ -7,13 +7,13 @@ image:
 author: J Edwards
 date: 08-11-2023
 published: true
-slug: database-indexing
+slug: min-database-indexing
 ---
 
 > Want to grasp a complex concept in the time it takes to brew your morning coffee?  In our **Xata 3-Minute Reads** series we offer concise explanations to help you unravel intricate database concepts without the time commitment. Today we are looking at **database indexing**.
 
 
-## **What is database indexing?**
+## What is database indexing?
 
 At its core, a database index is pretty much like an index in a book - it allows you to quickly find information without having to read through all of the content. In a database, indexing involves creating a structured roadmap that speeds up the retrieval of specific information from a huge collection of data.
 
@@ -26,7 +26,7 @@ When a user hunts for movies from a specific year, your query instantly knows wh
 Without indexing, databases might need to scan through every row of data to find the desired information. By creating a roadmap that guides database systems to relevant data points, indexing can reduce the time required for queries and can help ensure that query tasks are performed quickly, without unnecessary strain on system resources.
 
 
-### **Key considerations for database indexing**
+### Key considerations for database indexing
 
 When dealing with database indexing, there are a few points to consider:
 
@@ -35,29 +35,29 @@ When dealing with database indexing, there are a few points to consider:
 - **Update impact:** As data changes, indexes must be updated as well. This update process can impact database performance, so choosing when and how to update indexes is a strategic decision.
 
 
-### **Applying database indexing**
+### Applying database indexing
 
 Database indexing is applied using SQL statements that define which columns to index and how. Different types of indexes, such as B-tree, hash, and full-text indexes, cater to different data structures and use cases.
 
 **Types of database indexes include:**
 
-#### **B-Tree index**
+#### B-Tree index
 
 The name "B-Tree" comes from the structure it forms - a balanced tree. This index type is good at maintaining balance between efficient range queries (like selecting values between A and Z) and quick equality searches (finding a specific value). 
 
-#### **Hash index**
+#### Hash index
 
 The term "Hash" refers to the method this index uses. It uses a hash function to create a unique identifier (hash) for each data value. The identifier acts as a pointer to the data, making searches for exact matches super fast.
 
-#### **Bitmap index**
+#### Bitmap index
 
 "Bitmap" uses a series of 0s and 1s, similar to a bitmap image. Each bit represents the presence or absence of a data value in a particular category. This is pretty efficient for low-cardinality columns.
 
-#### **Full-text index**
+#### Full-text index
 
 "Full-Text" indicates the scope of this index type. It's tailored for analyzing large text fields. Instead of just keywords, it considers the entire text, which is great for thorough keyword searches. 
 
-#### **Spatial index**
+#### Spatial index
 
 "Spatial" refers to the index's focus on spatial, or geographic, data. This index type arranges geographical coordinates (latitude, longitude) to allow for quick spatial queries. 
 
@@ -81,7 +81,7 @@ SELECT * FROM products WHERE category = 'Tees';
 
 In the first query, without an index, the database would need to scan the entire **`products`** table to find matching rows. In the second query, after creating an index on the **`category`** column, the database engine can jump to the rows related to 'Tees'.
 
-#### **Improving join operations**
+#### Improving join operations
 
 Indexes are not limited to single-column scenarios. They can work in join operations too. Consider a scenario where you're joining the **`orders`** and **`customers`** tables:
 
@@ -116,7 +116,7 @@ CREATE INDEX idx_date ON sales(date);
 SELECT SUM(amount) FROM sales WHERE date BETWEEN '2023-01-01' AND '2023-08-30';
 ```
 
-By indexing the **`date`** column, the query's execution time is reduced.
+By indexing the `date` column, the query's execution time is reduced.
 
 So there you have it –  database indexing demystified (a little). While we've only scratched the surface of this topic, you now hold the key to understanding how indexes work their magic in optimizing data retrieval.
 
