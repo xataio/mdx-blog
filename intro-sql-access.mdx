@@ -1,0 +1,32 @@
+---
+title: 'Query your database using SQL'
+description: 'Run SQL queries over HTTP directly in PostgreSQL'
+author: Noémi Ványi
+date: 08-24-2023
+published: false
+slug: sql-query-over-http-intro
+---
+
+We are excited to introduce direct SQL access to your database.
+
+Internally, Xata relies on PostgreSQL for storing your data. We would
+like you to enjoy the goodness of SQL apart from the existing Xata
+API.  From now on we support running some SQL commands over HTTP.  The
+allowed statements are `SELECT`, `INSERT`, `UPDATE` and `DELETE` with
+some limitations.
+
+You can run your queries over HTTP using either one of our SDKs or
+directly using the REST API. You can submit one SQL statement in a
+request. Multiple statements are not yet supported.
+
+## How does it work?
+
+We run a PostgreSQL instance that stores your database. Xata authenticates
+and authorizes your request. If you have access to the database branch,
+we validate that your statement is correct and only contains SQL keywords
+and functions that are allowed.
+
+If your statement is correct, we run it in PostgreSQL and return the response
+from PostgreSQL, including rows and errors.
+
+You can find more details about the SQL access in the documentation.
