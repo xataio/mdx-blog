@@ -1,6 +1,6 @@
 ---
 title: 'Announcing General Availability of the Python SDK'
-description: 'We are excited to ship the first general available version of the Xata Python SDK'
+description: 'We are excited to ship the first general available version of the Xata Python SDK.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-go-logos.png
   alt: Xata Python SDK
@@ -10,11 +10,15 @@ published: true
 slug: announcing-the-python-sdk-ga
 ---
 
-Xata started with the idea to provide a great developer experience for [Jamstack](blog/jamstack-mern-lamp-stack-comparison#jamstack-and-databases) engineers, hence we invested in a solid [TypeScript experience](https://www.npmjs.com/package/@xata.io/client). 
+Xata started with the idea to provide a great developer experience for [Jamstack](/blog/jamstack-mern-lamp-stack-comparison#jamstack-and-databases) engineers, hence we invested in a solid [TypeScript experience](https://www.npmjs.com/package/@xata.io/client). 
 But we also released a Python SDK with minimal functionality. 
 Since that initial release, a few things have changed. The world has gone AI-crazy and Python has unofficially become the language of AI / ML. And, we released support for vector embeddings and our OpenAI integration for ChatGPT on your data.
 The Python SDK user base was growing steadily and we collected feedback what people liked or didn't. 
-Today, we are thrilled to announce the [1.0.0](https://pypi.org/project/xata/1.0.0/) release of our [Python SDK](https://xata.io/docs/python-sdk/overview).
+Today, we are thrilled to announce the [v1.0.0 release](https://pypi.org/project/xata/1.0.0/) of our [Python SDK](/docs/python-sdk/overview).
+
+## PEP-8 FTW!
+
+We received feedback that the SDK didn't not feel pythonic, and we couldn’t agree more! Initially, in the `0.x` releases, the API was generated one by one from [our OpenAPI specification](/docs/rest-api/contexts), which resulted in a non-pythonic API. For this release, we have aligned as much as possible with the [PEP-8](https://peps.python.org/pep-0008/) standard.
 
 ## Speed improvements
 
@@ -26,13 +30,9 @@ We changed a couple of things under the hood about how connections being managed
 | Insert a single record | 4.95x |
 | Insert 100 records with transactions | 2.22x |
 
-## PEP-8 FTW!
-
-We received feedback that the SDK didn't not feel pythonic, and we couldn’t agree more! Initially, in the `0.x` releases, the API was generated one by one from [our OpenAPI specification](https://xata.io/docs/rest-api/openapi), which resulted in a non-pythonic API. For this release, we have aligned as much as possible with the [PEP-8](https://peps.python.org/pep-0008/) standard.
-
 ## How to migrate to 1.x?
 
-Migrating to a new major version can be painful to get up to speed on the breaking changes and dropped functionality. With that in mind, we were trying to minimize the impact while still making necessary changes for the good. You can check out the [full migration guide](https://xata.io/docs/python-sdk/migration-guide) in our docs.
+Migrating to a new major version can be painful to get up to speed on the breaking changes and dropped functionality. With that in mind, we were trying to minimize the impact while still making necessary changes for the good. You can check out the [full migration guide](/docs/python-sdk/migration-guide) in our docs.
 
 The most impactful user-facing change is the renaming of the API surface [[xata-py#93](https://github.com/xataio/xata-py/issues/93)] and considered a breaking change. Additionally, some API endpoint calls were simplified to remove unnecessary code bloat, like creating a database.
 
@@ -59,7 +59,7 @@ We are going to continue to support the `0.x` version of the Xata Python SDK wit
 
 ## What’s next?
 
-Check out our [documentation](https://xata.io/docs/python-sdk/migration-guide) and let us know what you think. We’d love to hear from you! If you think something is missing or found a bug, open a ticket in the [xata-py](https://github.com/xataio/xata-py) repository. All contributions are welcome. You can also follow us on [Twitter](https://twitter.com/xata) or join us in [Discord](https://xata.io/discord).
+Check out our [documentation](/docs/python-sdk/migration-guide) and let us know what you think. We’d love to hear from you! If you think something is missing or found a bug, open a ticket in the [xata-py](https://github.com/xataio/xata-py) repository. All contributions are welcome. You can also follow us on [Twitter](https://twitter.com/xata) or join us in [Discord](https://xata.io/discord).
 
 If Go is your language of choice, our community got you covered! The xata-go SDK, was initated by [Kerdo](https://github.com/kerdokurs) is hosted on [GitHub](https://github.com/kerdokurs/xata-go) and don't forget the check out [the story behind xata-go, a Go SDK for Xata](/blog/community-spotlight-xata-go-sdk).
 In case you are looking for terraform provider to provision Xata, head over to [terraform-provider-xata](https://github.com/mrkresnofatih/terraform-provider-xata) created by [mrkresnofatih](https://github.com/mrkresnofatih)! 
