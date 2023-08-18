@@ -7,7 +7,8 @@ published: false
 slug: sql-query-over-http-intro
 ---
 
-We are excited to introduce direct SQL access to your database.
+We are excited to announce the support for direct SQL access to your
+database.
 
 Internally, Xata relies on PostgreSQL for storing your data. We would
 like you to enjoy the goodness of SQL apart from the existing Xata
@@ -15,18 +16,35 @@ API.  From now on we support running some SQL commands over HTTP.  The
 allowed statements are `SELECT`, `INSERT`, `UPDATE` and `DELETE` with
 some limitations.
 
-You can run your queries over HTTP using either one of our SDKs or
-directly using the REST API. You can submit one SQL statement in a
-request. Multiple statements are not yet supported.
+So if there is something that is not covered by the Xata API, you can
+submit an SQL query over HTTP to solve the problem. You can run your
+queries over the regular Xata way either using the SDK or our REST
+API. You can submit one SQL statement in a request. Multiple
+statements are not yet supported.
 
 ## How does it work?
 
-We run a PostgreSQL instance that stores your database. Xata authenticates
-and authorizes your request. If you have access to the database branch,
-we validate that your statement is correct and only contains SQL keywords
-and functions that are allowed.
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/sql-intro.png"
+  width="2083"
+  height="1386"
+  alt="Diagram of PostgreSQL proxy"
+  caption="Diagram of PostgreSQL proxy"
+  position="center"
+/>
+
+We run a PostgreSQL instance that stores your database. Xata
+authenticates and authorizes your request. If you have access to the
+database branch, we validate that your statement is correct and only
+contains only allowed SQL keywords and functions.
 
 If your statement is correct, we run it in PostgreSQL and return the response
 from PostgreSQL, including rows and errors.
 
 You can find more details about the SQL access in the documentation.
+
+## Limitations
+
+As you access your database directly using SQL, the Xata goodies will not
+be accessible to you. For example the special `email` Xata type is not safe.
+You can only add or edit special data types using the Xata API.
