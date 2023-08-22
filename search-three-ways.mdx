@@ -18,7 +18,7 @@ In this example, we’ll walk you through three different ways you can search yo
 
 ## Partial Match Search
 
-The first method available is [partial match search](https://xata.io/docs/typescript-client/filtering#partial-match). This involves grabbing a search term from a request and then using Xata to grab the first N accounts with either name, username, description, or location containing the search term. In the code below, a helper function is created to replace every instance of the search term with the same term enclosed in an `<em>` tag. This helper function is then used to add a highlighted version of the name and other values to create partial match search with highlighting.
+The first method available is [partial match search](/docs/sdk/filtering#partial-match). This involves grabbing a search term from a request and then using Xata to grab the first N accounts with either name, username, description, or location containing the search term. In the code below, a helper function is created to replace every instance of the search term with the same term enclosed in an `<em>` tag. This helper function is then used to add a highlighted version of the name and other values to create partial match search with highlighting.
 
 ```tsx
 import { contains } from '@xata.io/client';
@@ -61,7 +61,7 @@ export default async function handler(req, res) {
 
 ## Fuzzy Search
 
-The second method Xata provides is [fuzzy full-text search](https://xata.io/docs/typescript-client/search). Fuzzy search involves grabbing the search term from the request and then using Xata to search for the term in the accounts table. This method is different from partial match search in that it also matches words that are not identical to the search term. In the code below use Xata's helper function, `getMetadata()`, to access a highlighted version of the record.
+The second method Xata provides is [fuzzy full-text search](/docs/sdk/search). Fuzzy search involves grabbing the search term from the request and then using Xata to search for the term in the accounts table. This method is different from partial match search in that it also matches words that are not identical to the search term. In the code below use Xata's helper function, `getMetadata()`, to access a highlighted version of the record.
 
 ```tsx
 import { getXataClient } from '../../xata';
@@ -95,7 +95,7 @@ export default async function handler(req, res) {
 
 ## Semantic Search
 
-Last but certainly not least, the final method is [semantic (AI) search](https://xata.io/docs/typescript-client/vector-search). Semantic search involves grabbing the search term from the request and transforming it into an embedding using OpenAI. Xata can then perform a vector search with the search term embedding against the embedding for each account. The embeddings are vectors of floating-point numbers, and the distance between two vectors measures their relatedness. This allows you to search for terms like the search term from the request and receive responses that are related.
+Last but certainly not least, the final method is [semantic (AI) search](/docs/sdk/vector-search). Semantic search involves grabbing the search term from the request and transforming it into an embedding using OpenAI. Xata can then perform a vector search with the search term embedding against the embedding for each account. The embeddings are vectors of floating-point numbers, and the distance between two vectors measures their relatedness. This allows you to search for terms like the search term from the request and receive responses that are related.
 
 ```jsx
 import { Configuration, OpenAIApi } from 'openai';
