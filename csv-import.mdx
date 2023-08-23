@@ -1,0 +1,81 @@
+---
+title: 'Bring your own data with CSV import'
+description: 'Bring your own data with CSV import'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-rename.png
+  alt: 'Database schema design'
+author: Richard Gill
+date: 08-26-2023
+published: true
+slug: csv-import-export
+---
+
+We know how important bringing your own data is when getting started with Xata. Often you’ve already got your own data and you don’t want to waste time manually creating a schema from scratch and then writing the code to import the data.
+
+While the option to import CSV files via the [Xata CLI](https://something.com) has always been part of our offering, we've taken things a step further. Based on valuable feedback from our user community, we've crafted a more user-friendly approach for data importing and exporting using the Xata UI. This means an easier, more intuitive way to work with your data, saving you time and making the whole process smoother.
+
+We’re introducing a new CSV import UI experience, built from scratch, to make your Xata journey simpler - allowing you to automatically add new tables by importing your data directly into a Xata database. Also, we’ve added an export feature that allows you seamlessly download your data to CSV.
+
+## Preview before you import
+
+To get started click on the import csv button in the sidebar:
+
+**gif_goes_here**
+
+Browse or drag your csv file (read the docs to see the formats we support)
+
+Xata will preview the first 1000 rows in the file and intelligently guess the column types based on the data in your CSV.
+
+In some cases the column types might not be what you want, in which case you can change them in the drop down and the preview will refresh. You can also rename columns.
+
+**gif_goes_here**
+
+
+Errors are highlighted in red.
+
+When you’re happy with how the preview looks you can…
+
+## Start the import
+
+Importing large files can take a while, be sure to leave your browser tab open whilst the import happens.
+
+Any errors encountered while importing rows will be displayed in real-time. You'll have the option to download a summary of all these errors once the import is finished.
+
+**Screenshot goes here**
+
+If something isn’t right you can stop the import and go back to the preview screen to tweak your settings.
+
+There is no cap on the size of the files you can upload - we’ve successfully imported 10 million rows in a 1GB CSV file.
+
+## Exporting to CSV
+
+We’ve also added the highly requested feature to download a Xata table as a CSV.
+
+To download your table click the action button at the top of your table:
+
+**Screenshot goes here**
+
+There are two options for downloading a CSV:
+
+### **Export full table to CSV**
+
+This exports all the rows from your table. Links only include the id.
+
+You might find this useful to take a quick back up, or export data into another system (or right back into another Xata table).
+
+### **Export current view to CSV**
+
+The will export a CSV which looks exactly the same as your current table view (including filters, columns and sorts).
+
+You might find this useful to share data with someone or importing a subset of the rows into a spreadsheet for analysis.
+
+## Open source import
+
+We’ve open sourced `@xata.io/[importer](https://github.com/xataio/client-ts/tree/main/packages/importer)` our core code which parses CSV’s - if you’re interested in building something which parse’s CSVs into a Xata database please check it out.
+
+Happy importing and exporting!
+
+---
+
+#
+We’d love your feedback on this feature, if you have any suggestions, questions, or issues reach out to us on [Discord](https://xata.io/discord) or follow us on [Twitter](https://twitter.com/xata). We'd love to hear from you and keep you updated on the latest at Xata.
