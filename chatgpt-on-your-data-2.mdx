@@ -64,7 +64,7 @@ const functions: CompletionCreateParams.Function[] = [
 
 If we want to allow OpenAI to fine-tune the search results, we can add more options to the `parameters` object. For example, we can add a `fuzziness` parameter to allow for fuzzy search.
 
-```diff
+```diff,ts
 const functions: CompletionCreateParams.Function[] = [
   {
     name: 'full_text_search',
@@ -108,7 +108,7 @@ With the functions defined, the AI will be able to call the `full_text_search` f
 
 If we want to improve the results, we can add more information to the `messages` array as system messages. For example, we give instructions to the AI or hints about our database.
 
-```diff
+```diff,ts
 +const { schema } = await api.branches.getBranchDetails({ workspace, region, database, branch });
 
 const response = await openai.chat.completions.create({
