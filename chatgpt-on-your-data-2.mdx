@@ -180,6 +180,18 @@ return new StreamingTextResponse(stream);
 
 We have chosen to stream the results to the client, but you can also wait for the completion to finish and return the results as a single response.
 
+### Bonus - Building an interactive chatbot UI
+
+With React and the [useChat hook](https://sdk.vercel.ai/docs/api-reference/use-chat) you can easily create a chatbot that can answer questions about your data.
+
+```tsx
+const { messages, append, reload, stop, isLoading } = useChat({
+  // The route to the endpoint we have just created
+  api: '/api/chat',
+  initialMessages
+});
+```
+
 ### Conclusion
 
 Congratulations! You've just built a powerful system that combines the capabilities of OpenAI and Xata's database API. Users can now engage in natural language conversations with their databases, and OpenAI will utilize the provided functions to perform searches and retrieve relevant information.
