@@ -35,7 +35,7 @@ Setting this to false will deploy the blog post live to the website, but will hi
 ## Images
 
 ```md
-![](../images/my-image.png)
+![](/images/my-image.png)
 ```
 
 ### Code syntax
