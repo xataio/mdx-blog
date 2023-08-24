@@ -133,10 +133,7 @@ const response = await openai.chat.completions.create({
 });
 ```
 
-<Alert status="info">
-  For more accurate responses, we recommend using GPT-4 model instead of GPT-3.5-turbo. You can set the model to `gpt-4`
-  in the request to OpenAI.
-</Alert>
+OpenAI offers multiple models listed [here](https://platform.openai.com/docs/models/overview), if you have the need to use a different model that fits your use case better, simply change the `model` variable.
 
 ## Step 3 - Running the completion and streaming the results
 
