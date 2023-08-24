@@ -64,7 +64,7 @@ const functions: CompletionCreateParams.Function[] = [
 
 If we want to allow OpenAI to fine-tune the search results, we can add more options to the `parameters` object. For example, we can add a `fuzziness` parameter to allow for fuzzy search.
 
-```ts
+```ts {12-15}
 const functions: CompletionCreateParams.Function[] = [
   {
     name: 'full_text_search',
@@ -76,10 +76,10 @@ const functions: CompletionCreateParams.Function[] = [
           type: 'string',
           description: 'The search query'
         },
-+        fuzziness: {
-+          type: 'number',
-+          description: 'Maximum levenshtein distance for fuzzy search, minimum 0, maximum 2'
-+        }
+        fuzziness: {
+          type: 'number',
+          description: 'Maximum levenshtein distance for fuzzy search, minimum 0, maximum 2'
+        }
       },
       required: ['query']
     }
@@ -108,30 +108,30 @@ With the functions defined, the AI will be able to call the `full_text_search` f
 
 If we want to improve the results, we can add more information to the `messages` array as system messages. For example, we give instructions to the AI or hints about our database.
 
-```ts
-+const { schema } = await api.branches.getBranchDetails({ workspace, region, database, branch });
+```ts {1,11-23}
+const { schema } = await api.branches.getBranchDetails({ workspace, region, database, branch });
 
 const response = await openai.chat.completions.create({
   model: 'gpt-3.5-turbo',
   stream: true,
   messages: [
     {
-      role: "user",
+      role: 'user',
       content: question
     },
-+    {
-+      role: 'system',
-+      content: `
-+        Workspace: ${workspace}
-+        Region: ${region}
-+        Database: ${database}
-+        Branch: ${branch}
-+        Schema: ${JSON.stringify(schema)}
-+
-+        Reply to the user about the data in the database, do not reply about other topics.
-+        Only use the functions you have been provided with, and use them in the way they are documented.
-+      `
-+    }
+    {
+      role: 'system',
+      content: `
+        Workspace: ${workspace}
+        Region: ${region}
+        Database: ${database}
+        Branch: ${branch}
+        Schema: ${JSON.stringify(schema)}
+
+        Reply to the user about the data in the database, do not reply about other topics.
+        Only use the functions you have been provided with, and use them in the way they are documented.
+      `
+    }
   ],
   functions
 });
