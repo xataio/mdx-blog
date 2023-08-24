@@ -34,7 +34,9 @@ Setting this to false will deploy the blog post live to the website, but will hi
 
 ## Images
 
-For now, images need to be absolute URLs that point to their raw URL on GitHub. In a future build of the website, relative images will be pushed to Xata directly.
+```md
+![](../images/my-image.png)
+```
 
 ### Code syntax
 
