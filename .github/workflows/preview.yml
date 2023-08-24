@@ -13,9 +13,6 @@ on:
         description: 'Website branch to build from'
         default: 'main'
         type: string
-env:
-  VERCEL_ORG_ID: team_lMj2cFnO13wwm6LWz3X5kulx
-  VERCEL_PROJECT_ID: prj_7fENPf4qHhMCnz6j2IGYWDUkJ9wU
 
 jobs:
   build:
@@ -50,8 +47,8 @@ jobs:
             --env XATA_BRANCH=main \
             > deploy_url.txt
         env:
-          VERCEL_ORG_ID: $VERCEL_ORG_ID
-          VERCEL_PROJECT_ID: $VERCEL_PROJECT_ID
+          VERCEL_ORG_ID: team_lMj2cFnO13wwm6LWz3X5kulx
+          VERCEL_PROJECT_ID: prj_7fENPf4qHhMCnz6j2IGYWDUkJ9wU
 
       - name: Get deployment URL
         id: get-url
@@ -86,5 +83,5 @@ jobs:
             --token ${{ secrets.VERCEL_TOKEN }} \
             $(cat deploy_url.txt)
         env:
-          VERCEL_ORG_ID: $VERCEL_ORG_ID
-          VERCEL_PROJECT_ID: $VERCEL_PROJECT_ID
+          VERCEL_ORG_ID: team_lMj2cFnO13wwm6LWz3X5kulx
+          VERCEL_PROJECT_ID: prj_7fENPf4qHhMCnz6j2IGYWDUkJ9wU
