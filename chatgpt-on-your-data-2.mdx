@@ -28,18 +28,7 @@ Before we begin, make sure you have the following prerequisites:
 
 In your preferred serverless environment, make sure to install the [OpenAI API Library](https://github.com/openai/openai-node) and [Vercel ai library](https://github.com/vercel-labs/ai) to get started.
 
-## Step 1 - Initializing the OpenAI client
-
-First, we need to initialize the OpenAI client with our API key. We'll also set the engine to `gpt-3.5-turbo` for cost effective good results.
-
-```ts
-const openai = new OpenAI({
-  // Make sure to properly load and set your OpenAI API key here
-  apiKey: process.env.OPENAI_API_KEY
-});
-```
-
-## Step 2 - Defining a search function
+## Step 1 - Defining a search function
 
 Next, we'll define a function that will allow us to search our database using OpenAI's [Function calling](https://platform.openai.com/docs/guides/gpt/function-calling) feature.
 
@@ -87,11 +76,16 @@ const functions: CompletionCreateParams.Function[] = [
 ];
 ```
 
-## Step 3 - Ask a question about your data
+## Step 2 - Ask a question about your data
 
 Now that we have our search function defined, we can use the `openai` library to ask a question about our data.
 
 ```ts
+const openai = new OpenAI({
+  // Make sure to properly load and set your OpenAI API key here
+  apiKey: process.env.OPENAI_API_KEY
+});
+
 const response = await openai.chat.completions.create({
   model,
   messages: [
@@ -142,7 +136,7 @@ const response = await openai.chat.completions.create({
   in the request to OpenAI.
 </Alert>
 
-## Step 4 - Running the completion and streaming the results
+## Step 3 - Running the completion and streaming the results
 
 Finally, we can run the completion and stream the results to the client.
 
