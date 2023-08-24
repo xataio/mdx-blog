@@ -1,0 +1,190 @@
+---
+title: 'Xata & OpenAI: ChatGPT for your data (Part 2)'
+description: 'Use Xata to ask your data questions and get the answers that matter most.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/chatgpt-on-your-data.png
+  alt: Xata and ChatGPT logos
+author: Alexis Rico
+date: 08-29-2023
+published: true
+slug: chatgpt-on-your-data-2
+---
+
+In today's data-driven world, efficient interaction with databases is a crucial aspect of many applications. But what if we could go beyond conventional search methods and enable a natural language conversation with our databases?
+
+In the second part of this series, we'll show you how to integrate OpenAI's [Function calling](https://platform.openai.com/docs/guides/gpt/function-calling) feature with Xata's database API to create a chatbot that can answer questions about your data.
+
+By the end of this TypeScript tutorial, you'll have a functional endpoint that allows you to chat with your data and have OpenAI search your database using intuitive language.
+
+If you haven't already, check out [Part 1](https://xata.io/blog/chatgpt-on-your-data) of this series to learn how to use our built-in [ask endpoint](https://xata.io/docs/sdk/ask) that allows you to ask questions about your data with our APIs and SDKs.
+
+## Prerequisites
+
+Before we begin, make sure you have the following prerequisites:
+
+- Existing project configured with the [Xata CLI](https://xata.io/docs/getting-started/installation)
+- [Xata API key](https://app.xata.io/settings)
+- [OpenAI API key](https://platform.openai.com/account/api-keys)
+
+In your preferred serverless environment, make sure to install the [OpenAI API Library](https://github.com/openai/openai-node) and [Vercel ai library](https://github.com/vercel-labs/ai) to get started.
+
+## Step 1 - Initializing the OpenAI client
+
+First, we need to initialize the OpenAI client with our API key. We'll also set the engine to `gpt-3.5-turbo` for cost effective good results.
+
+```ts
+const openai = new OpenAI({
+  // Make sure to properly load and set your OpenAI API key here
+  apiKey: process.env.OPENAI_API_KEY
+});
+```
+
+## Step 2 - Defining a search function
+
+Next, we'll define a function that will allow us to search our database using OpenAI's [Function calling](https://platform.openai.com/docs/guides/gpt/function-calling) feature.
+
+```ts
+const functions: CompletionCreateParams.Function[] = [
+  {
+    name: 'full_text_search',
+    description: 'Full text search on a branch',
+    parameters: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'The search query'
+        }
+      },
+      required: ['query']
+    }
+  }
+];
+```
+
+If we want to allow OpenAI to fine-tune the search results, we can add more options to the `parameters` object. For example, we can add a `fuzziness` parameter to allow for fuzzy search.
+
+```diff
+const functions: CompletionCreateParams.Function[] = [
+  {
+    name: 'full_text_search',
+    description: 'Full text search on a branch',
+    parameters: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'The search query'
+        },
++        fuzziness: {
++          type: 'number',
++          description: 'Maximum levenshtein distance for fuzzy search, minimum 0, maximum 2'
++        }
+      },
+      required: ['query']
+    }
+  }
+];
+```
+
+## Step 3 - Ask a question about your data
+
+Now that we have our search function defined, we can use the `openai` library to ask a question about our data.
+
+```ts
+const response = await openai.chat.completions.create({
+  model,
+  messages: [
+    {
+      role: "user",
+      content: question
+    }
+  ],
+  functions
+});
+```
+
+With the functions defined, the AI will be able to call the `full_text_search` function and pass the `query` parameter with the parts of the question that are relevant to the search.
+
+If we want to improve the results, we can add more information to the `messages` array as system messages. For example, we give instructions to the AI or hints about our database.
+
+```diff
++const { schema } = await api.branches.getBranchDetails({ workspace, region, database, branch });
+
+const response = await openai.chat.completions.create({
+  model: 'gpt-3.5-turbo',
+  stream: true,
+  messages: [
+    {
+      role: "user",
+      content: question
+    },
++    {
++      role: 'system',
++      content: `
++        Workspace: ${workspace}
++        Region: ${region}
++        Database: ${database}
++        Branch: ${branch}
++        Schema: ${JSON.stringify(schema)}
++
++        Reply to the user about the data in the database, do not reply about other topics.
++        Only use the functions you have been provided with, and use them in the way they are documented.
++      `
++    }
+  ],
+  functions
+});
+```
+
+<Alert status="info">
+  For more accurate responses, we recommend using GPT-4 model instead of GPT-3.5-turbo. You can set the engine to `gpt-4` in the `openai` client.
+</Alert>
+
+## Step 4 - Running the completion and streaming the results
+
+Finally, we can run the completion and stream the results to the client.
+
+```ts
+const stream = OpenAIStream(response, {
+  experimental_onFunctionCall: async ({ name, arguments: args }, createFunctionCallMessages) => {
+    switch (name) {
+      case 'full_text_search': {
+        const response = await api.searchAndFilter.searchBranch({
+          workspace,
+          region,
+          database,
+          branch,
+          query: args.query as string,
+          fuzziness: args.fuzziness as number
+        });
+
+        const newMessages = createFunctionCallMessages(response);
+
+        return openai.chat.completions.create({
+          messages: [...messages, ...newMessages],
+          stream: true,
+          model,
+          functions
+        });
+      }
+      default:
+        throw new Error('Unknown OpenAI function call name');
+    }
+  }
+});
+
+return new StreamingTextResponse(stream);
+```
+
+We have chosen to stream the results to the client, but you can also wait for the completion to finish and return the results as a single response.
+
+### Conclusion
+
+Congratulations! You've just built a powerful system that combines the capabilities of OpenAI and Xata's database API. Users can now engage in natural language conversations with their databases, and OpenAI will utilize the provided functions to perform searches and retrieve relevant information.
+
+By following this tutorial, you've learned how to integrate multiple APIs, handle requests and create interactive responses. This foundation can be extended to create even more sophisticated systems that enable seamless human-machine interactions with data.
+
+If you want to learn more about Xata's database API, check out our [documentation](https://xata.io/docs) and come say hi on our [Discord](https://xata.io/discord) if you have any questions.
+
+Happy coding! 🦋
