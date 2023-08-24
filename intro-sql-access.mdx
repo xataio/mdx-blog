@@ -7,23 +7,21 @@ published: false
 slug: sql-query-over-http-intro
 ---
 
-We are excited to announce that Xata now offers direct SQL access to your database.
-database.
+We are excited to announce that Xata now offers direct SQL access to
+your database.
 
-Internally, Xata relies on [PostgreSQL](/docs/concepts/how-it-works) for storing your data.
-We want you to experience the benefits of SQL beyond the existing Xata API.
-API.  From now on we support running some SQL commands over HTTP.  The
-allowed statements are `SELECT`, `INSERT`, `UPDATE` and `DELETE` with
-some limitations.
+Internally, Xata relies on [PostgreSQL](/docs/concepts/how-it-works)
+for storing your data.  We want you to experience the benefits of SQL
+beyond the existing Xata API. From now on we support running some SQL
+commands over HTTP. The allowed statements are `SELECT`, `INSERT`,
+`UPDATE` and `DELETE` with some limitations.
 
-So if there is something that is not covered by the Xata API, you can
-You also have the flexibility to execute your queries using the
-conventional Xata approach - using either the SDK or our REST
-API. Each request can contain a single SQL statement; currently,
-support for multiple statements is not available.  queries over the
-regular Xata way either using the SDK or our REST API. You can submit
-one SQL statement in a request. Multiple statements are not yet
-supported.
+So if there is something that is not covered by the Xata API, you also
+have the flexibility to execute your queries using the conventional
+Xata approach - using either the SDK or our REST API. Each request can
+contain a single SQL statement; currently, support for multiple
+statements is not available. You can submit parameterized queries with
+parameters, so you are protected from SQL injection attacks.
 
 ## How does it work?
 
@@ -33,13 +31,50 @@ supported.
   caption="Diagram of PostgreSQL proxy"
 />
 
-We run a PostgreSQL instance that stores your database. Xata
-authenticates and authorizes your request. If you have access to the
-database branch, we validate that your statement is correct and only
-contains only allowed SQL keywords and functions.
+### Database storage
 
-If your statement is correct, we run it in PostgreSQL and return the response
-from PostgreSQL, including rows and errors.
+We run a PostgreSQL instance that stores your database. With opening
+up the access now you can directly query and edit database rows in
+PostgreSQL.
+
+### Authentication and authorization
+
+Xata plays a pivotal role in authenticating and authorizing your
+requests. This not only safeguards your data but also ensures that
+only legitimate users can access and manipulate the database. If you
+have access to the database branch, we validate that your statement is
+correct and only contains only allowed SQL keywords and functions.
+
+### Request validation
+
+For queries within the database branch, we go a step further by
+validating your SQL statement. We forbid several functions like
+`pg_sleep` or database administration commands, as we we run the
+database instance for you. We take care of administrator tasks.
+
+If your statement is correct, we run it in PostgreSQL and return the
+response, including rows and errors. If your statement has syntax
+errors or SQL errors, the error is returned to you. In case of
+forbidden or unknown functions, Xata returns unknown function
+error. All user errors get HTTP 400 (Bad request) responses with
+the error message.
+
+### SQL execution
+
+Assuming your statement is accurate and aligned with the allowed
+parameters, Xata proceeds to execute it within the PostgreSQL
+instance. This means that if you've requested a `SELECT`, `INSERT`,
+`UPDATE`, or `DELETE` operation and you might provided parameters.
+
+When running your SQL statement, we use a dedicated PostgreSQL role
+that only has access to the selected database branch objects be it
+tables, constraints or indices.
+
+### Response retrieval
+
+We serialize the response from PostgreSQL into JSON. We return at most
+1000 rows in a singe response. So please use pagination using `LIMIT`
+and `OFFSET` keywords.
 
 You can find more details about the SQL access in the documentation.
 
@@ -48,6 +83,9 @@ You can find more details about the SQL access in the documentation.
 As you access your database directly using SQL, the Xata goodies will not
 be accessible to you. For example the special `email` Xata type is not safe.
 You can only add or edit special data types using the Xata API.
+
+We support one statement per request.
+
 
 Let us know what you think! If you have any suggestions, questions, or
 issues reach out to us on [Discord](https://xata.io/discord) or follow
