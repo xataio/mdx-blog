@@ -86,6 +86,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
+const model = 'gpt-3.5-turbo';
+
 const response = await openai.chat.completions.create({
   model,
   messages: [
@@ -106,7 +108,7 @@ If we want to improve the results, we can add more information to the `messages`
 const { schema } = await api.branches.getBranchDetails({ workspace, region, database, branch });
 
 const response = await openai.chat.completions.create({
-  model: 'gpt-3.5-turbo',
+  model,
   stream: true,
   messages: [
     {
