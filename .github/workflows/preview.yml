@@ -75,3 +75,10 @@ jobs:
           edit-mode: replace
           body: |
             Check out the preview at ${{ steps.get-url.outputs.URL }}
+
+      - name: Job cancelled
+        if: ${{ cancelled() }}
+        run: |
+          vercel remove \
+            --token ${{ secrets.VERCEL_TOKEN }} \
+            $(cat deploy_url.txt)
