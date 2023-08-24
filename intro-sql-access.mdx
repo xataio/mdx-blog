@@ -2,7 +2,7 @@
 title: 'Query your database using SQL'
 description: 'Run SQL queries over HTTP directly in PostgreSQL'
 author: Noémi Ványi
-date: 08-24-2023
+date: 08-31-2023
 published: false
 slug: sql-query-over-http-intro
 ---
@@ -17,20 +17,20 @@ allowed statements are `SELECT`, `INSERT`, `UPDATE` and `DELETE` with
 some limitations.
 
 So if there is something that is not covered by the Xata API, you can
-You also have the flexibility to execute your queries using the conventional Xata approach – using either the SDK or our REST API. Each request can contain a single SQL statement; currently, support for multiple statements is not available.
-queries over the regular Xata way either using the SDK or our REST
-API. You can submit one SQL statement in a request. Multiple
-statements are not yet supported.
+You also have the flexibility to execute your queries using the
+conventional Xata approach - using either the SDK or our REST
+API. Each request can contain a single SQL statement; currently,
+support for multiple statements is not available.  queries over the
+regular Xata way either using the SDK or our REST API. You can submit
+one SQL statement in a request. Multiple statements are not yet
+supported.
 
 ## How does it work?
 
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/sql-intro.png"
-  width="2083"
-  height="1386"
   alt="Diagram of PostgreSQL proxy"
   caption="Diagram of PostgreSQL proxy"
-  position="center"
 />
 
 We run a PostgreSQL instance that stores your database. Xata
@@ -48,3 +48,7 @@ You can find more details about the SQL access in the documentation.
 As you access your database directly using SQL, the Xata goodies will not
 be accessible to you. For example the special `email` Xata type is not safe.
 You can only add or edit special data types using the Xata API.
+
+Let us know what you think! If you have any suggestions, questions, or
+issues reach out to us on [Discord](https://xata.io/discord) or follow
+us on [Twitter](https://twitter.com/xata).
