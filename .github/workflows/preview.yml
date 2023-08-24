@@ -49,6 +49,9 @@ jobs:
             --build-env XATA_BRANCH=main \
             --env XATA_BRANCH=main \
             > deploy_url.txt
+        env:
+          VERCEL_ORG_ID: $VERCEL_ORG_ID
+          VERCEL_PROJECT_ID: $VERCEL_PROJECT_ID
 
       - name: Get deployment URL
         id: get-url
@@ -82,3 +85,6 @@ jobs:
           vercel remove \
             --token ${{ secrets.VERCEL_TOKEN }} \
             $(cat deploy_url.txt)
+        env:
+          VERCEL_ORG_ID: $VERCEL_ORG_ID
+          VERCEL_PROJECT_ID: $VERCEL_PROJECT_ID
