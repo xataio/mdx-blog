@@ -19,6 +19,10 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      VERCEL_ORG_ID: team_lMj2cFnO13wwm6LWz3X5kulx
+      VERCEL_PROJECT_ID: prj_7fENPf4qHhMCnz6j2IGYWDUkJ9wU
+
     steps:
       - name: Checkout website repo
         uses: actions/checkout@v3
@@ -46,9 +50,6 @@ jobs:
             --build-env XATA_BRANCH=main \
             --env XATA_BRANCH=main \
             > deploy_url.txt
-        env:
-          VERCEL_ORG_ID: team_lMj2cFnO13wwm6LWz3X5kulx
-          VERCEL_PROJECT_ID: prj_7fENPf4qHhMCnz6j2IGYWDUkJ9wU
 
       - name: Get deployment URL
         id: get-url
@@ -81,10 +82,7 @@ jobs:
         run: |
           vercel remove \
             --token ${{ secrets.VERCEL_TOKEN }} \
-            --scope team_lMj2cFnO13wwm6LWz3X5kulx \
+            --scope $VERCEL_ORG_ID \
             --safe \
             --yes \
             $(cat deploy_url.txt)
-        env:
-          VERCEL_ORG_ID: team_lMj2cFnO13wwm6LWz3X5kulx
-          VERCEL_PROJECT_ID: prj_7fENPf4qHhMCnz6j2IGYWDUkJ9wU
