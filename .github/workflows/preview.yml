@@ -82,6 +82,8 @@ jobs:
           vercel remove \
             --token ${{ secrets.VERCEL_TOKEN }} \
             --scope team_lMj2cFnO13wwm6LWz3X5kulx \
+            --safe \
+            -- yes \
             $(cat deploy_url.txt)
         env:
           VERCEL_ORG_ID: team_lMj2cFnO13wwm6LWz3X5kulx
