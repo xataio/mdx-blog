@@ -12,18 +12,18 @@ slug: csv-import-export
 
 We know how important bringing your own data is when getting started with Xata. Often you’ve already got your own data and you don’t want to waste time manually creating a schema from scratch and then writing the code to import the data.
 
-Love it or hate it, CSV is simply the world's most popular data format. While the option to import CSV files via the [Xata CLI](/docs/csv-data/import-data-cli) has always been part of our offering, we've taken things a step further. 
+Love it or hate it, CSV is simply the world's most popular data format. While the option to import CSV files via the [Xata CLI](/docs/csv-data/import-data-cli) has always been part of our offering, we've taken things a step further.
 
 Simple at the surface, the devil is really in the details if you want to have a great CSV import experience - which we do! Here are some things we considered:
 
 - There is no well defined standard and lots of variations. For example there are different separators and header can be present or missing.
 - We wanted to support large files (millions of rows and GBs of data), meaning rows need to be streamed and processed in batches, while ensuring there are no memory leaks in the browser.
 - Importing with the correct data types is important. For example, a column might use numbers in the first few records, but then have a string value further in the file.
-- Treating and reporting errors in a user-friendly way is important. No on wants to attempt importing millions of rows only to be hit with an unhelpful error. 
+- Treating and reporting errors in a user-friendly way is important. No on wants to attempt importing millions of rows only to be hit with an unhelpful error.
 
 Keeping these items in mind and taking into account valuable feedback from our user community, we've crafted a more user-friendly approach for data importing and exporting using the Xata UI. This means an easier, more intuitive way to work with your data, saving you time and making the whole process smoother.
 
-As part of our [launch week](link-when-ready), we’re introducing a new CSV import UI experience, built from scratch, to make your Xata journey simpler - allowing you to automatically add new tables by importing your data directly into a Xata database. Also, we’ve added an export feature that allows you seamlessly download your data as a CSV file.
+As part of our [launch week](/blog/launch-week-august-2023), we’re introducing a new CSV import UI experience, built from scratch, to make your Xata journey simpler - allowing you to automatically add new tables by importing your data directly into a Xata database. Also, we’ve added an export feature that allows you seamlessly download your data as a CSV file.
 
 ## Preview before you import
 
@@ -53,11 +53,9 @@ If something isn’t right you can stop the import and go back to the preview sc
 
 There is no cap on the size of the files you can upload - we’ve successfully imported 10 million rows in a 1GB CSV file.
 
-
 ### Open source import
 
 We’ve open-sourced [@xata.io/importer](https://github.com/xataio/client-ts/tree/main/packages/importer) our core code which parses CSV files - if you're interested in building on top of our importer, we invite you to contribute.
-
 
 ## Exporting to CSV
 
