@@ -1,6 +1,6 @@
 ---
-title: 'Bring your own data with CSV import'
-description: 'Effortlessly import your data using CSV import functionality in the Xata UI'
+title: 'Bring (and take) your own data with CSV import and export'
+description: 'Simplified data import and export in the Xata UI to bring, manage, and retrieve your own data'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-rename.png
   alt: 'Database schema design'
@@ -53,9 +53,15 @@ If something isn’t right you can stop the import and go back to the preview sc
 
 There is no cap on the size of the files you can upload - we’ve successfully imported 10 million rows in a 1GB CSV file.
 
+
+### Open source import
+
+We’ve open-sourced [@xata.io/importer](https://github.com/xataio/client-ts/tree/main/packages/importer) our core code which parses CSV files - if you're interested in building on top of our importer, we invite you to contribute.
+
+
 ## Exporting to CSV
 
-We’ve also added the highly requested feature to download a Xata table as a CSV file.
+We’ve also added the [highly requested feature](https://xata.canny.io/feature-requests/p/export-records-to-file) to download a Xata table as a CSV file.
 
 To download your table click the **Actions** button at the top of your table:
 
@@ -66,10 +72,6 @@ There are two options for downloading a CSV file:
 - **Export full table to CSV:** This exports all the rows from your table. Links only include the ID. You might find this useful for creating a quick back up, or exporting data into another system (or right back into another Xata table).
 
 - **Export current view to CSV:** The will export a CSV which looks exactly the same as your current table view (including filters, columns and sorts). You might find this useful to share data with someone or importing a subset of the rows into a spreadsheet for analysis.
-
-## Open source import
-
-We’ve open-sourced [@xata.io/importer](https://github.com/xataio/client-ts/tree/main/packages/importer) our core code which parses CSV files - if you’re interested in building something which parses CSVs into a Xata database, please check it out.
 
 Happy importing and exporting!
 
