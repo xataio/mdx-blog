@@ -4,8 +4,8 @@ description: 'Catchy blog description about file attachments'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/launch-week.jpg
   alt: 'Introducing file attachments, scalable storage embedded in your database'
-author: Sorin Toma & Alex Francoeur
-date: 08-30-2023
+author: Sorin Toma and Alex Francoeur
+date: 08-28-2023
 published: false
 slug: file-attachments
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/launch-week-og.jpg
@@ -38,7 +38,7 @@ The first step in our design was to acknowledge that relational data and large b
 
 As with any interesting designs, we had to work out a solution to address apparent contradictory requirements, the APIs for relational data and binary objects should be unified, while the backend storage must be different to meet the expected performance and feature set.
 
-### Introducing the file column type
+## Introducing the file column type
 
 At API and database schema level, the binary object data type became the `file` column type. You can attach one or multiple files to a record in your database. This approach allowed all existing Xata features to work with the file type without any API change.
 
@@ -62,7 +62,7 @@ In the API record model the file column holds a json object (docs link) with a p
 }
 ```
 
-### Control access to your files
+## Control access to your files
 
 Since the file attachment APIs share the same endpoints with the Xata’s common APIs, the same authorization scheme applies. Whether you are using API keys or OAuth, the same credentials can be used for managing files. This single service approach reduces complexity on the client side and at the same time guarantees that future authorization methods and future permissions models apply uniformly to both records API and file storage API.
 
@@ -152,7 +152,7 @@ We will call this high scale read use case, the content distribution scenario.
 
 To address content distribution, Xata introduces direct access URLs. They can be retrieved by reading the file column. Accessing the URL does not involve a database call and therefore they are NOT subject to Xata concurrency and rate limits and they can make use of the storage service capacity.
 
-### Example image gallery app
+## Example image gallery app
 
 We have launched this functionality with an example image gallery app to highlight the developer experience you get with Xata and give you a starting point to try it out. This example combines full text search, aggregations, files and image transformations. If you’d like get started, be sure to check out our [example repository](https://github.com/xataio/sample-nextjs-chakra-gallery-app).
 
