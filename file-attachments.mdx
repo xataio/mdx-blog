@@ -6,7 +6,7 @@
    alt: 'Introducing file attachments'
  author: Sorin Toma and Alex Francoeur
  date: 08-30-2023
- published: false
+ published: true
  slug: file-attachments
 ---
 
@@ -41,7 +41,7 @@ Like with any design challenge, we had to devise a solution to address seemingly
 
 At the API and database schema level, the binary object data type became the `file` column type. You can attach one or multiple files to a record in your database. This approach allowed all existing Xata features to work with the file type without any API change.
 
-//![Adding a file column type](/videos/fa_add_file.mp4)
+![Adding a file column type](/videos/fa_add_file.mp4)
 
 Using the existing Xata APIs, either REST or Xata SDKs, and the same connection, a developer can now upload a file, download a file, run queries over files using filters, aggregations, joins, and even run search queries to match file metadata.
 
@@ -65,7 +65,7 @@ In the API record model the file column holds a JSON object (docs link) with a p
 
 Since the file attachment APIs share the same endpoints with the Xata’s common APIs, the same authorization scheme applies. Whether you are using API keys or OAuth, the same credentials can be used for managing files. This single service approach reduces complexity on the client side and at the same time guarantees that future authorization methods and future permissions models apply uniformly to both records API and file storage API.
 
-//![Making a file public](/videos/fa_make_file_public.mp4)
+![Making a file public](/videos/fa_make_file_public.mp4)
 
 As we discussed in the previous section, there are 2 distinct usage scenarios for files. The first is the common relational data approach where the operations are file CRUD and metadata query. The common authorization applies here. Access to the file is conditioned by the user having access to the database record.
 
