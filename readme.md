@@ -8,7 +8,7 @@ There's a hefty dose of linting through `eslint`, `prettier` and `remark`. If yo
 
 ### Frontmatter
 
-Each MDX document needs to include the following frontmatter at the top of the page. Most fields should be self-explanatory. The `doc.schema.yaml` file defines its shape.
+Each MDX document needs to include the following frontmatter at the top of the page. Most fields should be self-explanatory. The `blog.schema.yaml` file defines its shape.
 
 ```yaml
 ---
@@ -17,6 +17,7 @@ description: 'Use Xata and Auth․js on two Next․js apps: app directory and pa
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-authjs-nextjs.png
   alt: Xata and ChatGPT logos
+ogImage: https://user-images.githubusercontent.com/2750668/263696819-1d1c6978-4095-4442-ba6b-cd07c988c14a.jpg
 author: Attila Fassina
 date: 03-23-2023
 published: true

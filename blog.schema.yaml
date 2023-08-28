@@ -29,6 +29,11 @@ properties:
     description: URL without forward slash or "docs" prefix
     type: string
     maxLength: 300
+  ogImage:
+    title: ogImage
+    description: URL location of a custom image for Open Graph
+    type: string
+    maxLength: 300
   published:
     description: Whether to list this doc in the menu and search
     type: boolean
