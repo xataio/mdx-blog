@@ -1,51 +1,52 @@
 ---
-title: 'Introducing file attachments, scalable storage embedded in your database'
-description: 'Catchy blog description about file attachments'
-image:
-  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/launch-week.jpg
-  alt: 'Introducing file attachments, scalable storage embedded in your database'
-author: Sorin Toma and Alex Francoeur
-date: 08-30-2023
-published: false
-slug: file-attachments
+ title: 'Introducing file attachments, scalable storage embedded in your database'
+ description: 'Catchy blog description about file attachments'
+ image:
+   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/launch-week.jpg
+   alt: 'Introducing file attachments'
+ author: Sorin Toma and Alex Francoeur
+ date: 08-30-2023
+ published: false
+ slug: file-attachments
+ ---
 ---
 
 At Xata, we are building a platform around Postgres to meet all modern application data needs. Rather than extending Postgres to fit every use case, we believe that we should provide users with the absolute best tools for the job in the most efficient development experience possible. Today we’re excited to extend our platform capabilities to include file and image attachments! 
 
 ## Extending our data platform to support storage use cases
 
-Both files and relational data are ubiquitous in today’s applications. Even the most basic scenarios generally require both structured, relational data and file storage. Think about a blog which uses both posts metadata and images, think about a product catalogue or a document library. They all require basic data record management, query capabilities, but also storage and access to large binary objects like images, videos, documents.
+Both files and relational data are ubiquitous in today’s applications. Even the most basic scenarios generally require both structured, relational data and file storage. Think about a blog which uses both posts metadata and images, think about a product catalogue or a document library. They all require basic data record management, query capabilities, but also storage and access to large binary objects like images, videos, and documents.
 
-It is common practice for engineers to use a relational database and a storage service to store the data used by their application. In most cases the binary files are related to the relational data, therefore the common pattern is to store a file link in the database. We believe that this experience adds unnecessary friction and requires additional domain knowledge for your team. In our eyes, there is an opportunity to simplify this data experience.  Because file storage use cases are so closely correlated to data, we decided to embed [file attachments](https://xata.io/docs/concepts/file-attachments) directly into our serverless database and bring a new experience for building data apps that require binary storage. 
+It is common practice for engineers to use a relational database and a storage service to store the data used by their application. In most cases the binary files are related to the relational data, therefore the common pattern is to store a file link in the database. We believe that this experience adds unnecessary friction and requires additional domain knowledge for your team. In our eyes, there is an opportunity to simplify this data experience. Because file storage use cases are so closely correlated to data, we decided to embed [file attachments](https://xata.io/docs/concepts/file-attachments) directly into our serverless database and bring a new experience for building data apps that requires binary storage. 
 
-Whether you’re building a full scale e-commerce application, a personal blog or evolving your product to be AI-native — file attachments unlock a number of new use cases, provides an opportunity to simplify your architecture and reduce the number of services you rely on.
+Whether you’re building a full scale e-commerce application, a personal blog or evolving your product to be AI-native — file attachments unlock a number of new use cases, providing an opportunity to simplify your architecture and reduce the number of services you rely on.
 
 > Xata has become a critical part of my development cycle because I can quickly create and modify data structures without having to handle the database and migrations myself. Extending my records to include images has been great because I can easily apply transformations to them in the SDK. What I'm really excited about the ability to store any file type securely inside my database, it allows me to eliminate additional services like AWS S3.
 > Sebastian Gilits - Entrepreneur
 
-Let’s have a deeper look into what gets simplified and how does Xata achieves this.
+Let’s take a deeper look into what gets simplified and how Xata achieves this.
 
 ## Attachments, not buckets
 
-We’re really excited about todays release because it packs a lot of functionality into the simple experience of adding another column to your database. We wanted this experience to feel familiar, like adding and viewing an attachment in a spreadsheet instead of dropping a file into a generic bucket. As we started to work on the file attachments, we had the following goals in mind:
+We’re really excited about today's release because it packs a lot of functionality into the simple experience of adding another column to your database. We wanted this experience to feel familiar, like adding and viewing an attachment in a spreadsheet instead of dropping a file into a generic bucket. As we started to work on the file attachments, we had the following goals in mind:
 
 1. Relational and storage APIs should share the same endpoints and the same connections. It is easier to work with and maintain one service rather than two.
 2. APIs must share the same authorization scheme and the same permissions model. Avoid having to use different credentials and keep permissions in sync.
 3. Relational data and binary object data should share the same region. Both data types should reside in the same compliance boundary and have similar guarantees.
 
-The first step in our design was to acknowledge that relational data and large binary objects have very different consumption models and trying to fit both into the same storage service would lead to unacceptable compromises. One size doesn’t fit all. Very briefly, serving large binary objects from a relational database cannot match the performance of a dedicated storage service in terms of compute cost, concurrency and throughput. The opposite is even more obvious, a storage service cannot match the querying and data management capabilities of a relational database.
+The first step in our design was to acknowledge that relational data and large binary objects have very different consumption models and trying to fit both into the same storage service leads to unacceptable compromises. One size doesn’t fit all. Very briefly, serving large binary objects from a relational database cannot match the performance of a dedicated storage service in terms of compute cost, concurrency and throughput. The opposite is even more obvious, a storage service cannot match the querying and data management capabilities of a relational database.
 
-As with any interesting designs, we had to work out a solution to address apparent contradictory requirements, the APIs for relational data and binary objects should be unified, while the backend storage must be different to meet the expected performance and feature set.
+Like with any design challenge, we had to devise a solution to address seemingly conflicting requirements. The APIs for relational data and binary objects needed to be unified, while the backend storage had to differ to achieve the expected performance and feature set.
 
 ## Introducing the file column type
 
-At API and database schema level, the binary object data type became the `file` column type. You can attach one or multiple files to a record in your database. This approach allowed all existing Xata features to work with the file type without any API change.
+At the API and database schema level, the binary object data type became the `file` column type. You can attach one or multiple files to a record in your database. This approach allowed all existing Xata features to work with the file type without any API change.
 
 ![Adding a file column type](/videos/fa_add_file.mp4)
 
-Using the existing Xata APIs, either REST or Xata SDKs, using the same connection, a developer can now upload a file, download a file, run queries over files using filters, aggregations, joins, and even run search queries to match file metadata.
+Using the existing Xata APIs, either REST or Xata SDKs, and the same connection, a developer can now upload a file, download a file, run queries over files using filters, aggregations, joins, and even run search queries to match file metadata.
 
-In the API record model the file column holds a json object (docs link) with a predefined schema which contains both file metadata and the file content.
+In the API record model the file column holds a JSON object (docs link) with a predefined schema which contains both file metadata and the file content.
 
 ```json
 {
@@ -153,7 +154,7 @@ To address content distribution, Xata introduces direct access URLs. They can be
 
 ## Example image gallery app
 
-We have launched this functionality with an example image gallery app to highlight the developer experience you get with Xata and give you a starting point to try it out. This example combines full text search, aggregations, files and image transformations. If you’d like get started, be sure to check out our [example repository](https://github.com/xataio/sample-nextjs-chakra-gallery-app).
+We have launched this functionality with an example image gallery app to highlight the developer experience you get with Xata and give you a starting point to try it out. This example combines full-text search, aggregations, files, and image transformations. If you’d like to get started, be sure to check out our [example repository](https://github.com/xataio/sample-nextjs-chakra-gallery-app).
 
 ![Gallery example with file attachments](/images/fa_example_gallery_app.png)
 
