@@ -9,3 +9,205 @@ date: 01-09-2023
 published: false
 slug: json-column-type
 ---
+
+Schemafull data models are great. In Xata we are convinced that they are the best way to model your data in most cases,
+but we also know that sometimes you need to store data that is not easily modeled in a relational way,
+it's not as convenient as schemaless, or you just don't want to spend time on that at an early stage.
+JSON documents as fields in a relational data store are a great way have the best of both worlds.
+
+Many of our users have been asking for this feature, and we are happy to announce that it's finally here. Basic support for JSON column types has been added and it features:
+
+- JSON validation according to [RFC 7159](https://www.rfc-editor.org/rfc/rfc7159.html)
+- Indexing full documents and full-text search
+- Performant queries by nested keys
+
+We plan on extending Xata support for JSON even further in the future, but the current capabilities are already very powerful and will solve most use cases.
+Let's get into the details and provide a few examples on how you can start using JSON documents in Xata today.
+
+Let's think a bit about a simple data model for an online shop. Suppose we have a _Products_ table.
+
+\[ insert image here ]
+
+## Creating a JSON column
+
+Sometimes different categories of products have completely different specs, so we don't want to create a column for each of them.
+We could use a JSON column to store the product details. Let's do this and add a `details` field to our table:
+
+<TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
+  ```ts
+  ```
+
+```py
+
+```
+
+```jsonp
+
+```
+
+```jsonp
+
+```
+
+</TabbedCode>
+
+Let's add a few products with different details, for instance:
+
+- A t-shirt with a size and a color
+- A book with ISBN and number of pages
+- A climbing rope with a length and a thickness
+
+<TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
+  ```ts
+  ```
+
+```py
+
+```
+
+```jsonp
+
+```
+
+```jsonp
+
+```
+
+</TabbedCode>
+
+It's important to note that the JSON documents are processed and stored in a binary format in order to improve querying and storage performance.
+This has the following implications:
+
+- White spaces are not preserved
+- Key order is not preserved
+- In case of duplicate key, only the last one is stored
+
+## Querying JSON documents
+
+### Filter products size 'M'
+
+<TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
+  ```ts
+      const records = await xata.db.Posts.filter({
+          "details->size": 'M',
+      }).getMany();
+  ```
+
+```python
+    records = xata.data().query("Posts", {
+        "filter": {
+            "details->size": "M",
+        }
+})
+```
+
+```jsonc
+// POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/sql
+
+{
+  "statement": "SELECT * FROM \"Products\" WHERE details->>'size' = 'M';"
+}
+```
+
+```jsonc
+// POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/tables/{table}/query
+
+{
+  "filter": {
+    "details->>size": "M"
+  }
+}
+```
+
+</TabbedCode>
+
+### Filter products with a length greater than 50 meters
+
+<TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
+  ```ts
+      const records = await xata.db.Posts.filter({
+      "details->length": {
+          "$gt": 50
+  },
+  }).getMany();
+  ```
+
+```python
+    records = xata.data().query("Posts", {
+    "filter": {
+        "details->length": {
+            "$gt": 50
+        },
+    }
+})
+```
+
+```jsonc
+// POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/sql
+
+{
+  "statement": "SELECT * FROM \"Products\" WHERE (details->>length)::numeric > 50;"
+}
+```
+
+```jsonc
+// POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/tables/{table}/query
+
+{
+  "filter": {
+    "details->length": {
+      "$gt": 50
+    }
+  }
+}
+```
+
+</TabbedCode>
+
+### Other general control or negation operators work as well
+
+<TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
+  ```ts
+      const records = await xata.db.Posts.filter({
+      "details->length": {
+      "$gt": 50
+      },
+      }).getMany();
+  ```
+
+```python
+    records = xata.data().query("Posts", {
+        "filter": {
+            "details->length": {
+            "$gt": 50
+            },
+        }
+    })
+```
+
+```jsonc
+// POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/sql
+{
+  "statement": "SELECT * FROM \"Products\" WHERE (details->>length)::numeric > 50;"
+}
+```
+
+```jsonc
+// POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/tables/{table}/query
+{
+  "filter": {
+    "details->length": {
+      "$gt": 50
+    }
+  }
+}
+```
+
+</TabbedCode>
+
+## Conclusion
+
+Xata is committed to simplify the way everyone work with data. We will keep improving our offering by both adding more rich data types and extending the capabilities of the current ones.
+Basic JSON support is one more step in that direction along with the previously released Files.
+
+If you have feedback or questions, you can reach out to us on [Discord](https://xata.io/discord) or [Twitter](https://twitter.com/xata).
