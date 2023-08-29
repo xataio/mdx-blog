@@ -26,20 +26,24 @@ contain a single SQL statement; currently, support for multiple
 statements is not available. You can submit parameterized queries with
 parameters, so you are protected from SQL injection attacks.
 
-````json|ts|python
-    ```ts
-    const { records: myRecord } = await xata.sql<TeamsRecord>`SELECT * FROM teams`;
-    ```
-    ```python
-    records = xata.sql().query("SELECT * FROM \"teams\"")
-    ```
-    ```json
-    // POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/sql
-    {
-        "statement": "SELECT * FROM \"teams\""
-    }
-    ```
-````
+<TabbedCode tabs={['TypeScript', 'Python', 'JSON']}>
+
+```ts
+const { records: myRecord } = await xata.sql<TeamsRecord>`SELECT * FROM teams`;
+```
+
+```python
+records = xata.sql().query("SELECT * FROM \"teams\"")
+```
+
+```json
+// POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/sql
+{
+  "statement": "SELECT * FROM \"teams\""
+}
+```
+
+</TabbedCode>
 
 ## How does it work?
 
