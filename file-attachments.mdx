@@ -1,5 +1,5 @@
 ---
- title: 'Introducing file attachments, scalable storage embedded in your database'
+ title: 'Databases can store files and images now'
  description: 'Catchy blog description about file attachments'
  image:
    src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/launch-week.jpg
@@ -10,22 +10,23 @@
  slug: file-attachments
 ---
 
-At Xata, we are building a platform around Postgres to meet all modern application data needs. Rather than extending Postgres to fit every use case, we believe that we should provide users with the absolute best tools for the job in the most efficient development experience possible. Today we’re excited to extend our platform capabilities to include file and image attachments!
+At Xata, we are building a platform around Postgres to meet all modern application data needs. Rather than extending Postgres to fit every use case, we believe that we should provide users with the absolute best tools for the job in the most efficient development experience possible. Today we’re excited to extend our platform capabilities to include file attachments and image transformations!
 
-## Extending our data platform to support storage use cases
+### Extending our data platform to support storage use cases
 
-Both files and relational data are ubiquitous in today’s applications. Even the most basic scenarios generally require both structured, relational data and file storage. Think about a blog which uses both posts metadata and images, think about a product catalogue or a document library. They all require basic data record management, query capabilities, but also storage and access to large binary objects like images, videos, and documents.
+Both files and relational data are ubiquitous in today’s applications. Even the most basic scenarios generally require structured, relational data and file storage. Think about a blog which uses both posts metadata and images, think about a product catalogue or a document library. They all require basic data record management, query capabilities, but also storage and access to large binary objects like images, videos, and documents.
 
-It is common practice for engineers to use a relational database and a storage service to store the data used by their application. In most cases the binary files are related to the relational data, therefore the common pattern is to store a file link in the database. We believe that this experience adds unnecessary friction and requires additional domain knowledge for your team. In our eyes, there is an opportunity to simplify this data experience. Because file storage use cases are so closely correlated to data, we decided to embed [file attachments](https://xata.io/docs/concepts/file-attachments) directly into our serverless database and bring a new experience for building data apps that requires binary storage.
+We often see engineers using a relational database with a separate storage service to store the data used by their application. In most cases the binary files are related to the relational data, therefore the common pattern is to store a file link in the database. We believe that this experience adds unnecessary friction and requires additional domain knowledge for your team. In our eyes, there is an opportunity to simplify this data experience. Because file storage use cases are so closely correlated to data, we decided to embed [file attachments](https://xata.io/docs/concepts/file-attachments) directly into our serverless database and bring a new experience for building data apps that requires binary storage.
 
 Whether you’re building a full scale e-commerce application, a personal blog or evolving your product to be AI-native — file attachments unlock a number of new use cases, providing an opportunity to simplify your architecture and reduce the number of services you rely on.
 
 > Xata has become a critical part of my development cycle because I can quickly create and modify data structures without having to handle the database and migrations myself. Extending my records to include images has been great because I can easily apply transformations to them in the SDK. What I'm really excited about the ability to store any file type securely inside my database, it allows me to eliminate additional services like AWS S3.
+>
 > Sebastian Gilits - Entrepreneur
 
 Let’s take a deeper look into what gets simplified and how Xata achieves this.
 
-## Attachments, not buckets
+### Attachments, not buckets
 
 We’re really excited about today's release because it packs a lot of functionality into the simple experience of adding another column to your database. We wanted this experience to feel familiar, like adding and viewing an attachment in a spreadsheet instead of dropping a file into a generic bucket. As we started to work on the file attachments, we had the following goals in mind:
 
@@ -37,21 +38,21 @@ The first step in our design was to acknowledge that relational data and large b
 
 Like with any design challenge, we had to devise a solution to address seemingly conflicting requirements. The APIs for relational data and binary objects needed to be unified, while the backend storage had to differ to achieve the expected performance and feature set.
 
-## Introducing the file column type
+### Introducing the file column type
 
 At the API and database schema level, the binary object data type became the `file` column type. You can attach one or multiple files to a record in your database. This approach allowed all existing Xata features to work with the file type without any API change.
 
 <ArticleVideo
   platform="html"
   src="https://raw.githubusercontent.com/xataio/mdx-blog/file-attachments-blog/videos/fa_add_file.mp4"
-  width="820"
-  height="590"
+  width="960"
+  height="467"
   alt="Adding a file column type"
 />
 
-Using the existing Xata APIs, either REST or Xata SDKs, and the same connection, a developer can now upload a file, download a file, run queries over files using filters, aggregations, joins, and even run search queries to match file metadata.
+Using the existing Xata REST APIs or SDKs, and the same connection, a developer can now upload a file, download a file, run queries over files using filters, aggregations, joins, and even run search queries to match file metadata.
 
-In the API record model the file column holds a JSON object (docs link) with a predefined schema which contains both file metadata and the file content.
+In the record model the file column holds a [JSON object](/docs/concepts/file-attachments#record-apis) with a predefined schema which contains both file metadata and the file content.
 
 ```json
 {
@@ -67,19 +68,19 @@ In the API record model the file column holds a JSON object (docs link) with a p
 }
 ```
 
-## Control access to your files
+### Control access to your files
 
-Since the file attachment APIs share the same endpoints with the Xata’s common APIs, the same authorization scheme applies. Whether you are using API keys or OAuth, the same credentials can be used for managing files. This single service approach reduces complexity on the client side and at the same time guarantees that future authorization methods and future permissions models apply uniformly to both records API and file storage API.
+Since the file attachment APIs share the same endpoints with the Xata’s common APIs, the same authorization scheme applies. Whether you are using API keys or OAuth, the same credentials can be used for managing files. This single service approach reduces complexity on the client side and at the same time guarantees that future authorization methods and future permissions models apply uniformly to both records API and file attachments API.
 
 <ArticleVideo
   platform="html"
   src="https://raw.githubusercontent.com/xataio/mdx-blog/file-attachments-blog/videos/fa_make_file_public.mp4"
-  width="820"
-  height="590"
+  width="960"
+  height="467"
   alt="Making a file public"
 />
 
-As we discussed in the previous section, there are 2 distinct usage scenarios for files. The first is the common relational data approach where the operations are file CRUD and metadata query. The common authorization applies here. Access to the file is conditioned by the user having access to the database record.
+As we discussed in the previous section, there are two distinct usage scenarios for files. The first is the common relational data approach where the operations are file CRUD and metadata query. The common authorization applies here. Access to the file is conditioned by the user having access to the database record.
 
 The second scenario is the content distribution through direct access URLs. In this case the authorization requirements are very different. If resource management requires a trusted security model, content distribution sometimes requires unrestricted access.
 
@@ -91,12 +92,13 @@ To cater for different URL access needs, Xata provides 3 levels of authorization
 
 All the access URLs offer lower latency compared to file retrieval through the common API because, apart from the authorization check (for signed and authenticated URLs) they go directly to storage skipping Xata middleware and the database service.
 
-## A global content distribution network by default
+### A global content distribution network by default
 
 Going further on storage performance, for today’s global applications it is a basic requirement to have consistent good performance across the globe.
 
 > We chose Xata as our DBaaS for KWARECOM’s Mapping and Reporting Portal because of its low latency and serverlessness in comparison to other options out there. Our performance expectations are met. We’ve come to know and love their latest file storage offering; very unique and appealing. The CDN backed images are fast and the simplicity Xata provides means we at KWARECOM don’t need to worry about the complexity on the backend anymore.
-> Titus S. Zoneh - CEO @ KWARECOM
+>
+> _Titus S. Zoneh - CEO @ KWARECOM_
 
 We could not claim to simplify working with files and then ask customers to configure and manage their own CDN to get reasonable global performance. Hence the file attachments support comes with CDN included. There is no opt-in and no configuration necessary. All direct access URLs are served through a CDN by default. In essence, all files retrieved through URL are cached at the edge, making the following requests blazing fast.
 
@@ -108,7 +110,7 @@ Following this pattern, when the client application loads a set of records from 
 
 We have seen that content cannot be stale, but there is an important note on permissions. When a public object gets cached, changing permissions will not invalidate the cache entry. Making a file private applies immediately for new URLs, but the file is still accessible through old URLs until the cache entry expires in 2h. Xata advises greatest caution when configuring public access, because in practice there is a delay in changing the permissions from public to private.
 
-## Your images, your way with image transformations
+### Your images, your way with image transformations
 
 Looking at the most common scenarios where relational data is used together with binary files, the images case stands out. All web applications use images today and images tend to require processing before they are rendered. Xata file attachments come with a [comprehensive set of image transformations](https://xata.io/docs/concepts/file-attachments#image-transformations), from resizing and photo adjustments to changing format and compression.
 
@@ -121,9 +123,10 @@ https://eu-west-1.storage.xata.sh/transform/rotate=180,height=50/nj42n37o4l3dd19
 ```
 
 > The DX for images and file storage in the Python SDK and REST API were out of this world. I’m using images and file storage for an article classification tool. The simplicity of having image transformations baked into the record API is second to none. When my students at Berkeley are looking to spin up a quick project, I’m going to point them to Xata.
-> Will Monge - Engineering Lead @ Good Research
+>
+> _Will Monge - Engineering Lead @ Good Research_
 
-## Building a file attachment service
+### Building a file attachment service
 
 Generally, our philosophy is to abstract away complexity where we can so our end users don’t have to worry about it. File attachments is no exception.
 
@@ -141,7 +144,7 @@ The implemented solution treats the PostgreSQL data as source of truth and remov
 
 Backup support adds another level of complexity. Xata creates regular backups and can perform a restore on request. The binary object storage needs to match the ability to restore the state from the time of the database backup. This is achieved through a combination of immutable S3 objects (we’ll go into details later in this post) and configuring S3 lifecycle. Deleted files become inaccessible, but they are kept for 7 days after their deletion for recovery purposes. After the 7 days the files are permanently deleted.
 
-## API considerations
+### API considerations
 
 If you look at the file column example above, it might strike you as odd. Files don’t come encoded as base64 and they are certainly not used in their encoded form.
 
@@ -153,7 +156,7 @@ To alleviate these concerns we introduced [binary file APIs](https://xata.io/doc
 
 It is important to mention these are still database APIs, they involve reads and writes of metadata to PostgreSQL and they are not direct S3 wrappers.
 
-## Read and write patterns
+### Read and write patterns
 
 Thinking further about typical relational data use cases and file storage use cases, we noticed significant commonalities and differences. The management of files maps very well to relational data management. Basically CRUD operations are similar in the sense that they work over organized data, entries have owners, there is a permission model in place, they offer a level of consistency and durability. In general we can say that the write patterns are fairly similar. An application for managing files can very well use a database API to achieve the same.
 
@@ -163,21 +166,22 @@ We will call this high scale read use case, the content distribution scenario.
 
 To address content distribution, Xata introduces direct access URLs. They can be retrieved by reading the file column. Accessing the URL does not involve a database call and therefore they are NOT subject to Xata concurrency and rate limits and they can make use of the storage service capacity.
 
-## Example image gallery app
+### Example image gallery app
 
 We have launched this functionality with an example image gallery app to highlight the developer experience you get with Xata and give you a starting point to try it out. This example combines full-text search, aggregations, files, and image transformations. If you’d like to get started, be sure to check out our [example repository](https://github.com/xataio/sample-nextjs-chakra-gallery-app).
 
 ![Gallery example with file attachments](/images/fa_example_gallery_app.png)
 
-## Shout out to the Xata community
+### Shout out to the Xata community
 
 > I’m building an API service and application on top of Xata. With the availability for image and file storage, my application can rely solely on Xata without needing additional third-party services.
-> Ishaan Bedi - Developer
+>
+> _Ishaan Bedi - Developer_
 
 Before releasing file attachments, we decided to open up an early access program for those interested in our community. It was our first early access program since our private beta last year, and we were blown away by the amount of support and engagement we received from our honorary Xataflies. We sincerely want to thank everyone that participated. This feature would not be as amazing as it is today without your help 🙏
 
 Want to join our next EAP, have some fun with the community and get some sweet Xata swag? Sign up here (need form link) and we’ll reach out before the next one.
 
-## Get started today
+### Get started today
 
 Xata is simplifying the patterns of working with relational data and binary objects together. If you are facing any of the problems described in this post, we welcome you to [sign up](https://app.xata.io/) and try Xata. We’d love your feedback on this feature, if you have any suggestions, questions, or issues reach out to us on [Discord](https://xata.io/discord) or follow us on [Twitter](https://twitter.com/xata).
