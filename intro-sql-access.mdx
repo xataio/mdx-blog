@@ -7,7 +7,7 @@ published: false
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-full-text-search.png
   alt: SQL access to Xata
-slug: sql-query-over-http-intro
+slug: sql-over-http
 ---
 
 We are excited to announce that Xata now offers direct SQL access to your database, in addition to the Xata API. This allows you to express arbitrary complex SQL queries and use SQL builders like Kysley or Drizzle. You can play with the new SQL support in the built-in Playground, which we have extended to support SQL.
@@ -71,7 +71,7 @@ const { records: myRecord } = await xata.sql<TeamsRecord>`SELECT * FROM "teams"`
 ```
 
 ```python
-records = xata.sql().query('''SELECT * FROM \"teams\"''')
+records = xata.sql().query('''SELECT * FROM "teams"''')
 ```
 
 ```json
@@ -88,11 +88,11 @@ Currently, each request can contain a single SQL statement. You can submit param
 <TabbedCode tabs={['TypeScript', 'Python', 'REST']}>
 
 ```tsx
-const { records: myRecord } = await xata.sql<TeamsRecord>`SELECT * FROM teams WHERE name=${name}`;
+const { records: myRecord } = await xata.sql<TeamsRecord>`SELECT * FROM "teams" WHERE name=${name}`;
 ```
 
 ```python
-records = xata.sql().query("SELECT * FROM \"teams\" WHERE name=$1", params=[name])
+records = xata.sql().query('''SELECT * FROM "teams" WHERE name=$1''', params=[name])
 ```
 
 ```json
@@ -113,11 +113,11 @@ SQL, on the other hand, is useful as an escape-hatch for features that are not a
 
 ```tsx
 const { records: myRecord } =
-  await xata.sql<TeamsRecord>`"SELECT "primaryTitle", md5("primaryTitle"), avg("runtimeMinutes") FROM titles GROUP BY "primaryTitle"`;
+  await xata.sql<TeamsRecord>`SELECT "primaryTitle", md5("primaryTitle"), avg("runtimeMinutes") FROM titles GROUP BY "primaryTitle"`;
 ```
 
 ```python
-records = xata.sql().query('''"SELECT "primaryTitle", md5("primaryTitle"), avg("runtimeMinutes") FROM titles GROUP BY "primaryTitle"''')
+records = xata.sql().query('''SELECT "primaryTitle", md5("primaryTitle"), avg("runtimeMinutes") FROM titles GROUP BY "primaryTitle"''')
 ```
 
 ```json
