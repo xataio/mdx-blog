@@ -12,7 +12,7 @@
 
 Today, we’re beyond excited to announce a feature that we've wanted to add ever since we started Xata: File Attachments. Think of it as having a new database column type where you can store files of any size, and behind the scenes they are stored in AWS S3 and cached through a global CDN. With this approach, files simply become part of a database record. For example, they respect the same security boundary -- if you delete a record, the files also get deleted. Image file types also get some extra functionality allowing you to request them at any size and style with built-in transformations. In this blog we'll dive into the capabilities released today and architecture behind our implementation. We hope you enjoy the read as much as we did building it all out 😃
 
-### Extending our data platform to support storage use cases
+### Adding file storage to the database
 
 Both files and relational data are ubiquitous in todays applications. Even the most basic scenarios generally require both structured relational data and file storage. Think about a blog which uses both posts metadata and images, a product catalogue or a document library. They all require basic data record management and query capabilities, but also storage and access to large binary objects like images, videos, and documents.
 
