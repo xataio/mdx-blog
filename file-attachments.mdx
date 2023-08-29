@@ -10,13 +10,13 @@
  slug: file-attachments
 ---
 
-At Xata, we are building a platform around Postgres to meet all modern application data needs. Rather than extending Postgres to fit every use case, we believe that we should provide users with the absolute best tools for the job in the most efficient development experience possible. Today we’re excited to extend our platform capabilities to include file and image attachments! 
+At Xata, we are building a platform around Postgres to meet all modern application data needs. Rather than extending Postgres to fit every use case, we believe that we should provide users with the absolute best tools for the job in the most efficient development experience possible. Today we’re excited to extend our platform capabilities to include file and image attachments!
 
 ## Extending our data platform to support storage use cases
 
 Both files and relational data are ubiquitous in today’s applications. Even the most basic scenarios generally require both structured, relational data and file storage. Think about a blog which uses both posts metadata and images, think about a product catalogue or a document library. They all require basic data record management, query capabilities, but also storage and access to large binary objects like images, videos, and documents.
 
-It is common practice for engineers to use a relational database and a storage service to store the data used by their application. In most cases the binary files are related to the relational data, therefore the common pattern is to store a file link in the database. We believe that this experience adds unnecessary friction and requires additional domain knowledge for your team. In our eyes, there is an opportunity to simplify this data experience. Because file storage use cases are so closely correlated to data, we decided to embed [file attachments](https://xata.io/docs/concepts/file-attachments) directly into our serverless database and bring a new experience for building data apps that requires binary storage. 
+It is common practice for engineers to use a relational database and a storage service to store the data used by their application. In most cases the binary files are related to the relational data, therefore the common pattern is to store a file link in the database. We believe that this experience adds unnecessary friction and requires additional domain knowledge for your team. In our eyes, there is an opportunity to simplify this data experience. Because file storage use cases are so closely correlated to data, we decided to embed [file attachments](https://xata.io/docs/concepts/file-attachments) directly into our serverless database and bring a new experience for building data apps that requires binary storage.
 
 Whether you’re building a full scale e-commerce application, a personal blog or evolving your product to be AI-native — file attachments unlock a number of new use cases, providing an opportunity to simplify your architecture and reduce the number of services you rely on.
 
@@ -41,7 +41,7 @@ Like with any design challenge, we had to devise a solution to address seemingly
 
 At the API and database schema level, the binary object data type became the `file` column type. You can attach one or multiple files to a record in your database. This approach allowed all existing Xata features to work with the file type without any API change.
 
-![Adding a file column type](/videos/fa_add_file.mp4)
+<ArticleVideo platform="html" src="/videos/fa_add_file.mp4" width="820" height="590" />
 
 Using the existing Xata APIs, either REST or Xata SDKs, and the same connection, a developer can now upload a file, download a file, run queries over files using filters, aggregations, joins, and even run search queries to match file metadata.
 
@@ -49,15 +49,15 @@ In the API record model the file column holds a JSON object (docs link) with a p
 
 ```json
 {
-    "name": "Butterfree.png",
-    "mediaType": "image/png",
-    "size": 75,
-    "version": 1,
-    "attributes": {
-      "height": 475,
-      "width": 475
-    },
-		"base64Content": "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEklEQVR42mNk+M9QzwAEjDAGACCDAv8cI7IoAAAAAElFTkSuQmCC...",
+  "name": "Butterfree.png",
+  "mediaType": "image/png",
+  "size": 75,
+  "version": 1,
+  "attributes": {
+    "height": 475,
+    "width": 475
+  },
+  "base64Content": "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEklEQVR42mNk+M9QzwAEjDAGACCDAv8cI7IoAAAAAElFTkSuQmCC..."
 }
 ```
 
@@ -65,7 +65,7 @@ In the API record model the file column holds a JSON object (docs link) with a p
 
 Since the file attachment APIs share the same endpoints with the Xata’s common APIs, the same authorization scheme applies. Whether you are using API keys or OAuth, the same credentials can be used for managing files. This single service approach reduces complexity on the client side and at the same time guarantees that future authorization methods and future permissions models apply uniformly to both records API and file storage API.
 
-![Making a file public](/videos/fa_make_file_public.mp4)
+<ArticleVideo platform="html" src="/videos/fa_make_file_public.mp4" width="820" height="590" />
 
 As we discussed in the previous section, there are 2 distinct usage scenarios for files. The first is the common relational data approach where the operations are file CRUD and metadata query. The common authorization applies here. Access to the file is conditioned by the user having access to the database record.
 
@@ -90,7 +90,7 @@ We could not claim to simplify working with files and then ask customers to conf
 
 Xata opted to integrate [Cloudflare’s Global CDN](https://www.cloudflare.com/application-services/products/cdn/) for its wide geographical coverage, its performance and its feature set.
 
-As with any cache, the great performance improvement comes with a the fundamental problem of stale cache entries and cache invalidation. Xata addresses stale cache entries by design using immutable file objects. This means any update to a file is in fact a new file object with a different id generating a different URL and eventually a different cache entry. This pattern is also known as *versioning*, because conceptually the cache keys change with every version of the object.
+As with any cache, the great performance improvement comes with a the fundamental problem of stale cache entries and cache invalidation. Xata addresses stale cache entries by design using immutable file objects. This means any update to a file is in fact a new file object with a different id generating a different URL and eventually a different cache entry. This pattern is also known as _versioning_, because conceptually the cache keys change with every version of the object.
 
 Following this pattern, when the client application loads a set of records from Xata, it also gets the most up-to-date URLs which are guaranteed NOT to hit a stale cache entry, no matter where the cache is (browser, web proxy, CDN). This is very important because the user can clear the browser cache and Xata service can invalidate the CDN cache, but a web proxy in between might still serve a stale cache entry. Versioning guarantees this can never happen. The downside is that file URLs are not persistent and they should not be used as static resources. However, this fits the Xata model of attaching binary objects to database records. Similar to the database records, the URLs are dynamic content and needs to be retrieved through database reads and queries.
 
@@ -100,7 +100,7 @@ We have seen that content cannot be stale, but there is an important note on per
 
 Looking at the most common scenarios where relational data is used together with binary files, the images case stands out. All web applications use images today and images tend to require processing before they are rendered. Xata file attachments come with a [comprehensive set of image transformations](https://xata.io/docs/concepts/file-attachments#image-transformations), from resizing and photo adjustments to changing format and compression.
 
-All transformations are applied at the edge and are cached by default. Again Xata leverages Cloudflare functionality for image transformations. 
+All transformations are applied at the edge and are cached by default. Again Xata leverages Cloudflare functionality for image transformations.
 
 We considered more flexible transformation definitions through query parameters or request body objects, but in the end chose the industry standard of defining the transformations in the URL path. This makes it easier to embed the transformation into a web page and also the transformation is automatically included in the cache key in the CDN.
 
@@ -168,4 +168,4 @@ Want to join our next EAP, have some fun with the community and get some sweet X
 
 ## Get started today
 
-Xata is simplifying the patterns of working with relational data and binary objects together. If you are facing any of the problems described in this post, we welcome you to [sign up](https://app.xata.io/) and try Xata. We’d love your feedback on this feature, if you have any suggestions, questions, or issues reach out to us on [Discord](https://xata.io/discord) or follow us on [Twitter](https://twitter.com/xata).
+Xata is simplifying the patterns of working with relational data and binary objects together. If you are facing any of the problems described in this post, we welcome you to [sign up](https://app.xata.io/) and try Xata. We’d love your feedback on this feature, if you have any suggestions, questions, or issues reach out to us on [Discord](https://xata.io/discord) or follow us on [Twitter](https://twitter.com/xata).
