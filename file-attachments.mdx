@@ -1,6 +1,6 @@
 ---
  title: 'File Attachments: Databases can now store files and images'
- description: 'Extending a database record to include a new file column type with a global CDN, common security boundaries and image transformations.'
+ description: 'Extending a database record to include a new file column type with a global CDN, common security boundaries ,and image transformations.'
  image:
    src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/fa_blog_illustration.jpeg
    alt: 'File Attachments: Databases can now store files and images'
@@ -82,7 +82,7 @@ Thinking further about typical relational data and file storage use cases, we no
 
 The important difference comes with the read patterns. Relational databases are designed for complex queries, which can involve high usage of CPU and memory, while storage reads have minimal CPU and memory usage. Because the operations are extremely simple, the storage reads generally scale to much higher request rate, concurrency and throughput. Therefore storage read patterns expect very high concurrency and throughput with minimal cost. Offering the database read for files retrieval will not meet the expectations for a storage service.
 
-We will call this high scale read use case, the content distribution scenario. To address content distribution, Xata introduces direct access URLs. They can be retrieved by reading the file column. Accessing the URL does not involve a database call and therefore they are NOT subject to Xata concurrency and rate limits and can make use of the storage service capacity.
+We will call this high scale read use case, the content distribution scenario. To address content distribution, Xata introduces direct access URLs. They can be retrieved by reading the file column. Accessing the URL does not involve a database call and therefore they are NOT subject to Xata concurrency and rate limits, and can make use of the storage service capacity.
 
 ### Access control for your files
 
@@ -112,11 +112,11 @@ All the access URLs offer lower latency compared to file retrieval through the X
 
 Going further on storage performance, modern applications require low latency across the globe.
 
-We could not claim to simplify working with files and then ask customers to configure and manage their own CDN to get reasonable global performance. Hence the file attachments support comes with CDN included. There is no opt-in and no configuration necessary. All direct access URLs are served through a CDN by default. In essence, all files retrieved through URL are cached at the edge, making the following requests blazing fast.
+We could not claim to simplify working with files and then ask customers to configure and manage their own CDN to get reasonable global performance. Hence, the file attachments support comes with CDN included. There is no opt-in and or configuration needed; all direct access URLs are served through a CDN by default. In essence, all files retrieved through a URL are cached at the edge, making the following requests blazing fast.
 
 Xata opted to integrate [Cloudflare’s Global CDN](https://www.cloudflare.com/application-services/products/cdn/) for its wide geographical coverage, its performance and its feature set.
 
-As with any cache, the great performance improvement comes with a the fundamental problem of stale cache entries and cache invalidation. Xata addresses stale cache entries by design using immutable file objects. This means any update to a file is in fact a new file object with a different id generating a different URL and eventually a different cache entry. This pattern is also known as _versioning_, because conceptually the cache keys change with every version of the object.
+As with any cache, the great performance improvement comes with the fundamental problem of stale cache entries and cache invalidation. Xata addresses stale cache entries by design using immutable file objects. This means any update to a file is in fact a new file object, with a different ID generating a different URL and eventually a different cache entry. This pattern is also known as _versioning_, because conceptually the cache keys change with every version of the object.
 
 Following this pattern, when the client application loads a set of records from Xata, it also gets the most up-to-date URLs which are guaranteed NOT to hit a stale cache entry, no matter where the cache is (browser, web proxy, CDN). This is very important because the user can clear the browser cache and Xata can invalidate the CDN cache, but a web proxy in between might still serve a stale cache entry. Versioning guarantees this can never happen. The downside is that file URLs are not persistent and they should not be used as static resources. However, this fits the Xata model of attaching binary objects to database records. Similar to the database records, the URLs are dynamic content and needs to be retrieved through database reads and queries.
 
@@ -126,7 +126,7 @@ We have seen that content cannot be stale, but there is an important note on per
 
 Looking at the most common scenarios where relational data is used together with binary files, the image use case stands out. All web applications use images today and images tend to require processing before they are rendered. Xata file attachments come with a [comprehensive set of image transformations](https://xata.io/docs/concepts/file-attachments#image-transformations) -- from resizing to photo adjustments to changing format and compression.
 
-All transformations are applied at the edge and are cached by default. Again Xata leverages Cloudflare functionality for image transformations.
+All transformations are applied at the edge and are cached by default. Again, Xata leverages Cloudflare functionality for image transformations.
 
 We considered more flexible transformation definitions through query parameters or request body objects, but in the end chose the industry standard of defining the transformations in the URL path. This makes it easier to embed the transformation into a web page and the transformation is automatically included in the cache key within the CDN.
 
@@ -160,7 +160,7 @@ Xata APIs are JSON based and therefore the file content needed to fit in a JSON 
 
 While we recommend this approach when dealing with small files and when extending existing apps that already use Xata APIs, we acknowledge there are drawbacks in using the Base64 encoding. For very large files or for very high throughput applications, the extra CPU cost of encoding and decoding the files begins to matter and it is exposed in the delivery latency. Also, the extra 33% in file size added by the encoding impacts the size on the wire and implicitly the performance and bandwidth costs.
 
-To alleviate these concerns we introduced [binary file APIs](https://xata.io/docs/concepts/file-attachments#file-binary-apis). These APIs use similar endpoints but they accept and they retrieve binary content. For files larger than 20MB these are the only APIs for uploading content.
+To alleviate these concerns we introduced [binary file APIs](/docs/sdk/file-attachments). These APIs use similar endpoints but they accept and they retrieve binary content. For files larger than 20MB these are the only APIs for uploading content.
 
 It is important to mention these are still database APIs, they involve reads and writes of metadata to PostgreSQL and they are not direct S3 wrappers.
 
