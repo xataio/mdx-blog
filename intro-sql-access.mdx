@@ -10,30 +10,68 @@ image:
 slug: sql-query-over-http-intro
 ---
 
-We are excited to announce that Xata now offers direct SQL access to
-your database.
+We are excited to announce that Xata now offers direct SQL access to your database, in addition to the Xata API. This allows you to express arbitrary complex SQL queries and use SQL builders like Kysley or Drizzle. You can play with the new SQL support in the built-in Playground, which we have extended to support SQL.
 
-Internally, Xata relies on [PostgreSQL](/docs/concepts/how-it-works)
-for storing your data. We want you to experience the benefits of SQL
-beyond the existing Xata API. From now on we support running some SQL
-commands over HTTP. The allowed statements are `SELECT`, `INSERT`,
-`UPDATE` and `DELETE` with some limitations.
+## Why
 
-So if there is something that is not covered by the Xata API, you also
-have the flexibility to execute your queries using the conventional
-Xata approach - using either the SDK or our REST API. Each request can
-contain a single SQL statement; currently, support for multiple
-statements is not available. You can submit parameterized queries with
-parameters, so you are protected from SQL injection attacks.
+Internally, Xata is powered by PostgreSQL. We use Postgres as the source of truth for the data, and we also automatically replicate the data to Elasticsearch for features like full-text search, vector search, and aggregations. We also deeply integrate blob storage and CDN in order to offer [file attachments](https://xata.io/blog/file-attachments).
 
-<TabbedCode tabs={['TypeScript', 'Python', 'JSON']}>
+While PostgreSQL is at the core of Xata, so far we haven't exposed its protocol directly and it wasn't possible to run SQL queries against Xata. This was partially for technical reasons: our free tier runs on shared PostgreSQL clusters, which allows us to offer a very generous free tier, however it also means that direct connections pose a security risk. The other reasons are product related: by controlling the API, we can offer rich types (e.g. attachments), simple replication, instant branching, and more.
+
+Yet, one of our most requested features was to add direct SQL access. Could we have both? Could we allow for SQL access and still mediate the queries?
+
+## The SQL proxy
+
+In order to safely give SQL access to the Xata databases, we wrote a SQL proxy that deeply understands the SQL commands being executed and checks them for safety. This SQL proxy parses the query, walks the parsed tree, and checks which tables and columns are accessed, which functions are called, and so on. The implementation uses the [pg_query_go library](https://github.com/pganalyze/pg_query_go) from [PGAnalyze](https://pganalyze.com/), which uses the actual C code used by the PostgreSQL server.
+
+At the moment we support SQL (Postgres dialect) over HTTP and the allowed statements are `SELECT`, `INSERT`, `UPDATE` and `DELETE` with some limitations. DML statements are currently not supported, but they will be in the future.
+
+SQL over HTTP has the advantage that it can be easily used from serverless environments, including Cloudflare Workers, just like the rest of the Xata SDK. We're planning to extend the SQL support and also offer the Postgres Wire protocol for maximum compatibility.
+
+Architecturally, the Proxy sits side-by-side with the Xata data api implementation, between Postgres itself and the routing and authentication components:
+
+![Architecture with the SQL proxy](images/sql-intro.png)
+
+### PostgreSQL database
+
+We run a PostgreSQL instance that stores your database. With opening up the access now you can directly query and edit database rows in PostgreSQL.
+
+### Authentication and authorization
+
+Since the SQL access is exposed via our HTTP REST API, the authentication and authorization works exactly the same. If you have access to the database branch, we validate that your statement is correct, that it accesses tables in that branch and it only contains only allowed SQL keywords and functions.
+
+### Request validation
+
+For queries within the database branch, we go a step further by validating your SQL statement. We forbid several functions like `pg_sleep` or database administration commands. We take care of database administrative tasks, so you don't have to.
+
+If your statement is correct, we run it in PostgreSQL and return the response, including rows and errors. If your statement has syntax errors or SQL errors, the error is returned to you. In case of forbidden or unknown functions, Xata returns an _unknown function_ error. All user errors get HTTP 400 (Bad request) responses with the error message.
+
+### SQL execution
+
+Assuming your statement is accurate and aligned with the allowed parameters, Xata proceeds to execute it within the PostgreSQL instance. When running your SQL statement, we use a dedicated PostgreSQL role that only has access to the selected database branch objects (tables, constraints, indices, etc.)
+
+### Response retrieval
+
+We serialize the response from PostgreSQL into JSON. We return at most 1000 rows in a single response to avoid generating huge JSON responses. It is recommended to use `LIMIT` and `OFFSET` keywords to paginate through the results.
+
+You can find more details about the SQL access in the documentation.
+
+### Xata rich types
+
+As you access your database directly using SQL, the Xata rich column types (File, email) have reduced functionality. For example, the File type are currently read-only when accessed over SQL. You can only add or edit some of the rich types using the Xata API.
+
+## Examples and SDK support
+
+SQL is supported in both the TypeScript/Javascript and the Python SDKs, as well as via the REST API. In it’s simple form, you can run SQL like this:
+
+<TabbedCode tabs={['TypeScript', 'Python', 'REST']}>
 
 ```ts
-const { records: myRecord } = await xata.sql<TeamsRecord>`SELECT * FROM teams`;
+const { records: myRecord } = await xata.sql<TeamsRecord>`SELECT * FROM "teams"`;
 ```
 
 ```python
-records = xata.sql().query("SELECT * FROM \"teams\"")
+records = xata.sql().query('''SELECT * FROM \"teams\"''')
 ```
 
 ```json
@@ -45,65 +83,76 @@ records = xata.sql().query("SELECT * FROM \"teams\"")
 
 </TabbedCode>
 
-## How does it work?
+Currently, each request can contain a single SQL statement. You can submit parameterized queries with parameters, which you should use to protect against SQL injection. Here is an example:
 
-![Diagram of PostgreSQL proxy](images/sql-intro.png)
+<TabbedCode tabs={['TypeScript', 'Python', 'REST']}>
 
-### Database storage
+```tsx
+const { records: myRecord } = await xata.sql<TeamsRecord>`SELECT * FROM teams WHERE name=${name}`;
+```
 
-We run a PostgreSQL instance that stores your database. With opening
-up the access now you can directly query and edit database rows in
-PostgreSQL.
+```python
+records = xata.sql().query("SELECT * FROM \"teams\" WHERE name=$1", params=[name])
+```
 
-### Authentication and authorization
+```json
+// POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/sql
+{
+  "statement": "SELECT * FROM \"teams\" WHERE name=$",
+  "params": ["name"]
+}
+```
 
-Xata plays a pivotal role in authenticating and authorizing your
-requests. This not only safeguards your data but also ensures that
-only legitimate users can access and manipulate the database. If you
-have access to the database branch, we validate that your statement is
-correct and only contains only allowed SQL keywords and functions.
+</TabbedCode>
 
-### Request validation
+The above examples, however, could be easier achieved using the Xata API, and we generally recommend you using the Xata SDKs for this types of queries because they provide better type safety-ness (in TypeScript) and overall a better developer experience.
 
-For queries within the database branch, we go a step further by
-validating your SQL statement. We forbid several functions like
-`pg_sleep` or database administration commands, as we we run the
-database instance for you. We take care of administrator tasks.
+SQL, on the other hand, is useful as an escape-hatch for features that are not available (yet) in the Xata API. For example, the following uses the `md5` and `avg` PostgreSQL functions and groups the results by the title:
 
-If your statement is correct, we run it in PostgreSQL and return the
-response, including rows and errors. If your statement has syntax
-errors or SQL errors, the error is returned to you. In case of
-forbidden or unknown functions, Xata returns unknown function
-error. All user errors get HTTP 400 (Bad request) responses with
-the error message.
+<TabbedCode tabs={['TypeScript', 'Python', 'REST']}>
 
-### SQL execution
+```tsx
+const { records: myRecord } =
+  await xata.sql<TeamsRecord>`"SELECT "primaryTitle", md5("primaryTitle"), avg("runtimeMinutes") FROM titles GROUP BY "primaryTitle"`;
+```
 
-Assuming your statement is accurate and aligned with the allowed
-parameters, Xata proceeds to execute it within the PostgreSQL
-instance. This means that if you've requested a `SELECT`, `INSERT`,
-`UPDATE`, or `DELETE` operation and you might provided parameters.
+```python
+records = xata.sql().query('''"SELECT "primaryTitle", md5("primaryTitle"), avg("runtimeMinutes") FROM titles GROUP BY "primaryTitle"''')
+```
 
-When running your SQL statement, we use a dedicated PostgreSQL role
-that only has access to the selected database branch objects be it
-tables, constraints or indices.
+```json
+// POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/sql
+{
+  "statement": "SELECT \"primaryTitle\", md5(\"primaryTitle\"), avg(\"runtimeMinutes\") FROM titles GROUP BY \"primaryTitle\""
+}
+```
 
-### Response retrieval
+</TabbedCode>
 
-We serialize the response from PostgreSQL into JSON. We return at most
-1000 rows in a singe response. So please use pagination using `LIMIT`
-and `OFFSET` keywords.
+In the above example, note that the double-quotes are required because the column names are in camelCase.
 
-You can find more details about the SQL access in the documentation.
+### Kysley integration
 
-## Limitations
+In the above examples, we’re using hand-written SQL, but you can also use SQL query builders or ORMs. [Kysley](https://kysely.dev/) is a query builder for TypeScript, providing type safteyness and integrations with several database systems.
 
-As you access your database directly using SQL, the Xata goodies will not
-be accessible to you. For example the special `email` Xata type is not safe.
-You can only add or edit special data types using the Xata API.
+We have created a [Xata dialect for Kysley](https://github.com/xataio/client-ts/tree/main/packages/plugin-client-kysely), which you can use with something like this:
 
-We support one statement per request.
+```tsx
+import { Kysely } from 'kysely';
+import { XataDialect } from '@xata.io/kysely';
+import { getXataClient } from 'src/xata'; // generated client
 
-Let us know what you think! If you have any suggestions, questions, or
-issues reach out to us on [Discord](https://xata.io/discord) or follow
-us on [Twitter](https://twitter.com/xata).
+const xata = getXataClient();
+
+const db = new Kysely<Database>({
+  xata // Your Xata client instance
+});
+
+return await db.selectFrom('person').where('id', '=', id).selectAll().executeTakeFirst();
+```
+
+## What's next?
+
+SQL over HTTP adds a new tool in your Xata toolbox, a standard yet powerful one! It is also just the beginning, we're planning to offer the Postgres wire protocol and a lot more controls over the underlying Postgres instances.
+
+Let us know what you think! If you have any suggestions, questions, or issues reach out to us on [Discord](https://xata.io/discord) or on [Twitter](https://twitter.com/xata).
