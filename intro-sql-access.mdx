@@ -4,6 +4,9 @@ description: 'Run SQL queries over HTTP directly in PostgreSQL'
 author: Noémi Ványi
 date: 08-31-2023
 published: false
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-full-text-search.png
+  alt: SQL access to Xata
 slug: sql-query-over-http-intro
 ---
 
@@ -11,7 +14,7 @@ We are excited to announce that Xata now offers direct SQL access to
 your database.
 
 Internally, Xata relies on [PostgreSQL](/docs/concepts/how-it-works)
-for storing your data.  We want you to experience the benefits of SQL
+for storing your data. We want you to experience the benefits of SQL
 beyond the existing Xata API. From now on we support running some SQL
 commands over HTTP. The allowed statements are `SELECT`, `INSERT`,
 `UPDATE` and `DELETE` with some limitations.
@@ -23,7 +26,7 @@ contain a single SQL statement; currently, support for multiple
 statements is not available. You can submit parameterized queries with
 parameters, so you are protected from SQL injection attacks.
 
-```json|ts|python
+````json|ts|python
     ```ts
     const { records: myRecord } = await xata.sql<TeamsRecord>`SELECT * FROM teams`;
     ```
@@ -36,7 +39,7 @@ parameters, so you are protected from SQL injection attacks.
         "statement": "SELECT * FROM \"teams\""
     }
     ```
-```
+````
 
 ## How does it work?
 
@@ -96,7 +99,6 @@ be accessible to you. For example the special `email` Xata type is not safe.
 You can only add or edit special data types using the Xata API.
 
 We support one statement per request.
-
 
 Let us know what you think! If you have any suggestions, questions, or
 issues reach out to us on [Discord](https://xata.io/discord) or follow
