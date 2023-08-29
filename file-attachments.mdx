@@ -19,7 +19,7 @@ In this blog we'll dive into the capabilities released today and architecture be
 
 Both files and relational data are ubiquitous in todays applications. Even the most basic scenarios generally require both structured relational data and file storage. Think about a blog which uses both posts metadata and images, a product catalogue or a document library. They all require basic data record management and query capabilities, as well as storage and access to large binary objects like images, videos, and documents.
 
-We often see engineers using a relational database with a separate storage service to store the data used by their application. In most cases the binary files are related to the relational data, therefore the common pattern is to store a file link in the database. This experience adds unnecessary friction and we saw an opportunity to simplify. Because file storage use cases are so closely correlated to data, we decided to embed [file attachments](https://xata.io/docs/concepts/file-attachments) directly into our serverless database and bring a new experience for building data apps that require binary storage.
+We often see engineers using a relational database with a separate storage service to store the data used by their application. In most cases the binary files are related to the relational data, therefore the common pattern is to store a file link in the database. This experience adds unnecessary friction and we saw an opportunity to simplify. Because file storage use cases are so closely correlated to data, we decided to embed [file attachments](/docs/sdk/image-transformations) directly into our serverless database and bring a new experience for building data apps that require binary storage.
 
 We've shown this feature to a number of developers before releasing it, and this is the type of feedback we've received on our approach so far:
 
@@ -140,7 +140,7 @@ Generally, our philosophy is to abstract away complexity where we can so our end
 
 ![File attachments architecture](/images/fa_architecture.png)
 
-Behind the scenes, the file data is actually stored in two places. The file content is stored as an AWS S3 object while the file metadata (name, type, size, S3 pointer) is stored as a json object in the PostgreSQL database table.
+Behind the scenes, the file data is actually stored in two places. The file content is stored as an AWS S3 object while the file metadata (name, type, size, S3 pointer) is stored as a JSON object in the PostgreSQL database table.
 
 We chose S3 for the binary object storage for its high performance, durability, availability and because it shares the same compliance certifications with the AWS Aurora, which we use for running PostgreSQL. This way, all data (relational and binary objects) is located in the same data centers and benefits from the same compliance guarantees.
 
@@ -148,7 +148,7 @@ The fundamental challenge when writing state to two different services is making
 
 A second set of challenges comes around data deletion and cleanup, where again it is not trivial to keep the state in sync between two services. With database tables, Xata takes the cautious approach of delayed cleanup. This allows us to offer undo delete operations (not exposed yet) and to have a general recovery option in case of accidental deletes. When file content storage comes into the picture, it needs to follow the same pattern. Restoring only half of the deleted data is not particularly useful.
 
-The implemented solution treats the PostgreSQL metadata as source of truth and removes the associated file data only when the corresponding records are deleted from PostreSQL. This is achieved by hooking into the PostgreSQL replication and handling delete record events. This is an elegant way of replicating the deleted state from Postgresql to S3, but unfortunately it is only half the solution, because it only handles individual record or value deletes. When data is deleted by dropping entire columns, tables, databases the events are not captured in replication so Xata handles this separately by scheduling bulk deletes.
+The implemented solution treats the PostgreSQL metadata as source of truth and removes the associated file data only when the corresponding records are deleted from PostgreSQL. This is achieved by hooking into the PostgreSQL replication and handling delete record events. This is an elegant way of replicating the deleted state from PostgreSQL to S3, but unfortunately it is only half the solution, because it only handles individual record or value deletes. When data is deleted by dropping entire columns, tables, databases the events are not captured in replication so Xata handles this separately by scheduling bulk deletes.
 
 Backup support adds another level of complexity. Xata creates regular backups and can perform a restore on request. The binary object storage needs to match the ability to restore the state from the time of the database backup. This is achieved through a combination of immutable S3 objects and configuring S3 lifecycle. Deleted files become inaccessible, but they are kept for 7 days after their deletion for recovery purposes. After the 7 days the files are permanently deleted.
 
