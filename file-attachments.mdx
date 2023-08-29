@@ -11,11 +11,9 @@
  ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/fa_blog_illustration.jpeg
 ---
 
-Today, as part of [our launch week](https://xata.io/blog/launch-week-august-2023), we’re beyond excited to announce a feature that we've wanted to add ever since we started Xata: File Attachments. Think of it as having a new database column type where you can store files of any size, and behind the scenes they are stored in AWS S3 and cached through a global CDN. With this approach, files simply become part of a database record. For example, they respect the same security boundary -- if you can access a record, you can also access its attached files. Image file types also get some extra functionality allowing you to request them at any size and style with built-in transformations.
+Today, as part of [our launch week](https://xata.io/blog/launch-week-august-2023), we’re beyond excited to announce a feature that we've wanted to add ever since we started Xata: File Attachments. Think of it as having a new database column type where you can store files of any size, and behind the scenes they are stored in AWS S3 and cached through a global CDN. Files simply become a part of a database record. For example, they respect the same security boundary -- if you can access a record, you can also access its attached files. Image file types also get some extra functionality allowing you to request them at any size and style with built-in transformations. With this release, we aim to simplify your application architecture and reduce the number of services you need to manage.
 
-Whether you’re building a full scale e-commerce application, a personal blog or evolving your product to be AI-native — file attachments unlock a number of new use cases while providing an opportunity to simplify your architecture and reduce the number of services you rely on.
-
-In this blog we'll dive into the capabilities released today and architecture behind our implementation. We hope you enjoy the read as much as we did building it all out 😃
+In this blog we'll dive into the capabilities released today and architecture behind our implementation. We hope you enjoy the read as much as we did building it 😃
 
 ### Adding file storage to the database
 
@@ -23,8 +21,16 @@ Both files and relational data are ubiquitous in todays applications. Even the m
 
 We often see engineers using a relational database with a separate storage service to store the data used by their application. In most cases the binary files are related to the relational data, therefore the common pattern is to store a file link in the database. This experience adds unnecessary friction and we saw an opportunity to simplify. Because file storage use cases are so closely correlated to data, we decided to embed [file attachments](https://xata.io/docs/concepts/file-attachments) directly into our serverless database and bring a new experience for building data apps that require binary storage.
 
+We've shown this feature to a number of developers before releasing it, and this is the type of feedback we've received on our approach so far:
+
 > Xata has become a critical part of my development cycle because I can quickly create and modify data structures without having to handle the database and migrations myself. Extending my records to include images has been great because I can easily apply transformations to them in the SDK. What I'm really excited about the ability to store any file type securely inside my database, it allows me to eliminate additional services like AWS S3.  
 > **Sebastian Gilits - Entrepreneur**
+
+> We chose Xata as our DBaaS for KWARECOM’s Mapping and Reporting Portal because of its low latency and serverlessness in comparison to other options out there. Our performance expectations are met. We’ve come to know and love their latest file storage offering; very unique and appealing. The CDN backed images are fast and the simplicity Xata provides means we at KWARECOM don’t need to worry about the complexity on the backend anymore.  
+> **Titus S. Zoneh - CEO @ KWARECOM**
+
+> The DX for images and file storage in the Python SDK and REST API were out of this world. I’m using images and file storage for an article classification tool. The simplicity of having image transformations baked into the record API is second to none. When my students at Berkeley are looking to spin up a quick project, I’m going to point them to Xata.  
+> **Will Monge - Engineering Lead @ Good Research**
 
 Let’s take a deeper look into what gets simplified and how Xata achieves this.
 
@@ -106,9 +112,6 @@ All the access URLs offer lower latency compared to file retrieval through the X
 
 Going further on storage performance, modern applications require low latency across the globe.
 
-> We chose Xata as our DBaaS for KWARECOM’s Mapping and Reporting Portal because of its low latency and serverlessness in comparison to other options out there. Our performance expectations are met. We’ve come to know and love their latest file storage offering; very unique and appealing. The CDN backed images are fast and the simplicity Xata provides means we at KWARECOM don’t need to worry about the complexity on the backend anymore.  
-> **Titus S. Zoneh - CEO @ KWARECOM**
-
 We could not claim to simplify working with files and then ask customers to configure and manage their own CDN to get reasonable global performance. Hence the file attachments support comes with CDN included. There is no opt-in and no configuration necessary. All direct access URLs are served through a CDN by default. In essence, all files retrieved through URL are cached at the edge, making the following requests blazing fast.
 
 Xata opted to integrate [Cloudflare’s Global CDN](https://www.cloudflare.com/application-services/products/cdn/) for its wide geographical coverage, its performance and its feature set.
@@ -130,9 +133,6 @@ We considered more flexible transformation definitions through query parameters 
 ```json
 https://eu-west-1.storage.xata.sh/transform/rotate=180,height=50/nj42n37o4l3dd19fe6vsh4plkk
 ```
-
-> The DX for images and file storage in the Python SDK and REST API were out of this world. I’m using images and file storage for an article classification tool. The simplicity of having image transformations baked into the record API is second to none. When my students at Berkeley are looking to spin up a quick project, I’m going to point them to Xata.  
-> **Will Monge - Engineering Lead @ Good Research**
 
 ### Building a file attachment service
 
@@ -171,9 +171,6 @@ We have launched this functionality with an example image gallery app to highlig
 ![Gallery example with file attachments](/images/fa_example_gallery_app.png)
 
 ### Shout out to the Xata community
-
-> I’m building an API service and application on top of Xata. With the availability for image and file storage, my application can rely solely on Xata without needing additional third-party services.  
-> **Ishaan Bedi - Developer**
 
 Before releasing file attachments, we decided to open up an early access program for those interested in our community. It was our first early access program since our private beta last year, and we were blown away by the amount of support and engagement we received from our honorary Xataflies. We sincerely want to thank everyone that participated. This feature would not be as amazing as it is today without your help 🙏
 
