@@ -17,9 +17,9 @@ In this blog we'll dive into the capabilities released today and architecture be
 
 ### Adding file storage to the database
 
-Both files and relational data are ubiquitous in todays applications. Even the most basic scenarios generally require both structured relational data and file storage. Think about a blog which uses both posts metadata and images, a product catalogue or a document library. They all require basic data record management and query capabilities, as well as storage and access to large binary objects like images, videos, and documents.
+Both files and relational data are ubiquitous in today's applications. Even the most basic scenarios generally require both structured relational data and file storage. Think about a blog which uses both posts metadata and images, a product catalogue or a document library. They all require basic data record management and query capabilities, as well as storage and access to large binary objects like images, videos, and documents.
 
-We often see engineers using a relational database with a separate storage service to store the data used by their application. In most cases the binary files are related to the relational data, therefore the common pattern is to store a file link in the database. This experience adds unnecessary friction and we saw an opportunity to simplify. Because file storage use cases are so closely correlated to data, we decided to embed [file attachments](/docs/sdk/image-transformations) directly into our serverless database and bring a new experience for building data apps that require binary storage.
+We often see engineers using a relational database with a separate storage service to store the data used by their application. In most cases the binary files are related to the relational data, therefore the common pattern is to store a file link in the database. This experience adds unnecessary friction and we saw an opportunity to simplify. Because file storage use cases are so closely correlated to data, we decided to embed [file attachments](/docs/sdk/file-attachments) directly into our serverless database and bring a new experience for building data apps that require binary storage.
 
 We've shown this feature to a number of developers before releasing it, and this is the type of feedback we've received on our approach so far:
 
@@ -112,7 +112,7 @@ All the access URLs offer lower latency compared to file retrieval through the X
 
 Going further on storage performance, modern applications require low latency across the globe.
 
-We could not claim to simplify working with files and then ask customers to configure and manage their own CDN to get reasonable global performance. Hence, the file attachments support comes with CDN included. There is no opt-in and or configuration needed; all direct access URLs are served through a CDN by default. In essence, all files retrieved through a URL are cached at the edge, making the following requests blazing fast.
+We could not claim to simplify working with files and then ask customers to configure and manage their own CDN to get reasonable global performance. As a result, the support for file attachments includes built-in CDN capabilities. There is no opt-in and no action is required to enable it; all direct access URLs are served through a CDN by default. In essence, all files retrieved through a URL are cached at the edge, making the following requests blazing fast.
 
 Xata opted to integrate [Cloudflare’s Global CDN](https://www.cloudflare.com/application-services/products/cdn/) for its wide geographical coverage, its performance and its feature set.
 
@@ -124,7 +124,7 @@ We have seen that content cannot be stale, but there is an important note on per
 
 ### Your images, your way with image transformations
 
-Looking at the most common scenarios where relational data is used together with binary files, the image use case stands out. All web applications use images today and images tend to require processing before they are rendered. Xata file attachments come with a [comprehensive set of image transformations](https://xata.io/docs/concepts/file-attachments#image-transformations) -- from resizing to photo adjustments to changing format and compression.
+Looking at the most common scenarios where relational data is used together with binary files, the image use case stands out. All web applications use images today and images tend to require processing before they are rendered. Xata file attachments come with a [comprehensive set of image transformations](/docs/sdk/image-transformations) -- from resizing to photo adjustments to changing format and compression.
 
 All transformations are applied at the edge and are cached by default. Again, Xata leverages Cloudflare functionality for image transformations.
 
