@@ -1,6 +1,6 @@
 ---
 title: 'Query your database using SQL'
-description: 'Run SQL queries over HTTP directly in PostgreSQL'
+description: 'Query PostgreSQL directly with SQL over HTTP in our REST API and SDKs'
 author: Noémi Ványi
 date: 08-31-2023
 published: false
@@ -10,13 +10,13 @@ image:
 slug: sql-over-http
 ---
 
-We are excited to announce that Xata now offers direct SQL access to your database, in addition to the Xata API. This allows you to express arbitrary complex SQL queries and use SQL builders like Kysley or Drizzle. You can play with the new SQL support in the built-in Playground, which we have extended to support SQL.
+As part of our [launch week](https://xata.io/blog/launch-week-august-2023), we are excited to announce that Xata now offers direct SQL access to your database, in addition to the Xata API. This allows you to express arbitrary complex SQL queries and use SQL builders like Kysley or Drizzle. You can also now save and run SQL queries in our Playground, which we have extended to support SQL.
 
-## Why
+## Why are we adding SQL access?
 
 Behind the scenes, Xata is powered by PostgreSQL. Postgres serves as the source of truth for the data, and we automatically replicate the data to Elasticsearch for features like full-text search, vector search, and aggregations. Additionally, our integration of blob storage and CDN enhances the experience by enabling [file attachment](https://xata.io/blog/file-attachments) capabilities.
 
-While PostgreSQL is at the core of Xata, we had not previously exposed its protocol directly, which in turn limited the ability to execute SQL queries in Xata. This was partially due to technical reasons: our free tier runs on shared PostgreSQL clusters, which allows us to offer a very generous free tier; however, it also means that direct connections pose a security risk. The other reasons are product related: by controlling the API, we can offer rich types (e.g. attachments), simple replication, instant branching, and more.
+While PostgreSQL is at the core of Xata, we had not previously exposed its protocol directly, which in turn limited the ability to execute SQL queries in Xata. This was partially due to technical reasons: our free tier runs on shared PostgreSQL clusters, which allows us to offer a very generous free tier; however, it also means that direct connections pose a security risk. The other reasons are product related: by controlling the API, we can offer rich types (e.g. file attachments), simple replication, instant branching, and more.
 
 Yet, one of our most requested features was to add direct SQL access. Could we have both? Could we allow for SQL access and still mediate the queries?
 
@@ -26,15 +26,15 @@ In order to safely give SQL access to the Xata databases, we wrote a SQL proxy t
 
 At the moment we support SQL (Postgres dialect) over HTTP and the allowed statements are `SELECT`, `INSERT`, `UPDATE` and `DELETE` with some limitations. Currently, DML statements are not supported, but they will be in the future.
 
-Using SQL over HTTP offers the benefit of easy integration within serverless environments, including Cloudflare Workers, similar to the rest of the Xata SDK. Our roadmap includes expanding SQL support and introducing the Postgres Wire protocol for maximum compatibility.
+Using SQL over HTTP offers the benefit of easy integration within serverless environments, such as [Cloudflare Workers](https://workers.cloudflare.com/), just like the rest of the Xata SDK. Our roadmap includes expanding SQL support and introducing the Postgres Wire protocol for maximum compatibility.
 
-Architecturally, the Proxy sits side-by-side with the Xata data api implementation, between Postgres itself and the routing and authentication components:
+Architecturally, the proxy sits side-by-side with the Xata data api implementation, between Postgres itself and the routing and authentication components:
 
 ![Architecture with the SQL proxy](images/sql-intro.png)
 
 ### PostgreSQL database
 
-We run a PostgreSQL instance that stores your database. By enabling SQL access, you gain the ability to directly interact with and manipulate database rows within PostgreSQL. This means you can now perform queries and updates at a more granular level.
+As we mentioned above, we run a PostgreSQL instance that stores your database. By enabling SQL access, you gain the ability to directly interact with and manipulate database rows within PostgreSQL.
 
 ### Authentication and authorization
 
@@ -129,7 +129,7 @@ records = xata.sql().query('''SELECT "primaryTitle", md5("primaryTitle"), avg("r
 
 </TabbedCode>
 
-In the above example, note that the double-quotes are required because the column names are in camelCase.
+It is worth noting that the double-quotes are required because the column names are in camelCase.
 
 ### Kysley integration
 
@@ -153,6 +153,6 @@ return await db.selectFrom('person').where('id', '=', id).selectAll().executeTak
 
 ## What's next?
 
-SQL over HTTP adds a new tool in your Xata toolbox, a standard yet powerful one! It is also just the beginning, we're planning to offer the Postgres wire protocol and a lot more controls over the underlying Postgres instances.
+SQL over HTTP adds a new tool to your Xata toolbox; a standard, yet powerful one! It is also just the beginning. We're planning to offer the Postgres wire protocol and a lot more controls over the underlying Postgres instances in the future Stay tuned for more updates in this space.
 
-Let us know what you think! If you have any suggestions, questions, or issues reach out to us on [Discord](https://xata.io/discord) or on [Twitter](https://twitter.com/xata).
+Let us know what you think! If you have any suggestions, questions, or issues reach out to us on [Discord](https://xata.io/discord) or on [X/Twitter](https://twitter.com/xata).
