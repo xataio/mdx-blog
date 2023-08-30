@@ -32,10 +32,6 @@ Architecturally, the proxy sits side-by-side with the Xata data api implementati
 
 ![Architecture with the SQL proxy](images/sql-intro.png)
 
-### PostgreSQL database
-
-As we mentioned above, we run a PostgreSQL instance that stores your database. By enabling SQL access, you gain the ability to directly interact with and manipulate database rows within PostgreSQL.
-
 ### Authentication and authorization
 
 Since the SQL access is exposed via our HTTP REST API, the authentication and authorization work exactly the same. If you have access to the database branch, we validate that your statement is correct, that it accesses tables in that branch, and that it only contains allowed SQL keywords and functions.
