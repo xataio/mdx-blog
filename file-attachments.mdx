@@ -1,6 +1,6 @@
 ---
  title: 'File Attachments: Databases can now store files and images'
- description: 'Extending a database record to include a new file column type with a global CDN, common security boundaries ,and image transformations.'
+ description: 'Extending a database record to include a new file column type with a global CDN, common security boundaries, and image transformations.'
  image:
    src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/fa_blog_illustration.jpeg
    alt: 'File Attachments: Databases can now store files and images'
@@ -23,14 +23,14 @@ We often see engineers using a relational database with a separate storage servi
 
 We've shown this feature to a number of developers before releasing it, and this is the type of feedback we've received on our approach so far:
 
-> Xata has become a critical part of my development cycle because I can quickly create and modify data structures without having to handle the database and migrations myself. Extending my records to include images has been great because I can easily apply transformations to them in the SDK. What I'm really excited about the ability to store any file type securely inside my database, it allows me to eliminate additional services like AWS S3.  
-> **Sebastian Gilits - Entrepreneur**
+> Xata has become a critical part of my development cycle because I can quickly create and modify data structures without having to handle the database and migrations myself. Extending my records to include images has been great because I can easily apply transformations to them in the SDK. What I'm really excited about the ability to store any file type securely inside my database, it allows me to eliminate additional services like AWS S3.\
+> _Sebastian Gilits - Entrepreneur_
 
-> We chose Xata as our DBaaS for KWARECOM’s Mapping and Reporting Portal because of its low latency and serverlessness in comparison to other options out there. Our performance expectations are met. We’ve come to know and love their latest file storage offering; very unique and appealing. The CDN backed images are fast and the simplicity Xata provides means we at KWARECOM don’t need to worry about the complexity on the backend anymore.  
-> **Titus S. Zoneh - CEO @ KWARECOM**
+> We chose Xata as our DBaaS for KWARECOM’s Mapping and Reporting Portal because of its low latency and serverlessness in comparison to other options out there. Our performance expectations are met. We’ve come to know and love their latest file storage offering; very unique and appealing. The CDN backed images are fast and the simplicity Xata provides means we at KWARECOM don’t need to worry about the complexity on the backend anymore.\
+> _Titus S. Zoneh - CEO @ KWARECOM_
 
-> The DX for images and file storage in the Python SDK and REST API were out of this world. I’m using images and file storage for an article classification tool. The simplicity of having image transformations baked into the record API is second to none. When my students at Berkeley are looking to spin up a quick project, I’m going to point them to Xata.  
-> **Will Monge - Engineering Lead @ Good Research**
+> The DX for images and file storage in the Python SDK and REST API were out of this world. I’m using images and file storage for an article classification tool. The simplicity of having image transformations baked into the record API is second to none. When my students at Berkeley are looking to spin up a quick project, I’m going to point them to Xata.\
+> _Will Monge - Engineering Lead @ Good Research_
 
 Let’s take a deeper look into what gets simplified and how Xata achieves this.
 
@@ -38,9 +38,9 @@ Let’s take a deeper look into what gets simplified and how Xata achieves this.
 
 We’re really excited about today's release because it packs a lot of functionality into the simple experience of adding another column to your database. We wanted this experience to feel familiar, like adding and viewing an attachment in a spreadsheet instead of dropping a file into a generic bucket. When we started to work on the file attachments, we had the following goals in mind:
 
-1. Relational and storage APIs should share the same endpoints and the same connections. It is easier to work with and maintain one service rather than two.
-2. APIs must share the same authorization scheme and the same permissions model. Avoid having to use different credentials and keep permissions in sync.
-3. Relational data and binary object data should share the same region. Both data types should reside in the same compliance boundary and have similar guarantees.
+1.  Relational and storage APIs should share the same endpoints and the same connections. It is easier to work with and maintain one service rather than two.
+2.  APIs must share the same authorization scheme and the same permissions model. Avoid having to use different credentials and keep permissions in sync.
+3.  Relational data and binary object data should share the same region. Both data types should reside in the same compliance boundary and have similar guarantees.
 
 The first step in our design was to acknowledge that relational data and large binary objects have very different consumption models and trying to fit both into the same storage service leads to unacceptable compromises. One size doesn’t fit all. Serving large binary objects from a relational database cannot match the performance of a dedicated storage service in terms of compute cost, concurrency and throughput. The opposite is even more obvious, a storage service cannot match the querying and data management capabilities of a relational database.
 
@@ -102,9 +102,9 @@ The second scenario is the content distribution through direct access URLs. In t
 
 To cater for different URL access needs, Xata provides 3 levels of authorization for the URLs that it generates.
 
-1. Public Access - the requests to retrieve the file are not subject to any authentication or authorization. This is very convenient for truly public content, but can be very dangerous if configured by mistake on sensitive data. By default, all uploaded files are private (the access URL requires authentication). Public access can be configured per file to allow maximum flexibility. The default can be updated per column, for scenarios where all files need to be public.
-2. Signed URL - Xata can generate a signed URL which grants access to anyone having the URL for a specified amount of time. This is commonly used in scenarios where an image is rendered but the URL cannot be further shared because it expires shortly. The default timeout is 1 minute, but it can be configured per file.
-3. Authenticated URL - the requests need to include a valid Authorization header in order to retrieve the file.
+1.  Public Access - the requests to retrieve the file are not subject to any authentication or authorization. This is very convenient for truly public content, but can be very dangerous if configured by mistake on sensitive data. By default, all uploaded files are private (the access URL requires authentication). Public access can be configured per file to allow maximum flexibility. The default can be updated per column, for scenarios where all files need to be public.
+2.  Signed URL - Xata can generate a signed URL which grants access to anyone having the URL for a specified amount of time. This is commonly used in scenarios where an image is rendered but the URL cannot be further shared because it expires shortly. The default timeout is 1 minute, but it can be configured per file.
+3.  Authenticated URL - the requests need to include a valid Authorization header in order to retrieve the file.
 
 All the access URLs offer lower latency compared to file retrieval through the Xata API because, apart from the authorization check (for signed and authenticated URLs) they go directly to storage skipping Xata middleware and the database service.
 
@@ -130,7 +130,7 @@ All transformations are applied at the edge and are cached by default. Again, Xa
 
 We considered more flexible transformation definitions through query parameters or request body objects, but in the end chose the industry standard of defining the transformations in the URL path. This makes it easier to embed the transformation into a web page and the transformation is automatically included in the cache key within the CDN.
 
-```json
+```
 https://eu-west-1.storage.xata.sh/transform/rotate=180,height=50/nj42n37o4l3dd19fe6vsh4plkk
 ```
 
