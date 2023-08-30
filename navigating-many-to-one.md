@@ -1,0 +1,336 @@
+---
+title: 'Navigating '
+description: 'Relationships'
+image:
+  src: 'https://raw.githubusercontent.com/xataio/mdx-blog/main/images/csv-import-export-cover.jpg'
+  alt: 'image'
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/csv-import-export-cover-og.jpg
+author: Alejandro
+date: 08-31-2023
+published: false
+slug: navigating
+---
+
+
+In this blog post we’ll be introducing a new syntax to navigate relationships through the API. Xata already provides a good experience returning related data on `[Link` columns](https://xata.io/docs/concepts/data-model#link) for the *many-to-one* direction, but the backwards [relationship](https://xata.io/docs/concepts/data-model#links-and-relations) (*one-to-many*) requires a better approach that helps avoiding the *n+1 problem*.
+
+The following is a simple schema that will help us explain the problem. The *posts* table has some data and also points to the author. Author’s data belongs in the *users* table.
+
+![Screenshot 2023-07-06 at 09.45.14.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/9c8cae68-683c-4689-af8a-2bc4d5dbd928/Screenshot_2023-07-06_at_09.45.14.png)
+
+When querying the *posts* table we are able to get back the *title, likes* **and** the *author*’s *name* (and any other field present in the *users* table):
+
+```json
+// Request
+POST /db/blogs:main/tables/posts/query
+{
+  "columns": ["*","author.*"]
+}
+
+// Response (xata fields have been omitted for clarity)
+{
+    "records": [
+        {
+            "author": {
+                "id": "rec_cie05krjtojbm41fv2q0",
+                "name": "Tudor Golubenco"
+            },
+            "id": "rec_cie05srjtojbm41fv2t0",
+            "likes": 13,
+            "title": "Postgres schema changes are still a PITA"
+        },
+        {
+            "author": {
+                "id": "rec_cie05krjtojbm41fv2q0",
+                "name": "Tudor Golubenco"
+            },
+            "id": "rec_cie05v3jtojbm41fv2tg",
+            "likes": 15,
+            "title": "On the performance impact of REPLICA IDENTITY FULL in Postgres"
+        },
+        {
+            "author": {
+                "id": "rec_cie05ljjtojbm41fv2qg",
+                "name": "Joan Edwards"
+            },
+            "id": "rec_cie060jjtojbm41fv2u0",
+            "likes": 5,
+            "title": "Introducing the new Xata regions: Sydney & Frankfurt"
+        },
+        {
+            "author": {
+                "id": "rec_cie05krjtojbm41fv2q0",
+                "name": "Tudor Golubenco"
+            },
+            "id": "rec_cii1kajjtoj0t82ae3ag",
+            "likes": 6,
+            "title": "Semantic or keyword search for finding ChatGPT context. Who searched it better?"
+        },
+        {
+            "author": {
+                "id": "rec_cii1ki3jtoj0t82ae3b0",
+                "name": "Alex Francoeur"
+            },
+            "id": "rec_cii1kjjjtoj0t82ae3bg",
+            "likes": 9,
+            "title": "The next era of databases are serverless, adaptive, and collaborative"
+        },
+        {
+            "author": {
+                "id": "rec_cii1ki3jtoj0t82ae3b0",
+                "name": "Alex Francoeur"
+            },
+            "id": "rec_cii1kpbjtoj0t82ae3c0",
+            "likes": 8,
+            "title": "End-to-end preview deployment workflows with Xata and Vercel"
+        },
+        {
+            "author": {
+                "id": "rec_cii1ki3jtoj0t82ae3b0",
+                "name": "Alex Francoeur"
+            },
+            "id": "rec_cii1l1rjtoj0t82ae3cg",
+            "likes": 20,
+            "title": "Modern database workflows with GitHub, Vercel, Netlify, and Xata"
+        }
+    ]
+}
+```
+
+# N + 1 problem
+
+What if we wanted to list the authors and their posts? We would need to query the *users* table in order to retrieve all authors:
+
+```json
+// Request
+POST /db/blogs:main/tables/users/query
+{
+  "columns": ["*"]
+}
+
+// Response (xata fields have been omitted for clarity)
+{
+    "records": [
+        {
+            "id": "rec_cie05krjtojbm41fv2q0",
+            "name": "Tudor Golubenco"
+        },
+        {
+            "id": "rec_cie05ljjtojbm41fv2qg",
+            "name": "Joan Edwards"
+        },
+        {
+            "id": "rec_cii1ki3jtoj0t82ae3b0",
+            "name": "Alex Francoeur"
+        }
+    ]
+}
+```
+
+And then, for each user that has been returned, make a separate request in the *posts* table to retrieve the posts from each author, similar to:
+
+```json
+// Request
+POST /db/blogs:main/tables/posts/query
+{
+  "columns": ["*"],
+  "filter": {
+      "author": "rec_cie05krjtojbm41fv2q0"
+  }
+}
+
+// Response (xata fields have been omitted for clarity)
+{
+    "records": [
+        {
+            "author": {
+                "id": "rec_cie05krjtojbm41fv2q0"
+            },
+            "id": "rec_cie05srjtojbm41fv2t0",
+            "likes": 13,
+            "title": "Postgres schema changes are still a PITA"
+        },
+        {
+            "author": {
+                "id": "rec_cie05krjtojbm41fv2q0"
+            },
+            "id": "rec_cie05v3jtojbm41fv2tg",
+            "likes": 15,
+            "title": "On the performance impact of REPLICA IDENTITY FULL in Postgres"
+        },
+        {
+            "author": {
+                "id": "rec_cie05krjtojbm41fv2q0"
+            },
+            "id": "rec_cii1kajjtoj0t82ae3ag",
+            "likes": 6,
+            "title": "Semantic or keyword search for finding ChatGPT context. Who searched it better?"
+        }
+    ]
+}
+```
+
+We are performing 1 (get the authors) + n (get the author’s posts) requests. This is inconvenient and also quite inefficient, since the number of requests depends on the number of user records.
+
+There are workarounds depending on the dataset and the amount of code we are willing to write, like getting *all* the authors and *all* the posts, or using the `IN` operator and then processing the response in the app. But it would be better if our API would help us getting exactly what we want.
+
+# Navigate links backwards
+
+Since the relationship is already defined by the `link` column, it’s a matter of providing a good API experience to get this data more easily. We have introduced [Column Expressions](https://xata.io/docs/concepts/data-model#links-and-relations) in the query endpoint so the `columns` field is no longer restricted to a list of column names. Now we are able to provide a JSON object in order to better define the projection we want.
+
+A good way of illustrating this is trying to improve our previous use case by taking advantage of this backwards relationship using column expressions:
+
+```json
+// Request
+POST /db/blogs:main/tables/users/query
+{
+  "columns": [
+      "*",
+      {
+          "name": "<-posts.author",
+          "columns": ["title"]
+      }
+  ]
+}
+```
+
+In this request we are asking for all the fields in the *users* table (`*`) plus a column expression. The expression consists of a structure with two fields:
+
+- *name:* the `<-` prefix indicates we are navigating backwards the `link` described by the `author` column in the `posts` table, which results in a one-to-many relationship
+- *columns:* is the projection to apply to the table at the other side of the relation
+
+What we get back is a list of post data nested in every author record. The default name for the nested list is *postsauthor* (i.e. table name + link name):
+
+```json
+// Response (xata fields have been omitted for clarity)
+{
+    "records": [
+        {
+            "id": "rec_cie05krjtojbm41fv2q0",
+            "name": "Tudor Golubenco",
+            "postsauthor": {
+                "records": [
+                    {
+                        "id": "rec_cie05srjtojbm41fv2t0",
+                        "title": "Postgres schema changes are still a PITA"
+                    },
+                    {
+                        "id": "rec_cie05v3jtojbm41fv2tg",
+                        "title": "On the performance impact of REPLICA IDENTITY FULL in Postgres"
+                    },
+                    {
+                        "id": "rec_cii1kajjtoj0t82ae3ag",
+                        "title": "Semantic or keyword search for finding ChatGPT context. Who searched it better?"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "rec_cie05ljjtojbm41fv2qg",
+            "name": "Joan Edwards",
+            "postsauthor": {
+                "records": [
+                    {
+                        "id": "rec_cie060jjtojbm41fv2u0",
+                        "title": "Introducing the new Xata regions: Sydney & Frankfurt"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "rec_cii1ki3jtoj0t82ae3b0",
+            "name": "Alex Francoeur",
+            "postsauthor": {
+                "records": [
+                    {
+                        "id": "rec_cii1kpbjtoj0t82ae3c0",
+                        "title": "End-to-end preview deployment workflows with Xata and Vercel"
+                    },
+                    {
+                        "id": "rec_cii1kjjjtoj0t82ae3bg",
+                        "title": "The next era of databases are serverless, adaptive, and collaborative"
+                    },
+                    {
+                        "id": "rec_cii1l1rjtoj0t82ae3cg",
+                        "title": "Modern database workflows with GitHub, Vercel, Netlify, and Xata"
+                    }
+                ]
+            }
+        }
+    ]
+}
+```
+
+Using this syntax we are able to avoid the N + 1 problem, getting all the data we want using a single request and, therefore, avoiding any unnecessary roundtrips and repetitive code.
+
+More fields are available to configure the projection further: *as*, *sort*, *limit*, *offset*. The same request can be tuned like this (comments are not part of the JSON spec):
+
+```json
+// Request
+POST /db/blogs:main/tables/users/query
+{
+  "columns": [
+      "*",
+      {
+          "name": "<-posts.author",
+          "as": "posts", // Field is returned as `posts`
+          "columns": ["title"],
+          "sort": [      // Return the nested records in this order
+						{"title": "desc"}
+          ],
+          "limit": 1,    // Limit the amount of nested records to 1
+          "offset": 1    // Skip first nested record
+      }
+  ]
+}
+
+// Response (xata fields have been omitted for clarity)
+{
+    "records": [
+        {
+            "id": "rec_cie05krjtojbm41fv2q0",
+            "name": "Tudor Golubenco",
+            "posts": {
+                "records": [
+                    {
+                        "id": "rec_cii1kajjtoj0t82ae3ag",
+                        "title": "Semantic or keyword search for finding ChatGPT context. Who searched it better?"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "rec_cie05ljjtojbm41fv2qg",
+            "name": "Joan Edwards",
+            "posts": {
+                "records": [
+                    {
+                        "id": "rec_cie060jjtojbm41fv2u0",
+                        "title": "Introducing the new Xata regions: Sydney & Frankfurt"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "rec_cii1ki3jtoj0t82ae3b0",
+            "name": "Alex Francoeur",
+            "posts": {
+                "records": [
+                    {
+                        "id": "rec_cii1kjjjtoj0t82ae3bg",
+                        "title": "The next era of databases are serverless, adaptive, and collaborative"
+                    }
+                ]
+            }
+        }
+    ]
+}
+```
+
+For the moment, sorting options and classical pagination (limit + offset) are available for the reverse link querying. In the future, we will add support for filtering and cursor pagination. Similarly, we plan to add support for following multiple reverse links transitively. Nevertheless, we think that the majority of use cases are solved by the current functionality already.
+
+# Conclusion
+
+The new Xata querying syntax makes it possible to traverse the N:1 relationships backwards and therefore solves the N+1 problem in a single round-trip.
+
+If you have feedback or questions, you can reach out to us on [Discord](https://xata.io/discord) or [Twitter](https://twitter.com/xata).
