@@ -34,19 +34,25 @@ Sometimes different categories of products have completely different specs, so w
 We could use a JSON column to store the product details. Let's do this and add a `details` field to our table:
 
 <TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
-  ```ts
-  ```
+```ts
+
+````
 
 ```py
 
+````
+
+```jsonc
+    // Not yet available
+
 ```
 
-```jsonp
-
-```
-
-```jsonp
-
+```jsonc
+// POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/{tables}/{table_name}/columns
+{
+  "name": "details",
+  "type": "json"
+}
 ```
 
 </TabbedCode>
@@ -54,22 +60,80 @@ We could use a JSON column to store the product details. Let's do this and add a
 Let's add a few products with different details, for instance:
 
 - A t-shirt with a size and a color
-- A book with ISBN and number of pages
+- A book with author, ISBN and number of pages
 - A climbing rope with a length and a thickness
 
 <TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
   ```ts
+    const record1 = await xata.db.Users.create({
+        name: 'Xata xwag T-shirt',
+        details: {
+            color: 'purple',
+            size: 'M',
+        }
+    });
+    const record2 = await xata.db.Users.create({
+        name: 'Meditations',
+        details: {
+            author: 'Marcus Aurelius',
+            isbn: '978-0140449334',
+        }
+    });
+    const record3 = await xata.db.Users.create({
+        name: 'Long climbing rope',
+        details: {
+            length: 80,
+            thickness: 9.8,
+            color: 'blue',
+        }
+    });
   ```
 
 ```py
-
+    record1 = xata.records().insert("Users", {
+        "name": "Xata xwag T-shirt",
+        "details": {
+            "color": "purple",
+            "size": "M",
+        }
+    })
+    record2 = xata.records().insert("Users", {
+        "name": "Meditations",
+        "details": {
+            "author": "Marcus Aurelius",
+            "isbn": "978-0140449334",
+        }
+    })
+    record3 = xata.records().insert("Users", {
+        "name": "Long climbing rope",
+        "details": {
+            "length": 80,
+            "thickness": 9.8,
+            "color":"blue"
+        }
+    })
 ```
 
-```jsonp
-
+```jsonc
+    // Not yet available
 ```
 
-```jsonp
+```jsonc
+    // POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/{tables}/{table_name}/data
+    {
+        "name": "Xata xwag T-shirt",
+        "details": "{\"color\": \"purple\", \"size\": \"M\"}"
+    }
+
+    {
+        "name": "Meditations",
+        "details": "{\"author\": \"Marcus Aurelius\", \"isbn\": \"978-0140449334\"}"
+    }
+
+    {
+        "name":"Long climbing rope",
+        "details":"{\"length\": 80, \"thickness\": 9.8, \"color\": \"blue\"}"
+    }
 
 ```
 
