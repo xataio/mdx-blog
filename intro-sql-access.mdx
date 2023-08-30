@@ -16,7 +16,7 @@ We are excited to announce that Xata now offers direct SQL access to your databa
 
 Behind the scenes, Xata is powered by PostgreSQL. Postgres serves as the source of truth for the data, and we automatically replicate the data to Elasticsearch for features like full-text search, vector search, and aggregations. Additionally, our integration of blob storage and CDN enhances the experience by enabling [file attachment](https://xata.io/blog/file-attachments) capabilities.
 
-While PostgreSQL is at the core of Xata, so far we haven't exposed its protocol directly and it wasn't possible to run SQL queries against Xata. This was partially for technical reasons: our free tier runs on shared PostgreSQL clusters, which allows us to offer a very generous free tier, however it also means that direct connections pose a security risk. The other reasons are product related: by controlling the API, we can offer rich types (e.g. attachments), simple replication, instant branching, and more.
+While PostgreSQL is at the core of Xata, we had not previously exposed its protocol directly, which in turn limited the ability to execute SQL queries in Xata. This was partially due to technical reasons: our free tier runs on shared PostgreSQL clusters, which allows us to offer a very generous free tier; however, it also means that direct connections pose a security risk. The other reasons are product related: by controlling the API, we can offer rich types (e.g. attachments), simple replication, instant branching, and more.
 
 Yet, one of our most requested features was to add direct SQL access. Could we have both? Could we allow for SQL access and still mediate the queries?
 
