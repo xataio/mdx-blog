@@ -16,7 +16,7 @@ As part of our [launch week](https://xata.io/blog/launch-week-august-2023), we a
 
 Behind the scenes, Xata is powered by PostgreSQL. Postgres serves as the source of truth for the data, and we automatically replicate the data to Elasticsearch for features like full-text search, vector search, and aggregations. Additionally, our integration of blob storage and CDN enhances the experience by enabling [file attachment](https://xata.io/blog/file-attachments) capabilities.
 
-While PostgreSQL is at the core of Xata, we had not previously exposed its protocol directly, which in turn limited the ability to execute SQL queries in Xata. This was partially due to technical reasons: our free tier runs on shared PostgreSQL clusters, which allows us to offer a very generous free tier; however, it also means that direct connections pose a security risk. The other reasons are product related: by controlling the API, we can offer rich types (e.g. file attachments), simple replication, instant branching, and more.
+While PostgreSQL is at the core of Xata, we had not previously exposed its protocol directly. This was partially due to technical reasons: our free tier runs on shared PostgreSQL clusters, which allows us to offer a very generous free tier; however, it also means that direct connections pose a security risk. The other reasons are product related: by controlling the API, we can offer rich types (e.g. file attachments), simple replication, instant branching, and more.
 
 Yet, one of our most requested features was to add direct SQL access. Could we have both? Could we allow for SQL access and still mediate the queries?
 
@@ -28,7 +28,7 @@ At the moment we support SQL (Postgres dialect) over HTTP and the allowed statem
 
 Using SQL over HTTP offers the benefit of easy integration within serverless environments, such as [Cloudflare Workers](https://workers.cloudflare.com/), just like the rest of the Xata SDK. Our roadmap includes expanding SQL support and introducing the Postgres Wire protocol for maximum compatibility.
 
-Architecturally, the proxy sits side-by-side with the Xata data api implementation, between Postgres itself and the routing and authentication components:
+Architecturally, the proxy sits side-by-side with the Xata data API implementation, between Postgres itself and the routing and authentication components:
 
 ![Architecture with the SQL proxy](images/sql-intro.png)
 
