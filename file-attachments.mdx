@@ -52,7 +52,7 @@ At the API and database schema level, the binary object data type became the `fi
 
 <ArticleVideo
   platform="html"
-  src="https://raw.githubusercontent.com/xataio/mdx-blog/file-attachments-blog/videos/fa_add_file.mp4"
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/videos/fa_add_file.mp4"
   width="960"
   height="467"
   alt="Adding a file column type"
@@ -90,7 +90,7 @@ Since file attachments share the same endpoints with the Xata APIs, the same aut
 
 <ArticleVideo
   platform="html"
-  src="https://raw.githubusercontent.com/xataio/mdx-blog/file-attachments-blog/videos/fa_make_file_public.mp4"
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/videos/fa_make_file_public.mp4"
   width="960"
   height="467"
   alt="Making a file public"
@@ -130,9 +130,7 @@ All transformations are applied at the edge and are cached by default. Again, Xa
 
 We considered more flexible transformation definitions through query parameters or request body objects, but in the end chose the industry standard of defining the transformations in the URL path. This makes it easier to embed the transformation into a web page and the transformation is automatically included in the cache key within the CDN.
 
-```
-https://eu-west-1.storage.xata.sh/transform/rotate=180,height=50/nj42n37o4l3dd19fe6vsh4plkk
-```
+`https://eu-west-1.storage.xata.sh/transform/rotate=180,height=50/nj42n37o4l3dd19fe6vsh4plkk`
 
 ### Building a file attachment service
 
@@ -178,4 +176,4 @@ Want to join in on the fun with our community? Sign up for our content hackathon
 
 ### Get started today
 
-Xata is simplifying the patterns of working with relational data and binary objects together. If you are facing any of the problems described in this post, we welcome you to [sign up](https://app.xata.io/) and try Xata. We’d love your feedback on this feature, if you have any suggestions, questions, or issues reach out to us on [Discord](https://xata.io/discord) or follow us on [Twitter](https://twitter.com/xata).
+Xata is simplifying the patterns of working with relational data and binary objects together. If you are facing any of the problems described in this post, we welcome you to [sign up](https://app.xata.io/) and try Xata. We’d love your feedback on this feature, if you have any suggestions, questions, or issues reach out to us on [Discord](https://xata.io/discord) or follow us on [X / Twitter](https://twitter.com/xata).
