@@ -24,7 +24,7 @@ Yet, one of our most requested features was to add direct SQL access. Could we h
 
 In order to safely give SQL access to the Xata databases, we wrote a SQL proxy that deeply understands the SQL commands being executed and checks them for safety. This SQL proxy parses the query, walks the parsed tree, and checks which tables and columns are accessed, which functions are called, and so on. The implementation uses the [pg_query_go library](https://github.com/pganalyze/pg_query_go) from [PGAnalyze](https://pganalyze.com/), which uses the actual C code used by the PostgreSQL server.
 
-At the moment we support SQL (Postgres dialect) over HTTP and the allowed statements are `SELECT`, `INSERT`, `UPDATE` and `DELETE` with some limitations. DML statements are currently not supported, but they will be in the future.
+At the moment we support SQL (Postgres dialect) over HTTP and the allowed statements are `SELECT`, `INSERT`, `UPDATE` and `DELETE` with some limitations. Currently, DML statements are not supported, but they will be in the future.
 
 SQL over HTTP has the advantage that it can be easily used from serverless environments, including Cloudflare Workers, just like the rest of the Xata SDK. We're planning to extend the SQL support and also offer the Postgres Wire protocol for maximum compatibility.
 
