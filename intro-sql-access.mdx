@@ -26,7 +26,7 @@ In order to safely give SQL access to the Xata databases, we wrote a SQL proxy t
 
 At the moment we support SQL (Postgres dialect) over HTTP and the allowed statements are `SELECT`, `INSERT`, `UPDATE` and `DELETE` with some limitations. Currently, DML statements are not supported, but they will be in the future.
 
-SQL over HTTP has the advantage that it can be easily used from serverless environments, including Cloudflare Workers, just like the rest of the Xata SDK. We're planning to extend the SQL support and also offer the Postgres Wire protocol for maximum compatibility.
+Using SQL over HTTP offers the benefit of easy integration within serverless environments, including Cloudflare Workers, similar to the rest of the Xata SDK. Our roadmap includes expanding SQL support and introducing the Postgres Wire protocol for maximum compatibility.
 
 Architecturally, the Proxy sits side-by-side with the Xata data api implementation, between Postgres itself and the routing and authentication components:
 
