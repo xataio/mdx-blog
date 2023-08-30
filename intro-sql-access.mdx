@@ -101,7 +101,7 @@ records = xata.sql().query('''SELECT * FROM "teams" WHERE name=$1''', params=[na
 
 </TabbedCode>
 
-The above examples, however, could be easier achieved using the Xata API, and we generally recommend you using the Xata SDKs for this types of queries because they provide better type safety-ness and overall a better developer experience.
+The above examples, however, could be easier achieved using the Xata API. We generally recommend using the Xata SDKs for these types of queries because they provide better type safety and an overall better developer experience.
 
 SQL, on the other hand, is useful as an escape-hatch for features that are not available (yet) in the Xata API. For example, the following uses the `md5` and `avg` PostgreSQL functions and groups the results by the title:
 
