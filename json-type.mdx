@@ -15,11 +15,14 @@ but we also know that sometimes you need to store data that is not easily modele
 it's not as convenient as schemaless, or you just don't want to spend time on that at an early stage.
 JSON documents as fields in a relational data store are a great way have the best of both worlds.
 
-Many of our users have been asking for this feature, and we are happy to announce that it's finally here. Basic support for JSON column types has been added and it features:
+Many of our users have been asking for this feature, and we are happy to announce that it's finally here.
+Basic support for JSON column types has been added and it will bring many benefits:
 
-- JSON validation according to [RFC 7159](https://www.rfc-editor.org/rfc/rfc7159.html)
-- Indexing full documents and full-text search
-- Performant queries by nested keys
+- Enhanced flexibility: by providing a way to store schemaless data in a relational database
+- Data integrity: JSON validation according to [RFC 7159](https://www.rfc-editor.org/rfc/rfc7159.html)
+- Streamlined development: store any unstructured data directly with no need to handle a schema or data conversions
+- Efficient queries: apply many filters to nested nodes
+- Search: JSON documents are indexed as any other Xata data type and can be searched using the [full-text search](https://xata.io/docs/sdk/search) capabilities of Xata
 
 We plan on extending Xata support for JSON even further in the future, but the current capabilities are already very powerful and will solve most use cases.
 Let's get into the details and provide a few examples on how you can start using JSON documents in Xata today.
@@ -65,21 +68,21 @@ Let's add a few products with different details, for instance:
 
 <TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
   ```ts
-    const record1 = await xata.db.Users.create({
+    const record1 = await xata.db.Products.create({
         name: 'Xata xwag T-shirt',
         details: {
             color: 'purple',
             size: 'M',
         }
     });
-    const record2 = await xata.db.Users.create({
+    const record2 = await xata.db.Products.create({
         name: 'Meditations',
         details: {
             author: 'Marcus Aurelius',
             isbn: '978-0140449334',
         }
     });
-    const record3 = await xata.db.Users.create({
+    const record3 = await xata.db.Products.create({
         name: 'Long climbing rope',
         details: {
             length: 80,
@@ -90,21 +93,21 @@ Let's add a few products with different details, for instance:
   ```
 
 ```py
-    record1 = xata.records().insert("Users", {
+    record1 = xata.records().insert("Products", {
         "name": "Xata xwag T-shirt",
         "details": {
             "color": "purple",
             "size": "M",
         }
     })
-    record2 = xata.records().insert("Users", {
+    record2 = xata.records().insert("Products", {
         "name": "Meditations",
         "details": {
             "author": "Marcus Aurelius",
             "isbn": "978-0140449334",
         }
     })
-    record3 = xata.records().insert("Users", {
+    record3 = xata.records().insert("Products", {
         "name": "Long climbing rope",
         "details": {
             "length": 80,
@@ -152,13 +155,13 @@ This has the following implications:
 
 <TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
   ```ts
-      const records = await xata.db.Posts.filter({
+      const records = await xata.db.Products.filter({
           "details->size": 'M',
       }).getMany();
   ```
 
 ```python
-    records = xata.data().query("Posts", {
+    records = xata.data().query("Products", {
         "filter": {
             "details->size": "M",
         }
@@ -178,7 +181,7 @@ This has the following implications:
 
 {
   "filter": {
-    "details->>size": "M"
+    "details->size": "M"
   }
 }
 ```
@@ -189,7 +192,7 @@ This has the following implications:
 
 <TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
   ```ts
-      const records = await xata.db.Posts.filter({
+      const records = await xata.db.Products.filter({
       "details->length": {
           "$gt": 50
   },
@@ -197,7 +200,7 @@ This has the following implications:
   ```
 
 ```python
-    records = xata.data().query("Posts", {
+    records = xata.data().query("Products", {
     "filter": {
         "details->length": {
             "$gt": 50
@@ -228,11 +231,11 @@ This has the following implications:
 
 </TabbedCode>
 
-### Other general control or negation operators work as well
+### Check for a substring in a nested JSON node
 
 <TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
   ```ts
-      const records = await xata.db.Posts.filter({
+      const records = await xata.db.Products.filter({
       "details->length": {
       "$gt": 50
       },
@@ -240,7 +243,47 @@ This has the following implications:
   ```
 
 ```python
-    records = xata.data().query("Posts", {
+    records = xata.data().query("Products", {
+        "filter": {
+            "details->length": {
+            "$gt": 50
+            },
+        }
+    })
+```
+
+```jsonc
+// POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/sql
+{
+  "statement": "SELECT * FROM \"Products\" WHERE NOT (details->>length)::numeric > 50;"
+}
+```
+
+```jsonc
+// POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/tables/{table}/query
+{
+  "filter": {
+    "details->author": {
+      "$contains": "Marcus"
+    }
+  }
+}
+```
+
+</TabbedCode>
+### Other general control or negation operators work as well
+
+<TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
+  ```ts
+      const records = await xata.db.Products.filter({
+      "details->length": {
+      "$gt": 50
+      },
+      }).getMany();
+  ```
+
+```python
+    records = xata.data().query("Products", {
         "filter": {
             "details->length": {
             "$gt": 50
@@ -260,8 +303,10 @@ This has the following implications:
 // POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/tables/{table}/query
 {
   "filter": {
-    "details->length": {
-      "$gt": 50
+    "$not": {
+      "details->length": {
+        "$gt": 50
+      }
     }
   }
 }
