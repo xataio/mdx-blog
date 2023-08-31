@@ -124,27 +124,63 @@ records = xata.sql().query('''SELECT "primaryTitle", md5("primaryTitle"), avg("r
 
 It is worth noting that the double-quotes are required because the column names are in camelCase.
 
+You can find more examples in the [documentation](https://xata.io/docs/sdk/sql/overview).
+
 ### Kysley integration
 
 In the above examples, we’re using hand-written SQL, but you can also use SQL query builders or ORMs. [Kysley](https://kysely.dev/) is a query builder for TypeScript, providing type safety and integrations with several database systems.
 
 We have created a [Xata dialect for Kysley](https://github.com/xataio/client-ts/tree/main/packages/plugin-client-kysely), which you can use with something like this:
 
-```tsx
+```ts
 import { Kysely } from 'kysely';
-import { XataDialect } from '@xata.io/kysely';
-import { getXataClient } from 'src/xata'; // generated client
+import { XataDialect, Model } from '@xata.io/kysely';
+import { DatabaseSchema, getXataClient } from 'xata'; // generated client
 
 const xata = getXataClient();
 
-const db = new Kysely<Database>({
-  xata // Your Xata client instance
+const db = new Kysely<Model<DatabaseSchema>>({
+  dialect: new XataDialect({ xata })
 });
 
-return await db.selectFrom('person').where('id', '=', id).selectAll().executeTakeFirst();
+const drivers = await db
+  .selectFrom('drivers')
+  .select(['forename', 'surname'])
+  .where('nationality', '=', 'Spanish')
+  .execute();
+
+console.log(drivers);
 ```
 
-### Test SQL statements in our playground
+In the above, note that the `Model` type adapts the Xata generated `DatabaseSchema` type to the `Model` type used by Kysely. This means that Kysley is aware of the tables and columns from Xata. For more details on how to use this integration, see the [documentation](https://xata.io/docs/integrations/kysley).
+
+### Drizzle integration
+
+We're also happy to announce an experimental integration with [Drizzle](https://github.com/drizzle-team/drizzle-orm). Drizzle is an TypeScript ORM that is focused on type-safety and that follows the SQL syntax as closely as possible. Drizzle's main philosophy is "If you know SQL, you know Drizzle ORM".
+
+You can use Drizzle with a Xata database like this:
+
+```ts
+import { pgTable, text } from 'drizzle-orm/pg-core';
+import { drizzle } from '@xata.io/drizzle';
+import { eq } from 'drizzle-orm';
+import { getXataClient } from './xata';
+
+const xata = getXataClient();
+const db = drizzle(xata);
+
+const drivers = pgTable('drivers', {
+  id: text('id').primaryKey(),
+  surname: text('surname'),
+  forename: text('forename')
+});
+
+const result = await db.select(['forename', 'surname']).from(drivers).where(eq('nationality', 'spanish')).execute();
+```
+
+For now, we recommend manually defining the schema like in the example here. We are working on utility functions to automatically generate the Drizzle model from the Xata database schema.
+
+## Test SQL statements in our playground
 
 The Xata playground has also been extended to support SQL statements in addition to TypeScript code. Building off of the new SQL support, we've also added a few more enhancements to the playground. You can now tab through multiple sessions and name them to easily identify for re-use.
 ![Playground SQL statement](images/sql_top_games.png)
