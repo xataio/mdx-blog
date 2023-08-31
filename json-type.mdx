@@ -34,7 +34,7 @@ Let's think a bit about a simple data model for an online shop. Suppose we have 
 ## Creating a JSON column
 
 Sometimes different categories of products have completely different specs, so we don't want to create a column for each of them.
-We could use a JSON column to store the product details. Let's do this by adding a `details` field to our table. You can do this via the UI or via the API like this:
+We can use a JSON column to store the product details. Let's do this by adding a `details` field to our table. You can do this via the UI or via the API like this:
 
 ```jsonc
 // POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/tables/{table}/columns
