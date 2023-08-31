@@ -137,6 +137,13 @@ This has the following implications:
 
 ## Querying JSON documents
 
+### The arrow notation `->`
+
+This is PostgreSQL's syntax for navigating JSON fields. It's used to access the value of any JSON node, no matter how deep in the tree.
+Xata uses a similar notation to query data and apply some of the existing filters to any JSON value. PostgreSQL uses different operators and casting
+depending on the data types, but Xata is able to infer the data type from the provided value and apply the correct operator.
+So far, comparison by strings and numbers is supported but this will be extended in the near future.
+
 ### Filter products size 'M'
 
 <TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
