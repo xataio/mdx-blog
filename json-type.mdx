@@ -16,7 +16,7 @@ it's not as convenient as schemaless, or you just don't want to spend time on th
 JSON documents as fields in a relational data store are a great way to have the best of both worlds.
 
 Many of our users have been asking for this feature, and we are happy to announce that it's finally here.
-Basic support for JSON column types has been added and it will bring many benefits:
+Basic support for [JSON column type](https://xata.io/docs/sdk/filtering#json) has been added and it will bring many benefits:
 
 - Enhanced flexibility: by providing a way to store schemaless data in a relational database
 - Data integrity: JSON validation according to [RFC 7159](https://www.rfc-editor.org/rfc/rfc7159.html)
@@ -34,7 +34,7 @@ Let's think a bit about a simple data model for an online shop. Suppose we have 
 ## Creating a JSON column
 
 Sometimes different categories of products have completely different specs, so we don't want to create a column for each of them.
-We could use a JSON column to store the product details. Let's do this and add a `details` field to our table:
+We could use a JSON column to store the product details. Let's do this by adding a `details` field to our table:
 
 <TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
 ```ts
