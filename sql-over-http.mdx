@@ -10,11 +10,11 @@ image:
 slug: sql-over-http
 ---
 
-As part of our [launch week](https://xata.io/blog/launch-week-august-2023), we are excited to announce that Xata now offers direct SQL access to your database, in addition to the Xata API. This allows you to express arbitrary complex SQL queries and use SQL builders like Kysley or Drizzle. You can also now save and run SQL queries in our Playground, which we have extended to support SQL.
+As part of our [launch week](/blog/launch-week-august-2023), we are excited to announce that Xata now offers direct SQL access to your database, in addition to the Xata API. This allows you to express arbitrary complex SQL queries and use SQL builders like Kysley or Drizzle. You can also now save and run SQL queries in our Playground, which we have extended to support SQL.
 
 ## Why are we adding SQL access?
 
-Behind the scenes, Xata is powered by PostgreSQL. Postgres serves as the source of truth for the data, and we automatically replicate the data to Elasticsearch for features like full-text search, vector search, and aggregations. Additionally, our integration of blob storage and CDN enhances the experience by enabling [file attachment](https://xata.io/blog/file-attachments) capabilities.
+Behind the scenes, Xata is powered by PostgreSQL. Postgres serves as the source of truth for the data, and we automatically replicate the data to Elasticsearch for features like full-text search, vector search, and aggregations. Additionally, our integration of blob storage and CDN enhances the experience by enabling [file attachment](/file-attachments) capabilities.
 
 While PostgreSQL is at the core of Xata, we had not previously exposed its protocol directly. This was partially due to technical reasons: our free tier runs on shared PostgreSQL clusters, which allows us to offer a very generous free tier; however, it also means that direct connections pose a security risk. The other reasons are product related: by controlling the API, we can offer rich types (e.g. file attachments), simple replication, instant branching, and more.
 
@@ -24,7 +24,7 @@ Yet, one of our most requested features was to add direct SQL access. Could we h
 
 In order to safely give SQL access to the Xata databases, we wrote a SQL proxy that deeply understands the SQL commands being executed and checks them for safety. This SQL proxy parses the query, walks the parsed tree, and checks which tables and columns are accessed, which functions are called, and so on. The implementation uses the [pg_query_go library](https://github.com/pganalyze/pg_query_go) from [PGAnalyze](https://pganalyze.com/), which uses the actual C code used by the PostgreSQL server.
 
-At the moment we support SQL (Postgres dialect) over HTTP and the allowed statements are `SELECT`, `INSERT`, `UPDATE` and `DELETE` with some limitations. Currently, DML statements are not supported, but they will be in the future.
+At the moment, we support SQL (Postgres dialect) over HTTP and the allowed statements are `SELECT`, `INSERT`, `UPDATE` and `DELETE` with some limitations. Currently, DML statements are not supported, but they will be in the future.
 
 Using SQL over HTTP offers the benefit of easy integration within serverless environments, such as [Cloudflare Workers](https://workers.cloudflare.com/), just like the rest of the Xata SDK. Our roadmap includes expanding SQL support and introducing the Postgres Wire protocol for maximum compatibility.
 
