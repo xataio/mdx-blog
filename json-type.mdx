@@ -37,7 +37,8 @@ Sometimes different categories of products have completely different specs, so w
 We could use a JSON column to store the product details. Let's do this by adding a `details` field to our table:
 
 ```jsonc
-// POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/{tables}/{table_name}/columns
+// POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/tables/{table}/columns
+
 {
   "name": "details",
   "type": "json"
@@ -108,7 +109,7 @@ record3 = xata.records().insert("Products", {
 ```
 
 ```jsonc
-// POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/{tables}/{table_name}/data
+// POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/tables/{table}/data
 {
   "name": "Xata xwag T-shirt",
   "details": "{\"color\": \"purple\", \"size\": \"M\"}"
