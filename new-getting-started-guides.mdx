@@ -4,10 +4,10 @@ description: 'New getting started guides are now available for Astro, Remix, Sol
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/launch-week.jpg
   alt: 'Launch Week'
-author: Alex Francoeur
+author: Phil Leggetter
 date: 09-01-2023
 published: true
-slug: new-get-started-with-xata-guides
+slug: new-getting-started-with-xata-guides
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/launch-week-og.jpg
 ---
 
@@ -22,19 +22,70 @@ these popular full-stack JavaScript frameworks: Astro, Remix, SolidStart, Svelte
 />
 
 The new getting started with Xata guides for [Astro][astro], [Remix][remix], [SolidStart][solidstart], [SvelteKit][sveltekit],
-[Next.js][nextjs], and [Nuxt][nuxt], walk you through building a blog application and demonstrate features such as:
+[Next.js][nextjs], and [Nuxt][nuxt], walk you through building a blog application and in doing so help you learn some Xata fundamentals.
+
+The guides demonstrate features such as:
 
 - Using the [Xata CLI][cli] to create a database
 - Defining a database schema and seeding the database by [importing a CSV][csv]
+- TypeScript [code generation][codegen] with database branching
 - [Querying and filtering][query-filter]
 - [Full-text fuzzy search][search]
+
+## Astro
+
+With the recent launch of [Astro 3.0][astro-3], now is a great time to dive into the Xata and Astro getting started guide.
+This guide demonstrates using Xata database and full-text search in combination with Astro features
+such as [SSG (Static Site Generation)][astro-ssg], [dynamic routes][astro-dynamic], and [Server Side Rendering (SSR)][astro-ssr]
+via Astro "hybrid" mode.
+
+[Get started with Xata and Astro →][astro]
+
+## Remix
+
+The getting started with Xata and Remix guide shows how to build a database driven application with full-text fuzzy search.
+It covers using the [`useLoaderData` Remix hook][remix-hook] to load data from a Xata database, using [Remix dynamic segments][remix-dynamic]
+to pass parameters within URLs, and making use of search parameters within a Remix application to integrate Xata's full-text fuzzy search.
+
+[Get started with Xata and Remix →][astro]
+
+## SolidStart
+
+SolidStart is current in beta but shows a lot of promise. This new Xata with SolidStart getting started guide is an opportunity to learn some
+of the basics of Xata, [SolidStart][solidstart-website], and [SolidJS][solidjs]. It covers using [`createServerData$`][solid-createserverdata] and
+[`useRouteData`][solid-useroutedata] to load data from a Xata database, using the [`<Match />` and `<Switch />`][solid-match-switch], and [`<For />`][solid-for]
+SolidJS logic operators for conditional UI rendering, defining and accessing path parameters using [dynamic routing][solid-routing], and how to access and
+utilize search parameters within a SolidStart application to integrate Xata's full-text fuzzy search.
+
+[Get started with Xata and SolidStart →][solidstart]
+
+## SvelteKit
+
+## Next.js
+
+## Nuxt
+
+## What should we write next?
 
 We'd love to hear from you if you have any feedback on the guides or if you'd like to see guides for other frameworks or technologies.
 So, reach out to us on [Discord](/discord) or join us on [Twitter/X](https://twitter.com/xata).
 
+[astro-3]: https://astro.build/blog/astro-3/
 [astro]: /docs/getting-started/astro
+[astro-ssg]: https://docs.astro.build/en/core-concepts/routing/#static-ssg-mode
+[astro-dynamic]: https://docs.astro.build/en/core-concepts/routing/#dynamic-routes
+[astro-ssr]: https://docs.astro.build/en/core-concepts/routing/#server-ssr-mode
 [remix]: /docs/getting-started/remix
+[remix-hook]: https://remix.run/docs/en/main/hooks/use-loader-data
+[remix-dynamic]: https://remix.run/docs/en/main/guides/routing#dynamic-segments
 [solidstart]: /docs/getting-started/solidstart
+[solidstart-website]: https://start.solidjs.com/
+[solid-createserverdata]: https://start.solidjs.com/api/createServerData
+[solid-useRouteData]: https://start.solidjs.com/api/useRouteData
+[solid-match-switch]: https://www.solidjs.com/docs/latest/api#switchmatch
+[solid-for]: https://www.solidjs.com/docs/latest/api#for
+[solid-routing]: https://start.solidjs.com/core-concepts/routing
+[solidjs]: https://solidjs.com/
 [sveltekit]: /docs/getting-started/sveltekit
 [nextjs]: /docs/getting-started/nextjs
 [nuxt]: /docs/getting-started/nuxt
@@ -42,3 +93,4 @@ So, reach out to us on [Discord](/discord) or join us on [Twitter/X](https://twi
 [csv]: /blog/csv-import-export
 [query-filter]: /docs/sdk/get
 [search]: /docs/sdk/search
+[codegen]: /docs/getting-started/cli#codegen
