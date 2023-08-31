@@ -38,7 +38,7 @@ Since the SQL access is exposed via our HTTP REST API, the authentication and au
 
 ### Request validation
 
-For queries within the database branch, we go a step further by validating your SQL statement. We forbid several functions like `pg_sleep` or database administration commands. We take care of database administrative tasks, so you don't have to.
+For queries within the database branch, we go a step further by validating your SQL statement. We [forbid several functions](/docs/sdk/sql/overview) like `pg_sleep` or database administration commands. We take care of database administrative tasks, so you don't have to.
 
 If your statement is correct, we run it in PostgreSQL and return the response, including rows and errors. If your statement has syntax errors or SQL errors, the error is returned to you. In case of forbidden or unknown functions, Xata returns an _unknown function_ error. All user errors get HTTP 400 (Bad request) responses with the error message.
 
@@ -50,7 +50,7 @@ Assuming your statement is accurate and aligned with the allowed parameters, Xat
 
 We serialize the response from PostgreSQL into JSON. We return at most 1000 rows in a single response to avoid generating huge JSON responses. It is recommended to use `LIMIT` and `OFFSET` keywords to paginate through the results.
 
-You can find more details about the SQL access in the [docs](/docs/sdk/sql-access).
+You can find more details about the SQL access in the [docs](/docs/sdk/sql/overview).
 
 ### Xata rich types
 
@@ -122,9 +122,9 @@ records = xata.sql().query('''SELECT "primaryTitle", md5("primaryTitle"), avg("r
 
 </TabbedCode>
 
-It is worth noting that the double-quotes are required because the column names are in camelCase.
+It's worth noting that the double-quotes are required because the column names are in camelCase.
 
-You can find more examples in the [documentation](https://xata.io/docs/sdk/sql/overview).
+You can find more examples in the [documentation](/docs/sdk/sql/overview).
 
 ### Kysley integration
 
@@ -150,11 +150,11 @@ const result = await db
   .execute();
 ```
 
-In the above, note that the `Model` type adapts the Xata generated `DatabaseSchema` type to the `Model` type used by Kysely. This means that Kysley is aware of the tables and columns from Xata. For more details on how to use this integration, see the [documentation](https://xata.io/docs/integrations/kysley).
+In the above, note that the `Model` type adapts the Xata generated `DatabaseSchema` type to the `Model` type used by Kysely. This means that Kysley is aware of the tables and columns from Xata. For more details on how to use this integration, see the [documentation](/docs/integrations/kysley).
 
 ### Drizzle integration
 
-We're also happy to announce an experimental integration with [Drizzle](https://github.com/drizzle-team/drizzle-orm). Drizzle is an TypeScript ORM that is focused on type-safety and that follows the SQL syntax as closely as possible. Drizzle's main philosophy is "If you know SQL, you know Drizzle ORM".
+We're also happy to announce an experimental integration with [Drizzle](https://github.com/drizzle-team/drizzle-orm). Drizzle is a TypeScript ORM that is focused on type-safety and that follows the SQL syntax as closely as possible. Drizzle's main philosophy is "If you know SQL, you know Drizzle ORM".
 
 You can use Drizzle with a Xata database like this:
 
@@ -182,8 +182,8 @@ const db = drizzle(xata, { schema });
 const result = await db.execute(sql`select * from ${drivers} where ${drivers.nationality} = 'Spanish'`);
 ```
 
-For now, we recommend manually defining the schema like in the example here. We are working on utility functions to automatically generate the Drizzle model from the Xata database schema.
-
+For now, we recommend manually defining the schema like in the example above. We are working on utility functions to automatically generate the Drizzle model from the Xata database schema.
+ 
 ## Test SQL statements in our playground
 
 The Xata playground has also been extended to support SQL statements in addition to TypeScript code. Building off of the new SQL support, we've also added a few more enhancements to the playground. You can now tab through multiple sessions and name them to easily identify for re-use.
