@@ -1,6 +1,6 @@
 ---
-title: 'Managing one-to-many database relations'
-description: 'Efficiently navigate one-to-many relationships with Xata's new approach.'
+title: 'Managing many-to-one and one-to-many database relations'
+description: 'Addressing the n+1 problem and navigating one-to-many relationships with Xata's new approach.'
 image:
   src: 'https://raw.githubusercontent.com/xataio/mdx-blog/main/images/csv-import-export-cover.jpg'
   alt: 'image'
@@ -11,13 +11,13 @@ published: true
 slug: navigating-many-to-one
 ---
 
-As part of our ongoing [launch week](/blog/launch-week-2023), we're diving into the world of APIs and their intricate relationships. Today, we're introducing a new syntax that simplifies navigating these relationships. While Xata already provides a great way to retrieve related data using [link columns](/docs/concepts/data-model#link) for the _many-to-one_ direction, we're addressing the challenge of navigating the reverse [relationship](https://xata.io/docs/concepts/data-model#links-and-relations) (_one-to-many_). This new approach improves efficiency and helps avoid the _n + 1 problem_.
+As part of our ongoing [launch week](/blog/launch-week-august-2023), we're diving into the world of APIs and their intricate relationships. Today, we're introducing a new syntax that simplifies navigating these relationships. While Xata already provides a great way to retrieve related data using [link columns](/docs/concepts/data-model#link) for the _many-to-one_ relationship, we're addressing the challenge of navigating the reverse [relationship](https://xata.io/docs/concepts/data-model#links-and-relations) (_one-to-many_). This new approach improves efficiency and helps avoid the _n + 1 problem_.
 
 Let's consider a basic schema. Within our schema, there's a _posts_ table containing certain information and establishing a connection to the corresponding author. This author-related data belongs in the _users_ table.
 
 ![](image/many-to-one-relationships.png)
 
-When querying the *posts* table we are able to get back the title, likes, **and** the author’s name (and any other fields present in the *users* table):
+When querying the _posts_ table we are able to retrieve the title, likes, and the author’s name (and any other fields present in the _users_ table):
 
 ```json
 // Request
@@ -96,9 +96,9 @@ POST /db/blogs:main/tables/posts/query
 }
 ```
 
-# N + 1 problem
+## The N + 1 problem
 
-What if we wanted to list the authors and their posts? We would need to query the *Users* table in order to retrieve all authors:
+What if we wanted to list the authors and their posts? You would need to query the _users_ table in order to retrieve all authors:
 
 ```json
 // Request
@@ -107,7 +107,7 @@ POST /db/blogs:main/tables/users/query
   "columns": ["*"]
 }
 
-// Response (xata fields have been omitted for clarity)
+// Response (Xata fields have been omitted for clarity)
 {
     "records": [
         {
@@ -126,7 +126,7 @@ POST /db/blogs:main/tables/users/query
 }
 ```
 
-And then, for each user that has been returned, make a separate request in the *posts* table to retrieve the posts from each author, similar to:
+And then, for each user that has been returned, make a separate request in the _posts_ table to retrieve the posts from each author, similar to:
 
 ```json
 // Request
@@ -138,7 +138,7 @@ POST /db/blogs:main/tables/posts/query
   }
 }
 
-// Response (xata fields have been omitted for clarity)
+// Response (Xata fields have been omitted for clarity)
 {
     "records": [
         {
@@ -169,13 +169,13 @@ POST /db/blogs:main/tables/posts/query
 }
 ```
 
-We are performing "1" (get the authors) + "n" (get the author’s posts) requests. This is inconvenient and also quite inefficient, since the number of requests depends on the number of user records.
+We are performing "1" (get the authors) + "n" (get the authors's posts) requests. This is inconvenient and also quite inefficient, since the number of requests depends on the number of user records.
 
 There are workarounds depending on the data set and the amount of code we are willing to write, like getting _all_ the authors and _all_ the posts, or using the `IN` operator and then processing the response in the app. But it would be better if our API would help us getting exactly what we want.
 
 # Navigate links backwards
 
-Since the relationship is already defined by the `link` column, it’s a matter of providing a good API experience to get this data more easily. We have introduced [column expressions](https://xata.io/docs/concepts/data-model#links-and-relations) in the query endpoint so the `columns` field is no longer restricted to a list of column names. Now we are able to provide a JSON object to better define the projection we want.
+Since the relationship is already defined by the `link` column, it’s a matter of providing a good API experience to get this data more easily. We have introduced [column expressions](/docs/concepts/data-model#links-and-relations) in the query endpoint so the `columns` field is no longer restricted to a list of column names. Now we are able to provide a JSON object to better define the projection we want.
 
 To better understand this concept, let's improve on the previous example to showcase the benefits of navigating relationships in reverse using column expressions:
 
@@ -195,9 +195,9 @@ POST /db/blogs:main/tables/users/query
 
 In this request we are asking for all the fields in the _Users_ table (`*`) plus a column expression. The expression consists of a structure with two fields:
 
-- `name`: When using the `<-` prefix, it signifies that we are navigating in reverse along the link defined by the author column in the posts table. This reverse navigation establishes a one-to-many relationship between the linked records.
+- `name`: When using the `<-` prefix, it signifies that we are navigating in reverse along the link defined by the `author` column in the _posts_ table. This reverse navigation establishes a one-to-many relationship between the linked records.
 
-- `columns`: The columns field defines the projection to be applied to the table located on the opposite side of this relationship. It specifies which fields from the related table should be included in the query result.
+- `columns`: The `columns` field defines the projection to be applied to the table on the opposite side of this relationship. It specifies which fields from the related table should be included in the query result.
 
 What we get back is a list of post data nested in every author record. The default name for the nested list is `postsauthor` (i.e. table name + link name):
 
@@ -261,9 +261,9 @@ What we get back is a list of post data nested in every author record. The defau
 }
 ```
 
-Using this syntax we are able to avoid the N + 1 problem, getting all the data we want using a single request and, therefore, avoiding any unnecessary roundtrips and repetitive code.
+Using this syntax we are able to avoid the N + 1 problem - getting all the data we want using a single request and, therefore, avoiding any unnecessary roundtrips and repetitive code.
 
-More fields are available to configure the projection further: *as*, *sort*, *limit*, *offset*. The same request can be tuned like this (comments are not part of the JSON spec):
+More fields are available to configure the projection further: `as`, `sort`, `limit`, `offset`. The same request can be modified like the following:
 
 ```json
 // Request
