@@ -8,6 +8,7 @@ image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/intro-sql-access-over-http-cover.png
   alt: SQL access to Xata
 slug: sql-over-http
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/intro-sql-access-over-http-cover.png
 ---
 
 As part of our [launch week](/blog/launch-week-august-2023), we are excited to announce that Xata now offers direct SQL access to your database, in addition to the Xata API. This allows you to express arbitrary complex SQL queries and use SQL builders like Kysley or Drizzle. You can also now save and run SQL queries in our Playground, which we have extended to support SQL.
@@ -183,7 +184,7 @@ const result = await db
 ```
 
 For now, we recommend manually defining the schema like in the example above. We are working on utility functions to automatically generate the Drizzle model from the Xata database schema.
- 
+
 ## Test SQL statements in our playground
 
 The Xata playground has also been extended to support SQL statements in addition to TypeScript code. Building off of the new SQL support, we've also added a few more enhancements to the playground. You can now persist multiple snippets and name them to easily identify for re-use.
