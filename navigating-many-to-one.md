@@ -1,24 +1,25 @@
 ---
-title: 'Navigating '
+title: 'Navigating many-to-one relations'
 description: 'Relationships'
 image:
   src: 'https://raw.githubusercontent.com/xataio/mdx-blog/main/images/csv-import-export-cover.jpg'
   alt: 'image'
-ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/csv-import-export-cover-og.jpg
-author: Alejandro
-date: 08-31-2023
+ogImage: 'https://raw.githubusercontent.com/xataio/mdx-blog/main/images/csv-import-export-cover-og.jpg
+author: Alejandro Martínez Vieites
+date: 09-01-2023
 published: false
-slug: navigating
+slug: navigating-one-to-many
 ---
 
 
-In this blog post we’ll be introducing a new syntax to navigate relationships through the API. Xata already provides a good experience returning related data on `[Link` columns](https://xata.io/docs/concepts/data-model#link) for the *many-to-one* direction, but the backwards [relationship](https://xata.io/docs/concepts/data-model#links-and-relations) (*one-to-many*) requires a better approach that helps avoiding the *n+1 problem*.
 
-The following is a simple schema that will help us explain the problem. The *posts* table has some data and also points to the author. Author’s data belongs in the *users* table.
+In this blog post we’ll be introducing a new syntax to navigate relationships through the API. Xata already provides a good experience returning related data on [`Link` columns](/docs/concepts/data-model#link) for the *many-to-one* direction, but the backwards [relationship](https://xata.io/docs/concepts/data-model#links-and-relations) (*one-to-many*) requires a better approach that helps avoiding the _n+1 problem_.
+
+The following is a simple schema that will help us explain the problem. The _posts_ table has some data and also points to the author. Author’s data belongs in the *users* table.
 
 ![Screenshot 2023-07-06 at 09.45.14.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/9c8cae68-683c-4689-af8a-2bc4d5dbd928/Screenshot_2023-07-06_at_09.45.14.png)
 
-When querying the *posts* table we are able to get back the *title, likes* **and** the *author*’s *name* (and any other field present in the *users* table):
+When querying the *posts* table we are able to get back the title, likes, **and** the author’s name (and any other fields present in the *users* table):
 
 ```json
 // Request
