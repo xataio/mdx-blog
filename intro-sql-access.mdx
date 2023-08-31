@@ -135,7 +135,7 @@ We have created a [Xata dialect for Kysley](https://github.com/xataio/client-ts/
 ```tsx
 import { Kysely } from 'kysely';
 import { XataDialect, Model } from '@xata.io/kysely';
-import { DatabaseSchema, getXataClient } from 'xata'; // generated client
+import { DatabaseSchema, getXataClient } from 'xata'; // Generated client
 
 const xata = getXataClient();
 
@@ -143,13 +143,11 @@ const db = new Kysely<Model<DatabaseSchema>>({
   dialect: new XataDialect({ xata })
 });
 
-const drivers = await db
+const result = await db
   .selectFrom('drivers')
   .select(['forename', 'surname'])
   .where('nationality', '=', 'Spanish')
   .execute();
-
-console.log(drivers);
 ```
 
 In the above, note that the `Model` type adapts the Xata generated `DatabaseSchema` type to the `Model` type used by Kysely. This means that Kysley is aware of the tables and columns from Xata. For more details on how to use this integration, see the [documentation](https://xata.io/docs/integrations/kysley).
@@ -161,23 +159,27 @@ We're also happy to announce an experimental integration with [Drizzle](https://
 You can use Drizzle with a Xata database like this:
 
 ```tsx
-import { pgTable, text } from 'drizzle-orm/pg-core';
 import { drizzle } from '@xata.io/drizzle';
-import { eq } from 'drizzle-orm';
-import { getXataClient } from './xata';
+import { sql } from 'drizzle-orm';
+import { pgTable, text } from 'drizzle-orm/pg-core';
+import { getXataClient } from './xata'; // Generated client
 
 const xata = getXataClient();
-const db = drizzle(xata);
 
 const drivers = pgTable('drivers', {
   id: text('id').primaryKey(),
   surname: text('surname'),
-  forename: text('forename')
+  forename: text('forename'),
+  nationality: text('nationality')
 });
 
-const result = await db.select(['forename', 'surname']).from(drivers).where(eq('nationality', 'spanish')).execute();
+const schema = {
+  drivers
+};
 
-console.log(drivers);
+const db = drizzle(xata, { schema });
+
+const result = await db.execute(sql`select * from ${drivers} where ${drivers.nationality} = 'Spanish'`);
 ```
 
 For now, we recommend manually defining the schema like in the example here. We are working on utility functions to automatically generate the Drizzle model from the Xata database schema.
