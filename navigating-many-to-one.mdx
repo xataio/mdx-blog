@@ -1,13 +1,14 @@
 ---
 title: 'Managing many-to-one and one-to-many database relations'
-description: 'Addressing the N+1 problem and navigating one-to-many relationships with Xata's new approach.'
+description: "Addressing the N+1 problem and navigating one-to-many relationships with Xata's new approach."
 image:
-  src: 'https://raw.githubusercontent.com/xataio/mdx-blog/main/images/csv-import-export-cover.jpg'
-  alt: 'Many-to-one relationship'
+  src: 'https://raw.githubusercontent.com/xataio/mdx-blog/main/images/many-to-one-relation.jpg'
+  alt: 'Many to one relationship'
 author: Alejandro Martínez Vieites
 date: 09-01-2023
 published: true
 slug: navigating-many-to-one
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/many-to-one-relation-cover-og.jpg
 ---
 
 As our [launch week](/blog/launch-week-august-2023) comes to a close, we're looking at APIs and their intricate relationships. Today, we're introducing a new syntax that simplifies navigating these relationships. While Xata already provides a great way to retrieve related data using [link columns](/docs/concepts/data-model#link) for the _many-to-one_ relationship, we're addressing the challenge of navigating the reverse [relationship](https://xata.io/docs/concepts/data-model#links-and-relations) (_one-to-many_). This new approach improves efficiency and helps avoid the _n + 1 problem_.
