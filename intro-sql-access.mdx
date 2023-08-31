@@ -176,6 +176,8 @@ const drivers = pgTable('drivers', {
 });
 
 const result = await db.select(['forename', 'surname']).from(drivers).where(eq('nationality', 'spanish')).execute();
+
+console.log(drivers);
 ```
 
 For now, we recommend manually defining the schema like in the example here. We are working on utility functions to automatically generate the Drizzle model from the Xata database schema.
