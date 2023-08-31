@@ -62,7 +62,7 @@ We could use a JSON column to store the product details. Let's do this by adding
 
 Let's add a few products with different details, for instance:
 
-- A t-shirt with a size and a color
+- A t-shirt with size and color
 - A book with author, ISBN and number of pages
 - A climbing rope with a length and a thickness
 
@@ -80,6 +80,7 @@ Let's add a few products with different details, for instance:
         details: {
             author: 'Marcus Aurelius',
             isbn: '978-0140449334',
+            pages: 304
         }
     });
     const record3 = await xata.db.Products.create({
@@ -105,6 +106,7 @@ Let's add a few products with different details, for instance:
         "details": {
             "author": "Marcus Aurelius",
             "isbn": "978-0140449334",
+            "pages": 304
         }
     })
     record3 = xata.records().insert("Products", {
@@ -130,7 +132,7 @@ Let's add a few products with different details, for instance:
 
     {
         "name": "Meditations",
-        "details": "{\"author\": \"Marcus Aurelius\", \"isbn\": \"978-0140449334\"}"
+        "details": "{\"author\": \"Marcus Aurelius\", \"isbn\": \"978-0140449334\", \"pages\": 304}"
     }
 
     {
@@ -191,13 +193,13 @@ This has the following implications:
 ### Filter products with a length greater than 50 meters
 
 <TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
-  ```ts
-      const records = await xata.db.Products.filter({
-      "details->length": {
-          "$gt": 50
-  },
-  }).getMany();
-  ```
+```ts
+    const records = await xata.db.Products.filter({
+    "details->length": {
+      "$gt": 50
+    },
+}).getMany();
+```
 
 ```python
     records = xata.data().query("Products", {
@@ -234,13 +236,13 @@ This has the following implications:
 ### Check for a substring in a nested JSON node
 
 <TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
-  ```ts
-      const records = await xata.db.Products.filter({
-      "details->length": {
-      "$gt": 50
-      },
-      }).getMany();
-  ```
+```ts
+    const records = await xata.db.Products.filter({
+        "details->length": {
+            "$gt": 50
+        },
+    }).getMany();
+```
 
 ```python
     records = xata.data().query("Products", {
@@ -274,13 +276,13 @@ This has the following implications:
 ### Other general control or negation operators work as well
 
 <TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
-  ```ts
-      const records = await xata.db.Products.filter({
-      "details->length": {
-      "$gt": 50
-      },
-      }).getMany();
-  ```
+```ts
+    const records = await xata.db.Products.filter({
+        "details->length": {
+            "$gt": 50
+        },
+    }).getMany();
+```
 
 ```python
     records = xata.data().query("Products", {
