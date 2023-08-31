@@ -1,6 +1,6 @@
 ---
-title: 'New Getting Started Guides: Astro, Remix, SolidStart, SvelteKit, Next.js, and Nuxt'
-description: 'New getting started guides are now available for Astro, Remix, SolidStart, SvelteKit, Next.js, and Nuxt.'
+title: 'New Getting Started Guides: Astro, Next.js, Nuxt, Remix, SolidStart, and SvelteKit'
+description: 'Learn how to add Xata database and full-text search functionality to Astro, Next.js, Nuxt, Remix, SolidStart, and SvelteKit with our new Getting Started guides.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/launch-week.jpg
   alt: 'Launch Week'
@@ -13,16 +13,17 @@ ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/launch-we
 
 Our mission at Xata is to simplify the way developers work with data. This is ingrained in everything we do, from
 our products to the educational material we create to enable you to get the most out of Xata. So, today, as part of
-[Xata launch week](/blog/launch-week-august-2023), we're excited to share six new getting started guides for the
-these popular full-stack JavaScript frameworks: Astro, Remix, SolidStart, SvelteKit, Next.js, and Nuxt.
+[Xata launch week](/blog/launch-week-august-2023), we're excited to share six new getting started guides for these
+popular full-stack JavaScript frameworks: Astro, Next.js, Nuxt, Remix, SolidStart, and SvelteKit,.
 
 <ArticleVideo
   platform="html"
   src="https://github.com/xataio/mdx-docs/raw/main/020-Getting-started/videos/getting-started-app.mp4"
 />
 
-The new getting started with Xata guides for [Astro][astro], [Remix][remix], [SolidStart][solidstart], [SvelteKit][sveltekit],
-[Next.js][nextjs], and [Nuxt][nuxt], walk you through building a blog application and in doing so help you learn some Xata fundamentals.
+The new getting started with Xata guides for [Astro][astro], [Next.js][nextjs], [Nuxt][nuxt], [Remix][remix],
+[SolidStart][solidstart], [SvelteKit][sveltekit], walk you through building a blog application and in doing so,
+help you learn some Xata fundamentals.
 
 The guides demonstrate features such as:
 
@@ -34,24 +35,40 @@ The guides demonstrate features such as:
 
 ## Astro
 
-With the recent launch of [Astro 3.0][astro-3], now is a great time to dive into the Xata and Astro getting started guide.
+With the recent launch of [Astro 3.0][astro-3], now is a great time to dive into the Xata and Astro Getting Started guide.
 This guide demonstrates using Xata database and full-text search in combination with Astro features
 such as [SSG (Static Site Generation)][astro-ssg], [dynamic routes][astro-dynamic], and [Server Side Rendering (SSR)][astro-ssr]
 via Astro "hybrid" mode.
 
 [Get started with Xata and Astro →][astro]
 
+## Next.js
+
+Next.js is the most popular full-stack JavaScript framework on the planet. So, we've rewritten our existing guide to show how to integrate Xata
+database and search with a [Next.js App router][nextjs-app-router] based application with [server components][nextjs-server-components].
+The guide also covers [dynamic routes][nextjs-routes] and adding full-text search to a Next.js App router application.
+
+[Get started with Xata and Next.js →][nextjs]
+
+## Nuxt
+
+The Nuxt and Xata Getting Started guide demonstrates integrating Xata database to drive the content via [Nuxt server/API routes][nuxt-routes],
+invoked on both the server and client. The guide also covers [Vue.js conditional rendering][vue-rendering] and how to use [Nuxt dynamic parameters](nuxt-params)
+to drive database and full-text search queries.
+
+[Get started with Xata and Nuxt →][nuxt]
+
 ## Remix
 
-The getting started with Xata and Remix guide shows how to build a database driven application with full-text fuzzy search.
+The Getting Started with Xata and Remix guide shows how to build a database-driven application with full-text fuzzy search.
 It covers using the [`useLoaderData` Remix hook][remix-hook] to load data from a Xata database, using [Remix dynamic segments][remix-dynamic]
-to pass parameters within URLs, and making use of search parameters within a Remix application to integrate Xata's full-text fuzzy search.
+to pass parameters within URLs, and using search parameters within a Remix application to integrate Xata's full-text fuzzy search.
 
 [Get started with Xata and Remix →][astro]
 
 ## SolidStart
 
-SolidStart is current in beta but shows a lot of promise. This new Xata with SolidStart getting started guide is an opportunity to learn some
+SolidStart is currently in beta but shows a lot of promise. This new Xata with SolidStart Getting Started guide is an opportunity to learn some
 of the basics of Xata, [SolidStart][solidstart-website], and [SolidJS][solidjs]. It covers using [`createServerData$`][solid-createserverdata] and
 [`useRouteData`][solid-useroutedata] to load data from a Xata database, using the [`<Match />` and `<Switch />`][solid-match-switch], and [`<For />`][solid-for]
 SolidJS logic operators for conditional UI rendering, defining and accessing path parameters using [dynamic routing][solid-routing], and how to access and
@@ -61,9 +78,11 @@ utilize search parameters within a SolidStart application to integrate Xata's fu
 
 ## SvelteKit
 
-## Next.js
+The Xata and SvelteKit Getting Started guide demonstrates how to load data from a database using [SvelteKit data loading][sveltekit-data],
+how to render data using [Svelte logic blocks][svelte-logic], using [page parameters][svelte-params], and how to add full-text search to
+a SvelteKit application via [URL data][svelte-url-data].
 
-## Nuxt
+[Get started with Xata and SvelteKit →][sveltekit]
 
 ## What should we write next?
 
@@ -87,8 +106,18 @@ So, reach out to us on [Discord](/discord) or join us on [Twitter/X](https://twi
 [solid-routing]: https://start.solidjs.com/core-concepts/routing
 [solidjs]: https://solidjs.com/
 [sveltekit]: /docs/getting-started/sveltekit
+[sveltekit-data]: https://kit.svelte.dev/docs/load
+[svelte-logic]: https://svelte.dev/docs/logic-blocks
+[svelte-params]: https://kit.svelte.dev/docs/routing#page-page-js
+[svelte-url-data]: https://kit.svelte.dev/docs/load#using-url-data
 [nextjs]: /docs/getting-started/nextjs
+[nextjs-app-router]: https://nextjs.org/docs/app
+[nextjs-server-components]: https://nextjs.org/docs/app/building-your-application/rendering/server-components
+[nextjs-routes]: https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes
 [nuxt]: /docs/getting-started/nuxt
+[nuxt-routes]: https://nuxt.com/docs/guide/directory-structure/server#server-routes
+[nuxt-params]: https://nuxt.com/docs/guide/directory-structure/server#matching-route-parameters
+[vue-rendering]: https://vuejs.org/guide/essentials/conditional.html
 [cli]: /docs/getting-started/cli
 [csv]: /blog/csv-import-export
 [query-filter]: /docs/sdk/get
