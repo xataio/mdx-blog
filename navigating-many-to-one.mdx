@@ -168,7 +168,7 @@ POST /db/blogs:main/tables/posts/query
 }
 ```
 
-We are performing "1" (get the authors) + "n" (get the authors's posts) requests. This is inconvenient and also quite inefficient, since the number of requests depends on the number of user records.
+We are performing "1" (get the authors) + "N" (get the authors's posts) requests. This is inconvenient and also quite inefficient, since the number of requests depends on the number of user records.
 
 There are workarounds depending on the data set and the amount of code we are willing to write, like getting _all_ the authors and _all_ the posts, or using the `IN` operator and then processing the response in the app. But it would be better if our API would help us getting exactly what we want.
 
