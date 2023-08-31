@@ -61,7 +61,7 @@ As you access your database directly using SQL, the Xata rich column types (File
 SQL is supported in both the TypeScript/Javascript and the Python SDKs, as well as via the REST API. In it’s simple form, you can run SQL like this:
 
 <TabbedCode tabs={['TypeScript', 'Python', 'REST']}>
-  ```ts
+  ```tsx
   const { records: myRecord } = await xata.sql<TeamsRecord>`SELECT * FROM "teams"`;
   ```
 
@@ -132,7 +132,7 @@ In the above examples, we’re using hand-written SQL, but you can also use SQL 
 
 We have created a [Xata dialect for Kysley](https://github.com/xataio/client-ts/tree/main/packages/plugin-client-kysely), which you can use with something like this:
 
-```ts
+```tsx
 import { Kysely } from 'kysely';
 import { XataDialect, Model } from '@xata.io/kysely';
 import { DatabaseSchema, getXataClient } from 'xata'; // generated client
@@ -160,7 +160,7 @@ We're also happy to announce an experimental integration with [Drizzle](https://
 
 You can use Drizzle with a Xata database like this:
 
-```ts
+```tsx
 import { pgTable, text } from 'drizzle-orm/pg-core';
 import { drizzle } from '@xata.io/drizzle';
 import { eq } from 'drizzle-orm';
