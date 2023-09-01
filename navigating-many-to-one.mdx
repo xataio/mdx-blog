@@ -311,7 +311,7 @@ Using this syntax we are able to avoid the N + 1 problem - getting all the data 
 
 More fields are available to configure the projection further: `as`, `sort`, `limit`, `offset`. The same request can be modified like the following:
 
-<TabbedCode tabs={['TypeScript', 'JSON']}>
+<TabbedCode tabs={['TypeScript']}>
 ```ts
 const records = await xata.db.users
     .select(["*", {
