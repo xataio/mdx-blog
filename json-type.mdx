@@ -268,23 +268,23 @@ records = xata.data().query("Products", {
 <TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
 ```ts
 const records = await xata.db.Products.filter({
-  "details->length": {
     "$not": {
-        "$gt": 50
+        "details->length": {
+            "$gt": 50
+        }
     }
-  }
 }).getMany();
 ```
 
 ```python
 records = xata.data().query("Products", {
-  "filter": {
-    "details->length": {
+    "filter": {
         "$not": {
-            "$gt": 50
+            "details->length": {
+                "$gt": 50
+            }
         }
     }
-  }
 })
 ```
 
