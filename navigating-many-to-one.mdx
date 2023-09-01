@@ -19,24 +19,28 @@ Let's consider a basic schema. Within the schema, there's a _posts_ table contai
 
 When querying the _posts_ table we are able to retrieve the title, likes, and the author's name (and any other fields present in the _users_ table):
 
-<TabbedCode tabs={['TypeScript', 'JSON']}>
+<TabbedCode tabs={['TypeScript', 'Python', 'JSON']}>
 ```ts
 const records = await xata.db.posts
     .select(["*", "author.*"])
     .getAll();
 ```
 
+```python
+records = xata.data().query("posts", {
+  "columns": ["*","author.*"]
+})
+```
+
 ```jsonc
-// Request
-POST /db/blogs:main/tables/posts/query
+// POST /db/blogs:main/tables/posts/query
 {
   "columns": ["*","author.*"]
 }
 ```
-
 </TabbedCode>
 
-```json
+```jsonc
 // Response (xata fields have been omitted for clarity)
 {
   "records": [
@@ -111,24 +115,26 @@ POST /db/blogs:main/tables/posts/query
 
 What if we wanted to list the authors and their posts? You would need to query the _users_ table in order to retrieve all authors:
 
-<TabbedCode tabs={['TypeScript', 'JSON']}>
+<TabbedCode tabs={['TypeScript', 'Python', 'JSON']}>
 ```ts
 const records = await xata.db.users
     .select(["*"])
     .getAll();
 ```
-
+```python
+records = xata.data().query("posts", {
+  "columns": ["*"]
+})
+```
 ```jsonc
-// Request
-POST /db/blogs:main/tables/users/query
+// POST /db/blogs:main/tables/users/query
 {
   "columns": ["*"]
 }
 ```
-
 </TabbedCode>
 
-```json
+```jsonc
 // Response (Xata fields have been omitted for clarity)
 {
   "records": [
@@ -150,28 +156,33 @@ POST /db/blogs:main/tables/users/query
 
 And then, for each user that has been returned, make a separate request in the _posts_ table to retrieve the posts from each author, similar to:
 
-<TabbedCode tabs={['TypeScript', 'JSON']}>
+<TabbedCode tabs={['TypeScript', 'Python', 'JSON']}>
 ```ts
 const records = await xata.db.posts
     .select(["*"])
     .filter({ author: "rec_cie05krjtojbm41fv2q0"})
     .getAll();
 ```
-
-```json
-// Request
-POST /db/blogs:main/tables/posts/query
+```python
+records = xata.data().query("posts", {
+  "columns": ["*"],
+  "filter": {
+    "author": "rec_cie05krjtojbm41fv2q0"
+  }
+})
+```
+```jsonc
+// POST /db/blogs:main/tables/posts/query
 {
   "columns": ["*"],
   "filter": {
-      "author": "rec_cie05krjtojbm41fv2q0"
+    "author": "rec_cie05krjtojbm41fv2q0"
   }
 }
 ```
-
 </TabbedCode>
 
-```json
+```jsonc
 // Response (Xata fields have been omitted for clarity)
 {
   "records": [
@@ -213,7 +224,7 @@ Since the relationship is already defined by the `link` column, it’s a matter 
 
 To better understand this concept, let's improve on the previous example to showcase the benefits of navigating relationships in reverse using column expressions:
 
-<TabbedCode tabs={['TypeScript', 'JSON']}>
+<TabbedCode tabs={['TypeScript', 'Python', 'JSON']}>
 ```ts
 const records = await xata.db.users
     .select(["*", {
@@ -222,21 +233,29 @@ const records = await xata.db.users
     }])
     .getAll();
 ```
-
-```json
-// Request
-POST /db/blogs:main/tables/users/query
+```python
+records = xata.data().query("posts", {
+  "columns": [
+    "*",
+    {
+      "name": "<-posts.author",
+      "columns": ["title"]
+    }
+  ]
+})
+```
+```jsonc
+// POST /db/blogs:main/tables/users/query
 {
   "columns": [
-      "*",
-      {
-          "name": "<-posts.author",
-          "columns": ["title"]
-      }
+    "*",
+    {
+      "name": "<-posts.author",
+      "columns": ["title"]
+    }
   ]
 }
 ```
-
 </TabbedCode>
 
 In this request we are asking for all the fields in the _Users_ table (`*`) plus a column expression. The expression consists of a structure with two fields:
@@ -247,7 +266,7 @@ In this request we are asking for all the fields in the _Users_ table (`*`) plus
 
 What we get back is a list of post data nested in every author record. The default name for the nested list is `postsauthor` (i.e. table name + link name):
 
-```json
+```jsonc
 // Response (xata fields have been omitted for clarity)
 {
   "records": [
@@ -311,7 +330,7 @@ Using this syntax we are able to avoid the N + 1 problem - getting all the data 
 
 More fields are available to configure the projection further: `as`, `sort`, `limit`, `offset`. The same request can be modified like the following:
 
-<TabbedCode tabs={['TypeScript', 'JSON']}>
+<TabbedCode tabs={['TypeScript', 'Python', 'JSON']}>
 ```ts
 const records = await xata.db.users
     .select(["*", {
@@ -324,31 +343,47 @@ const records = await xata.db.users
         "limit": 1,
         "offset": 1
     }])
-.getAll();
+    .getAll();
 ```
-
-```jsonc
-// Request
-POST /db/blogs:main/tables/users/query
-{
-    "columns": [
+```python
+records = xata.data().query("posts", {
+  "columns": [
     "*",
     {
-        "name": "<-posts.author",
-        "as": "posts", // Field is returned as `posts`
-        "columns": ["title"],
-        "sort": [      // Return the nested records in this order
-            {"title": "desc"}
-        ],
-        "limit": 1,    // Limit the amount of nested records to 1
-        "offset": 1    // Skip first nested record
-    }]
+      "name": "<-posts.author",
+      "as": "posts",
+      "sort": [
+        { "title": "desc" }
+      ],
+      "columns": ["title"],
+      "limit": 1,
+      "offset": 1
+    }
+  ]
+})
+```
+```jsonc
+// POST /db/blogs:main/tables/users/query
+{
+  "columns": [
+    "*",
+    {
+      "name": "<-posts.author",
+      "as": "posts", // Field is returned as `posts`
+      "columns": ["title"],
+      "sort": [      // Return the nested records in this order
+          {"title": "desc"}
+      ],
+      "limit": 1,    // Limit the amount of nested records to 1
+      "offset": 1    // Skip first nested record
+    }
+  ]
 }
 ```
 
 </TabbedCode>
 
-```json
+```jsonc
 // Response (xata fields have been omitted for clarity)
 {
   "records": [
