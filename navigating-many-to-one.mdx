@@ -19,80 +19,91 @@ Let's consider a basic schema. Within the schema, there's a _posts_ table contai
 
 When querying the _posts_ table we are able to retrieve the title, likes, and the author's name (and any other fields present in the _users_ table):
 
-```json
+<TabbedCode tabs={['TypeScript', 'JSON']}>
+```ts
+const records = await xata.db.posts
+    .select(["*", "author.*"])
+    .getAll();
+```
+
+```jsonc
 // Request
 POST /db/blogs:main/tables/posts/query
 {
   "columns": ["*","author.*"]
 }
+```
 
+</TabbedCode>
+
+```json
 // Response (xata fields have been omitted for clarity)
 {
-    "records": [
-        {
-            "author": {
-                "id": "rec_cie05krjtojbm41fv2q0",
-                "name": "Tudor Golubenco"
-            },
-            "id": "rec_cie05srjtojbm41fv2t0",
-            "likes": 13,
-            "title": "Postgres schema changes are still a PITA"
-        },
-        {
-            "author": {
-                "id": "rec_cie05krjtojbm41fv2q0",
-                "name": "Tudor Golubenco"
-            },
-            "id": "rec_cie05v3jtojbm41fv2tg",
-            "likes": 15,
-            "title": "On the performance impact of REPLICA IDENTITY FULL in Postgres"
-        },
-        {
-            "author": {
-                "id": "rec_cie05ljjtojbm41fv2qg",
-                "name": "Joan Edwards"
-            },
-            "id": "rec_cie060jjtojbm41fv2u0",
-            "likes": 5,
-            "title": "Introducing the new Xata regions: Sydney & Frankfurt"
-        },
-        {
-            "author": {
-                "id": "rec_cie05krjtojbm41fv2q0",
-                "name": "Tudor Golubenco"
-            },
-            "id": "rec_cii1kajjtoj0t82ae3ag",
-            "likes": 6,
-            "title": "Semantic or keyword search for finding ChatGPT context. Who searched it better?"
-        },
-        {
-            "author": {
-                "id": "rec_cii1ki3jtoj0t82ae3b0",
-                "name": "Alex Francoeur"
-            },
-            "id": "rec_cii1kjjjtoj0t82ae3bg",
-            "likes": 9,
-            "title": "The next era of databases are serverless, adaptive, and collaborative"
-        },
-        {
-            "author": {
-                "id": "rec_cii1ki3jtoj0t82ae3b0",
-                "name": "Alex Francoeur"
-            },
-            "id": "rec_cii1kpbjtoj0t82ae3c0",
-            "likes": 8,
-            "title": "End-to-end preview deployment workflows with Xata and Vercel"
-        },
-        {
-            "author": {
-                "id": "rec_cii1ki3jtoj0t82ae3b0",
-                "name": "Alex Francoeur"
-            },
-            "id": "rec_cii1l1rjtoj0t82ae3cg",
-            "likes": 20,
-            "title": "Modern database workflows with GitHub, Vercel, Netlify, and Xata"
-        }
-    ]
+  "records": [
+    {
+      "author": {
+        "id": "rec_cie05krjtojbm41fv2q0",
+        "name": "Tudor Golubenco"
+      },
+      "id": "rec_cie05srjtojbm41fv2t0",
+      "likes": 13,
+      "title": "Postgres schema changes are still a PITA"
+    },
+    {
+      "author": {
+        "id": "rec_cie05krjtojbm41fv2q0",
+        "name": "Tudor Golubenco"
+      },
+      "id": "rec_cie05v3jtojbm41fv2tg",
+      "likes": 15,
+      "title": "On the performance impact of REPLICA IDENTITY FULL in Postgres"
+    },
+    {
+      "author": {
+        "id": "rec_cie05ljjtojbm41fv2qg",
+        "name": "Joan Edwards"
+      },
+      "id": "rec_cie060jjtojbm41fv2u0",
+      "likes": 5,
+      "title": "Introducing the new Xata regions: Sydney & Frankfurt"
+    },
+    {
+      "author": {
+        "id": "rec_cie05krjtojbm41fv2q0",
+        "name": "Tudor Golubenco"
+      },
+      "id": "rec_cii1kajjtoj0t82ae3ag",
+      "likes": 6,
+      "title": "Semantic or keyword search for finding ChatGPT context. Who searched it better?"
+    },
+    {
+      "author": {
+        "id": "rec_cii1ki3jtoj0t82ae3b0",
+        "name": "Alex Francoeur"
+      },
+      "id": "rec_cii1kjjjtoj0t82ae3bg",
+      "likes": 9,
+      "title": "The next era of databases are serverless, adaptive, and collaborative"
+    },
+    {
+      "author": {
+        "id": "rec_cii1ki3jtoj0t82ae3b0",
+        "name": "Alex Francoeur"
+      },
+      "id": "rec_cii1kpbjtoj0t82ae3c0",
+      "likes": 8,
+      "title": "End-to-end preview deployment workflows with Xata and Vercel"
+    },
+    {
+      "author": {
+        "id": "rec_cii1ki3jtoj0t82ae3b0",
+        "name": "Alex Francoeur"
+      },
+      "id": "rec_cii1l1rjtoj0t82ae3cg",
+      "likes": 20,
+      "title": "Modern database workflows with GitHub, Vercel, Netlify, and Xata"
+    }
+  ]
 }
 ```
 
@@ -100,33 +111,52 @@ POST /db/blogs:main/tables/posts/query
 
 What if we wanted to list the authors and their posts? You would need to query the _users_ table in order to retrieve all authors:
 
-```json
+<TabbedCode tabs={['TypeScript', 'JSON']}>
+```ts
+const records = await xata.db.users
+    .select(["*"])
+    .getAll();
+```
+
+```jsonc
 // Request
 POST /db/blogs:main/tables/users/query
 {
   "columns": ["*"]
 }
+```
 
+</TabbedCode>
+
+```json
 // Response (Xata fields have been omitted for clarity)
 {
-    "records": [
-        {
-            "id": "rec_cie05krjtojbm41fv2q0",
-            "name": "Tudor Golubenco"
-        },
-        {
-            "id": "rec_cie05ljjtojbm41fv2qg",
-            "name": "Joan Edwards"
-        },
-        {
-            "id": "rec_cii1ki3jtoj0t82ae3b0",
-            "name": "Alex Francoeur"
-        }
-    ]
+  "records": [
+    {
+      "id": "rec_cie05krjtojbm41fv2q0",
+      "name": "Tudor Golubenco"
+    },
+    {
+      "id": "rec_cie05ljjtojbm41fv2qg",
+      "name": "Joan Edwards"
+    },
+    {
+      "id": "rec_cii1ki3jtoj0t82ae3b0",
+      "name": "Alex Francoeur"
+    }
+  ]
 }
 ```
 
 And then, for each user that has been returned, make a separate request in the _posts_ table to retrieve the posts from each author, similar to:
+
+<TabbedCode tabs={['TypeScript', 'JSON']}>
+```ts
+const records = await xata.db.posts
+    .select(["*"])
+    .filter({ author: "rec_cie05krjtojbm41fv2q0"})
+    .getAll();
+```
 
 ```json
 // Request
@@ -137,35 +167,39 @@ POST /db/blogs:main/tables/posts/query
       "author": "rec_cie05krjtojbm41fv2q0"
   }
 }
+```
 
+</TabbedCode>
+
+```json
 // Response (Xata fields have been omitted for clarity)
 {
-    "records": [
-        {
-            "author": {
-                "id": "rec_cie05krjtojbm41fv2q0"
-            },
-            "id": "rec_cie05srjtojbm41fv2t0",
-            "likes": 13,
-            "title": "Postgres schema changes are still a PITA"
-        },
-        {
-            "author": {
-                "id": "rec_cie05krjtojbm41fv2q0"
-            },
-            "id": "rec_cie05v3jtojbm41fv2tg",
-            "likes": 15,
-            "title": "On the performance impact of REPLICA IDENTITY FULL in Postgres"
-        },
-        {
-            "author": {
-                "id": "rec_cie05krjtojbm41fv2q0"
-            },
-            "id": "rec_cii1kajjtoj0t82ae3ag",
-            "likes": 6,
-            "title": "Semantic or keyword search for finding ChatGPT context. Who searched it better?"
-        }
-    ]
+  "records": [
+    {
+      "author": {
+        "id": "rec_cie05krjtojbm41fv2q0"
+      },
+      "id": "rec_cie05srjtojbm41fv2t0",
+      "likes": 13,
+      "title": "Postgres schema changes are still a PITA"
+    },
+    {
+      "author": {
+        "id": "rec_cie05krjtojbm41fv2q0"
+      },
+      "id": "rec_cie05v3jtojbm41fv2tg",
+      "likes": 15,
+      "title": "On the performance impact of REPLICA IDENTITY FULL in Postgres"
+    },
+    {
+      "author": {
+        "id": "rec_cie05krjtojbm41fv2q0"
+      },
+      "id": "rec_cii1kajjtoj0t82ae3ag",
+      "likes": 6,
+      "title": "Semantic or keyword search for finding ChatGPT context. Who searched it better?"
+    }
+  ]
 }
 ```
 
@@ -178,6 +212,16 @@ There are workarounds depending on the data set and the amount of code we are wi
 Since the relationship is already defined by the `link` column, it’s a matter of providing a good API experience to get this data more easily. We have introduced [column expressions](/docs/concepts/data-model#links-and-relations) in the query endpoint so the `columns` field is no longer restricted to a list of column names. Now we are able to provide a JSON object to better define the projection we want.
 
 To better understand this concept, let's improve on the previous example to showcase the benefits of navigating relationships in reverse using column expressions:
+
+<TabbedCode tabs={['TypeScript', 'JSON']}>
+```ts
+const records = await xata.db.users
+    .select(["*", {
+        "name": "<-posts.author",
+        "columns": ["title"]
+    }])
+    .getAll();
+```
 
 ```json
 // Request
@@ -192,6 +236,8 @@ POST /db/blogs:main/tables/users/query
   ]
 }
 ```
+
+</TabbedCode>
 
 In this request we are asking for all the fields in the _Users_ table (`*`) plus a column expression. The expression consists of a structure with two fields:
 
@@ -265,65 +311,64 @@ Using this syntax we are able to avoid the N + 1 problem - getting all the data 
 
 More fields are available to configure the projection further: `as`, `sort`, `limit`, `offset`. The same request can be modified like the following:
 
-```json
-// Request
-POST /db/blogs:main/tables/users/query
-{
-  "columns": [
-      "*",
-      {
-          "name": "<-posts.author",
-          "as": "posts", // Field is returned as `posts`
-          "columns": ["title"],
-          "sort": [      // Return the nested records in this order
-						{"title": "desc"}
-          ],
-          "limit": 1,    // Limit the amount of nested records to 1
-          "offset": 1    // Skip first nested record
-      }
-  ]
-}
+<TabbedCode tabs={['TypeScript', 'JSON']}>
+```ts
+const records = await xata.db.users
+    .select(["*", {
+        "name": "<-posts.author",
+        "as": "posts",
+        "sort": [
+            { "title": "desc" }
+        ],
+        "columns": ["title"],
+        "limit": 1,
+        "offset": 1
+    }])
+.getAll();
+```
+</TabbedCode>
 
+```json
 // Response (xata fields have been omitted for clarity)
 {
-    "records": [
-        {
-            "id": "rec_cie05krjtojbm41fv2q0",
-            "name": "Tudor Golubenco",
-            "posts": {
-                "records": [
-                    {
-                        "id": "rec_cii1kajjtoj0t82ae3ag",
-                        "title": "Semantic or keyword search for finding ChatGPT context. Who searched it better?"
-                    }
-                ]
-            }
-        },
-        {
-            "id": "rec_cie05ljjtojbm41fv2qg",
-            "name": "Joan Edwards",
-            "posts": {
-                "records": [
-                    {
-                        "id": "rec_cie060jjtojbm41fv2u0",
-                        "title": "Introducing the new Xata regions: Sydney & Frankfurt"
-                    }
-                ]
-            }
-        },
-        {
-            "id": "rec_cii1ki3jtoj0t82ae3b0",
-            "name": "Alex Francoeur",
-            "posts": {
-                "records": [
-                    {
-                        "id": "rec_cii1kjjjtoj0t82ae3bg",
-                        "title": "The next era of databases are serverless, adaptive, and collaborative"
-                    }
-                ]
-            }
-        }
-    ]
+  "records": [
+    {
+      "id": "rec_cie05krjtojbm41fv2q0",
+      "name": "Tudor Golubenco",
+      "posts": {
+        "records": [
+          {
+            "id": "rec_cii1kajjtoj0t82ae3ag",
+            "title": "Semantic or keyword search for finding ChatGPT context. Who searched it better?"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rec_cie05ljjtojbm41fv2qg",
+      "name": "Joan Edwards",
+      "posts": {
+        "records": [
+          {
+            "id": "rec_cie060jjtojbm41fv2u0",
+            "title": "Introducing the new Xata regions: Sydney & Frankfurt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rec_cii1ki3jtoj0t82ae3b0",
+      "name": "Alex Francoeur",
+      "posts": {
+        "records": [
+          {
+            "id": "rec_cii1kjjjtoj0t82ae3bg",
+            "title": "The next era of databases are serverless, adaptive, and collaborative"
+          }
+        ]
+      }
+    }
+  ]
 }
 ```
 
