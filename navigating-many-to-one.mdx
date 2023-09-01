@@ -333,7 +333,7 @@ For the moment, sorting options and classical pagination (limit and offset) are 
 
 We evaluated three different strategies:
 
-- Subqueries: The primary advantage is that we don't increase the number of queries. Although, this is at the cost of introducing some complexity into the existing query and statement builder code.
+- Subqueries: This approach is useful for when you need to perform operations that involve multiple tables or when you need to filter data based on the results of another query. The primary advantage is that we wouldn't have to increase the number of queries. Although, this is at the cost of introducing some complexity into the existing query and statement builder code.
 
 - JOINS: With this approach, we also maintain the same number of queries, but the code could become significantly more intricate, and we would need to deal with filtering out substantial amounts of duplicated data within each row.
 
