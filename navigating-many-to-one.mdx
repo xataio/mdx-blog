@@ -203,60 +203,60 @@ What we get back is a list of post data nested in every author record. The defau
 ```json
 // Response (xata fields have been omitted for clarity)
 {
-    "records": [
-        {
-            "id": "rec_cie05krjtojbm41fv2q0",
-            "name": "Tudor Golubenco",
-            "postsauthor": {
-                "records": [
-                    {
-                        "id": "rec_cie05srjtojbm41fv2t0",
-                        "title": "Postgres schema changes are still a PITA"
-                    },
-                    {
-                        "id": "rec_cie05v3jtojbm41fv2tg",
-                        "title": "On the performance impact of REPLICA IDENTITY FULL in Postgres"
-                    },
-                    {
-                        "id": "rec_cii1kajjtoj0t82ae3ag",
-                        "title": "Semantic or keyword search for finding ChatGPT context. Who searched it better?"
-                    }
-                ]
-            }
-        },
-        {
-            "id": "rec_cie05ljjtojbm41fv2qg",
-            "name": "Joan Edwards",
-            "postsauthor": {
-                "records": [
-                    {
-                        "id": "rec_cie060jjtojbm41fv2u0",
-                        "title": "Introducing the new Xata regions: Sydney & Frankfurt"
-                    }
-                ]
-            }
-        },
-        {
-            "id": "rec_cii1ki3jtoj0t82ae3b0",
-            "name": "Alex Francoeur",
-            "postsauthor": {
-                "records": [
-                    {
-                        "id": "rec_cii1kpbjtoj0t82ae3c0",
-                        "title": "End-to-end preview deployment workflows with Xata and Vercel"
-                    },
-                    {
-                        "id": "rec_cii1kjjjtoj0t82ae3bg",
-                        "title": "The next era of databases are serverless, adaptive, and collaborative"
-                    },
-                    {
-                        "id": "rec_cii1l1rjtoj0t82ae3cg",
-                        "title": "Modern database workflows with GitHub, Vercel, Netlify, and Xata"
-                    }
-                ]
-            }
-        }
-    ]
+  "records": [
+    {
+      "id": "rec_cie05krjtojbm41fv2q0",
+      "name": "Tudor Golubenco",
+      "postsauthor": {
+        "records": [
+          {
+            "id": "rec_cie05srjtojbm41fv2t0",
+            "title": "Postgres schema changes are still a PITA"
+          },
+          {
+            "id": "rec_cie05v3jtojbm41fv2tg",
+            "title": "On the performance impact of REPLICA IDENTITY FULL in Postgres"
+          },
+          {
+            "id": "rec_cii1kajjtoj0t82ae3ag",
+            "title": "Semantic or keyword search for finding ChatGPT context. Who searched it better?"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rec_cie05ljjtojbm41fv2qg",
+      "name": "Joan Edwards",
+      "postsauthor": {
+        "records": [
+          {
+            "id": "rec_cie060jjtojbm41fv2u0",
+            "title": "Introducing the new Xata regions: Sydney & Frankfurt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rec_cii1ki3jtoj0t82ae3b0",
+      "name": "Alex Francoeur",
+      "postsauthor": {
+        "records": [
+          {
+            "id": "rec_cii1kpbjtoj0t82ae3c0",
+            "title": "End-to-end preview deployment workflows with Xata and Vercel"
+          },
+          {
+            "id": "rec_cii1kjjjtoj0t82ae3bg",
+            "title": "The next era of databases are serverless, adaptive, and collaborative"
+          },
+          {
+            "id": "rec_cii1l1rjtoj0t82ae3cg",
+            "title": "Modern database workflows with GitHub, Vercel, Netlify, and Xata"
+          }
+        ]
+      }
+    }
+  ]
 }
 ```
 
@@ -327,6 +327,17 @@ POST /db/blogs:main/tables/users/query
 ```
 
 For the moment, sorting options and classical pagination (limit and offset) are available for the reverse link querying. In the future, we will add support for filtering and cursor pagination. Similarly, we plan to add support for following multiple reverse links transitively. Nevertheless, we think that the majority of use cases are solved by the current functionality already.
+
+## PostgreSQL implementation
+
+We evaluated three different strategies:
+
+- Subqueries: the main advantage is that we don't increment the number of queries at the cost of adding some complexity to the existing one (and to the statement builder code)
+- JOINs: we would also keep the number of queries the same, but the code could get really complex and we would need to filter out lots of duplicated data in each row
+- N+1 queries: we would keep our SQL simple at the cost of (still) making N+1 queries to the database and joining the responses together. This would still be an improvement because the (backend - PostgreSQL) latency is an order of magnitude less than the (client - backend) latency
+
+So far, we went on with the subquery approach because it was simple and easy to adapt in the future, if needed. To make it even more simple
+we take advantage of the [json_agg()](https://www.postgresql.org/docs/current/functions-aggregate.html) function to get a JSON document with all the related data ready to be returned in the response.
 
 # Conclusion
 
