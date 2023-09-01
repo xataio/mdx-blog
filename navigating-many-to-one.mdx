@@ -15,7 +15,7 @@ As our [launch week](/blog/launch-week-august-2023) comes to a close, we're look
 
 Let's consider a basic schema. Within the schema, there's a _Posts_ table containing certain information and establishing a connection to the corresponding author. This author-related data belongs in the _Users_ table.
 
-![Xata schema showing a many-to-one relationship](images/many-to-one-relationships-schema.png)
+![Xata schema showing a many-to-one relationship](images/many-to-one-relationship-schema.png)
 
 When querying the _Posts_ table we are able to retrieve the title, likes, and the author's name (and any other fields present in the _Users_ table):
 
@@ -35,9 +35,10 @@ records = xata.data().query("posts", {
 ```jsonc
 // POST /db/blogs:main/tables/posts/query
 {
-  "columns": ["*","author.*"]
+  "columns": ["*", "author.*"]
 }
 ```
+
 </TabbedCode>
 
 ```jsonc
