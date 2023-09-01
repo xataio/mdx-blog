@@ -1,20 +1,21 @@
 ---
 title: 'Managing many-to-one and one-to-many database relations'
-description: 'Addressing the N+1 problem and navigating one-to-many relationships with Xata's new approach.'
+description: "Addressing the N+1 problem and navigating one-to-many relationships with Xata's new approach."
 image:
-  src: 'https://raw.githubusercontent.com/xataio/mdx-blog/main/images/csv-import-export-cover.jpg'
-  alt: 'Many-to-one relationship'
+  src: 'https://raw.githubusercontent.com/xataio/mdx-blog/main/images/many-to-one-relation.jpg'
+  alt: 'Many to one relationship'
 author: Alejandro Martínez Vieites
 date: 09-01-2023
 published: true
 slug: navigating-many-to-one
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/many-to-one-relation-cover-og.jpg
 ---
 
 As our [launch week](/blog/launch-week-august-2023) comes to a close, we're looking at APIs and their intricate relationships. Today, we're introducing a new syntax that simplifies navigating these relationships. While Xata already provides a great way to retrieve related data using [link columns](/docs/concepts/data-model#link) for the _many-to-one_ relationship, we're addressing the challenge of navigating the reverse [relationship](https://xata.io/docs/concepts/data-model#links-and-relations) (_one-to-many_). This new approach improves efficiency and helps avoid the _n + 1 problem_.
 
 Let's consider a basic schema. Within the schema, there's a _posts_ table containing certain information and establishing a connection to the corresponding author. This author-related data belongs in the _users_ table.
 
-![Xata schema showing a many-to-one relationship](image/many-to-one-relationships.png)
+![Xata schema showing a many-to-one relationship](images/many-to-one-relationships.png)
 
 When querying the _posts_ table we are able to retrieve the title, likes, and the author's name (and any other fields present in the _users_ table):
 
@@ -172,7 +173,7 @@ We are performing "1" (get the authors) + "N" (get the authors's posts) requests
 
 There are workarounds depending on the data set and the amount of code we are willing to write, like getting _all_ the authors and _all_ the posts, or using the `IN` operator and then processing the response in the app. But it would be better if our API would help us getting exactly what we want.
 
-# Navigate links backwards
+## Navigate links backwards
 
 Since the relationship is already defined by the `link` column, it’s a matter of providing a good API experience to get this data more easily. We have introduced [column expressions](/docs/concepts/data-model#links-and-relations) in the query endpoint so the `columns` field is no longer restricted to a list of column names. Now we are able to provide a JSON object to better define the projection we want.
 
@@ -339,7 +340,7 @@ We evaluated three different strategies:
 So far, we went on with the subquery approach because it was simple and easy to adapt in the future, if needed. To make it even more simple
 we take advantage of the [json_agg()](https://www.postgresql.org/docs/current/functions-aggregate.html) function to get a JSON document with all the related data ready to be returned in the response.
 
-# Conclusion
+## Conclusion
 
 The new Xata querying syntax makes it possible to traverse the N:1 relationships backwards and therefore solves the N + 1 problem in a single round-trip.
 
