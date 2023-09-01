@@ -11,7 +11,7 @@ slug: navigating-many-to-one
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/many-to-one-relation-cover-og.jpg
 ---
 
-As our [launch week](/blog/launch-week-august-2023) comes to a close, we're looking at APIs and their intricate relationships. Today, we're introducing a new syntax that simplifies navigating these relationships. While Xata already provides a great way to retrieve related data using [link columns](/docs/concepts/data-model#link) for the _many-to-one_ relationship, we're addressing the challenge of navigating the reverse [relationship](https://xata.io/docs/concepts/data-model#links-and-relations) (_one-to-many_). This new approach improves efficiency and helps avoid the _N + 1 problem_.
+As our [launch week](/blog/launch-week-august-2023) comes to a close, we're looking at APIs and their intricate relationships. Today, we're introducing a new syntax that simplifies navigating these relationships. While Xata already provides a great way to retrieve related data using [link columns](/docs/concepts/data-model#link) for the _many-to-one_ relationship, we're addressing the challenge of navigating the reverse [relationship](/docs/concepts/data-model#links-and-relations) (_one-to-many_). This new approach improves efficiency and helps avoid the _N + 1 problem_.
 
 Let's consider a basic schema. Within the schema, there's a _posts_ table containing certain information and establishing a connection to the corresponding author. This author-related data belongs in the _users_ table.
 
@@ -440,6 +440,8 @@ We evaluated three different strategies:
 - N+1 Queries: This approach keeps our SQL straightforward, albeit at the expense of still executing N+1 queries to the database and subsequently joining the responses together. Nonetheless, this represents an improvement because the latency (backend - PostgreSQL) is an order of magnitude lower than the latency (client - backend).
 
 For now, we have opted for the subquery approach due to its simplicity and its adaptability for future changes if the need arises. To further simplify the process, we are leveraging the [json_agg()](https://www.postgresql.org/docs/current/functions-aggregate.html) function to get a JSON document with all the related data ready to be returned in the response.
+
+Using subqueries in PostgreSQL simplifies complex queries, makes code more readable, avoids data duplication, and promotes code reusability. PostgreSQL's query optimizer can improve query performance with subqueries, which also support dynamic filtering, scalability with large datasets, and cross-platform compatibility through adherence to SQL standards.
 
 ## Conclusion
 
