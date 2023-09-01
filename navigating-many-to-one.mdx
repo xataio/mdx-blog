@@ -1,5 +1,5 @@
 ---
-title: 'Managing many-to-one and one-to-many database relations'
+title: 'Reduce query round trips with improved one-to-many relations'
 description: "Addressing the N+1 problem and navigating one-to-many relationships with Xata's new approach."
 image:
   src: 'https://raw.githubusercontent.com/xataio/mdx-blog/main/images/many-to-one-relation.jpg'
@@ -11,7 +11,7 @@ slug: navigating-many-to-one
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/many-to-one-relation-cover-og.jpg
 ---
 
-As our [launch week](/blog/launch-week-august-2023) comes to a close, we're looking at APIs and their intricate relationships. Today, we're introducing a new syntax that simplifies navigating these relationships. While Xata already provides a great way to retrieve related data using [link columns](/docs/concepts/data-model#link) for the _many-to-one_ relationship, we're addressing the challenge of navigating the reverse [relationship](https://xata.io/docs/concepts/data-model#links-and-relations) (_one-to-many_). This new approach improves efficiency and helps avoid the _n + 1 problem_.
+As our [launch week](/blog/launch-week-august-2023) comes to a close, we're looking at APIs and their intricate relationships. Today, we're introducing a new syntax that simplifies navigating these relationships. While Xata already provides a great way to retrieve related data using [link columns](/docs/concepts/data-model#link) for the _many-to-one_ relationship, we're addressing the challenge of navigating the reverse [relationship](https://xata.io/docs/concepts/data-model#links-and-relations) (_one-to-many_). This new approach improves efficiency and helps avoid the _N + 1 problem_.
 
 Let's consider a basic schema. Within the schema, there's a _posts_ table containing certain information and establishing a connection to the corresponding author. This author-related data belongs in the _users_ table.
 
@@ -205,7 +205,7 @@ POST /db/blogs:main/tables/posts/query
 
 We are performing "1" (get the authors) + "N" (get the authors's posts) requests. This is inconvenient and also quite inefficient, since the number of requests depends on the number of user records.
 
-There are workarounds depending on the data set and the amount of code we are willing to write, like getting _all_ the authors and _all_ the posts, or using the `IN` operator and then processing the response in the app. But it would be better if our API would help us getting exactly what we want.
+There are workarounds depending on the data set and the amount of code we are willing to write, like getting all the authors and all the posts, or using the `IN` operator and then processing the response in the app. But it would be better if our API helped us get exactly what we want.
 
 ## Navigate links backwards
 
@@ -378,12 +378,13 @@ For the moment, sorting options and classical pagination (limit and offset) are 
 
 We evaluated three different strategies:
 
-- Subqueries: the main advantage is that we don't increment the number of queries at the cost of adding some complexity to the existing one (and to the statement builder code)
-- JOINs: we would also keep the number of queries the same, but the code could get really complex and we would need to filter out lots of duplicated data in each row
-- N+1 queries: we would keep our SQL simple at the cost of (still) making N+1 queries to the database and joining the responses together. This would still be an improvement because the (backend - PostgreSQL) latency is an order of magnitude less than the (client - backend) latency
+- Subqueries: This approach is useful for when you need to perform operations that involve multiple tables or when you need to filter data based on the results of another query. The primary advantage is that we wouldn't have to increase the number of queries. Although, this is at the cost of introducing some complexity into the existing query and statement builder code.
 
-So far, we went on with the subquery approach because it was simple and easy to adapt in the future, if needed. To make it even more simple
-we take advantage of the [json_agg()](https://www.postgresql.org/docs/current/functions-aggregate.html) function to get a JSON document with all the related data ready to be returned in the response.
+- JOINS: With this approach, we also maintain the same number of queries, but the code could become significantly more intricate, and we would need to deal with filtering out substantial amounts of duplicated data within each row.
+
+- N+1 Queries: This approach keeps our SQL straightforward, albeit at the expense of still executing N+1 queries to the database and subsequently joining the responses together. Nonetheless, this represents an improvement because the latency (backend - PostgreSQL) is an order of magnitude lower than the latency (client - backend).
+
+For now, we have opted for the subquery approach due to its simplicity and its adaptability for future changes if the need arises. To further simplify the process, we are leveraging the [json_agg()](https://www.postgresql.org/docs/current/functions-aggregate.html) function to get a JSON document with all the related data ready to be returned in the response.
 
 ## Conclusion
 
