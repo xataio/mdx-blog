@@ -311,7 +311,7 @@ Using this syntax we are able to avoid the N + 1 problem - getting all the data 
 
 More fields are available to configure the projection further: `as`, `sort`, `limit`, `offset`. The same request can be modified like the following:
 
-<TabbedCode tabs={['TypeScript']}>
+<TabbedCode tabs={['TypeScript', 'JSON']}>
 ```ts
 const records = await xata.db.users
     .select(["*", {
@@ -326,6 +326,26 @@ const records = await xata.db.users
     }])
 .getAll();
 ```
+
+```jsonc
+// Request
+POST /db/blogs:main/tables/users/query
+{
+    "columns": [
+    "*",
+    {
+        "name": "<-posts.author",
+        "as": "posts", // Field is returned as `posts`
+        "columns": ["title"],
+        "sort": [      // Return the nested records in this order
+            {"title": "desc"}
+        ],
+        "limit": 1,    // Limit the amount of nested records to 1
+        "offset": 1    // Skip first nested record
+    }]
+}
+```
+
 </TabbedCode>
 
 ```json
