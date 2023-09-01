@@ -229,8 +229,8 @@ records = xata.data().query("Products", {
 <TabbedCode tabs={['TypeScript', 'Python', 'SQL', 'JSON']}>
 ```ts
 const records = await xata.db.Products.filter({
-  "details->length": {
-    "$gt": 50
+  "details->author": {
+    "$contains": "Marcus"
   }
 }).getMany();
 ```
@@ -238,8 +238,8 @@ const records = await xata.db.Products.filter({
 ```python
 records = xata.data().query("Products", {
   "filter": {
-    "details->length": {
-      "$gt": 50
+    "details->author": {
+      "contains": "Marcus"
     }
   }
 })
@@ -248,7 +248,7 @@ records = xata.data().query("Products", {
 ```jsonc
 // POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/sql
 {
-  "statement": "SELECT * FROM \"Products\" WHERE NOT (details->>length)::numeric > 50;"
+  "statement": "SELECT * FROM \"Products\" WHERE details->>author LIKE '%Marcus%';"
 }
 ```
 
@@ -270,7 +270,9 @@ records = xata.data().query("Products", {
 ```ts
 const records = await xata.db.Products.filter({
   "details->length": {
-    "$gt": 50
+    "$not": {
+        "$gt": 50
+    }
   }
 }).getMany();
 ```
@@ -279,7 +281,9 @@ const records = await xata.db.Products.filter({
 records = xata.data().query("Products", {
   "filter": {
     "details->length": {
-      "$gt": 50
+        "$not": {
+            "$gt": 50
+        }
     }
   }
 })
@@ -288,7 +292,7 @@ records = xata.data().query("Products", {
 ```jsonc
 // POST https://{workspace}.{region}.xata.sh/db/{db}:{branch}/sql
 {
-  "statement": "SELECT * FROM \"Products\" WHERE (details->>length)::numeric > 50;"
+  "statement": "SELECT * FROM \"Products\" WHERE NOT (details->>length)::numeric > 50;"
 }
 ```
 
