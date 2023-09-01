@@ -13,11 +13,11 @@ ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/many-to-o
 
 As our [launch week](/blog/launch-week-august-2023) comes to a close, we're looking at APIs and their intricate relationships. Today, we're introducing a new syntax that simplifies navigating these relationships. While Xata already provides a great way to retrieve related data using [link columns](/docs/concepts/data-model#link) for the _many-to-one_ relationship, we're addressing the challenge of navigating the reverse [relationship](/docs/concepts/data-model#links-and-relations) (_one-to-many_). This new approach improves efficiency and helps avoid the _N + 1 problem_.
 
-Let's consider a basic schema. Within the schema, there's a _posts_ table containing certain information and establishing a connection to the corresponding author. This author-related data belongs in the _users_ table.
+Let's consider a basic schema. Within the schema, there's a _Posts_ table containing certain information and establishing a connection to the corresponding author. This author-related data belongs in the _Users_ table.
 
 ![Xata schema showing a many-to-one relationship](images/many-to-one-relationships.png)
 
-When querying the _posts_ table we are able to retrieve the title, likes, and the author's name (and any other fields present in the _users_ table):
+When querying the _Posts_ table we are able to retrieve the title, likes, and the author's name (and any other fields present in the _Users_ table):
 
 <TabbedCode tabs={['TypeScript', 'Python', 'JSON']}>
 ```ts
@@ -113,7 +113,7 @@ records = xata.data().query("posts", {
 
 ## The N + 1 problem
 
-What if we wanted to list the authors and their posts? You would need to query the _users_ table in order to retrieve all authors:
+What if we wanted to list the authors and their posts? You would need to query the _Users_ table in order to retrieve all authors:
 
 <TabbedCode tabs={['TypeScript', 'Python', 'JSON']}>
 ```ts
@@ -154,7 +154,7 @@ records = xata.data().query("posts", {
 }
 ```
 
-And then, for each user that has been returned, make a separate request in the _posts_ table to retrieve the posts from each author, similar to:
+And then, for each user that has been returned, make a separate request in the _Posts_ table to retrieve the posts from each author, similar to:
 
 <TabbedCode tabs={['TypeScript', 'Python', 'JSON']}>
 ```ts
@@ -260,7 +260,7 @@ records = xata.data().query("posts", {
 
 In this request we are asking for all the fields in the _Users_ table (`*`) plus a column expression. The expression consists of a structure with two fields:
 
-- `name`: When using the `<-` prefix, it signifies that we are navigating in reverse along the link defined by the `author` column in the _posts_ table. This reverse navigation establishes a one-to-many relationship between the linked records.
+- `name`: When using the `<-` prefix, it signifies that we are navigating in reverse along the link defined by the `author` column in the _Posts_ table. This reverse navigation establishes a one-to-many relationship between the linked records.
 
 - `columns`: The `columns` field defines the projection to be applied to the table on the opposite side of this relationship. It specifies which fields from the related table should be included in the query result.
 
@@ -433,11 +433,11 @@ For the moment, sorting options and classical pagination (limit and offset) are 
 
 We evaluated three different strategies:
 
-- Subqueries: This approach is useful for when you need to perform operations that involve multiple tables or when you need to filter data based on the results of another query. The primary advantage is that we wouldn't have to increase the number of queries. Although, this is at the cost of introducing some complexity into the existing query and statement builder code.
+- **Subqueries:** This approach is useful for when you need to perform operations that involve multiple tables or when you need to filter data based on the results of another query. The primary advantage is that we wouldn't have to increase the number of queries. Although, this is at the cost of introducing some complexity into the existing query and statement builder code.
 
-- JOINS: With this approach, we also maintain the same number of queries, but the code could become significantly more intricate, and we would need to deal with filtering out substantial amounts of duplicated data within each row.
+- **JOINS:** With this approach, we also maintain the same number of queries, but the code could become significantly more intricate, and we would need to deal with filtering out substantial amounts of duplicated data within each row.
 
-- N+1 Queries: This approach keeps our SQL straightforward, albeit at the expense of still executing N+1 queries to the database and subsequently joining the responses together. Nonetheless, this represents an improvement because the latency (backend - PostgreSQL) is an order of magnitude lower than the latency (client - backend).
+- **N+1 queries:** This approach keeps our SQL straightforward, albeit at the expense of still executing N+1 queries to the database and subsequently joining the responses together. Nonetheless, this represents an improvement because the latency (backend - PostgreSQL) is an order of magnitude lower than the latency (client - backend).
 
 For now, we have opted for the subquery approach due to its simplicity and its adaptability for future changes if the need arises. To further simplify the process, we are leveraging the [json_agg()](https://www.postgresql.org/docs/current/functions-aggregate.html) function to get a JSON document with all the related data ready to be returned in the response.
 
@@ -447,4 +447,4 @@ Using subqueries in PostgreSQL simplifies complex queries, makes code more reada
 
 The new Xata querying syntax makes it possible to traverse the N:1 relationships backwards and therefore solves the N + 1 problem in a single round-trip.
 
-If you have feedback or questions, you can reach out to us on [Discord](https://xata.io/discord) or [X | Twitter](https://twitter.com/xata).
+If you have feedback or questions, you can reach out to us on [Discord](https://xata.io/discord) or [X/Twitter](https://twitter.com/xata).
