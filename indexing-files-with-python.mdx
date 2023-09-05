@@ -254,7 +254,8 @@ With the non-deterministic (random) approach we simply do not include any id whe
 
 ### Atomic writes vs Transactions
 
-The `mode` parameter allows selecting between the `atomic` or `transaction` indexing approach.  In both cases the response code when emitting text content to Xata must be checked for the retriable status code `429`, which is returned in case of hitting [rate limits](https://xata.io/docs/rest-api/limits#rate-limits).
+The `mode` parameter allows selecting between the `atomic` or `transaction` indexing approach.
+In both cases when emitting text content to Xata the response code should be checked for the retriable status code `429`, returned in case we hit the branch [rate limits](https://xata.io/docs/rest-api/limits#rate-limits).
 
 “Atomic” means writing one record, a single chunk of text, with each HTTP/S request to Xata.
 
