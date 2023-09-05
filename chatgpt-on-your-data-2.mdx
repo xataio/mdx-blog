@@ -102,7 +102,7 @@ const response = await openai.chat.completions.create({
 
 With the functions defined, the AI will be able to call the `full_text_search` function and pass the `query` parameter with the parts of the question that are relevant to the search.
 
-If we want to improve the results, we can add more information to the `messages` array as system messages. For example, we give instructions to the AI or hints about our database.
+To enhance the results, we can include additional information in the `messages` array as system messages. For instance, we can provide instructions to the AI or offer hints related to our database.
 
 ```ts {1,11-23}
 const { schema } = await api.branches.getBranchDetails({ workspace, region, database, branch });
