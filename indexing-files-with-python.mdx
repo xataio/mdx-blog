@@ -1,0 +1,432 @@
+---
+ title: 'Indexing Files with the Python SDK'
+ description: 'A walkthrough on how to extract and index text content from file attachments using the Python SDK.'
+ image:
+   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/TBD_blog_illustration.jpeg
+   alt: 'Extracting and indexing text from file attachments with Python'
+ author: Kostas Botsas
+ date: 09-05-2023
+ published: false
+ slug: index-files-with-python
+ ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/TBD_blog_illustration.jpeg
+---
+
+
+Xata’s [file attachments](https://xata.io/docs/concepts/file-attachments) is a powerful feature that enables you to store files in your database, alongside other common [column data types](https://xata.io/docs/concepts/data-model#column-types).
+
+Once uploaded, the attachment lives in Xata’s object store and it can be reached as a column value with additional metadata such as `mediaType`, `size` and `attributes`, which can be used in queries, filters and summaries. Xata’s API provides several methods for [file access](https://xata.io/docs/concepts/file-attachments#file-access-urls), including [Authenticated](https://xata.io/docs/concepts/file-attachments#authenticated-urls), [Public](https://xata.io/docs/concepts/file-attachments#public-urls) and [Signed](https://xata.io/docs/concepts/file-attachments#signed-urls) URLs. 
+
+The actual file content is not *indexed* by default. By “indexed”, we are referring to the process of extracting the file’s text content and storing it in a text column where it can be accessed, searched and queried.
+
+So how can we use Xata’s advanced features such as [Free-text Search](https://xata.io/docs/sdk/search) and [Ask AI](https://xata.io/docs/sdk/ask) on our file attachment’s actual content? 
+
+In this article we are exploring quick and easy ways for indexing file attachments while taking a look into Xata’s Python SDK which is now [Generally Available](https://xata.io/blog/announcing-the-python-sdk-ga)!
+
+## Summary
+
+The *xfileindex* script in the [xtools](https://github.com/xataio/xtools) repo can be used to extract content from text or pdf file attachments stored in your Xata records and index it as raw text, which enables us to use the content with Xata’s Query, Free-text search and Ask AI capabilities.
+
+The [readme](https://github.com/xataio/xtools/blob/main/xfileindex/README.md) file provides usage examples and the full list of parameters.
+
+## Using Xata’s Python SDK
+
+Python is a beginner-friendly programming language which comes pre-installed with many popular OS distributions but can also be [downloaded](https://www.python.org/downloads/) and installed on any platform. `pip` is the package installer of Python and it almost always exists alongside Python wherever it is installed (but there also more ways to [install pip](https://pip.pypa.io/en/stable/installation/) in any case). Pip fetches modules from the official Python Package Index (PyPI), where you will find the [Xata Python SDK](https://pypi.org/project/xata/) package. It can be installed with the command `pip install xata`.
+
+Once the Xata Python SDK has been installed, we can import the Xata Client in our code (`from xata.client import XataClient`) and use it to interact with our Xata database.
+
+Note that the version of python in your system (`python --version`) should be 3.8 or higher to use the [script](https://github.com/xataio/xtools/tree/xfileindex-v0.0.1/xfileindex).
+
+## A Python script to index file attachments
+
+Now that we’ve covered how to use Xata with Python, let’s jump straight to the point of indexing file attachments.
+
+We will assume that you’ve already stored some files in your database under columns of `file` or `file[]` type. Check out the [documentation](https://xata.io/docs/concepts/file-attachments) for more information on these column types.
+
+The [script](https://github.com/xataio/xtools/tree/xfileindex-v0.0.1/xfileindex) scrolls through our Xata database, looks for `file` or `file[]` columns with text, csv or pdf content (*mediaType*), extracts the text and writes it into text columns in a target table. Which is all we need, in order to put the file content to work with Query, Search, Ask AI features and whatever else is to come!
+
+Here are the essential steps to run this script:
+
+1. Clone the xtools repo: `git clone https://github.com/xataio/xtools -b xfileindex-v0.0.1` 
+This repo is a library of open source helper scripts provided by Xata, we welcome pull requests and community contributions.
+(We refer to git branch `xfileindex-v0.0.1` in this article for future reference as there may be changes in `main`.)
+2. Navigate to the directory: `cd xtools/xfileindex`
+3. Install the required packages using pip: `pip install -r requirements.txt`
+The script uses some extra packages (*xata,PyPDF2*) which are not typically available with the default Python installed in your system, so we need to make sure they’re installed before we proceed.
+4. Set your Xata API key as an environment variable on your terminal. You can generate an API key within the [account settings](https://app.xata.io/settings) page. Alternatively, you can use [a .env file](https://xata.io/docs/sdk/python/overview#dotenv), to store the API key.
+
+```bash
+export XATA_API_KEY="xau_mykey”
+```
+
+1. We need to gather a few parameters about our database and schema:
+- The database endpoint url. You can find that in the Settings page of your database, under “Database endpoint”. 
+- The table name where our files are stored.
+- The name(s)s of the column(s) where our files are stored
+2. Knowing all the above, we can run the script as follows:
+
+```bash
+python xfileindex.py --db https://{workspace}.{region}.xata.sh/db/{db} --table tablename --columns firstcolumn,secondcolumn
+```
+
+Example output:
+
+```bash
+python xfileindex.py --db https://ws-fdrujb.eu-central-1.xata.sh/db/myfilesdb --table filestable --columns firstcolumn,secondcolumn
+Created new table filestableIndex
+
+Downloading file from table: filestable , record: rec_cjmvbvr9o1hng2274a9g , column: firstcolumn , filename: lotr.pdf
+- Processing record: rec_cjmvbvr9o1hng2274a9g , column: firstcolumn , filename: lotr.pdf , type: application/pdf in 1199 chunks:
+  Indexed 100 / 1199 chunks.
+  Indexed 200 / 1199 chunks.
+  Indexed 300 / 1199 chunks.
+  Indexed 400 / 1199 chunks.
+  Indexed 500 / 1199 chunks.
+  Indexed 600 / 1199 chunks.
+  Indexed 700 / 1199 chunks.
+  Indexed 800 / 1199 chunks.
+  Indexed 900 / 1199 chunks.
+  Indexed 1000 / 1199 chunks.
+  Indexed 1100 / 1199 chunks.
+  Indexed 1199 / 1199 chunks.
+
+Downloading file from table: filestable , record: rec_cjmscqj9n6h19i0nbdng , column: secondcolumn , filename: sample-2mb-text-file.txt
+- Processing record: rec_cjmscqj9n6h19i0nbdng , column: secondcolumn , filename: sample-2mb-text-file.txt , type: text/plain in 11 chunks:
+  Indexed 11 / 11 chunks.
+
+Downloading file from table: filestable , record: rec_cjmscqj9n6h19i0nbdng , column: secondcolumn , filename: mycsv.csv
+- Processing record: rec_cjmscqj9n6h19i0nbdng , column: secondcolumn , filename: mycsv.csv , type: text/csv in 1 chunk:
+  Indexed 1 / 1 chunk.
+```
+
+### Under the hood
+
+Let’s take a moment to review the output and dive deeper into how things worked here.
+
+The script created a new table filestableIndex, by appending “Index” to our source table name. Alternatively you can specify your preferred name for the target table by providing the `dest`parameter (`--dest customTableName`). Also, in case your table lives in a branch other than `main`, you can add the branch parameter (`--branch dev`).
+
+The script opens a “scroll”, a [cursor-based](https://xata.io/docs/sdk/get#cursor-based-pagination) query to our table, which goes through our records looking for content under the specified columns (firstcolumn, secondcolumn). An intermediate function `ensure_target_table` makes sure the target table schema is compatible with the output that is going to be generated by the script, but you won’t typically be concerned about that - unless you want to customize the schema of the resulting table, in which case feel free to dive into the relevant [code section](https://github.com/xataio/xtools/blob/xfileindex-v0.0.1/xfileindex/xfileindex.py#L234).
+
+Here is how our “scroll” works in Python:
+
+```python
+xata = XataClient(db_url=TARGET_DB+":"+BRANCH)
+querypayload = {"columns": COLUMNS_TO_INDEX, "page": {"size": PAGE_SIZE}}
+more = True
+while more:
+	response = xata.data().query(SOURCE_TABLE, querypayload)
+	if "records" in response:
+		process_response(xata, response)
+	more = response.has_more_results()
+	if more:
+    page = {"after": response.get_cursor(), "size": PAGE_SIZE}
+    querypayload = {"columns": COLUMNS_TO_INDEX, "page": page}
+```
+
+An overview of the variables in use:
+
+**COLUMNS_TO_INDEX**: an array with the content of the `--columns` input parameter.
+
+**PAGE_SIZE**: the number of records to fetch from Xata at once with every scroll iteration. the query does not fetch the file content at this stage, just metadata informing us about the the file and its format. Using the maximum page size of 200, we fetch as many records as possible in a single round trip which is usually the fastest approach.
+
+**SOURCE_TABLE**: the content of the `--table` input parameter.
+
+Alongside the actual records, we also get:
+
+- a flag that we can check with `has_more_results()` informing us whether there are more records matching our query (containing content in the specified columns).
+- a cursor that we retrieve with `get_cursor()` which points the following query to the next page of results (if any).
+
+## Extracting text from attachments
+
+Text extraction takes place in the function `process_response(xata, response)`.
+
+As we saw earlier, the scroll query fetches records containing file *metadata*, but not the file *content*. After we’ve found a record and column where a file lives, we proceed to download the file’s *content*. 
+
+We can determine whether the file lives in a single file or file array column by retrieving the table schema and looking into the column type defined in it. Just to keep things simple we can also extrapolate this based on whether the column response is a dictionary (single file) or an array (hence, potentially multiple files):
+
+```python
+if column in record and type(record[column]) == dict:
+    column_type = "single_file"
+elif column in record and type(record[column]) == list:
+    column_type = "multiple_files"
+```
+
+Depending on whether the column we’re working with is a `file` or `file[]`, we download the file content using the `xata.files().get` or `xata.files.get_item()` call respectively:
+
+```python
+if column_type == "single_file":
+    file = xata.files().get(
+        SOURCE_TABLE,
+        record["id"],
+        column
+    )
+elif column_type == "multiple_files":
+    file = xata.files().get_item(
+        SOURCE_TABLE,
+        record["id"],
+        column,
+        column_file["id"]
+    )
+```
+
+The difference between the two methods is that content from single files (`.get()`) is retrieved using the combination of record id and column name, while content from file arrays (`.get_item()`) additionally requires the id of the file - since files stored in an array column also get a file id (automatically or explicitly assigned) so they can be identified in the array.
+
+File column metadata include the `mediaType` attribute, which informs us of the file’s type. We use this information to process content accordingly for plain text, csv or PDF files:
+
+```python
+def process_file(file, mediaType):
+    if mediaType == "text/plain" or mediaType == "text/csv":
+        chunked_text = process_text_file(file)
+    elif mediaType == "application/pdf":
+        chunked_text = process_pdf_file(file)
+    else:
+        chunked_text = []
+    return chunked_text
+```
+
+Note: csv files are treated as plain text in the context of this script. We recommend using the purpose-built [Import CSV](https://xata.io/docs/csv-data/import-data) features for ingesting csv files in a schema that mirrors the CSV file structure.
+
+Text files are split to chunks in order to fit into Xata’s [text](https://xata.io/docs/concepts/data-model#text) column type, which can store a maximum payload size of 200kb as stated in the [limits](https://xata.io/docs/rest-api/limits#column-limits) page. The default value of the optional `maxchunk` parameter, which sets the `MAX_TEXT_COLUMN_LENGTH` variable, is 200000 (characters) to satisfy this requirement.
+
+The `process_text_file` method then calls the wrap function from the [textwrap](https://docs.python.org/3/library/textwrap.html) module, to create chunked text. The result is a list of paragraphs with the requested max width. 
+
+```python
+def process_text_file(file):
+    chunked_text = wrap(
+        str(file.content.decode(ENCODING)),
+        width=MAX_TEXT_COLUMN_LENGTH,
+        drop_whitespace=False,
+        break_on_hyphens=False,
+        expand_tabs=False,
+        replace_whitespace=False,
+    )
+    return chunked_text
+```
+
+The `process_pdf_file` method calls the PdfReader function from the [PyPDF2](https://pypi.org/project/PyPDF2/) module to extract text from each page of the PDF. Additionally, in case a page contains more text than specified by the `maxchunk` parameter, it applies the same text processing wrap function which may split the PDF page to more chunks if necessary.
+
+```python
+def process_pdf_file(file):
+    with BytesIO(file.content) as open_pdf_file:
+        reader = PdfReader(open_pdf_file)
+        chunked_text = []
+        for page_iterator in range(len(reader.pages)):
+            pdf_page = reader.pages[page_iterator]
+            extracted_text = pdf_page.extract_text()
+            chunks = wrap(
+                str(extracted_text),
+                width=MAX_TEXT_COLUMN_LENGTH,
+                drop_whitespace=False,
+                break_on_hyphens=False,
+                expand_tabs=False,
+                replace_whitespace=False,
+            )
+            chunked_text.extend(chunks)
+        return chunked_text
+```
+
+Similar functions can be implemented for other mediaTypes to support more file types, but that may require installing additional libraries and software (such as [Pandoc](https://pandoc.org/)).
+
+## Indexing text chunks into Xata
+
+Now that we have extracted text from the file attachment into a `chunked_text` array containing chunks of appropriate max length, it is time to ingest them into Xata. The `ingest_chunks` method does just that, while offering a few options regarding our approach for overwriting records and ingesting content in bulks.
+
+### Automatically generated vs deterministic record ids
+
+In other words: do we prefer to overwrite text content for the same files if it already exists (i.e. when re-running the script), or do we always append new records?
+
+ Every record in a table is uniquely identified by the built-in [id column](https://xata.io/docs/concepts/data-model#id). By specifying a deterministic id pattern we can overwrite records if they already exist. Otherwise if we don’t specify any id for a record Xata automatically assign one, which means we write a new record every time we index a chunk of text, potentially creating duplicates if the script runs multiple times on the same tables. The preferred approach can be specified with the `--id` input parameter, providing a value between `deterministic` or `random`.
+
+With the deterministic approach, we generate record ids by concatenating the origin record’s id, the source table name, the source column name and an iterator for each chunk of text from this file. Additionally, for `file[]` columns we include the id of the file in the array.
+
+```python
+if ID_STRATEGY == "deterministic":
+    if column_type == "single_file":
+        chunk_rec_id = (
+            f'{source_record["id"]}-{SOURCE_TABLE}-{column}-{chunk_iterator}'
+        )
+    elif column_type == "multiple_files":
+				chunk_rec_id = f'{source_record["id"]}-{SOURCE_TABLE}-{column}-{column_file["id"]}-{chunk_iterator}'
+```
+
+The deterministic id approach requires to use the [upsert](https://xata.io/docs/sdk/update#replacing-a-record) method, or the [update transaction operation](https://xata.io/docs/sdk/transaction#updates) with the upsert parameter set to `true`, in order to replace existing records.
+
+With the non-deterministic (random) approach we simply do not include any id when writing to Xata with the [insert](https://xata.io/docs/sdk/insert) method or [insert transaction operation](https://xata.io/docs/sdk/transaction#inserts), which automatically assigns a new id to the created record.
+
+### Atomic writes vs Transactions
+
+The `mode` parameter allows selecting between the `atomic` or `transaction` indexing approach.
+
+“Atomic” refers to writing one record, a single chunk of text, with each HTTP/S request to Xata.
+
+- Atomic requests with deterministic record ids use the [upsert](https://xata.io/docs/sdk/update#replacing-a-record) method:
+
+```python
+if ID_STRATEGY == "deterministic":
+#...
+	if MODE == "atomic":
+	    resp = xata.records().upsert(
+	        TARGET_TABLE, chunk_rec_id, content_record
+	    )
+	    if resp.status_code in (200, 201):
+	        print(
+	            "  id:",
+	            chunk_rec_id,
+	            "size:",
+	            len(content_record["content"]),
+	            "chars",
+	        )
+	    else:
+	        print("Response", resp.status_code, resp)
+```
+
+- Atomic requests with autogenerated record ids use the [insert](https://xata.io/docs/sdk/insert) method:
+
+```python
+elif ID_STRATEGY == "random":
+#...
+	if MODE == "atomic":
+	    resp = xata.records().insert(
+	        TARGET_TABLE, content_record
+	    )
+	    if resp.status_code == 201:
+	        print(
+	            "  id:",
+	            resp["id"],
+	            "size:",
+	            len(content_record["content"]),
+	            "chars",
+	        )
+	    else:
+	        print("Response", resp.status_code, resp)
+```
+
+Atomic writes are useful for low volume use cases and for troubleshooting purposes, as in case of a write error we would receive a characteristic response code and error context about the erroring part of the request. 
+
+However, this approach does not usually perform well at scale as it requires the client to initiate a network connection and add HTTP/S protocol overhead (headers, encryption) for, comparably, little payload.
+
+By including multiple chunks of text in a single write request, we can achieve better “payload to overhead” ratio and our code ultimately works faster. This can be done with the [bulk_insert](https://xata.io/docs/sdk/insert#creating-records-in-bulk) method or with [transaction insert](https://xata.io/docs/sdk/transaction#inserts) operations.
+
+A distinctive difference between the two approaches for this particular case, is that transactions can also perform multiple upsert (replace record) operations at once, while the bulk endpoint only supports creating multiple *new* records so it can be used only with the autogenerated id approach.
+
+All operations within a transaction request are rolled back (aborted) in case any operation fails.
+
+Performance-wise, both methods would be very close. Although we could use bulks for autogenerated ids, just for uniformity we use the Transaction method for both deterministic and autogenerated ids.
+
+The Transaction helper method handles the grouping of Transaction Operations.
+
+```jsx
+if MODE == "transaction":
+        trx = Transaction(xata)
+```
+
+- Appending an “update” operation with deterministic record ids using the **upsert** parameter set to True:
+
+```python
+if ID_STRATEGY == "deterministic":
+#...
+		elif MODE == "transaction":
+			  trx.update(TARGET_TABLE, chunk_rec_id, content_record,True)
+```
+
+- Appending an “insert” operation with random (autogenerated) record ids:
+
+```python
+elif ID_STRATEGY == "random":
+#...
+		elif MODE == "transaction":
+			  trx.insert(TARGET_TABLE, content_record)
+```
+
+Once we reach the maximum number of operations that can run as a single transaction, specified by the `tsize` script parameter, we call the `trx.run()` method. The response code is checked for retriable status code `429` which is returned in case of hitting [rate limits](https://xata.io/docs/rest-api/limits#rate-limits).
+
+```python
+resp = trx.run()
+if resp["status_code"] == 200:
+		# success
+else:
+		# error
+    while resp["status_code"] == 429:
+        print("Throttled. Retrying...")
+        trx.operations=retriable_operations
+        resp = trx.run()
+```
+
+### Putting our indexed data to work
+
+Now that we’ve indexed the content of our file attachments to Xata, we can unleash the full potential of advanced [free-text search](https://xata.io/docs/sdk/search) and [Ask AI](https://xata.io/docs/sdk/ask) capabilities.
+
+As hinted in the script output above, one of the file attachments in the records indexed, was The Lord of the Rings (lotr.pdf).
+
+Jumping to the Playground section in the Xata Web UI, we can ask AI questions to the generated table `filestableIndex`:
+
+```python
+import { getXataClient } from "./xata";
+const xata = getXataClient();
+
+const response = await xata.db.filestableIndex.ask("Why was the One Ring forged?", {
+  rules: ["Only answer questions using the provided context."],
+});
+
+console.log(response);
+```
+
+```python
+{
+  "answer": "The One Ring was forged by Sauron to be his master and to control the other Rings of Power.",
+  "sessionId": "eh6adiosf10ct97qfahv70kn2k",
+  "records": [
+    "rec_cjobbv3l4agk1ks239dg-filestable-firstcolumn-15",
+    "rec_cjobbv3l4agk1ks239dg-filestable-firstcolumn-517",
+    "rec_cjobbv3l4agk1ks239dg-filestable-firstcolumn-263"
+  ]
+}
+```
+
+Go ahead and give it a try - you can upload this example file [https://us-east-1.storage.xata.sh/qdbf929rfh0uvajknm9slm00v4](https://us-east-1.storage.xata.sh/qdbf929rfh0uvajknm9slm00v4) to your database and index it with this script:
+
+```python
+python xfileindex.py --db https://ws-fdrujb.eu-central-1.xata.sh/db/myfilesdb --table filestable  --columns myfiles
+Created new table filestableIndex
+
+Downloading file from table: filestable , record: rec_cjob8i3l4agk1ks239a0 , column: myfiles , filename: jokes.pdf
+- Processing record: rec_cjob8i3l4agk1ks239a0 , column: myfiles , filename: jokes.pdf , type: application/pdf in 1 chunk:
+  Indexed 1 / 1 chunk.
+```
+
+The result is one record with a single chunk of text since the attachment is a one-page pdf with text content that fits within the character limit of a chunk (200000 characters).
+
+In the Playground, we can ask questions on the file’s content:
+
+```python
+import { getXataClient } from "./xata";
+const xata = getXataClient();
+
+const response = await xata.db.filestableIndex.ask("Why do I need a cat?",
+  {
+    rules: [
+      "Only answer questions using the provided context."
+    ]
+  });
+
+console.log(response);
+```
+
+Response:
+
+```python
+{
+  "answer": "You need a cat because it will remind you that you don't deserve unconditional love.",
+  "sessionId": "53nseq27f905pev4lhs4duiv3k",
+  "records": [
+    "rec_cjob8i3l4agk1ks239a0-filestable-myfiles-0"
+  ]
+}
+```
+
+Time to upload your own text, csv and pdf files to Xata and get them indexed easily!
+
+## Indexing local files to Xata
+
+If you are looking to index some of your locally stored files directly into Xata without storing them as attachments first, we got you covered: [localfileindex](https://github.com/xataio/xtools/blob/xfileindex-v0.0.1/xfileindex/localfileindex.py) is another flavor of this script, it extracts text from your local files and indexes the contents to Xata.
+
+Check out the [readme](https://github.com/xataio/xtools/tree/xfileindex-v0.0.1/xfileindex#localfileindex) for usage instructions.
