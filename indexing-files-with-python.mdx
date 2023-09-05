@@ -1,9 +1,9 @@
 ---
- title: 'Indexing Files with the Python SDK'
- description: 'A walkthrough on how to extract and index text content from file attachments using the Python SDK.'
+ title: 'Indexing File Attachments with the Python SDK'
+ description: 'A walkthrough on file text extraction and indexing with Python.'
  image:
    src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/TBD_blog_illustration.jpeg
-   alt: 'Extracting and indexing text from file attachments with Python'
+   alt: 'A walkthrough on file text extraction and indexing with Python.'
  author: Kostas Botsas
  date: 09-05-2023
  published: false
@@ -12,39 +12,39 @@
 ---
 
 
-Xata’s [file attachments](https://xata.io/docs/concepts/file-attachments) is a powerful feature that enables you to store files in your database, alongside other common [column data types](https://xata.io/docs/concepts/data-model#column-types).
+The all-new [File Attachments](https://xata.io/docs/concepts/file-attachments) column types enable storing files in your database alongside other common [column data types](https://xata.io/docs/concepts/data-model#column-types).
 
-Once uploaded, the attachment lives in Xata’s object store and it can be reached as a column value with additional metadata such as `mediaType`, `size` and `attributes`, which can be used in queries, filters and summaries. Xata’s API provides several methods for [file access](https://xata.io/docs/concepts/file-attachments#file-access-urls), including [Authenticated](https://xata.io/docs/concepts/file-attachments#authenticated-urls), [Public](https://xata.io/docs/concepts/file-attachments#public-urls) and [Signed](https://xata.io/docs/concepts/file-attachments#signed-urls) URLs. 
+Once uploaded, the attachment lives in Xata’s object store and it can be reached as a column value with additional metadata such as `mediaType`, `size` and `attributes`, which can be used in queries, filters and summaries. Xata’s API provides several methods for [File Access](https://xata.io/docs/concepts/file-attachments#file-access-urls), including [Authenticated](https://xata.io/docs/concepts/file-attachments#authenticated-urls), [Public](https://xata.io/docs/concepts/file-attachments#public-urls) and [Signed](https://xata.io/docs/concepts/file-attachments#signed-urls) URLs. 
 
-The actual file content is not *indexed* by default. By “indexed”, we are referring to the process of extracting the file’s text content and storing it in a text column where it can be accessed, searched and queried.
+The actual file content is not *indexed* by default though. By “indexed”, we are referring to the process of extracting a file’s text content and storing it under a text column where it can be queried and searched.
 
-So how can we use Xata’s advanced features such as [Free-text Search](https://xata.io/docs/sdk/search) and [Ask AI](https://xata.io/docs/sdk/ask) on our file attachment’s actual content? 
+How can we use Xata’s advanced features such as [Free-text Search](https://xata.io/docs/sdk/search) and [Ask AI](https://xata.io/docs/sdk/ask) on our file attachment’s actual content? 
 
-In this article we are exploring quick and easy ways for indexing file attachments while taking a look into Xata’s Python SDK which is now [Generally Available](https://xata.io/blog/announcing-the-python-sdk-ga)!
+In this article we are exploring methods for indexing File Attachments using Xata’s Python SDK which is now [Generally Available](https://xata.io/blog/announcing-the-python-sdk-ga)!
 
-## Summary
+## Overview
 
-The *xfileindex* script in the [xtools](https://github.com/xataio/xtools) repo can be used to extract content from text or pdf file attachments stored in your Xata records and index it as raw text, which enables us to use the content with Xata’s Query, Free-text search and Ask AI capabilities.
+The *xfileindex* script in the [xtools](https://github.com/xataio/xtools) repo can be used to extract content from Text or PDF File Attachments stored in Xata and index it as raw text, which enables us to use the content with Query, Free-text search and Ask AI capabilities.
 
-The [readme](https://github.com/xataio/xtools/blob/main/xfileindex/README.md) file provides usage examples and the full list of parameters.
+The [readme](https://github.com/xataio/xtools/blob/main/xfileindex/README.md) file provides usage examples as well as the full list of parameters.
 
 ## Using Xata’s Python SDK
 
-Python is a beginner-friendly programming language which comes pre-installed with many popular OS distributions but can also be [downloaded](https://www.python.org/downloads/) and installed on any platform. `pip` is the package installer of Python and it almost always exists alongside Python wherever it is installed (but there also more ways to [install pip](https://pip.pypa.io/en/stable/installation/) in any case). Pip fetches modules from the official Python Package Index (PyPI), where you will find the [Xata Python SDK](https://pypi.org/project/xata/) package. It can be installed with the command `pip install xata`.
+Python is a beginner-friendly programming language which comes pre-installed with many popular OS distributions but can also be [downloaded](https://www.python.org/downloads/) and installed on any platform. `pip` is the package installer of Python and it almost always exists alongside Python wherever it is installed (but there also more ways to [install pip](https://pip.pypa.io/en/stable/installation/) in any case). Pip fetches modules from the official Python Package Index (PyPI), where you will find the [Xata Python SDK](https://pypi.org/project/xata/) package. It can be installed with the command `pip install xata` - check the [documentation](https://xata.io/docs/sdk/python/overview) for more details.
 
-Once the Xata Python SDK has been installed, we can import the Xata Client in our code (`from xata.client import XataClient`) and use it to interact with our Xata database.
+With the Xata Python SDK installed, we can import the Xata Client in our code (`from xata.client import XataClient`) and interact with our Xata database.
 
-Note that the version of python in your system (`python --version`) should be 3.8 or higher to use the [script](https://github.com/xataio/xtools/tree/xfileindex-v0.0.1/xfileindex).
+Note that the Python versionin your system (`python --version`) should be 3.8 or higher in order to use the [script](https://github.com/xataio/xtools/tree/xfileindex-v0.0.1/xfileindex).
 
-## A Python script to index file attachments
+## Python code to index File Attachments
 
-Now that we’ve covered how to use Xata with Python, let’s jump straight to the point of indexing file attachments.
+Now that we’ve covered how to use Xata with Python, let’s jump straight to the point of indexing File Attachments.
 
-We will assume that you’ve already stored some files in your database under columns of `file` or `file[]` type. Check out the [documentation](https://xata.io/docs/concepts/file-attachments) for more information on these column types.
+We will assume that you’ve already uploaded some files in your database under columns of `file` or `file[]` type. Check out the [File Attachments documentation](https://xata.io/docs/concepts/file-attachments) for more details on those column types.
 
-The [script](https://github.com/xataio/xtools/tree/xfileindex-v0.0.1/xfileindex) scrolls through our Xata database, looks for `file` or `file[]` columns with text, csv or pdf content (*mediaType*), extracts the text and writes it into text columns in a target table. Which is all we need, in order to put the file content to work with Query, Search, Ask AI features and whatever else is to come!
+Our [script](https://github.com/xataio/xtools/tree/xfileindex-v0.0.1/xfileindex) scrolls through the Xata database, looks for `file` or `file[]` columns with text, csv or pdf content (*mediaType*), extracts the text and writes it into text columns in a target table. Which is all we need, in order to put the file content to work with Query, Search and Ask AI features!
 
-Here are the essential steps to run this script:
+Here are the essential steps for running this script:
 
 1. Clone the xtools repo: `git clone https://github.com/xataio/xtools -b xfileindex-v0.0.1` 
 This repo is a library of open source helper scripts provided by Xata, we welcome pull requests and community contributions.
@@ -118,8 +118,8 @@ while more:
 		process_response(xata, response)
 	more = response.has_more_results()
 	if more:
-    page = {"after": response.get_cursor(), "size": PAGE_SIZE}
-    querypayload = {"columns": COLUMNS_TO_INDEX, "page": page}
+        page = {"after": response.get_cursor(), "size": PAGE_SIZE}
+        querypayload = {"columns": COLUMNS_TO_INDEX, "page": page}
 ```
 
 An overview of the variables in use:
@@ -245,7 +245,7 @@ if ID_STRATEGY == "deterministic":
             f'{source_record["id"]}-{SOURCE_TABLE}-{column}-{chunk_iterator}'
         )
     elif column_type == "multiple_files":
-				chunk_rec_id = f'{source_record["id"]}-{SOURCE_TABLE}-{column}-{column_file["id"]}-{chunk_iterator}'
+		chunk_rec_id = f'{source_record["id"]}-{SOURCE_TABLE}-{column}-{column_file["id"]}-{chunk_iterator}'
 ```
 
 The deterministic id approach requires to use the [upsert](https://xata.io/docs/sdk/update#replacing-a-record) method, or the [update transaction operation](https://xata.io/docs/sdk/transaction#updates) with the upsert parameter set to `true`, in order to replace existing records.
@@ -254,9 +254,9 @@ With the non-deterministic (random) approach we simply do not include any id whe
 
 ### Atomic writes vs Transactions
 
-The `mode` parameter allows selecting between the `atomic` or `transaction` indexing approach.
+The `mode` parameter allows selecting between the `atomic` or `transaction` indexing approach.  In both cases the response code when emitting text content to Xata must be checked for the retriable status code `429`, which is returned in case of hitting [rate limits](https://xata.io/docs/rest-api/limits#rate-limits).
 
-“Atomic” refers to writing one record, a single chunk of text, with each HTTP/S request to Xata.
+“Atomic” means writing one record, a single chunk of text, with each HTTP/S request to Xata.
 
 - Atomic requests with deterministic record ids use the [upsert](https://xata.io/docs/sdk/update#replacing-a-record) method:
 
@@ -277,6 +277,11 @@ if ID_STRATEGY == "deterministic":
 	        )
 	    else:
 	        print("Response", resp.status_code, resp)
+            while resp.status_code == 429:
+                print("Throttled. Retrying...")
+                resp = xata.records().upsert(
+                    TARGET_TABLE, chunk_rec_id, content_record
+                )
 ```
 
 - Atomic requests with autogenerated record ids use the [insert](https://xata.io/docs/sdk/insert) method:
@@ -297,7 +302,12 @@ elif ID_STRATEGY == "random":
 	            "chars",
 	        )
 	    else:
-	        print("Response", resp.status_code, resp)
+            print("Response", resp.status_code, resp)
+            while resp.status_code == 429:
+                print("Throttled. Retrying...")
+                resp = xata.records().insert(
+                    TARGET_TABLE, content_record
+                )
 ```
 
 Atomic writes are useful for low volume use cases and for troubleshooting purposes, as in case of a write error we would receive a characteristic response code and error context about the erroring part of the request. 
@@ -316,7 +326,7 @@ The Transaction helper method handles the grouping of Transaction Operations.
 
 ```jsx
 if MODE == "transaction":
-        trx = Transaction(xata)
+    trx = Transaction(xata)
 ```
 
 - Appending an “update” operation with deterministic record ids using the **upsert** parameter set to True:
@@ -324,8 +334,8 @@ if MODE == "transaction":
 ```python
 if ID_STRATEGY == "deterministic":
 #...
-		elif MODE == "transaction":
-			  trx.update(TARGET_TABLE, chunk_rec_id, content_record,True)
+	elif MODE == "transaction":
+		trx.update(TARGET_TABLE, chunk_rec_id, content_record,True)
 ```
 
 - Appending an “insert” operation with random (autogenerated) record ids:
@@ -333,18 +343,18 @@ if ID_STRATEGY == "deterministic":
 ```python
 elif ID_STRATEGY == "random":
 #...
-		elif MODE == "transaction":
-			  trx.insert(TARGET_TABLE, content_record)
+	elif MODE == "transaction":
+		trx.insert(TARGET_TABLE, content_record)
 ```
 
-Once we reach the maximum number of operations that can run as a single transaction, specified by the `tsize` script parameter, we call the `trx.run()` method. The response code is checked for retriable status code `429` which is returned in case of hitting [rate limits](https://xata.io/docs/rest-api/limits#rate-limits).
+Once we reach the maximum number of operations that can run as a single transaction, as set by the `tsize` script parameter, we call the `trx.run()` method.
 
 ```python
 resp = trx.run()
 if resp["status_code"] == 200:
-		# success
+# print success
 else:
-		# error
+# error handling
     while resp["status_code"] == 429:
         print("Throttled. Retrying...")
         trx.operations=retriable_operations
