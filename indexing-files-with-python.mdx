@@ -185,7 +185,7 @@ def process_file(file, mediaType):
     return chunked_text
 ```
 
-Note: csv files are treated as plain text in the context of this script. We recommend using the purpose-built [Import CSV](https://xata.io/docs/csv-data/import-data) features for ingesting csv files in a schema that mirrors the CSV file structure.
+Note: csv files are treated as plain text in the context of this script. We recommend using the purpose-built [Import CSV](https://xata.io/docs/csv-data/import-data) feature for ingesting csv files in a schema that mirrors the CSV file structure.
 
 Text files are split to chunks in order to fit into Xata’s [text](https://xata.io/docs/concepts/data-model#text) column type, which can store a maximum payload size of 200kb as stated in the [limits](https://xata.io/docs/rest-api/limits#column-limits) page. The default value of the optional `maxchunk` parameter, which sets the `MAX_TEXT_COLUMN_LENGTH` variable, is 200000 (characters) to satisfy this requirement.
 
