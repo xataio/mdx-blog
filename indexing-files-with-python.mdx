@@ -26,6 +26,8 @@ In this article we are exploring methods for indexing File Attachments using Xat
 
 The *xfileindex* script in the [xtools](https://github.com/xataio/xtools) repo can be used to extract content from Text or PDF File Attachments stored in Xata and index it as raw text, which enables us to use the content with Query, Free-text search and Ask AI capabilities.
 
+```bash
+python3 xfileindex.py --db https://{workspace}.{region}.xata.sh/db/{db} --table mytable --columns myfile,mymultiplefiles
 The [README](https://github.com/xataio/xtools/blob/main/xfileindex/README.md) file provides usage examples as well as the full list of parameters.
 
 ## Using Xata’s Python SDK
