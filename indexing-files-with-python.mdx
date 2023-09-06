@@ -111,7 +111,7 @@ The script opens a “scroll”, a [cursor-based](https://xata.io/docs/sdk/get#c
 Here is how our “scroll” works in Python:
 
 ```python
-xata = XataClient(db_url=TARGET_DB+":"+BRANCH)
+xata = XataClient(db_url=f"{TARGET_DB}:{BRANCH}")
 querypayload = {"columns": COLUMNS_TO_INDEX, "page": {"size": PAGE_SIZE}}
 more = True
 while more:
