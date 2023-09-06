@@ -114,7 +114,7 @@ while more:
 	response = xata.data().query(SOURCE_TABLE, querypayload)
 	if response.is_success():
 		process_response(xata, response)
-        
+
 	more = response.has_more_results()
 	if more:
         page = {"after": response.get_cursor(), "size": PAGE_SIZE}
@@ -173,9 +173,10 @@ File column metadata include the `mediaType` attribute, which informs us of the 
 
 ```python
 def process_file(file, mediaType):
-    if mediaType == "text/plain" or mediaType == "text/csv":
+    mediaType = mediaType.lower()
+    if mediaType.startswith("text/plain") or mediaType.startswith("text/csv"):
         chunked_text = process_text_file(file)
-    elif mediaType == "application/pdf":
+    elif mediaType.startswith("application/pdf"):
         chunked_text = process_pdf_file(file)
     else:
         chunked_text = []
