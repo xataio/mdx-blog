@@ -114,6 +114,7 @@ while more:
 	response = xata.data().query(SOURCE_TABLE, querypayload)
 	if response.is_success():
 		process_response(xata, response)
+        
 	more = response.has_more_results()
 	if more:
         page = {"after": response.get_cursor(), "size": PAGE_SIZE}
