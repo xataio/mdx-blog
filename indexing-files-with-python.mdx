@@ -116,7 +116,7 @@ querypayload = {"columns": COLUMNS_TO_INDEX, "page": {"size": PAGE_SIZE}}
 more = True
 while more:
 	response = xata.data().query(SOURCE_TABLE, querypayload)
-	if "records" in response:
+	if response.is_success():
 		process_response(xata, response)
 	more = response.has_more_results()
 	if more:
