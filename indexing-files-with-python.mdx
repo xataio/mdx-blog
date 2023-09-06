@@ -114,11 +114,10 @@ while more:
 	response = xata.data().query(SOURCE_TABLE, querypayload)
 	if response.is_success():
 		process_response(xata, response)
-
 	more = response.has_more_results()
 	if more:
-        page = {"after": response.get_cursor(), "size": PAGE_SIZE}
-        querypayload = {"columns": COLUMNS_TO_INDEX, "page": page}
+            page = {"after": response.get_cursor(), "size": PAGE_SIZE}
+            querypayload = {"columns": COLUMNS_TO_INDEX, "page": page}
 ```
 
 An overview of the variables in use:
@@ -380,6 +379,8 @@ const response = await xata.db.filestableIndex.ask("Why was the One Ring forged?
 
 console.log(response);
 ```
+
+Response:
 
 ```python
 {
