@@ -111,13 +111,13 @@ xata = XataClient(db_url=f"{TARGET_DB}:{BRANCH}")
 querypayload = {"columns": COLUMNS_TO_INDEX, "page": {"size": PAGE_SIZE}}
 more = True
 while more:
-	response = xata.data().query(SOURCE_TABLE, querypayload)
-	if response.is_success():
-		process_response(xata, response)
-	more = response.has_more_results()
-	if more:
-            page = {"after": response.get_cursor(), "size": PAGE_SIZE}
-            querypayload = {"columns": COLUMNS_TO_INDEX, "page": page}
+  response = xata.data().query(SOURCE_TABLE, querypayload)
+  if response.is_success():
+    process_response(xata, response)
+    more = response.has_more_results()
+    if more:
+      page = {"after": response.get_cursor(), "size": PAGE_SIZE}
+      querypayload = {"columns": COLUMNS_TO_INDEX, "page": page}
 ```
 
 An overview of the variables in use:
@@ -152,18 +152,18 @@ Depending on whether the column we’re working with is a `file` or `file[]`, we
 
 ```python
 if column_type == "single_file":
-    file = xata.files().get(
-        SOURCE_TABLE,
-        record["id"],
-        column
-    )
+  file = xata.files().get(
+    SOURCE_TABLE,
+    record["id"],
+    column
+  )
 elif column_type == "multiple_files":
-    file = xata.files().get_item(
-        SOURCE_TABLE,
-        record["id"],
-        column,
-        column_file["id"]
-    )
+  file = xata.files().get_item(
+    SOURCE_TABLE,
+    record["id"],
+    column,
+    column_file["id"]
+  )
 ```
 
 The difference between the two methods is that content from single files (`.get()`) is retrieved using the combination of record id and column name, while content from file arrays (`.get_item()`) additionally requires the id of the file - since files stored in an array column also get a file id (automatically or explicitly assigned) so they can be identified in the array.
@@ -172,14 +172,14 @@ File column metadata include the `mediaType` attribute, which informs us of the 
 
 ```python
 def process_file(file, mediaType):
-    mediaType = mediaType.lower()
-    if mediaType.startswith("text/plain") or mediaType.startswith("text/csv"):
-        chunked_text = process_text_file(file)
-    elif mediaType.startswith("application/pdf"):
-        chunked_text = process_pdf_file(file)
-    else:
-        chunked_text = []
-    return chunked_text
+  mediaType = mediaType.lower()
+  if mediaType.startswith("text/plain") or mediaType.startswith("text/csv"):
+    chunked_text = process_text_file(file)
+  elif mediaType.startswith("application/pdf"):
+    chunked_text = process_pdf_file(file)
+  else:
+    chunked_text = []
+  return chunked_text
 ```
 
 Note: csv files are treated as plain text in the context of this script. We recommend using the purpose-built [Import CSV](https://xata.io/docs/csv-data/import-data) feature for ingesting csv files in a schema that mirrors the CSV file structure.
@@ -190,37 +190,37 @@ The `process_text_file` method then calls the wrap function from the [textwrap](
 
 ```python
 def process_text_file(file):
-    chunked_text = wrap(
-        str(file.content.decode(ENCODING)),
-        width=MAX_TEXT_COLUMN_LENGTH,
-        drop_whitespace=False,
-        break_on_hyphens=False,
-        expand_tabs=False,
-        replace_whitespace=False,
-    )
-    return chunked_text
+  chunked_text = wrap(
+    str(file.content.decode(ENCODING)),
+    width=MAX_TEXT_COLUMN_LENGTH,
+    drop_whitespace=False,
+    break_on_hyphens=False,
+    expand_tabs=False,
+    replace_whitespace=False,
+  )
+  return chunked_text
 ```
 
 The `process_pdf_file` method calls the PdfReader function from the [PyPDF2](https://pypi.org/project/PyPDF2/) module to extract text from each page of the PDF. Additionally, in case a page contains more text than specified by the `maxchunk` parameter, it applies the same text processing wrap function which may split the PDF page to more chunks if necessary.
 
 ```python
 def process_pdf_file(file):
-    with BytesIO(file.content) as open_pdf_file:
-        reader = PdfReader(open_pdf_file)
-        chunked_text = []
-        for page_iterator in range(len(reader.pages)):
-            pdf_page = reader.pages[page_iterator]
-            extracted_text = pdf_page.extract_text()
-            chunks = wrap(
-                str(extracted_text),
-                width=MAX_TEXT_COLUMN_LENGTH,
-                drop_whitespace=False,
-                break_on_hyphens=False,
-                expand_tabs=False,
-                replace_whitespace=False,
-            )
-            chunked_text.extend(chunks)
-        return chunked_text
+  with BytesIO(file.content) as open_pdf_file:
+    reader = PdfReader(open_pdf_file)
+    chunked_text = []
+    for page_iterator in range(len(reader.pages)):
+      pdf_page = reader.pages[page_iterator]
+      extracted_text = pdf_page.extract_text()
+      chunks = wrap(
+        str(extracted_text),
+        width=MAX_TEXT_COLUMN_LENGTH,
+        drop_whitespace=False,
+        break_on_hyphens=False,
+        expand_tabs=False,
+        replace_whitespace=False,
+      )
+      chunked_text.extend(chunks)
+    return chunked_text
 ```
 
 Similar functions can be implemented for other mediaTypes to support more file types, but that may require installing additional libraries and software (such as [Pandoc](https://pandoc.org/)).
@@ -239,12 +239,12 @@ With the deterministic approach, we generate record ids by concatenating the ori
 
 ```python
 if ID_STRATEGY == "deterministic":
-    if column_type == "single_file":
-        chunk_rec_id = (
-            f'{source_record["id"]}-{SOURCE_TABLE}-{column}-{chunk_iterator}'
-        )
-    elif column_type == "multiple_files":
-		chunk_rec_id = f'{source_record["id"]}-{SOURCE_TABLE}-{column}-{column_file["id"]}-{chunk_iterator}'
+  if column_type == "single_file":
+    chunk_rec_id = (
+      f'{source_record["id"]}-{SOURCE_TABLE}-{column}-{chunk_iterator}'
+    )
+  elif column_type == "multiple_files":
+    chunk_rec_id = f'{source_record["id"]}-{SOURCE_TABLE}-{column}-{column_file["id"]}-{chunk_iterator}'
 ```
 
 The deterministic id approach requires to use the [upsert](https://xata.io/docs/sdk/update#replacing-a-record) method, or the [update transaction operation](https://xata.io/docs/sdk/transaction#updates) with the upsert parameter set to `true`, in order to replace existing records.
@@ -263,25 +263,25 @@ In both cases when emitting text content to Xata the response code should be che
 ```python
 if ID_STRATEGY == "deterministic":
 #...
-	if MODE == "atomic":
-	    resp = xata.records().upsert(
-	        TARGET_TABLE, chunk_rec_id, content_record
-	    )
-	    if resp.status_code in (200, 201):
-	        print(
-	            "  id:",
-	            chunk_rec_id,
-	            "size:",
-	            len(content_record["content"]),
-	            "chars",
-	        )
-	    else:
-	        print("Response", resp.status_code, resp)
-            while resp.status_code == 429:
-                print("Throttled. Retrying...")
-                resp = xata.records().upsert(
-                    TARGET_TABLE, chunk_rec_id, content_record
-                )
+  if MODE == "atomic":
+    resp = xata.records().upsert(
+      TARGET_TABLE, chunk_rec_id, content_record
+    )
+    if resp.status_code in (200, 201):
+      print(
+        "  id:",
+        chunk_rec_id,
+        "size:",
+        len(content_record["content"]),
+        "chars",
+      )
+    else:
+      print("Response", resp.status_code, resp)
+      while resp.status_code == 429:
+        print("Throttled. Retrying...")
+        resp = xata.records().upsert(
+        TARGET_TABLE, chunk_rec_id, content_record
+      )
 ```
 
 - Atomic requests with autogenerated record ids use the [insert](https://xata.io/docs/sdk/insert) method:
@@ -289,25 +289,25 @@ if ID_STRATEGY == "deterministic":
 ```python
 elif ID_STRATEGY == "random":
 #...
-	if MODE == "atomic":
-	    resp = xata.records().insert(
-	        TARGET_TABLE, content_record
-	    )
-	    if resp.status_code == 201:
-	        print(
-	            "  id:",
-	            resp["id"],
-	            "size:",
-	            len(content_record["content"]),
-	            "chars",
-	        )
-	    else:
-            print("Response", resp.status_code, resp)
-            while resp.status_code == 429:
-                print("Throttled. Retrying...")
-                resp = xata.records().insert(
-                    TARGET_TABLE, content_record
-                )
+  if MODE == "atomic":
+    resp = xata.records().insert(
+      TARGET_TABLE, content_record
+    )
+    if resp.status_code == 201:
+      print(
+      "  id:",
+      resp["id"],
+      "size:",
+      len(content_record["content"]),
+      "chars",
+      )
+    else:
+      print("Response", resp.status_code, resp)
+      while resp.status_code == 429:
+        print("Throttled. Retrying...")
+        resp = xata.records().insert(
+          TARGET_TABLE, content_record
+        )
 ```
 
 Atomic writes are useful for low volume use cases and for troubleshooting purposes, as in case of a write error we would receive a characteristic response code and error context about the erroring part of the request. 
@@ -355,10 +355,10 @@ if resp["status_code"] == 200:
 # print success
 else:
 # error handling
-    while resp["status_code"] == 429:
-        print("Throttled. Retrying...")
-        trx.operations=retriable_operations
-        resp = trx.run()
+  while resp["status_code"] == 429:
+    print("Throttled. Retrying...")
+    trx.operations=retriable_operations
+    resp = trx.run()
 ```
 
 ### Putting our indexed data to work
