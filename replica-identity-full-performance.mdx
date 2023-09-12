@@ -10,6 +10,8 @@ published: true
 slug: replica-identity-full-performance
 ---
 
+> Hey there, you are on the Xata engineering blog. Xata is a serverless data platform that makes building on top of PostgreSQL. [Sign up today](https://xata.io/)!
+
 At [Xata](https://xata.io/), we've come to rely on the Postgres logical replication events quite a bit. Why? Because they provide us with a dependable stream of events about every single change that occurs within the database. We use them for syncing the data to Elasticsearch, web-hooks, deleting attachments after the parent row was deleted, and more. One of the configuration parameters for logical replication is the so called “replica identity”:
 
 > A published table must have a “replica identity” configured in order to be
