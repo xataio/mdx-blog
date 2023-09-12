@@ -356,7 +356,7 @@ else:
 # error handling
   while resp["status_code"] == 429:
     print("Throttled. Retrying...")
-    trx.operations=retriable_operations
+    trx.operations = retriable_operations
     resp = trx.run()
 ```
 
