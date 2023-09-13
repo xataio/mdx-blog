@@ -46,60 +46,68 @@ Our [script](https://github.com/xataio/xtools/tree/main/xfileindex) scrolls thro
 
 Here are the essential steps for running this script:
 
-1. Clone the xtools repo: `git clone https://github.com/xataio/xtools`.
-This repo is a library of open source helper scripts provided by Xata, but we welcome community contributions.
-2. Navigate to the directory: `cd xtools/xfileindex`
-3. Install the required packages using pip: `pip install -r requirements.txt`
-The script uses some extra packages (*xata, PyPDF2*) which are not typically available with the default Python installed in your system, so we need to make sure they’re installed before we proceed.
-4. Set your Xata API key as an environment variable on your terminal. You can generate an API key within the [account settings](https://app.xata.io/settings) page. Alternatively, you can use [a .env file](/docs/sdk/python/overview#dotenv), to store the API key.
-
-```bash
-export XATA_API_KEY="xau_mykey”
-```
-
+1. Clone the xtools repo:
+  ```bash
+  git clone https://github.com/xataio/xtools`
+  ```
+  This repo is a library of open source helper scripts provided by Xata, but we welcome community contributions.
+1. Navigate to the directory:
+  ```bash
+  cd xtools/xfileindex`
+  ```
+1. Install the required packages using pip:
+  ```bash
+  pip install -r requirements.txt
+  ```
+   The script uses some extra packages (xata, PyPDF2) which are not typically available with the default Python installed in your system, so we need to make sure they’re installed before we proceed.
+1. Set your Xata API key as an environment variable on your terminal. You can generate an API key in the [account settings](https://app.xata.io/settings) page. Alternatively, you can use [a `.env` file](/docs/sdk/python/overview#dotenv), to store the API key.
+   ```bash
+   export XATA_API_KEY="xau_mykey”
+   ```
 1. We need to gather a few parameters about our database and schema:
-- The database endpoint url. You can find that in the Settings page of your database, under “Database endpoint”. 
-- The table name where our files are stored.
-- The name(s)s of the column(s) where our files are stored
-2. Knowing all the above, we can run the script as follows:
-
-```bash
-python xfileindex.py --db https://{workspace}.{region}.xata.sh/db/{db} --table tablename --columns firstcolumn,secondcolumn
-```
-
-Example output:
-
-```bash
-python xfileindex.py --db https://ws-fdrujb.eu-central-1.xata.sh/db/myfilesdb --table mytable --columns firstcolumn,secondcolumn
-Created new table mytableIndex
-
-Downloading file from table: mytable , record: rec_cjmvbvr9o1hng2274a9g , column: firstcolumn , filename: lotr.pdf
-- Processing record: rec_cjmvbvr9o1hng2274a9g , column: firstcolumn , filename: lotr.pdf , type: application/pdf in 1199 chunks:
-  Indexed 100 / 1199 chunks.
-  Indexed 200 / 1199 chunks.
-  Indexed 300 / 1199 chunks.
-  Indexed 400 / 1199 chunks.
-  Indexed 500 / 1199 chunks.
-  Indexed 600 / 1199 chunks.
-  Indexed 700 / 1199 chunks.
-  Indexed 800 / 1199 chunks.
-  Indexed 900 / 1199 chunks.
-  Indexed 1000 / 1199 chunks.
-  Indexed 1100 / 1199 chunks.
-  Indexed 1199 / 1199 chunks.
-
-Downloading file from table: mytable , record: rec_cjmscqj9n6h19i0nbdng , column: secondcolumn , filename: sample-2mb-text-file.txt
-- Processing record: rec_cjmscqj9n6h19i0nbdng , column: secondcolumn , filename: sample-2mb-text-file.txt , type: text/plain in 11 chunks:
-  Indexed 11 / 11 chunks.
-
-Downloading file from table: mytable , record: rec_cjmscqj9n6h19i0nbdng , column: secondcolumn , filename: mycsv.csv
-- Processing record: rec_cjmscqj9n6h19i0nbdng , column: secondcolumn , filename: mycsv.csv , type: text/csv in 1 chunk:
-  Indexed 1 / 1 chunk.
-```
+  - The database endpoint URL. You can find that on the Settings page of your database, under “Database endpoint”. 
+  - The table name where our files are stored.
+  - The name(s) of the column(s) where your files are stored.
+1. Knowing all of the above, you can run the script as follows:
+   
+   ```bash
+   python xfileindex.py --db https://{workspace}.{region}.xata.sh/db/{db} --table tablename --columns firstcolumn,secondcolumn
+   ```
+  
+  <Expand title="Example output">
+  
+  ```bash
+  python xfileindex.py --db https://ws-fdrujb.eu-central-1.xata.sh/db/myfilesdb --table mytable --columns firstcolumn,secondcolumn
+  Created new table mytableIndex
+  
+  Downloading file from table: mytable , record: rec_cjmvbvr9o1hng2274a9g , column: firstcolumn , filename: lotr.pdf
+  - Processing record: rec_cjmvbvr9o1hng2274a9g , column: firstcolumn , filename: lotr.pdf , type: application/pdf in 1199 chunks:
+    Indexed 100 / 1199 chunks.
+    Indexed 200 / 1199 chunks.
+    Indexed 300 / 1199 chunks.
+    Indexed 400 / 1199 chunks.
+    Indexed 500 / 1199 chunks.
+    Indexed 600 / 1199 chunks.
+    Indexed 700 / 1199 chunks.
+    Indexed 800 / 1199 chunks.
+    Indexed 900 / 1199 chunks.
+    Indexed 1000 / 1199 chunks.
+    Indexed 1100 / 1199 chunks.
+    Indexed 1199 / 1199 chunks.
+  
+  Downloading file from table: mytable , record: rec_cjmscqj9n6h19i0nbdng , column: secondcolumn , filename: sample-2mb-text-file.txt
+  - Processing record: rec_cjmscqj9n6h19i0nbdng , column: secondcolumn , filename: sample-2mb-text-file.txt , type: text/plain in 11 chunks:
+    Indexed 11 / 11 chunks.
+  
+  Downloading file from table: mytable , record: rec_cjmscqj9n6h19i0nbdng , column: secondcolumn , filename: mycsv.csv
+  - Processing record: rec_cjmscqj9n6h19i0nbdng , column: secondcolumn , filename: mycsv.csv , type: text/csv in 1 chunk:
+    Indexed 1 / 1 chunk.
+  ```
+  </Expand>
 
 ### Under the hood
 
-Let’s take a moment to review the output and dive deeper into how things worked here.
+Let’s take a moment to review the output and dive deeper into how things work.
 
 The script created a new table `mytableIndex`, by appending "Index" to our source table name. Alternatively you can specify your preferred name for the target table by providing the `dest` parameter (`--dest customTableName`). Also, in case your table lives in a branch other than `main`, you can add the branch parameter (`--branch dev`).
 
