@@ -20,7 +20,7 @@ In this article we are exploring methods for indexing File Attachments using Xat
 
 ## Overview
 
-The *`xfileindex`* script in the [xtools](https://github.com/xataio/xtools) repo can be used to extract content from text or PDF file attachments stored in Xata and indexed as raw text, which allows us to use the content with query, free-text search, and Ask AI capabilities.
+The `xfileindex` script in the [xtools](https://github.com/xataio/xtools) repo can be used to extract content from text or PDF file attachments stored in Xata and indexed as raw text, which allows us to use the content with query, free-text search, and Ask AI capabilities.
 
 ```bash
 python xfileindex.py --db https://{workspace}.{region}.xata.sh/db/{db} --table mytable --columns myfile,mymultiplefiles
@@ -51,24 +51,24 @@ Here are the essential steps for running this script:
   git clone https://github.com/xataio/xtools`
   ```
   This repo is a library of open source helper scripts provided by Xata, but we welcome community contributions.
-1. Navigate to the directory:
+2. Navigate to the directory:
   ```bash
   cd xtools/xfileindex`
   ```
-1. Install the required packages using pip:
+3. Install the required packages using pip:
   ```bash
   pip install -r requirements.txt
   ```
    The script uses some extra packages (xata, PyPDF2) which are not typically available with the default Python installed in your system, so we need to make sure they’re installed before we proceed.
-1. Set your Xata API key as an environment variable on your terminal. You can generate an API key in the [account settings](https://app.xata.io/settings) page. Alternatively, you can use [a `.env` file](/docs/sdk/python/overview#dotenv), to store the API key.
+4. Set your Xata API key as an environment variable on your terminal. You can generate an API key in the [account settings](https://app.xata.io/settings) page. Alternatively, you can use [a `.env` file](/docs/sdk/python/overview#dotenv), to store the API key.
    ```bash
    export XATA_API_KEY="xau_mykey”
    ```
-1. We need to gather a few parameters about our database and schema:
+5. We need to gather a few parameters about our database and schema:
   - The database endpoint URL. You can find that on the Settings page of your database, under “Database endpoint”. 
   - The table name where our files are stored.
   - The name(s) of the column(s) where your files are stored.
-1. Knowing all of the above, you can run the script as follows:
+6. Knowing all of the above, you can run the script as follows:
    
    ```bash
    python xfileindex.py --db https://{workspace}.{region}.xata.sh/db/{db} --table tablename --columns firstcolumn,secondcolumn
