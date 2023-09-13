@@ -363,7 +363,7 @@ resp = trx.run()
 if resp["status_code"] == 200:
   # print success
 else:
-# error handling
+  # error handling
   while resp["status_code"] == 429:
     print("Throttled. Retrying...")
     trx.operations = retriable_operations
