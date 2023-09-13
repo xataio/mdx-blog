@@ -361,7 +361,7 @@ Once we reach the maximum number of operations that can run as a single transact
 ```python
 resp = trx.run()
 if resp["status_code"] == 200:
-# print success
+  # print success
 else:
 # error handling
   while resp["status_code"] == 429:
