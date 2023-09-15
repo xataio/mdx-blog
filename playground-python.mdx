@@ -1,0 +1,68 @@
+---
+title: 'Expanding the Xata Playground: Python Joins TypeScript and SQL'
+description: 'We've expanded the Xata Playground to include Python. Now you can write code in Xata's Playground using Python, TypeScript, and SQL.'
+image:
+  src: 
+  alt: ''
+author: Alexis Rico
+date: 09-19-2023
+published: false
+slug: playground-python
+ogImage: 
+---
+
+At Xata, we're committed to providing you with a versatile and powerful UI to interact with your data. That's why early on we built the [Xata Playground](https://xata.io/playground), a web-based IDE that allows you to write code in TypeScript and SQL to query your data in Xata.
+
+Today, we're excited to announce that we've expanded the Xata Playground to include Python. Now you can write code in Xata's Playground using Python, TypeScript, and SQL.
+
+In this post, we'll do a technical deep dive into how the Xata Playground works and how we added Python to the mix.
+
+## The Xata Playground
+
+As a new hire that had just marked my first month at Xata, the 8th of April 2022, I opened a pull request with the first version of the Xata Playground. It was a very simple proof of concept that I wanted to show during our weekly team meeting.
+
+It was a simple [monaco-editor](https://microsoft.github.io/monaco-editor/) where you could write TypeScript code and run it to see the results in a separate panel. The main goal was that our users could try out our TypeScript SDK without having to install anything.
+
+Both internally and with some early adopters, we noticed that it was something we had to invest in, and we decided to iterate quickly over the proof of concept and release it as soon as possible. On the 2nd of May 2022, we released the first version of the Xata Playground.
+
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/py-play/images/playground-v1.png"
+  width="330"
+  height="309"
+/>
+
+## How it works
+
+The Playground was built following the inspiration of other online IDEs like [TypeScript Playground](https://www.typescriptlang.org/play), [CodeSandBox](https://codesandbox.io/), or [StackBlitz](https://stackblitz.com/).
+
+One of the core principles, was that all code should be executed in the browser. We wanted to avoid the complexity of having a backend service that would execute the code and return the results. This would have required work to secure the code execution, and it would have added extra latency to the execution.
+
+To achieve this, we use rollup to bundle the code and a [plugin](https://github.com/SferaDev/rollup-plugin-import-cdn) to load any external library from a CDN. This way, we can transpile the code and all its dependencies into a single file that can be executed in a separate thread using [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers).
+
+Running the code in a separate thread is important, as it allows us to avoid blocking the main thread. This way, the UI is always responsive, and you can continue writing code while the previous code is being executed. Also, it provides some built-in security, as the code is isolated from the main thread.
+
+Also, to improve the experience when writing TypeScript code, we switched to the fork of monaco-editor that [TypeScript Playground](https://www.typescriptlang.org/play) uses. This fork is always up to date with the latest version of TypeScript, and it also includes several improvements for TypeScript developers.
+
+## Adding support for multiple files and languages
+
+The first version of the Playground only supported a single TypeScript file. This was a limitation that we wanted to remove, and when we started working on it, we also decided to add support for other languages.
+
+Monaco is the open source editor that powers VS Code, and it has support for multiple files and languages. We just needed to use its virtual file system that would allow us to load multiple files and execute them separately.
+
+The refactor allowed us to add support for SQL, both for full file execution and for inline execution. This was a great addition, as it allowed us to show how Xata's SQL Proxy works, and how you can use it to query your data.
+
+## Adding support for Python
+
+The next step was to add support for Python. We wanted to have the same experience as with TypeScript and SQL, where you could write code and execute it in the browser. Luckily, there are several projects that allow you to run Python in the browser, and we decided to use [Pyodide](https://pyodide.org).
+
+Pyodide is a project started by Mozilla that allows you to run Python in the browser using WebAssembly. It includes the standard library and several popular packages like NumPy, Pandas, or Matplotlib. It also includes a package manager that allows you to install any other package with a wheel available on PyPI.
+
+Similarly to TypeScript, we have a web worker that executes the Python code. The code is executed by Pyodide, and we load external packages from imports using the package manager.
+
+To make it fully work with our Python SDK, we only needed patch the runtime so that Pyodide could do HTTP requests, using `pyodide-http`.
+
+## Conclusion
+
+The Xata Playground is a great tool to try out Xata's SDKs and to learn how to use them. It's also a great tool to quickly try out some ideas and go back to your IDE to implement them.
+
+We hope you enjoy the new Python support, and we're looking forward to seeing what you build with it. If you have any feedback or ideas, please let us know in our [Discord](/discord).
