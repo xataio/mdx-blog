@@ -42,6 +42,12 @@ Running the code in a separate thread is important, as it allows us to avoid blo
 
 Also, to improve the experience when writing TypeScript code, we switched to the fork of monaco-editor that [TypeScript Playground](https://www.typescriptlang.org/play) uses. This fork is always up to date with the latest version of TypeScript, and it also includes several improvements for TypeScript developers.
 
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/py-play/images/playground-v2.png"
+  width="800"
+  height="440"
+/>
+
 ## Adding support for multiple files and languages
 
 The first version of the Playground only supported a single TypeScript file. This was a limitation that we wanted to remove, and when we started working on it, we also decided to add support for other languages.
@@ -59,6 +65,12 @@ Pyodide is a project started by Mozilla that allows you to run Python in the bro
 Similarly to TypeScript, we have a web worker that executes the Python code. The code is executed by Pyodide, and we load external packages from imports using the package manager.
 
 To make it fully work with our Python SDK, we only needed patch the runtime so that Pyodide could do HTTP requests, using `pyodide-http`.
+
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/py-play/images/playground-v3.png"
+  width="800"
+  height="440"
+/>
 
 ## Conclusion
 
