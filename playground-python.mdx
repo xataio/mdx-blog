@@ -57,7 +57,7 @@ Also, to improve the experience when writing TypeScript code, we switched to the
 
 The first version of the Playground only supported a single TypeScript file. This was a limitation that we wanted to remove. So when we started working on it, we also decided to add support for other languages.
 
-Monaco is the open source editor that powers VS Code, and it has support for multiple files and languages. We just needed to use its virtual file system that would allow us to load multiple files and execute them separately.
+[Monaco](https://microsoft.github.io/monaco-editor/) is the open source editor that powers VS Code, and it has support for multiple files and languages. We just needed to use its virtual file system that would allow us to load multiple files and execute them separately.
 
 The refactor allowed us to add support for SQL, both for full file execution and for inline execution. This was a great addition, as it allowed us query your data with [SQL over HTTP](https://xata.io/blog/sql-over-http).
 
