@@ -43,7 +43,7 @@ To achieve this, we use rollup to bundle the code and a [plugin](https://github.
 
 Running the code in a separate thread is important, as it allows us to avoid blocking the main thread. This way, the UI is always responsive, and you can continue writing code while the previous code is being executed. Also, it provides some built-in security, as the code is isolated from the main thread.
 
-Also, to improve the experience when writing TypeScript code, we switched to the fork of monaco-editor that [TypeScript Playground](https://www.typescriptlang.org/play) uses. This fork is always up to date with the latest version of TypeScript, and it also includes several improvements for TypeScript developers.
+Also, to improve the experience when writing TypeScript code, we switched to the fork of monaco-editor that [TypeScript Playground](https://www.typescriptlang.org/play) uses. This fork, [TypeScript Sandbox](https://www.typescriptlang.org/dev/sandbox/), is always up to date with the latest version of TypeScript, and includes several improvements for TypeScript developers, such as twoslash inlay hints.
 
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/py-play/images/playground-v2.png"
