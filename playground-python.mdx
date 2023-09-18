@@ -39,7 +39,7 @@ The Playground was built following the inspiration of other online IDEs like [Ty
 
 One of the core principles, was that all code should be executed in the browser. We wanted to avoid the complexity of having a backend service that would execute the code and return the results. This would have required work to secure the code execution, and it would have added extra latency to the execution.
 
-To achieve this, we use rollup to bundle the code and a [plugin](https://github.com/SferaDev/rollup-plugin-import-cdn) to load any external library from a CDN. This way, we can transpile the code and all its dependencies into a single file that can be executed in a separate thread using [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers).
+To achieve this, we use [Rollup](https://rollupjs.org) to bundle the code and a [plugin](https://github.com/SferaDev/rollup-plugin-import-cdn) to load any external library from a CDN. This way, we can transpile the code and all its dependencies into a single file that can be executed in a separate thread using [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers).
 
 Running the code in a separate thread is important, as it allows us to avoid blocking the main thread. This way, the UI is always responsive, and you can continue writing code while the previous code is being executed. Also, it provides some built-in security, as the code is isolated from the main thread.
 
