@@ -11,7 +11,7 @@ slug: sql-over-http
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/intro-sql-access-over-http-cover.jpg
 ---
 
-As part of our [launch week](/blog/launch-week-august-2023), we are excited to announce that Xata now offers direct SQL access to your database, in addition to the Xata API. This allows you to express arbitrary complex SQL queries and use SQL builders like Kysley or Drizzle. You can also now save and run SQL queries in our Playground, which we have extended to support SQL.
+As part of our [launch week](/blog/launch-week-august-2023), we are excited to announce that Xata now offers direct SQL access to your database, in addition to the Xata API. This allows you to express arbitrary complex SQL queries and use SQL builders like Kysely or Drizzle. You can also now save and run SQL queries in our Playground, which we have extended to support SQL.
 
 ## Why are we adding SQL access?
 
@@ -127,11 +127,11 @@ It's worth noting that the double-quotes are required because the column names a
 
 You can find more examples in the [documentation](/docs/sdk/sql/overview).
 
-### Kysley integration
+### Kysely integration
 
-In the above examples, we’re using hand-written SQL, but you can also use SQL query builders or ORMs. [Kysley](https://kysely.dev/) is a query builder for TypeScript, providing type safety and integrations with several database systems.
+In the above examples, we’re using hand-written SQL, but you can also use SQL query builders or ORMs. [Kysely](https://kysely.dev/) is a query builder for TypeScript, providing type safety and integrations with several database systems.
 
-We have created a [Xata dialect for Kysley](https://github.com/xataio/client-ts/tree/main/packages/plugin-client-kysely), which you can use with something like this:
+We have created a [Xata dialect for Kysely](https://github.com/xataio/client-ts/tree/main/packages/plugin-client-kysely), which you can use with something like this:
 
 ```tsx
 import { Kysely } from 'kysely';
@@ -151,7 +151,7 @@ const result = await db
   .execute();
 ```
 
-In the above, note that the `Model` type adapts the Xata generated `DatabaseSchema` type to the `Model` type used by Kysely. This means that Kysley is aware of the tables and columns from Xata. For more details on how to use this integration, see the [documentation](/docs/integrations/kysley).
+In the above, note that the `Model` type adapts the Xata generated `DatabaseSchema` type to the `Model` type used by Kysely. This means that Kysely is aware of the tables and columns from Xata. For more details on how to use this integration, see the [documentation](/docs/integrations/kysely).
 
 ### Drizzle integration
 
