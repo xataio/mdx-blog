@@ -23,7 +23,7 @@ Due to these issues, many developers choose to avoid complex migrations and only
 
 ## Introducing pgroll
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/d2476693-bc0d-456f-882a-a49b9000584b/f72e6060-c3c6-4637-838f-678b405c3e2b/Untitled.png)
+![pgroll mascot]()
 
 At Xata, we use Postgres for our internal systems and to host our users' data. As a result, we need to perform migrations for both our internal development and from the Xata product itself.
 
@@ -56,7 +56,7 @@ Backfilling data is also a big part of performing backwards-compatible schema ch
 
 Let’s show how `pgroll` works using an example. For instance, a typically complex migration would be to update a column to add a `NOT NULL` constraint to an existing column, while still allowing existing client applications to work without changes, providing time for devs to update them after the migration as part of their normal workflow. Other similar migrations that would typically result in breaking changes on the schema could be renaming a column, adding or removing constraints, setting `UNIQUE`... all of them supported by `pgroll`.
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/d2476693-bc0d-456f-882a-a49b9000584b/63926896-8878-4c8e-b744-efd6e804e536/Untitled.png)
+![pgroll migration schemas]()
 
 This defines the migration for setting a column as `NOT NULL` using `pgroll`. Additional operations can be included in the same migration, but we'll focus on this one for simplicity:
 
