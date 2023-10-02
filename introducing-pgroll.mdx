@@ -50,13 +50,15 @@ This is why we created `pgroll`: https://github.com/xataio/pgroll
 
 Previous and new versions of the schema are made available as “virtual” schemas on top of the Postgres physical one. By leveraging table views pointing to the right columns, `pgroll` is able to expose new parts of the schema and hide the old parts before safely removing them after the migration is completed.
 
+![pgroll migration flow](images/pgroll-migration-flow.png)
+
 As discussed in [a previous blog post](https://xata.io/blog/postgres-schema-changes-pita#locking-gotchas), ensuring Postgres locks on tables (ie `ACCESS EXCLUSIVE`)  while executing DDL statements don’t end up in data access blocking is possible. `pgroll` implements all migration operations using the right techniques to avoid this situation, so you don’t need to think about it.
 
 Backfilling data is also a big part of performing backwards-compatible schema changes. `pgroll` takes care of performing automatic backfills when they are needed, abstracting the problem away while keeping things transparent.
 
 Let’s show how `pgroll` works using an example. For instance, a typically complex migration would be to update a column to add a `NOT NULL` constraint to an existing column, while still allowing existing client applications to work without changes, providing time for devs to update them after the migration as part of their normal workflow. Other similar migrations that would typically result in breaking changes on the schema could be renaming a column, adding or removing constraints, setting `UNIQUE`... all of them supported by `pgroll`.
 
-![pgroll migration schemas**](images/pgroll-migration-schemas.png)
+![pgroll migration schemas](images/pgroll-migration-schemas.png)
 
 This defines the migration for setting a column as `NOT NULL` using `pgroll`. Additional operations can be included in the same migration, but we'll focus on this one for simplicity:
 
