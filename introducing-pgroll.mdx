@@ -13,10 +13,10 @@ ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/introduci
 
 ## Schema migrations are painful
 
-Database schema migrations are a double-edged sword. While they are essential for keeping our systems up to date and in sync with evolving application requirements, but they often [come bundled with a set of challenges](https://xata.io/blog/postgres-schema-changes-pita) that can leave even the most seasoned developers and database administrators scratching their heads (or banging them on the keyboard).
+Database schema migrations can be a double-edged sword. They are essential for keeping our systems up to date and in sync with evolving application requirements, but often [come bundled with a set of challenges](https://xata.io/blog/postgres-schema-changes-pita) that can leave even the most seasoned developers and database administrators scratching their heads (or banging them on the keyboard).
 
 - **Breaking changes**: One of the fundamental issues plaguing schema migrations is the potential for breaking changes. Altering the database schema can have far-reaching consequences, causing disruptions and errors in applications that depend on it.
-- **Multiple steps**: Database migrations are rarely a one-and-done affair. They often involve a series of intricate steps that need to be executed meticulously. Managing these multiple steps is usually not part of the team deployment workflow, and can quickly become a logistical nightmare. ie: It can take [6 steps to rename a column](https://xata.io/blog/postgres-schema-changes-pita#application-deploys-and-the-6-stages-of-rename) without downtime!
+- **Multiple steps**: Database migrations are rarely a one-and-done affair. They often involve a series of intricate steps that need to be executed meticulously. Managing these multiple steps is usually not part of the team deployment workflow, and can quickly become a logistical nightmare (e.g. It can take [6 steps to rename a column](https://xata.io/blog/postgres-schema-changes-pita#application-deploys-and-the-6-stages-of-rename) without downtime)!
 - **Unexpected database locks**: Traditional migration methods can cause unexpected database locks, bringing services to a grinding halt and causing application downtime.
 - **No easy rollbacks**: In the world of schema migrations, the safety net is often full of holes. Rolling back to a previous state in the event of a migration gone awry is rarely straightforward and is frequently a risky endeavor.
 
@@ -59,7 +59,7 @@ Previous and new versions of the schema are made available as “virtual” sche
 
 ![pgroll multiple active versions, client applications rollout](images/pgroll-migration-flow.svg)
 
-As discussed in [a previous blog post](https://xata.io/blog/postgres-schema-changes-pita#locking-gotchas), ensuring Postgres locks on tables (ie `ACCESS EXCLUSIVE`)  while executing DDL statements don’t end up in data access blocking is possible. `pgroll` implements all migration operations using the right techniques to avoid this situation, so you don’t need to think about it.
+As discussed in [a previous blog post](https://xata.io/blog/postgres-schema-changes-pita#locking-gotchas), ensuring Postgres locks on tables (i.e. `ACCESS EXCLUSIVE`) while executing DDL statements don’t end up in data access blocking is possible. `pgroll` implements all migration operations using the right techniques to avoid this situation, so you don’t need to think about it.
 
 Backfilling data is also a big part of performing backwards-compatible schema changes. `pgroll` takes care of performing automatic backfills when they are needed, abstracting the problem away while keeping things transparent.
 
