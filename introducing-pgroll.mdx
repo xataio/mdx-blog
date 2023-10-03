@@ -1,6 +1,6 @@
 ---
-title: 'Introducing pgroll: zero-downtime, undoable, schema migrations for Postgres'
-description: 'We are excited to ship the first version of pgroll, a command line tool that offers safe and undoable schema migrations for PostgreSQL'
+title: 'Introducing pgroll: zero-downtime, reversible, schema migrations for Postgres'
+description: 'We are excited to ship the first version of pgroll, a command line tool that offers safe and reversible schema migrations for PostgreSQL'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/introducing-pgroll.jpg
   alt: pgroll
@@ -39,7 +39,7 @@ We believe evolving your Postgres schema can be a considerably better experience
 - Migrations should not entail risks
 - Migrations should be easy to define, easy to execute
 - Migrations should be part of the normal deployment workflow (continuous delivery)
-- Migrations should be easily & quickly undoable
+- Migrations should be easily & quickly reversible
 - Migrations should not require special orchestration
 
 This is why we created `pgroll`: https://github.com/xataio/pgroll
