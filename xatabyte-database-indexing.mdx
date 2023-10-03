@@ -1,17 +1,16 @@
 ---
 title: 'XataByte: Basics of database indexing'
-description: "A basic overview of database indexing - what is a database index and what does it do?"
-image: 
+description: 'A basic overview of database indexing - what is a database index and what does it do?'
+image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/min-database-indexing.png
-  alt: Quick read on database indexing 
+  alt: Quick read on database indexing
 author: J Edwards
 date: 08-11-2023
 published: true
 slug: xatabyte-database-indexing
 ---
 
-> Want to grasp a complex concept in the time it takes to brew your morning coffee?  In our **XataByte: 3-minute byte-sized read** series we offer concise explanations to help you unravel intricate database concepts without the time commitment. Today we are looking at **database indexing**.
-
+> Want to grasp a complex concept in the time it takes to brew your morning coffee? In our **XataByte: 3-minute byte-sized read** series we offer concise explanations to help you unravel intricate database concepts without the time commitment. Today we are looking at **database indexing**.
 
 ## What is database indexing?
 
@@ -19,12 +18,11 @@ At its core, a database index is pretty much like an index in a book - it allows
 
 Imagine you’ve created a movie database app. Users want to explore films based on filters: genre, release year, lead actors, and more. But as your user base grows, running a search for these filters becomes as slow as watching a buffering video.
 
-Here's where indexes step in, like movie genres neatly organized on your shelf. Let's say you decide to index the "release year" column. Behind the scenes, your database engine creates a digital list with two columns: a release year value and a link to the corresponding movie record. 
+Here's where indexes step in, like movie genres neatly organized on your shelf. Let's say you decide to index the "release year" column. Behind the scenes, your database engine creates a digital list with two columns: a release year value and a link to the corresponding movie record.
 
 When a user hunts for movies from a specific year, your query instantly knows where to find the desired films. Thanks to this index magic, the query's efficiency is supercharged, taking mere seconds instead of super long wait times.
 
 Without indexing, databases might need to scan through every row of data to find the desired information. By creating a roadmap that guides database systems to relevant data points, indexing can reduce the time required for queries and can help ensure that query tasks are performed quickly, without unnecessary strain on system resources.
-
 
 ### Key considerations for database indexing
 
@@ -34,7 +32,6 @@ When dealing with database indexing, there are a few points to consider:
 - **Size vs performance:** While indexing speeds up queries, it does come with some overhead in terms of storage and update times. Striking the right balance between indexing and overall system performance is important.
 - **Update impact:** As data changes, indexes must be updated as well. This update process can impact database performance, so choosing when and how to update indexes is a strategic decision.
 
-
 ### Applying database indexing
 
 Database indexing is applied using SQL statements that define which columns to index and how. Different types of indexes, such as B-tree, hash, and full-text indexes, cater to different data structures and use cases.
@@ -43,7 +40,7 @@ Database indexing is applied using SQL statements that define which columns to i
 
 #### B-Tree index
 
-The name "B-Tree" comes from the structure it forms - a balanced tree. This index type is good at maintaining balance between efficient range queries (like selecting values between A and Z) and quick equality searches (finding a specific value). 
+The name "B-Tree" comes from the structure it forms - a balanced tree. This index type is good at maintaining balance between efficient range queries (like selecting values between A and Z) and quick equality searches (finding a specific value).
 
 #### Hash index
 
@@ -55,12 +52,11 @@ The term "Hash" refers to the method this index uses. It uses a hash function to
 
 #### Full-text index
 
-"Full-Text" indicates the scope of this index type. It's tailored for analyzing large text fields. Instead of just keywords, it considers the entire text, which is great for thorough keyword searches. 
+"Full-Text" indicates the scope of this index type. It's tailored for analyzing large text fields. Instead of just keywords, it considers the entire text, which is great for thorough keyword searches.
 
 #### Spatial index
 
-"Spatial" refers to the index's focus on spatial, or geographic, data. This index type arranges geographical coordinates (latitude, longitude) to allow for quick spatial queries. 
-
+"Spatial" refers to the index's focus on spatial, or geographic, data. This index type arranges geographical coordinates (latitude, longitude) to allow for quick spatial queries.
 
 ### How to apply database indexes
 
@@ -118,6 +114,6 @@ SELECT SUM(amount) FROM sales WHERE date BETWEEN '2023-01-01' AND '2023-08-30';
 
 By indexing the `date` column, the query's execution time is reduced.
 
-So there you have it –  database indexing demystified (a little). While we've only scratched the surface of this topic, you now hold the key to understanding how indexes work their magic in optimizing data retrieval.
+So there you have it – database indexing demystified (a little). While we've only scratched the surface of this topic, you now hold the key to understanding how indexes work their magic in optimizing data retrieval.
 
 Want to add to the discussion? Reach out to us on [Discord](https://xata.io/discord) or follow us on [Twitter](https://twitter.com/xata). We'd love to hear your thoughts, answer your questions, and keep you updated on the latest at Xata.

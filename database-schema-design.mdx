@@ -46,7 +46,7 @@ Let's dive a bit deeper into the world of tables and explore how parent-child re
 
 For instance, in a blog database, we can have `Posts` as the parent table and `Comments` as the child table. Using SQL, it might look something like the following:
 
-- Parent Table: `Posts`  
+- Parent Table: `Posts`
   - The `Posts` table contains information about the blog posts, such as the post title, content, publication date, and the author of the post.
 
 ```sql
@@ -80,17 +80,17 @@ This parent-child relationship allows multiple comments to be linked to a single
 The parent table/ child table is a pretty straight-forward relationship, but database schemas employ other types of relationships. In addition to the parent-child relationship, there are the following:
 
 - **One-to-one relationship:**
-    - In a one-to-one relationship, each record in one table is associated with exactly one record in another table. This relationship is pretty rare and often used to split data with many columns into two separate tables for clarity or security reasons.
-    - **Example:** Using our blog database as an example, a one-to-one relationship might exist between a `User` table and a `Profile` table. Each user has a unique profile, and each profile is associated with only one user.
+  - In a one-to-one relationship, each record in one table is associated with exactly one record in another table. This relationship is pretty rare and often used to split data with many columns into two separate tables for clarity or security reasons.
+  - **Example:** Using our blog database as an example, a one-to-one relationship might exist between a `User` table and a `Profile` table. Each user has a unique profile, and each profile is associated with only one user.
 - **One-to-many relationship:**
-    - In a one-to-many relationship, each record in one table can be associated with multiple records in another table. However, each record in the second table is related to only one record in the first table.
-    - **Example:** In a one-to-many relationship, a `Post` table can be related to a `Comment` table, like we mentioned earlier. Each post can have multiple comments, but each comment belongs to only one post.
+  - In a one-to-many relationship, each record in one table can be associated with multiple records in another table. However, each record in the second table is related to only one record in the first table.
+  - **Example:** In a one-to-many relationship, a `Post` table can be related to a `Comment` table, like we mentioned earlier. Each post can have multiple comments, but each comment belongs to only one post.
 - **Many-to-many Relationship:**
-    - In a many-to-many relationship, each record in one table can be associated with multiple records in another table, and vice versa. This relationship usually requires an intermediary table, called a junction or linking table, to manage the connections between the two main tables.
-    - **Example:** A many-to-many relationship could be established between a `Post` table and a `Tag` table through a junction table called `PostTags`. Each post can have multiple tags, and each tag can be associated with multiple posts.
+  - In a many-to-many relationship, each record in one table can be associated with multiple records in another table, and vice versa. This relationship usually requires an intermediary table, called a junction or linking table, to manage the connections between the two main tables.
+  - **Example:** A many-to-many relationship could be established between a `Post` table and a `Tag` table through a junction table called `PostTags`. Each post can have multiple tags, and each tag can be associated with multiple posts.
 - **Self-Referencing Relationship:**
-    - A self-referencing relationship is when a table references itself, creating a recursive relationship or hierarchy within the same table.
-    - **Example:** A self-referencing relationship might occur within the `Comment` table, where a comment can be a reply to another comment. Each comment can reference the ID of its parent comment in a `ParentCommentID` column.
+  - A self-referencing relationship is when a table references itself, creating a recursive relationship or hierarchy within the same table.
+  - **Example:** A self-referencing relationship might occur within the `Comment` table, where a comment can be a reply to another comment. Each comment can reference the ID of its parent comment in a `ParentCommentID` column.
 
 ## Types of database schemas
 
@@ -102,16 +102,16 @@ The database model schema acts as a visual representation of the database design
 
 There are several types of database models and database schemas, each with its own way of organizing and structuring data. The following table outlines the different types:
 
-| Schema type | Description | Use |
-| --- | --- | --- |
-| Flat model schema | Data is stored in a single table with rows and columns, similar to a spreadsheet.  | Schema is simple and easy to implement but may not be suitable for complex data relationships |
-| Hierarchical model schema | Organizes data in a tree-like structure with parent-child relationships. Each parent can have multiple children, but each child can have only one parent. | Schema is useful for representing nested data, such as organizational charts. |
-| Network model schema | For more complex relationships. Uses a graph-like structure where data items (nodes) are connected to one another through relationships (edges) | Suitable for representing many-to-many relationships. |
-| Relational model schema | Based on the concept of tables, rows, and columns. Data is organized in multiple tables, and relationships between tables are established using primary and foreign keys | Widely used and allows for flexible data retrieval using SQL. |
-| Entity-relationship model (ER model) schema | Represents entities, attributes, and relationships between entities. | Used to create a conceptual representation of a database before implementing it using a specific schema type. |
-| Star schema / Snowflake schema | Organizes data into a central fact table and several dimension tables. The Snowflake schema is an extension of the star schema. | Used in data warehousing and for dimension tables that are normalized to reduce data redundancy. |
-| Document model schema | Stores data as semi-structured documents. Data storage is flexible and dynamic. | Used in NoSQL databases. |
-| Key-value model schema | Stores data as key-value pairs.| Used in NoSQL databases |
+| Schema type                                 | Description                                                                                                                                                              | Use                                                                                                           |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| Flat model schema                           | Data is stored in a single table with rows and columns, similar to a spreadsheet.                                                                                        | Schema is simple and easy to implement but may not be suitable for complex data relationships                 |
+| Hierarchical model schema                   | Organizes data in a tree-like structure with parent-child relationships. Each parent can have multiple children, but each child can have only one parent.                | Schema is useful for representing nested data, such as organizational charts.                                 |
+| Network model schema                        | For more complex relationships. Uses a graph-like structure where data items (nodes) are connected to one another through relationships (edges)                          | Suitable for representing many-to-many relationships.                                                         |
+| Relational model schema                     | Based on the concept of tables, rows, and columns. Data is organized in multiple tables, and relationships between tables are established using primary and foreign keys | Widely used and allows for flexible data retrieval using SQL.                                                 |
+| Entity-relationship model (ER model) schema | Represents entities, attributes, and relationships between entities.                                                                                                     | Used to create a conceptual representation of a database before implementing it using a specific schema type. |
+| Star schema / Snowflake schema              | Organizes data into a central fact table and several dimension tables. The Snowflake schema is an extension of the star schema.                                          | Used in data warehousing and for dimension tables that are normalized to reduce data redundancy.              |
+| Document model schema                       | Stores data as semi-structured documents. Data storage is flexible and dynamic.                                                                                          | Used in NoSQL databases.                                                                                      |
+| Key-value model schema                      | Stores data as key-value pairs.                                                                                                                                          | Used in NoSQL databases                                                                                       |
 
 ## What makes a good database schema design?
 
@@ -121,25 +121,25 @@ Here are **10** pointers (in no particular order) to consider when designing a d
 
 1. **Uphold data integrity**: Set unique labels for each piece of data to avoid mix-ups. Data should be reliable and consistent. By setting rules like primary keys, foreign keys, and unique constraints, you can prevent data errors.
 1. **Champion for normalization:** Sort similar data into different tables to keep things tidy and organized. Organize data into neat tables and reduce repetition. Data normalization helps eliminate data redundancy, by applying defined rules that divide larger tables into smaller tables, link them using relationships and ensure the data appears consistent across all fields and records
-1. **Build relationships:** Create good relationships. Connect related tables using foreign keys for easy access. 
+1. **Build relationships:** Create good relationships. Connect related tables using foreign keys for easy access.
 1. **Think about efficiency:** Organize data in a way that you can quickly find the what you need. Use smart tricks like indexes and avoid unnecessary steps.
 1. **Design for scalability:** Ensure your table can expand to fit more data as your project grows.
 1. **Choose simplicity and understandability:** Give each column a clear name, so everyone knows what it is. By giving tables and columns meaningful names and following standard rules, you make sure everyone can navigate your database easily.
 1. **Focus on flexibility:** Design your tables in a way that you can easily add new data or move it around without breaking things.
 1. **Prioritize security:** Use measures like access controls and encryption to keep your data safe.
 1. **Fit and size appropriately**: Customize your table for specific tasks. Your design should should fit your application's needs and work hand-in-hand with your application.
-1. **Write it all down:** Keep good and detailed documentation of your design. It should include information about your design for easy reference and help you maintain your project. 
+1. **Write it all down:** Keep good and detailed documentation of your design. It should include information about your design for easy reference and help you maintain your project.
 
 ## How to design a database schema
 
-Now that we have an idea of what goes into designing a database schema, let’s apply  it to an example. We’ll mix it up and move away from the blog example; let’s see how this can apply to a [movie database](https://xmdb.vercel.app) - something like what we built in our [XMDB tutorial](https://xata.io/docs/examples/xmdb) (you can also check out [this blog post](https://xata.io/blog/server-actions-data-handling) if you want to learn more about how we built XMDB).
+Now that we have an idea of what goes into designing a database schema, let’s apply it to an example. We’ll mix it up and move away from the blog example; let’s see how this can apply to a [movie database](https://xmdb.vercel.app) - something like what we built in our [XMDB tutorial](https://xata.io/docs/examples/xmdb) (you can also check out [this blog post](https://xata.io/blog/server-actions-data-handling) if you want to learn more about how we built XMDB).
 
 Consider a movie database with entities such as `Movies`, `Actors`, and `Directors`, and their respective attributes:
 
 - **Identify entities and attributes:**
-    - `Movies` entity: Attributes like `movie_id` (unique identifier), `title`, `release_year`, `genre`, and `rating`.
-    - `Actors` entity: Attributes like `actor_id` (unique identifier), `full_name`, `birth_date`, and `nationality`.
-    - `Directors` entity: Attributes like `director_id` (unique identifier), `full_name`, `birth_date`, and `nationality`.
+  - `Movies` entity: Attributes like `movie_id` (unique identifier), `title`, `release_year`, `genre`, and `rating`.
+  - `Actors` entity: Attributes like `actor_id` (unique identifier), `full_name`, `birth_date`, and `nationality`.
+  - `Directors` entity: Attributes like `director_id` (unique identifier), `full_name`, `birth_date`, and `nationality`.
 
 ```sql
 CREATE TABLE movies (
@@ -168,31 +168,33 @@ CREATE TABLE directors (
 - **Normalize data:** Avoid redundancy. For example, if an actor stars in multiple movies, store the actor details only once in a `actors` table and use the `movie_actor` table to represent their associations.
 
 - **Establish relationships:** Create relationships between `Movies`, `Actors`, and `Directors` to represent their associations.
-    - *Many-to-many relationship*: A movie can have multiple actors, and an actor can be associated with multiple movies.
 
-    ```sql
-    CREATE TABLE movie_actor (
-      movie_id INT REFERENCES movies(movie_id),
-      actor_id INT REFERENCES actors(actor_id),
-      PRIMARY KEY (movie_id, actor_id)
-    );
-    ```
-    - *One-to-many relationship*: A director can direct multiple movies, but each movie has only one director.
+  - _Many-to-many relationship_: A movie can have multiple actors, and an actor can be associated with multiple movies.
 
-    ```sql
-    ALTER TABLE movies
-    ADD COLUMN director_id INT REFERENCES directors(director_id);
-    ```
+  ```sql
+  CREATE TABLE movie_actor (
+    movie_id INT REFERENCES movies(movie_id),
+    actor_id INT REFERENCES actors(actor_id),
+    PRIMARY KEY (movie_id, actor_id)
+  );
+  ```
+
+  - _One-to-many relationship_: A director can direct multiple movies, but each movie has only one director.
+
+  ```sql
+  ALTER TABLE movies
+  ADD COLUMN director_id INT REFERENCES directors(director_id);
+  ```
 
 - **Indexing:**
-Create indexes on frequently searched columns to optimize query performance. For instance, create an index on the `title` column in the `movies` table for faster movie title searches.
+  Create indexes on frequently searched columns to optimize query performance. For instance, create an index on the `title` column in the `movies` table for faster movie title searches.
 
 ```sql
 CREATE INDEX idx_movie_title ON movies(title);
 ```
 
 - **Use constraints:**
-Apply constraints to maintain data integrity. For example, enforce a `NOT NULL` constraint on the `title` column in the `movies` table, so that a value has to be applied.
+  Apply constraints to maintain data integrity. For example, enforce a `NOT NULL` constraint on the `title` column in the `movies` table, so that a value has to be applied.
 
 ```sql
 ALTER TABLE movies
@@ -200,7 +202,7 @@ ADD CONSTRAINT chk_movie_title_not_null CHECK (title IS NOT NULL);
 ```
 
 - **Review and refine:**
-Review and refine the database schema based on user feedback and evolving data requirements. A new film comes out? Add it in a way that complies and conforms to the rules you established.
+  Review and refine the database schema based on user feedback and evolving data requirements. A new film comes out? Add it in a way that complies and conforms to the rules you established.
 
 ## Best practices for database schema design
 
@@ -212,4 +214,4 @@ Mastering the art of schema design is no easy task, but it’s definitely worth 
 - **Build strong relationships:** Just like friendships, relationships between tables are vital! Connect related data using foreign keys to keep everything cohesive and easily accessible. This way, your database will work harmoniously, and data retrieval will be a breeze.
 - **Test, tweak, and repeat:** Take your schema for a test drive with real data. Fine-tune as needed to optimize performance. Testing and tweaking ensure your schema runs smoothly and efficiently, making your data management journey a success!
 
-Do you have any valuable tips or suggestions for designing effective database schemas? If there's anything we missed or if you want some extra guidance, don't hesitate to reach out to us; we’d love to hear what you think. If you have any feedback you can join us on [Discord](https://xata.io/discord) or follow us on [Twitter](https://twitter.com/xata).
+Do you have any valuable tips or suggestions for designing effective database schemas? If there's anything we missed or if you want some extra guidance, don't hesitate to reach out to us; we’d love to hear what you think. If you have any feedback you can join us on [Discord](https://xata.io/discord) or follow us on [Twitter](https://twitter.com/xata).
