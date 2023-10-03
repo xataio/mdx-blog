@@ -1,0 +1,120 @@
+---
+title: 'Introducing pgroll: zero-downtime, undoable, schema migrations for Postgres'
+description: 'We are excited to ship the first version of pgroll, a command line tool that offers safe and undoable schema migrations for PostgreSQL'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/introducing-pgroll.jpg
+  alt: pgroll
+author: Carlos Pérez-Aradros Herce
+date: 10-3-2023
+published: true
+slug: pgroll-schema-migrations-postgres
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/introducing-pgroll.jpg
+---
+
+## Schema migrations are painful
+
+Database schema migrations can be a double-edged sword. They are essential for keeping our systems up to date and in sync with evolving application requirements, but often [come bundled with a set of challenges](https://xata.io/blog/postgres-schema-changes-pita) that can leave even the most seasoned developers and database administrators scratching their heads (or banging them on the keyboard).
+
+- **Breaking changes**: One of the fundamental issues plaguing schema migrations is the potential for breaking changes. Altering the database schema can have far-reaching consequences, causing disruptions and errors in applications that depend on it.
+- **Multiple steps**: Database migrations are rarely a one-and-done affair. They often involve a series of intricate steps that need to be executed meticulously. Managing these multiple steps is usually not part of the team deployment workflow, and can quickly become a logistical nightmare (e.g. It can take [6 steps to rename a column](https://xata.io/blog/postgres-schema-changes-pita#application-deploys-and-the-6-stages-of-rename) without downtime)!
+- **Unexpected database locks**: Traditional migration methods can cause unexpected database locks, bringing services to a grinding halt and causing application downtime.
+- **No easy rollbacks**: In the world of schema migrations, the safety net is often full of holes. Rolling back to a previous state in the event of a migration gone awry is rarely straightforward and is frequently a risky endeavor.
+
+Due to these issues, many developers choose to avoid complex migrations and only make additive changes. This leads to the accumulation of **technical debt in the database schema**, such as orphaned columns or missing constraints.
+
+## Introducing pgroll
+
+<ArticleImage
+  src="https://github.com/xataio/mdx-blog/raw/main/images/introducing-pgroll-banner@2x.jpg"
+  width="1000"
+  height="465"
+  alt="pgroll banner"
+  position="center"
+/>
+
+At Xata, we use Postgres for our internal systems and to host our users' data. As a result, we need to perform migrations for both our internal development and from the Xata product itself.
+
+We believe evolving your Postgres schema can be a considerably better experience:
+
+- Migrations should not entail risks
+- Migrations should be easy to define, easy to execute
+- Migrations should be part of the normal deployment workflow (continuous delivery)
+- Migrations should be easily & quickly undoable
+- Migrations should not require special orchestration
+
+This is why we created `pgroll`: https://github.com/xataio/pgroll
+
+`pgroll` is an open source command-line tool for performing schema migrations against Postgres databases. Designed on these principles, `pgroll` allows users to define schema migrations using a high-level JSON format and then takes care of executing them. These are some of the key features:
+
+- **Migrations are defined in a high-level JSON format**: Simple definition, allowing for richer operations information on top of Postgres DDL statements (`CREATE`, `ALTER`, etc.)
+- **Keep two versions of the schema (previous and next) accessible at the same time during the whole migration process**: Previous versions of the applications will still work while the migration is happening, taking risk and pressure away from the deployment process.
+- **Instant rollbacks**: Since the previous version of the schema is kept alive, a rollback basically means canceling the migration; the previous schema never went away!
+- **Zero downtime**: All operations are implemented to ensure that Postgres won’t lock data access to the table while the schema changes are happening.
+
+## How does pgroll work?
+
+`pgroll` uses the [expand and contract pattern](https://openpracticelibrary.com/practice/expand-and-contract-pattern/) to evolve the database schema, automating its whole lifecycle behind an easy-to-use command line interface.
+
+Previous and new versions of the schema are made available as “virtual” schemas on top of the Postgres physical one. By leveraging table views pointing to the right columns, `pgroll` is able to expose new parts of the schema and hide the old parts before safely removing them after the migration is completed.
+
+![pgroll multiple active versions, client applications rollout](images/pgroll-migration-flow.svg)
+
+As discussed in [a previous blog post](https://xata.io/blog/postgres-schema-changes-pita#locking-gotchas), ensuring Postgres locks on tables (i.e. `ACCESS EXCLUSIVE`) while executing DDL statements don’t end up in data access blocking is possible. `pgroll` implements all migration operations using the right techniques to avoid this situation, so you don’t need to think about it.
+
+Backfilling data is also a big part of performing backwards-compatible schema changes. `pgroll` takes care of performing automatic backfills when they are needed, abstracting the problem away while keeping things transparent.
+
+Let’s show how `pgroll` works using an example. For instance, a typically complex migration would be to update a column to add a `NOT NULL` constraint to an existing column, while still allowing existing client applications to work without changes, providing time for devs to update them after the migration as part of their normal workflow. Other similar migrations that would typically result in breaking changes on the schema could be renaming a column, adding or removing constraints, setting `UNIQUE`... all of them supported by `pgroll`.
+
+![pgroll virtual schemas during a migration](images/pgroll-migration-schemas.svg)
+
+This defines the migration for setting a column as `NOT NULL` using `pgroll`. Additional operations can be included in the same migration, but we'll focus on this one for simplicity:
+
+```json
+{
+  "name": "review_not_null",
+  "operations": [
+    {
+      "alter_column": {
+        "table": "reviews",
+        "column": "review",
+        "not_null": true,
+        "up": "(SELECT CASE WHEN review IS NULL THEN product || ' is good' ELSE review END)",
+        "down": "review"
+      }
+    }
+  ]
+}
+```
+
+This is executed by running this simple command:
+
+```bash
+pgroll start review_not_null.json
+```
+
+`pgroll` will perform all the necessary steps to make this change available without disrupting existing client applications (the expand step from the [expand/contract pattern](https://openpracticelibrary.com/practice/expand-and-contract-pattern/)). In this particular example, it will:
+
+- Create a new column as a copy of the `review` column that respects the `NOT NULL` constraint.
+- Add the `NOT NULL` constraint to the new column, using the `NOT VALID` clause to ensure that data access doesn’t block due to this statement, avoiding unexpected downtime.
+- Backfill all existing values from the old column into the new one, upgrading the data in the cases where the value was `NULL`, based on the user-defined function. Of course, backfill happens in batches, avoiding excessively large updates that could also block the database.
+- Set up a trigger function so new inserts & updates get automatically copied between the new and the old columns.
+- Keep the old column working at all times, ensuring the migration can be rolled back instantly if needed.
+- Create a new view of the schema that hides the old column and promotes the new one in its place, exposing this way the new version of the schema while the old one keeps working.
+
+Typically, all of these steps would require manual execution to achieve a complex update like this. However, `pgroll` streamlines the process by performing all of them with a single command ✨.
+
+Once you are happy with the new version of the schema and all clients have been updated to use it, the old schema will no longer be accessed. It’s time to complete the migration (contract the schema) to get rid of the old column & triggers:
+
+```json
+pgroll complete
+```
+
+For more complex examples, there is a wide range of schema migration samples in our [examples](https://github.com/xataio/pgroll/tree/main/examples) and [docs](https://github.com/xataio/pgroll/tree/main/docs).
+
+## What’s next?
+
+Today, we are rolling out the first version of `pgroll` and we are looking forward to your feedback!  We plan to continue developing `pgroll` and exploring how it can make it easier and safer for Xata users to evolve their schema.
+
+If you have any suggestions or questions, please open an issue in our [GitHub repo](https://github.com/xataio/pgroll), reach out to us on [Discord](https://xata.io/discord) or follow us on [X / Twitter](https://twitter.com/xata). We'd love to hear from you and keep you up to date with the latest progress on `pgroll`.
+
+Let’s start rolling!
