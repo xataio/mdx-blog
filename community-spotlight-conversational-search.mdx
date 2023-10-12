@@ -1,0 +1,54 @@
+---
+title: 'Distilling news and legal research into simple chat experiences'
+description: 'Putting the community spotlight on Agustín Gomez and Alvaro Machuca, two developers based in Paraguay building real world applications for conversational search with your data.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/min-database-indexing.png
+  alt: Community Spotlight
+author: J Edwards
+date: 10-12-2023
+published: true
+slug: community-spotlight-chat-search-experiences
+---
+
+Today we’re putting the community spotlight on two developers based out of Paraguay, [Agustín Gomez](https://github.com/gomezag) and (Alvaro Machuca)\[https://github.com/quanturtle]. They discovered Xata while looking for a serverless database offering that supported vector embeddings. Since starting with Xata a few months ago, Agustín and Alvaro have built two practical applications to provide chat experiences on very specific sets of data. Both apps have a similar tech stack and build experiences on top of Python / Django, Xata, and Vercel.
+
+## Generative search solutions
+
+The first application is called [ChatGOV](https://www.chatgov.com.py/) and provides a simple and interactive way to converse about Paraguayan law.
+
+![ChatGOV beta](/images/cs_chatgov.png)
+
+All publicly accessible Paraguayan law was scraped and integrated into a Xata database. With these articles, [LangChain](https://xata.io/docs/integrations/langchain) and OpenAI were used to create embeddings, which were then stored in the same record as the respective legal documents. The ease of having the embeddings stored directly alongside the relational data made the journey to production extremely fast.
+
+> Having a way to store all the vectors along with your records saves me time and I don’t have to go fight with another client like Pinecone. The fact that it’s in one stop shop for everything is great! I want to build products, not mount database services.\
+> _Alvaro Machuca - Co-Founder of ChatGOV_
+
+The second application is called [Briefly News](https://briefly-news.vercel.app/)([GitHub repo](https://github.com/gomezag/briefly-news)). It provides a quick way to navigate the Paraguayan news and delve deeper into details about individuals mentioned in the articles.
+
+![ChatGOV beta](/images/cs_briefly_news.png)
+
+This project is still early days, but has already scraped and ingested nearly 70,000 articles. It provides end-to-end workflows for filtering news articles based on certain criteria, visualizing common terms with a word cloud, aggregating statistics of the news articles, and a chat-based workflow for learning more about the people featured in a news article. Rather than having disparate services and data stores to handle each one of these use cases, all of the data is simply stored in a Xata database. The Xata Python SDK and ORM-like experience was used for [filtering](https://xata.io/docs/sdk/filtering), [full-text search](https://xata.io/docs/sdk/search), [aggregations](https://xata.io/docs/sdk/aggregate) and [chat features](https://xata.io/docs/sdk/ask).
+
+> All in all, I have to say, I was really surprised at how easy it was to adopt Xata and just jump in and start using it. I haven’t had to look at my database in 3 months, it’s stable, no maintenance required and it just works.\
+> _Agustín Gomez - Software Engineer by Day, Superhero by Night_
+
+## Feedback and feature requests
+
+Having been using Xata since early this year, we asked both Agustín and Alvaro what their favorite aspects of Xata have been so far, and what they’d like to see on our roadmap. Here were some of the reasons Agustín and Alvaro chose Xata for their chat solutions.
+
+- **Transition from prototype to production.** For both projects it was extremely easy to prototype, iterate quickly and turn on for production use.
+- **Built-in vector DB.** Not having to worry about another database service specialized for vector embeddings was a huge benefit.
+- **Python SDK.** The Python SDK has steadily seen improvements with each release; it’s been great to see the progression over time.
+
+When asked what they’re looking forward to seeing, here’s what they shared.
+
+- **Usage observability.** As their project grows, they’d like to see more details about their usage. Luckily, this is already on [our roadmap](https://xata.io/roadmap) and in the works.
+- **Python functions.** It would be beneficial to have additional helper functions in the Python SDK. A Django-like [`get_or_create`](https://docs.djangoproject.com/en/4.2/ref/models/querysets/#get-or-create) function would be helpful for the web scraping use case. Sometimes an article needs to be created or updated. Having better warnings for pagination to ensure all data is returned also would have also been nice to see from the client.
+- **Built-in embedding generation.** We discussed a bit about some ✨. Simplifying the embedding creation process with more dynamic columns and supporting lighter weight embeddings would be great for their use case.
+
+If you’re interested in learning more about how to build practical solutions for generative search and the types of technical challenges you may find along the way, you can find Agustín, Alvaro, and the Xata team on our [Discord server](https://xata.io/discord).
+
+## Share your story
+
+Do you have a similar story or community contribution you’d like to share? [Send us an email](mailto:communityspotlight@xata.io) if you’d like to be featured in our community spotlight.
+Until then, happy building 🦋
