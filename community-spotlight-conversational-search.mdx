@@ -14,20 +14,22 @@ Today we’re putting the community spotlight on two developers based out of Par
 
 ## Generative search solutions
 
-The first application is called [ChatGOV](https://www.chatgov.com.py/) and provides a simple and interactive way to converse about Paraguayan law.
-
 ![ChatGOV beta](/images/cs_chatgov.png)
+
+The first application is called [ChatGOV](https://www.chatgov.com.py/) and provides a simple and interactive way to converse about Paraguayan law.
 
 All publicly accessible Paraguayan law was scraped and integrated into a Xata database. With these articles, [LangChain](https://xata.io/docs/integrations/langchain) and OpenAI were used to create embeddings, which were then stored in the same record as the respective legal documents. The ease of having the embeddings stored directly alongside the relational data made the journey to production extremely fast.
 
 > Having a way to store all the vectors along with your records saves me time and I don’t have to go fight with another client like Pinecone. The fact that it’s in one stop shop for everything is great! I want to build products, not mount database services.\
 > _Alvaro Machuca - Co-Founder of ChatGOV_
 
-The second application is called [Briefly News](https://briefly-news.vercel.app/) ([GitHub repo](https://github.com/gomezag/briefly-news)). It provides a quick way to navigate the Paraguayan news and delve deeper into details about individuals mentioned in the articles.
-
 ![Briefly News](/images/cs_briefly_news.png)
 
-This project is still early days, but has already scraped and ingested nearly 70,000 articles. It provides end-to-end workflows for filtering news articles based on certain criteria, visualizing common terms with a word cloud, aggregating statistics of the news articles, and a chat-based workflow for learning more about the people featured in a news article. Rather than having disparate services and data stores to handle each one of these use cases, all of the data is simply stored in a Xata database. The [Xata Python SDK](https://xata.io/docs/sdk/python/overview) and ORM-like experience was used for [filtering](https://xata.io/docs/sdk/filtering), [full-text search](https://xata.io/docs/sdk/search), [aggregations](https://xata.io/docs/sdk/aggregate) and [chat features](https://xata.io/docs/sdk/ask).
+The second application is called [Briefly News](https://briefly-news.vercel.app/) ([GitHub repo](https://github.com/gomezag/briefly-news)). It provides a quick way to navigate the Paraguayan news and delve deeper into details about individuals mentioned in the articles.
+
+This project is still early days, but has already scraped and ingested nearly 70,000 articles. It provides end-to-end workflows for filtering news articles based on certain criteria, visualizing common terms with a word cloud, aggregating statistics of the news articles, and a chat-based workflow for learning more about the people featured in a news article.
+
+Rather than having disparate services and data stores to handle each one of these use cases, all of the data is simply stored in a Xata database. The [Xata Python SDK](https://xata.io/docs/sdk/python/overview) and ORM-like experience was used for [filtering](https://xata.io/docs/sdk/filtering), [full-text search](https://xata.io/docs/sdk/search), [aggregations](https://xata.io/docs/sdk/aggregate) and [chat features](https://xata.io/docs/sdk/ask).
 
 > All in all, I have to say, I was really surprised at how easy it was to adopt Xata and just jump in and start using it. I haven’t had to look at my database in 3 months, it’s stable, no maintenance required and it just works.\
 > _Agustín Gomez - Software Engineer by Day, Superhero by Night_
