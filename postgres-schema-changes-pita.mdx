@@ -101,9 +101,9 @@ _Let’s imagine that we have a magic wand._ How would your ideal schema managem
 - Schema changes are **lock-free** or take table locks for minimal amounts of time.
 - Schema changes **don’t cause downtime** by breaking application code.
 - You can apply all types of changes in a **single-step**, or at most a couple of steps.
-- Schema changes are **undoable**, and the undo is quick.
+- Schema changes are **undo-able**, and the undo is quick.
 
-In short, a system that makes schema changes **standardized**, **zero-downtime, lock-free, one-step, and undoable.**
+In short, a system that makes schema changes **standardized**, **zero-downtime, lock-free, one-step, and reversible.**
 
 ### Is this possible?
 
