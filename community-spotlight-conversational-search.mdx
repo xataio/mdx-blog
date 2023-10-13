@@ -10,22 +10,22 @@ published: true
 slug: community-spotlight-chat-search-experiences
 ---
 
-Today we’re putting the community spotlight on two developers based out of Paraguay, [Agustín Gomez](https://github.com/gomezag) and (Alvaro Machuca)[https://github.com/quanturtle]. They discovered Xata while looking for a serverless database offering that supported vector embeddings. Since starting with Xata a few months ago, Agustín and Alvaro have built two practical applications to provide chat experiences on very specific sets of data. Both apps have a similar tech stack and build experiences on top of Python / Django, Xata, and Vercel.
+Today we’re putting the community spotlight on two developers based out of Paraguay, [Agustín Gomez](https://github.com/gomezag) and [Alvaro Machuca](https://github.com/quanturtle). They discovered Xata while looking for a serverless database offering that supported vector embeddings. Since starting with Xata a few months ago, Agustín and Alvaro have built two practical applications to provide chat experiences on very specific sets of data. Both apps have a similar tech stack and build experiences on top of Python / Django, Xata, and Vercel.
 
 ## Generative search solutions
 
-![ChatGOV beta](/images/cs_chatgov.png)
-
 The first application is called [ChatGOV](https://www.chatgov.com.py/) and provides a simple and interactive way to converse about Paraguayan law.
+
+![ChatGOV beta](/images/cs_chatgov.png)
 
 All publicly accessible Paraguayan law was scraped and integrated into a Xata database. With these articles, [LangChain](https://xata.io/docs/integrations/langchain) and OpenAI were used to create embeddings, which were then stored in the same record as the respective legal documents. The ease of having the embeddings stored directly alongside the relational data made the journey to production extremely fast.
 
 > Having a way to store all the vectors along with your records saves me time and I don’t have to go fight with another client like Pinecone. The fact that it’s in one stop shop for everything is great! I want to build products, not mount database services.\
 > _Alvaro Machuca - Co-Founder of ChatGOV_
 
-![Briefly News](/images/cs_briefly_news.png)
-
 The second application is called [Briefly News](https://briefly-news.vercel.app/) ([GitHub repo](https://github.com/gomezag/briefly-news)). It provides a quick way to navigate the Paraguayan news and delve deeper into details about individuals mentioned in the articles.
+
+![Briefly News](/images/cs_briefly_news.png)
 
 This project is still early days, but has already scraped and ingested nearly 70,000 articles. It provides end-to-end workflows for filtering news articles based on certain criteria, visualizing common terms with a word cloud, aggregating statistics of the news articles, and a chat-based workflow for learning more about the people featured in a news article.
 
