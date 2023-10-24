@@ -34,6 +34,11 @@ properties:
     description: URL location of a custom image for Open Graph
     type: string
     maxLength: 300
+  tags:
+    title: Tags
+    description: Tags used for categorizing and filtering content
+    type: array
+    maxLength: 300
   published:
     description: Whether to list this doc in the menu and search
     type: boolean
