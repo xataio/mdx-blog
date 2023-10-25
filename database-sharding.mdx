@@ -1,0 +1,68 @@
+---
+title: 'What is horizontal sharding?'
+description: 'A basic overview of horizontal sharding - what is it and what are the challenges?'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/database-sharding-min.png
+  alt: Quick read on horizontal sharding
+author: J Edwards
+date: 10-13-2023
+published: true
+slug: xatabyte-horizontal sharding
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/database-sharding-twitter-og-min.png
+---
+
+> Want to grasp a complex concept in the time it takes to brew your morning coffee? In our **XataByte: 3-minute byte-sized read** series we offer concise explanations to help you unravel intricate database concepts without the time commitment. Today we are looking at **horizontal sharding**.
+
+Recently, while wandering through the narrow aisles of a small comic store brimming with pop culture relics, I came across an interesting find. Hidden amongst a varied assortment of DC and Marvel comics, was an entire shelf dedicated to "Nexus" - a not too popular comic series from the 1980's. With the spines showing slight signs of age, I remarked to the store owner about the find and asked for a specific issue. Without resorting to a computer or any ledger, he quickly scanned the shelves and found it wih no hassle or issue. I was impressed to see that his collection was organized by both publication year and as well as story arc.
+
+The store owner's intricate system of organization reminded me of horizontal sharding in databases. Just as the comics were grouped and allocated to specific shelves based on various attributes, horizontal sharding distributes rows of a database across multiple locations, or "shards", based on specific key attributes. This method not only ensures quick access but also optimizes storage and performance. Just as the store owner knew exactly where each comic belonged, so does horizontal sharding ensure that every piece of data finds its right place in a database system.
+
+## What is Sharding
+
+Sharding is a database design technique where data is split across multiple servers, or "shards", each holding a portion of the data. Think of it like the vintage comic store: instead of having every comic jumbled together, the shop is organized into sections, with each section (or "shard") holding a specific category of comics. This structure makes it easier and faster to find a particular comic, just as sharding can make databases more efficient by spreading the load across multiple servers.
+
+As data volumes grow exponentially, efficient data management becomes extremely important. That's why sharding is so important, it's one of the techniques employed to maintain the sanity and speed of large databases. So, what are the different types of sharding?
+
+- **Vertical sharding:** In this approach, different tables or columns are placed on different servers. Using the customer database example, one server might store names and addresses, while another might store order histories.
+
+- **Horizontal sharding:** This is the most common form of sharding. Here, rows of a database table are held separately, rather than splitting by columns. For instance, if you had a database of customers, one shard might contain customers with IDs 1 to 1000, while another might hold 1001 to 2000, and so on.
+
+- **Range-Based sharding:** Range-based sharding is a specific method of horizontal sharding where rows are partitioned across shards based on ranges of values of a sharding key. For instance, user IDs 1 to 1000 might be stored on one shard, while user IDs 1001 to 2000 might be on another. In essence, all range-based sharding is horizontal sharding, but not all horizontal sharding is range-based. Other horizontal sharding strategies might involve hashing, directory-based sharding, or even geographically-based sharding. Each strategy has its own advantages and best-use cases.
+
+## Why horizontal sharding
+
+Database sharding is important for several reasons, primarily relating to the scalability, performance, and reliability of database systems, especially when managing massive amounts of data. Here's why it's considered crucial:
+
+- Scalability: As databases grow in size, they can experience slowdowns in query performance, potentially affecting the user experience for applications that depend on them. Sharding helps databases scale out by distributing the data across multiple servers or clusters, enabling them to handle larger workloads and more users.
+
+- Improved performance: Distributing the data across multiple servers means that fewer rows are queried in each shard. This leads to faster query performance since each server has less data to sift through.
+
+- Load balancing: Sharding can distribute the database load evenly across servers. This ensures that no single server becomes a bottleneck, improving the overall performance and responsiveness of the database system.
+
+- Hardware cost efficiency: Instead of scaling up (adding more power to a single server), sharding allows organizations to scale out, adding more servers to the mix. This can often be done using commodity hardware, making it more cost-effective than buying high-end servers.
+
+- Failover and redundancy: If one shard fails, it won't bring down the entire database. Only the users or transactions tied to that specific shard would be affected, while others can continue operations normally. This can be combined with replication strategies to provide even better fault tolerance.
+
+- Geographical distribution: For global applications, sharding can be done based on geographical considerations. This means that users can be served from a nearby shard, reducing latency and improving application responsiveness.
+
+- Isolation of problematic workloads: If a particular shard starts to experience issues, it can be isolated and managed without affecting the performance of other shards. This isolation can also be beneficial for maintenance and updates.
+
+- Storage management: Different shards can be placed on different storage mediums depending on the access patterns. For example, frequently accessed data can be placed on SSDs while less frequently accessed data can reside on HDDs.
+
+## Challenges horizontal sharding
+
+Certainly, let's rewrite the challenges of database sharding using the comic book store analogy in a straightforward manner:
+
+- **Efficient organization :**Think of it as sorting comics by themes and years in our comic store. In database sharding, the challenge is to efficiently organize data across shards, ensuring it's easy to manage and retrieve without getting jumbled up.
+
+- **Consistency across sections:** Just like maintaining different sections in our store, managing shards can lead to inconsistencies in data retrieval. Users accessing different shards might experience inconsistent query performance, similar to how different sections in the store can offer varying experiences. In sharding, data integrity can become a concern, especially when managing shards independently. Ensuring consistency and integrity across shards is vital to prevent data issues.
+
+- **Balancing workload:** Imagine one section of the comic store becoming too popular, causing overcrowding, while others remain empty. In sharding, this relates to load balancing. Uneven data distribution can overload some shards, resulting in performance issues, similar to a crowded section causing chaos.
+
+- Handling historical data\*\* Earlier we mentioned aging comics. Likewise, database sharding deals with managing historical data as it grows. Implementing effective strategies to handle older data is crucial for maintaining performance and storage efficiency.
+
+- **Performance bottlenecks:** Just as overcrowded store sections lead to slower service, improper shard distribution can cause performance bottlenecks in database sharding. Ensuring optimal data distribution among shards is essential to avoid these performance issues.
+
+- Complexity management:\*\* Similar to our store's complex categorization system, managing multiple shards in a database can be challenging. Implementing and maintaining sharding strategies require careful planning to avoid complexity. managing costs associated with adding more servers or clusters for sharding can be a challenge. Organizations must balance performance benefits with the cost of additional hardware and maintenance.
+
+## Solutions for horizontal sharding
