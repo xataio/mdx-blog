@@ -1,6 +1,6 @@
 ---
 title: 'Database nightmares: Tales from the Postgres crypt'
-description: 'Explore some of the challenges and terrors that can negatively impact your database project'
+description: 'Explore some of the challenges and terrors that can negatively impact your PostgreSQL database project'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/database-horrors.jpg
   alt:
@@ -32,11 +32,10 @@ However, as straightforward as this may sound, backups come with their own set o
 Backups are very important but come with their own set of potential pitfalls. Addressing these proactively is usually the best course of action. You can look into the following techniques:
 
 - **Review logs regularly**: You can check PostgreSQL logs and any error messages from your backup tool, such as **`pg_dump`** or **`pg_basebackup`**. The logs can provide vital clues to the root cause of the failure. Ensure you're using a compatible version of **`pg_dump`** or **`pg_basebackup`** with your PostgreSQL server. The logs can be found in the directory specified by the **`log_directory`** configuration parameter (usually found in the **`postgresql.conf`** file). The logs will contain entries for various events, and any errors related to backups will usually be evident with messages from tools like **`pg_dump`** or **`pg_basebackup`**.
-- **Look into Optimistic Concurrency Control (OCC):** OCC is a technique employed in database management systems to handle concurrent changes to database records. It ensures that when multiple transactions attempt to modify a record, only one succeeds, preventing unintended overwrites and conflicts. If a transaction tries to update a record and finds the version number has changed since it last read the record, the update is rejected. This mechanism ensures data integrity and consistency. With the **`xata.version`** column, Xata implements the optimistic concurrency control method.
-- **Try daily backups or Point-In-Time Recovery (PITR):** Daily backups can add a layer of protection against data loss. By taking consistent snapshots of the database, it's possible to recover data if mishaps occur, ensuring that the history and versioning of records is preserved. Similarly, Point-In-Time Recovery (PITR) allows for database recovery to a specific moment, helping restore data to a precise moment in time and to its exact state at that time. This can be particularly useful when there's a need to revert unintended changes or in the event of data corruption. In addition to OCC, Xata offers support for [daily backups and PITR](https://xata.io/docs/concepts/pricing).
+- **Try daily backups or point-in-time recovery (PITR):** Daily backups can add a layer of protection against data loss. By taking consistent snapshots of the database, it's possible to recover data if mishaps occur, ensuring that the history and versioning of records is preserved. Similarly, Point-In-Time Recovery (PITR) allows for database recovery to a specific moment, helping restore data to a precise moment in time and to its exact state at that time. This can be particularly useful when there's a need to revert unintended changes or in the event of data corruption. In addition to OCC, Xata offers support for [daily backups and PITR](https://xata.io/docs/concepts/pricing).
 - **Stay vigilant:** Inspect error messages and logs from your backup tools to pinpoint issues and remember to keep your backup tools updated to avoid compatibility problems. Also, ensure there's adequate storage space for backups and double-check the specified paths to make sure backups are being saved to the correct and accessible locations.
 
-## Schema Spectres: How misconfigured schemas can haunt you with data inconsistencies
+## Schema spectres: How misconfigured schemas can haunt you with data inconsistencies
 
 > On a fog-shrouded evening, deep within the echoing chambers of a startup, a lone developer embarked on what was to be a routine schema migration. He unwittingly unleashed an arcane script, and in so doing summoned tables twisted and contorted in unnatural ways, data tha floated into the abyss, and records once familiar - appeared as gibberish incantations. Panic set in with the chilling knowledge that in the realm of databases, some mistakes can haunt persistently.
 
@@ -55,14 +54,14 @@ Misconfigured schema migrations and replication issues in databases, can lead to
 ### How to prevent schema migration mishaps?
 
 - **Test before deploying:** Execute schema migrations in a development environment mirroring your production setup. It's important that the development environment closely resembles the production setup. Before implementing any schema migration, it's essential to test the potential performance implications on critical queries. This can be done using tools like the `EXPLAIN` command in PostgreSQL to understand how queries will be executed post-migration, which can help identify potential bottlenecks or inefficiencies.
-- **Use Schema version control:** Xata handles schema version control automatically. When you make changes to your database schema, Xata keeps track of the versions and ensures that the changes are applied correctly. This allows you to easily manage and track the evolution of your schema over time. Additionally, Xata provides features like optimistic concurrency control (OCC) and versioning for records, which further enhances the control and management of your data.
+- **Use schema version control:** When you make changes to your database schema, use tools that keep track of the versions and ensure that the changes are applied correctly. This allows you to easily manage and track the evolution of your schema over time. Additionally, [pgroll](https://github.com/xataio/pgroll) provides features which further enhance the control and management of your data as well as schema migrations.
 - **See no evil, just monitor:** Real-time monitoring of replication ensures you're alerted to any disruptions or lags. PostgreSQL’s `pg_stat_replication` offers valuable insights and Xata has plans to add additional monitoring capabilities.
 
 ## Vampiric VACUUM: Reclaiming dead tuples and space
 
-> Amidst the quiet hum of over worked servers, the database began to groan, choked by the weight of dead tuples. A forgotten VACUUM process, now awakened, thirsted for resources, plunging the system into darkness. As data vanished, whispers of lost records haunted the corridors
+> Amidst the quiet hum of over worked servers, the database began to groan, choked by the weight of dead tuples. A forgotten VACUUM process, now awakened, thirsted for resources, plunging the system into darkness. As data vanished, whispers of lost records haunted the corridors.
 
-While "horror stories" about the VACUUM process in PostgreSQL can be dramatized effect, there are genuine concerns and potential mishaps that can arise if VACUUM isn't managed correctly.
+While "horror stories" about the VACUUM process in PostgreSQL can be dramatized for effect, there are some genuine concerns and potential mishaps that can arise if VACUUM isn't managed correctly.
 
 In PostgreSQL, VACUUM is a maintenance operation that helps reclaim storage space and maintain the health of the database. Over time, as data gets updated or deleted, it leaves behind what are known as "dead tuples." These are essentially old versions of rows that are no longer needed. If left unchecked, these dead tuples can accumulate and lead to database bloat and degraded performance. VACUUM can reclaim storage and collect statistics on performance.
 
@@ -86,10 +85,10 @@ If a VACUUM operation is interrupted, especially a manual one, it might leave be
 
 The VACUUM process in PostgreSQL is important for maintaining database health, but managing it effectively requires understanding its nuances. Here are some solutions and best practices to address common VACUUM-related challenges:
 
-- **Tune Autovacuum :** You can adjust the **`autovacuum_naptime`** parameter to control how often the autovacuum process checks tables for cleanup. Modify or tweak the **`autovacuum_vacuum_scale_factor`** and **`autovacuum_analyze_scale_factor`** to determine when a table should be vacuumed or analyzed based on the proportion of changed tuples. Additionally, you can use **`autovacuum_vacuum_cost_limit`** and **`autovacuum_vacuum_cost_delay`** to influence how aggressive the autovacuum process is, preventing it from consuming too many resources.
-- **Try manual VACUUM**: Run a manual **`VACUUM`** if you know a table has accumulated a significant number of dead tuples. Use **`VACUUM (VERBOSE)`** to get detailed information about the vacuuming process, helping diagnose potential issues.
-- **Use less invasive tools**: Instead of frequently using **`VACUUM FULL`**, which is resource-intensive and locks tables, consider using the less invasive **`pg_repack`** extension to reclaim space without the extensive locks. Monitor disk space usage, table bloat, and autovacuum activity, and set up alerts for scenarios like nearing transaction ID wraparound or excessive table bloat.
-- **Increase maintenance work memory**: In PostgreSQL, the **`maintenance_work_mem`** configuration parameter determines how much memory can be allocated for maintenance operations. Boosting **`maintenance_work_mem`** can help speed up the VACUUM process by allowing it to sort and process more data in memory.
+- **Tune autovacuum:** You can adjust the **`autovacuum_naptime`** parameter to control how often the autovacuum process checks tables for cleanup. Modify or tweak the **`autovacuum_vacuum_scale_factor`** and **`autovacuum_analyze_scale_factor`** to determine when a table should be vacuumed or analyzed based on the proportion of changed tuples. Additionally, you can use **`autovacuum_vacuum_cost_limit`** and **`autovacuum_vacuum_cost_delay`** to influence how aggressive the autovacuum process is, preventing it from consuming too many resources.
+- **Try manual VACUUM:** Run a manual **`VACUUM`** if you know a table has accumulated a significant number of dead tuples. Use **`VACUUM (VERBOSE)`** to get detailed information about the vacuuming process, helping diagnose potential issues.
+- **Use less invasive tools:** Instead of frequently using **`VACUUM FULL`**, which is resource-intensive and locks tables, consider using the less invasive **`pg_repack`** extension to reclaim space without the extensive locks. Monitor disk space usage, table bloat, and autovacuum activity, and set up alerts for scenarios like nearing transaction ID wraparound or excessive table bloat.
+- **Increase maintenance work memory:** In PostgreSQL, the **`maintenance_work_mem`** configuration parameter determines how much memory can be allocated for maintenance operations. Boosting **`maintenance_work_mem`** can help speed up the VACUUM process by allowing it to sort and process more data in memory.
 
 ## Trick or treat
 
