@@ -39,9 +39,9 @@ Backups are very important but come with their own set of potential pitfalls. Ad
 
 > On a fog-shrouded evening, deep within the echoing chambers of a startup, a lone developer embarked on what was to be a routine schema migration. He unwittingly unleashed an arcane script, and in so doing summoned tables twisted and contorted in unnatural ways, data tha floated into the abyss, and records once familiar - appeared as gibberish incantations. Panic set in with the chilling knowledge that in the realm of databases, some mistakes can haunt persistently.
 
-[Schema migrations](https://xata.io/blog/pgroll-schema-migrations-postgres) can be intricate, especially when replication is involved.
+[Schema migrations](https://xata.io/blog/postgres-schema-changes-pitas) can be intricate, especially when replication is involved.
 
-Start a migration, and there's always the risk it might stall. When that happens, the database can find itself in a twilight zone, neither in its previous state nor fully migrated. This in-between state can lead to unpredictable behaviors when applications interact with it. [Think you can just reverse a migration that went wrong? It's trickier than it sounds](https://github.com/xataio/pgroll). Attempting to roll back a problematic change can sometimes introduce more inconsistencies than the original issue.
+Start a migration, and there's always the risk it might stall. When that happens, the database can find itself in a twilight zone, neither in its previous state nor fully migrated. This in-between state can lead to unpredictable behaviors when applications interact with it. [Think you can just reverse a migration that went wrong? It's trickier than it sounds](https://xata.io/blog/pgroll-schema-migrations-postgres). Attempting to roll back a problematic change can sometimes introduce more inconsistencies than the original issue.
 
 The order of deploying these changes is of paramount importance. Some updates hinge on the successful implementation of others. Misordering them might not only disrupt data access but can also bring entire operations to a standstill. There's another layer of complexity when the development environment doesn't mirror the live production setup. Pushing a change meant for testing into the live environment can result in unexpected complications.
 
