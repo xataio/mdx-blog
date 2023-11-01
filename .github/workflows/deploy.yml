@@ -4,13 +4,11 @@ on:
   push:
     branches:
       - main
-      - deploy-main-website
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     env:
       VERCEL_ORG_ID: team_lMj2cFnO13wwm6LWz3X5kulx
       VERCEL_PROJECT_ID: prj_7fENPf4qHhMCnz6j2IGYWDUkJ9wU
