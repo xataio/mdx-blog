@@ -34,5 +34,5 @@ jobs:
       - id: deploy
         name: Deploy to Vercel
         run: |
-          vercel deploy --no-wait \
+          vercel deploy --prod --no-wait \
             --token ${{ secrets.VERCEL_TOKEN }}
