@@ -13,13 +13,13 @@ ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/database-
 
 > Want to grasp a complex concept in the time it takes to brew your morning coffee? In our **XataByte: 3-minute byte-sized read** series we offer concise explanations to help you unravel intricate database concepts without the time commitment. Today we are looking at **horizontal sharding**.
 
-Recently, while wandering through the narrow aisles of a small comic store brimming with pop culture relics, I came across an interesting find. Hidden amongst a varied assortment of DC and Marvel comics, was an entire shelf dedicated to "Nexus" - a not too popular comic series from the 1980's. With the spines showing slight signs of age, I remarked to the store owner about the find and asked for a specific issue. Without resorting to a computer or any ledger, he quickly scanned the shelves and found it wih no hassle or issue. I was impressed to see that his collection was organized by both publication year and as well as story arc.
+Recently, while wandering through the narrow aisles of a small comic store brimming with pop culture relics, I came across an interesting find. Hidden amongst a varied assortment of DC and Marvel comics, were shelves dedicated to the "Jodoverse" - somewhat popular comic series created by Alejandro Jodorowsky. With the spines showing slight signs of age, I remarked to the store owner about the find and asked for a specific issue. Without resorting to a computer or any ledger, he quickly scanned the shelves and found exactly what I asked for with no hassle or issue. I was impressed to see that his collection was organized by collaborator, publication year as well as story arc!
 
-The store owner's intricate system of organization reminded me of horizontal sharding in databases. Just as the comics were grouped and allocated to specific shelves based on various attributes, horizontal sharding distributes rows of a database across multiple locations, or "shards", based on specific key attributes. This method not only ensures quick access but also optimizes storage and performance. Just as the store owner knew exactly where each comic belonged, so does horizontal sharding ensure that every piece of data finds its right place in a database system.
+The store owner's intricate system of organization is reminiscent of horizontal sharding in databases. Just as the comics are grouped and allocated to specific shelves based on various attributes, horizontal sharding distributes rows of a database across multiple locations, or "shards", based on specific key attributes. This method not only ensures quick access but also optimizes storage and performance. Just as the store owner knew exactly where each comic belonged, so does horizontal sharding ensure that every piece of data finds its right place in a database system.
 
 ## What is Sharding
 
-Sharding is a database design technique where data is split across multiple servers, or "shards", each holding a portion of the data. Think of it like the vintage comic store: instead of having every comic jumbled together, the shop is organized into sections, with each section (or "shard") holding a specific category of comics. This structure makes it easier and faster to find a particular comic, just as sharding can make databases more efficient by spreading the load across multiple servers.
+Sharding is a database design technique where data is split across multiple servers, or "shards", each holding a portion of the data. Think of it like the shop mentioned above: instead of having everything jumbled together, the shop is organized into sections, with each section (or "shard") holding a specific category of comics. This structure makes it easier and faster to find a particular item, just as sharding can make databases more efficient by spreading the load across multiple servers.
 
 As data volumes grow exponentially, efficient data management becomes extremely important. That's why sharding is so important, it's one of the techniques employed to maintain the sanity and speed of large databases. So, what are the different types of sharding?
 
@@ -50,8 +50,6 @@ Database sharding is important for several reasons, primarily relating to the sc
 - Storage management: Different shards can be placed on different storage mediums depending on the access patterns. For example, frequently accessed data can be placed on SSDs while less frequently accessed data can reside on HDDs.
 
 ## Challenges horizontal sharding
-
-Certainly, let's rewrite the challenges of database sharding using the comic book store analogy in a straightforward manner:
 
 - **Efficient organization :**Think of it as sorting comics by themes and years in our comic store. In database sharding, the challenge is to efficiently organize data across shards, ensuring it's easy to manage and retrieve without getting jumbled up.
 
