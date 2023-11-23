@@ -90,7 +90,7 @@ Using the same original table structure, if divided into two shards with vertica
 
 In horizontal sharding, the data is divided into different rows across shards, but the table structure (columns) is the same. In vertical sharding, the data is divided into different columns across shards, potentially splitting the table into different aspects or types of data.
 
-### Why horizontal sharding
+### Why horizontal sharding?
 
 Database sharding is important for several reasons, primarily relating to the scalability, performance, and reliability of database systems, especially when managing massive amounts of data. Here's why it's considered crucial:
 
@@ -110,7 +110,7 @@ Database sharding is important for several reasons, primarily relating to the sc
 
 - **Storage management**: Different shards can be placed on different storage mediums depending on the access patterns.
 
-### Benefits of Horizontal Sharding
+### Benefits of horizontal sharding
 
 - **Handles more data and users**: Sharding lets a database grow and handle more data and users.
 - **Speeds up searches**: It's usually quicker to find something in a smaller room than a huge library. Similarly, sharding makes data searches faster.
@@ -134,19 +134,19 @@ Database sharding is important for several reasons, primarily relating to the sc
 
 Horizontal sharding is not just a method of splitting a database; it's a strategic approach to reorganize how data is stored and accessed. Each phase, from choosing the sharding key to managing data across multiple shards, plays an important role in making the database more scalable and efficient. When done correctly, horizontal sharding can significantly improve a database's performance.
 
-#### Selecting a sharding key
+**1. Selecting a sharding key**
 
 The process starts with choosing a sharding key. This critical step involves identifying a specific data attribute that will dictate how the database is divided into shards. The success of sharding largely depends on this choice, as it affects how easily data can be accessed and managed.
 
-#### Shard creation and management
+**2. Shard creation and management**
 
 After determining the sharding key, the next step is to create the actual shards. These are smaller portions of the original database, designed to improve efficiency. However, it's not just about creating these shards; managing them is equally important. This includes tasks like ensuring data is evenly distributed across shards and that each shard is performing well.
 
-#### Data migration
+**3. Data migration**
 
 Migrating existing data to the newly created shards is a delicate operation. It requires careful planning to make sure that the data fits well with the chosen sharding key. Proper execution of this step is vital to ensure that data is distributed correctly across the shards.
 
-#### Handling queries across shards
+**4. Handling queries across shards**
 
 Sometimes, queries need to pull data from multiple shards. Handling these queries efficiently is crucial. The aim is to keep the retrieval process quick and smooth, maintaining the benefits of having a sharded database.
 
