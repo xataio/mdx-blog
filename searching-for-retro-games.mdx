@@ -121,7 +121,7 @@ To deliver this awesome, customized search experience to our users, we'll use Xa
 import { getXataClient } from './xata';
 const xata = getXataClient();
 
-const records = await xata.search.all('demon', {
+const { records } = await xata.search.all('demon', {
   tables: [
     {
       table: 'games',
@@ -380,7 +380,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Paste the code snippet copied from the Xata search dashboard
   // passing in the search term from the request
-  const records = await xata.search.all(term, {
+  const { records } = await xata.search.all(term, {
     tables: [
       {
         table: 'games', // Search the 'games' data

@@ -48,7 +48,7 @@ import { xataWorker } from './xata';
 
 // Code executed on the server as a Cloudflare Worker
 const searchAccount = xataWorker('searchAccount', async ({ xata }, { term }) => {
-  const results = await xata.search.all(term, {
+  const { records } = await xata.search.all(term, {
     tables: [
       {
         table: 'accounts',
@@ -61,7 +61,7 @@ const searchAccount = xataWorker('searchAccount', async ({ xata }, { term }) => 
     prefix: 'phrase'
   });
 
-  return results;
+  return { records };
 });
 
 // Code executed in the browser
@@ -154,7 +154,7 @@ import { xataWorker } from './xata';
 
 // Code executed on the server as a Cloudflare Worker
 const searchAccount = xataWorker('searchAccount', async ({ xata }, { term }) => {
-  const results = await xata.search.all(term, {
+  const { records } = await xata.search.all(term, {
     tables: [
       {
         table: 'accounts',
@@ -166,7 +166,7 @@ const searchAccount = xataWorker('searchAccount', async ({ xata }, { term }) => 
   });
 
   // Getting the highlights (and more)
-  const enrichedResults = results.map((result) => {
+  const enrichedResults = records.map((result) => {
     return {
       ...result,
       ...result.record.getMetadata()
