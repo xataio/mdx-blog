@@ -90,6 +90,38 @@ Using the same original table structure, if divided into two shards with vertica
 
 In horizontal sharding, the data is divided into different rows across shards, but the table structure (columns) is the same. In vertical sharding, the data is divided into different columns across shards, potentially splitting the table into different aspects or types of data.
 
+Other types of sharding exist and include:
+
+<Expand title="Hash-based sharding">
+  **How it works**: A hash function is applied to a key attribute, and the result determines which shard the record goes
+  to. **Use case**: Good for evenly distributing data, especially when the range or list is not predictable.
+  **Example**: User IDs are hashed, and the hash value determines the shard.
+</Expand>
+
+<Expand title="Directory-based sharding">
+  **How it works**: A separate lookup service or directory maps each data item to a specific shard. **Use case**: Offers
+  flexibility in sharding and can handle more complex data distribution scenarios. **Example**: A mapping service
+  directs user queries to the appropriate shard based on the user's location or preferences.
+</Expand>
+
+<Expand title="Geo-sharding">
+  **How it works**: Data is sharded based on geographical locations. **Use case**: Useful for services that need to
+  reduce latency by locating data closer to the user. **Example**: Social media posts might be stored in a shard located
+  in the same region as the user.
+</Expand>
+
+<Expand title="Key-based sharding">
+  **How it works**: Also known as customer sharding. The sharding is done based on a specific key, such as customer ID
+  or tenant ID. **Use case**: Effective for multi-tenant applications where data isolation between tenants is crucial.
+  **Example**: Each comic's data is stored in a separate shard.
+</Expand>
+
+<Expand title="Functional sharding">
+  **How it works**: Sharding based on the function or the type of data. **Use case**: Suitable for systems where
+  different types of data have vastly different access patterns. **Example**: One shard handles all the transactional
+  data, while another handles logging or archival data.
+</Expand>
+
 ### Why horizontal sharding?
 
 Database sharding is important for several reasons, primarily relating to the scalability, performance, and reliability of database systems, especially when managing massive amounts of data. Here's why it's considered crucial:
