@@ -34,41 +34,33 @@ As data volumes grow exponentially, efficient data management becomes extremely 
 Other types of sharding exist and include:
 
 <Expand title="Hash-based sharding">
-  | Aspect | Description |
-  |----------------|------------------------------------------------------------------------------------------------------|
-  | **How it works** | A hash function is applied to a key attribute, and the result determines which shard the record
-  goes to. | | **Use case** | Good for evenly distributing data, especially when the range or list is not predictable. |
-  | **Example** | User IDs are hashed, and the hash value determines the shard. |
+  A hash function is applied to a key attribute, and the result determines which shard the record goes to. This type of
+  sharding may be good for evenly distributing data, especially when the range or list is not predictable. For example,
+  user IDs can be hashed, and the hash value determines the shard.
 </Expand>
 
 <Expand title="Directory-based sharding">
-  | Aspect | Description | |----------------|-------------| | **How it works** | A separate lookup service or directory
-  maps each data item to a specific shard. | | **Use case** | Offers flexibility in sharding and can handle more complex
-  data distribution scenarios. | | **Example** | A mapping service directs user queries to the appropriate shard based
-  on the user's location or preferences. |
+  A separate lookup service or directory maps each data item to a specific shard. This offers flexibility in sharding
+  and can handle more complex data distribution scenarios. For example, a mapping service can direct user queries to the
+  appropriate shard based on the user's location or preferences.
 </Expand>
 
 <Expand title="Geo-sharding">
-  | Aspect | Description | |----------------|--------------------------------------------------------------------------|
-  | **How it works** | Data is sharded based on geographical locations. | | **Use case** | Useful for services that need
-  to reduce latency by locating data closer to the user. | | **Example** | Social media posts might be stored in a shard
-  located in the same region as the user. |
+  Data is sharded based on geographical locations. This is useful for services that need to reduce latency by locating
+  data closer to the user. For example, social media posts might be stored in a shard located in the same region as the
+  user.
 </Expand>
 
 <Expand title="Key-based sharding">
-  | Aspect | Description |
-  |----------------|------------------------------------------------------------------------------------------------------------|
-  | **How it works** | Also known as customer sharding. The sharding is done based on a specific key, such as customer
-  ID or tenant ID. | | **Use case** | Effective for multi-tenant applications where data isolation between tenants is
-  crucial. | | **Example** | Each comic's data is stored in a separate shard. |
+  This is also known as customer sharding. The sharding is done based on a specific key, such as customer ID or tenant
+  ID. This can be used for multi-tenant applications where data isolation between tenants is crucial. For example, each
+  comic's data can be stored in a separate shard.
 </Expand>
 
 <Expand title="Functional sharding">
-  | Aspect | Description |
-  |----------------|-----------------------------------------------------------------------------------------------------|
-  | **How it works** | Sharding based on the function or the type of data. | | **Use case** | Suitable for systems where
-  different types of data have vastly different access patterns. | | **Example** | One shard handles all the
-  transactional data, while another handles logging or archival data. |
+  This is sharding based on the function or the type of data. This is suitable for systems where different types of data
+  have vastly different access patterns. For example, this can be used when one shard handles all the transactional
+  data, while another handles logging or archival data.
 </Expand>
 
 ### Sharding comparison example
