@@ -6,14 +6,14 @@ image:
   alt: Quick read on horizontal sharding
 author: J Edwards
 date: 11-23-2023
-published: false
+published: true
 slug: xatabyte-horizontal-sharding
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/database-sharding-twitter-og-min.png
 ---
 
-> Want to grasp a complex concept in the time it takes to brew your morning coffee? In our **XataByte: 5-minute byte-sized read** series we offer concise explanations to help you unravel intricate database concepts without the time commitment. Today we are looking at **horizontal sharding**.
+> Want to grasp a complex concept in the time it takes to brew your morning coffee? In our **XataByte: 3-minute byte-sized read** series we offer concise explanations to help you unravel intricate database concepts without the time commitment. Today's reading is a bit on the longer side; we're looking at **horizontal sharding**.
 
-Recently, while wandering through the narrow aisles of a small comic store brimming with pop culture relics, I came across an interesting find. Hidden amongst a varied assortment of DC and Marvel comics, were shelves dedicated to the "Jodoverse" - somewhat popular comic series created by Alejandro Jodorowsky. With the spines showing slight signs of age, I remarked to the store owner about the find and asked for a specific issue. Without resorting to a system, ledger, or anything, he quickly scanned the shelves and found exactly what I asked for with no hassle or issue. I was impressed to see that his collection was organized by genre, collaborator, publication year as well as story arc!
+Recently, while wandering through the narrow aisles of a small comic store brimming with pop culture relics, I came across an interesting find. Hidden amongst a varied assortment of DC and Marvel comics, were shelves dedicated to the "Jodoverse" - a series of comics created by Alejandro Jodorowsky. With the spines showing slight signs of age, I remarked to the store owner about the find and asked for a specific issue. Without resorting to a system, ledger, or anything, he quickly scanned the shelves and in a matter of milliseconds found exactly what I asked for with no hassle. I was impressed to see that his collection was organized by genre, collaborator, publication year as well as story arc!
 
 The store owner's organizational strategy allowed him to quickly access comics. His store was divided into different sections; each section was like a mini comic store specializing in a particular category. For example, if you were looking for a 90s Jodorowsky comic created in collaboration with a particular artist, you'd first go to the section dedicated to Jodorowsky's works, find a specific area for collaborations, and then narrow your search down to the shelves tagged with the 90s. This setup, where each 'mini-store' or section held a distinct subset of the entire collection, mirrors the concept of horizontal sharding in databases, where data is split into manageable parts based on specific keys for more efficient access and retrieval.
 
@@ -134,13 +134,13 @@ Database sharding is important for several reasons, primarily relating to the sc
 
 - **Load balancing**: Sharding can distribute the database load evenly across servers. This ensures that no single server becomes a bottleneck, improving the overall performance and responsiveness of the database system.
 
-- **Hardware cost efficiency**: Instead of scaling up (adding more power to a single server), sharding allows organizations to scale out, adding more servers to the mix. This can often be done using commodity hardware, making it more cost-effective than buying high-end servers.
+- **Hardware cost efficiency**: Instead of scaling up, sharding allows organizations to scale out, adding more servers to the mix. This spreads data across multiple servers, each handling a part of the total data, which lightens the load on individual servers.
 
 - **Failover and redundancy**: If one shard fails, it won't bring down the entire database. Only the users or transactions tied to that specific shard would be affected, while others can continue operations normally. This can be combined with replication strategies to provide even better fault tolerance.
 
 - **Geographical distribution**: For global applications, sharding can be done based on geographical considerations. This means that users can be served from a nearby shard, reducing latency and improving application responsiveness.
 
-- **Isolation of problematic workloads**: If a particular shard starts to experience issues, it can be isolated and managed without affecting the performance of other shards. This isolation can also be beneficial for maintenance and updates.
+- **Isolation of problematic workloads**: If a particular shard starts to experience issues, it can be isolated and managed without affecting the performance of other shards. This isolation can also be good for maintenance and updates.
 
 - **Storage management**: Different shards can be placed on different storage mediums depending on the access patterns.
 
@@ -160,7 +160,7 @@ Database sharding is important for several reasons, primarily relating to the sc
 
 - **Handling historical data**: Just as we talked about those older comic books, database sharding also involves the challenge of managing historical data. As data accumulates over time, adopting efficient strategies to handle this older information becomes essential to sustain both performance and storage effectiveness.
 
-- **Performance bottlenecks:** An overcrowded store sections lead to slower service, improper shard distribution can cause performance bottlenecks in database sharding. Ensuring optimal data distribution among shards is essential to avoid these performance issues.
+- **Performance bottlenecks**: An overcrowded store sections lead to slower service, improper shard distribution can cause performance bottlenecks in database sharding. Ensuring optimal data distribution among shards is essential to avoid these performance issues.
 
 - **Complexity management**: Similar to the comic store's categorization system, managing multiple shards in a database can be challenging. Implementing and maintaining sharding strategies require careful planning to avoid complexity, in addition to managing costs associated with adding more servers or clusters for sharding can be a challenge. Also, PostgreSQL itself does not provide built-in database sharding in the same way some distributed databases do. However, PostgreSQL supports table partitioning, which can be seen as a form of horizontal sharding at the table level.
 
@@ -190,23 +190,23 @@ To get sharding in PostgreSQL, it usually has to be set up manually. This means 
 
 There are also [extensions](https://pgxn.org/dist/pg_shard/pg_shard.html#:~:text=pg_shard%20is%20a%20sharding%20extension,any%20changes%20to%20your%20application.) available that can help with sharding in PostgreSQL. These tools make it easier for PostgreSQL to handle data spread out across different places, making the database more scalable. However, adding sharding, whether by doing it manually or using these tools, makes the database system more complex. It requires careful planning and regular maintenance, especially when dealing with big datasets.
 
-## Solutions for horizontal sharding
+## Tips for horizontal sharding
 
 Implementing horizontal sharding in database management involves several key strategies. Below is a summary:
 
-| Strategy                                 | Detailed Explanation                                                                                                                                                                                                 |
-| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Sharding key selection**               | The sharding key is pivotal for determining how data is distributed across shards. It should be selected based on frequent data access patterns to ensure efficient querying and balanced data distribution.         |
-| **Data distribution and load balancing** | Shards should be balanced in terms of data load to prevent overloading. Regular monitoring and adjustment of data across shards are necessary to maintain optimal performance.                                       |
-| **Query optimization**                   | Queries, particularly those spanning multiple shards, must be optimized for speed. Efficient algorithms for aggregating data from multiple shards enhance query response times.                                      |
-| **Handling complex transactions**        | Implementing distributed transaction protocols is essential for maintaining data consistency across shards. This involves ensuring that transactions are processed uniformly, even when they affect multiple shards. |
-| **Data consistency and integrity**       | Regular synchronization and validation are required to ensure that data remains consistent and intact across all shards. This involves checks and balances to maintain data integrity.                               |
-| **Scalability and flexibility**          | The sharding architecture should be designed to easily adapt and scale. This includes accommodating the addition of new shards and adjusting to evolving data usage patterns.                                        |
-| **Shard management**                     | Effective management of each shard involves monitoring performance and automating routine tasks to ensure efficient operation of the sharded database.                                                               |
-| **Backup and disaster recovery**         | Implementing comprehensive backup solutions and quick disaster recovery strategies for each shard is crucial for data safety. This ensures minimal downtime in case of system failures.                              |
-| **Resource planning**                    | Efficient allocation and management of resources are key. Utilizing cloud services can offer additional flexibility and scalability for resource management.                                                         |
-| **Security**                             | Strong security measures, including data encryption and rigorous access controls, should be implemented at the shard level to protect sensitive information.                                                         |
+| Aspect                   | Description                                                               |
+| ------------------------ | ------------------------------------------------------------------------- |
+| **Sharding key**         | Choose based on frequent data access to evenly split data.                |
+| **Balancing data**       | Keep shards evenly loaded and adjust regularly to prevent overloading.    |
+| **Speedy queries**       | Optimize queries across shards for speed using efficient algorithms.      |
+| **Complex transactions** | Use protocols to maintain consistent data across all shards.              |
+| **Consistency checks**   | Regularly sync and check data for accuracy across shards.                 |
+| **Adaptable sharding**   | Design sharding to easily grow and adapt to changing data needs.          |
+| **Managing shards**      | Monitor shard performance and automate tasks for efficiency.              |
+| **Backup plans**         | Implement strong backup and recovery strategies for each shard.           |
+| **Resource management**  | Smartly plan and use resources, utilizing cloud services for flexibility. |
+| **Shard security**       | Protect data in each shard with encryption and strict access control.     |
 
-And there we go – a basic rundown of horizontal sharding in databases. This overview touches just the tip of the iceberg, but it gives a fundamental insight into how horizontal sharding helps in managing large datasets more efficiently.
+And there we go – a basic rundown of horizontal sharding in databases. This overview touches just the tip of the iceberg, but it gives some insight into how horizontal sharding helps in managing large datasets more efficiently.
 
-Let us know what you think. We have a lot more to say on the topic, so reach out to us on [Discord](https://xata.io/discord) or follow us on [X | Twitter](https://twitter.com/xata). We'd love to hear your thoughts, answer your questions, and keep you updated on the latest at Xata.
+Let us know what you think. We have a lot more to say on the topic, so reach out to us on [Discord](https://xata.io/discord) or follow us on [X | Twitter](https://twitter.com/xata). We'd love to hear your thoughts, answer your questions, and keep you updated on the latest at [Xata](https://xata.io/).
