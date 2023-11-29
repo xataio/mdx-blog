@@ -41,7 +41,7 @@ pgroll init
 
 A message is displayed confirming the successful configuration of pgroll.
 
-> What data does `pgroll` store?
+> What data does `pgroll` store?  
 > `pgroll` stores its data in the `pgroll` schema. In this schema it creates:
 >
 > - A `migrations` table containing the version history for each schema in the database
@@ -100,8 +100,8 @@ To apply the migration to the database, run the following command:
 pgroll start sql/01_create_users_table.json --complete
 ```
 
-> What does the `--complete` flag do here?
-> `pgroll` divides migration application into two steps: **start** and **complete**. During the **start** phase, both old and new versions of the database schema are available to client applications. After the **complete** phase, only the _most recent_ schema is available.
+> What does the `--complete` flag do here?  
+> `pgroll` divides migration application into two steps: **start** and **complete**. During the **start** phase, both old and new versions of the database schema are available to client applications. After the **complete** phase, only the _most recent_ schema is available.  
 > As this is the first migration, there is no _old_ schema to maintain, so the migration can safely be started and completed in one step.
 
 The `users` table can be filled with sample data using this SQL command:
@@ -159,8 +159,7 @@ pgroll start 02_user_description_set_nullable.json
 
 After some progress updates you'll receive a message confirming the successful start of the migration.
 
-> What's happening behind the progress updates?
->
+> What's happening behind the progress updates?  
 > In order to add the new `description` column, `pgroll` creates a temporary `_pgroll_new_description` column and copies over the data from the existing `description` column, using the `up` SQL from the migration. As we have 10^5 rows in our table, this process takes some time. This process is called _backfilling_ and it is performed in batches to avoid locking all rows in the table simultaneously.
 
 At this point it's useful to look at the table data and schema to see what `pgroll` has done. Let's look at the data first:
@@ -224,8 +223,7 @@ Triggers:
 
 The `_pgroll_new_description` column has a `NOT NULL` `CHECK` constraint, but the old `description` column is still nullable.
 
-> Why is the `IS NOT NULL` constraint on the new `_pgroll_new_description` column `NOT VALID`?
->
+> Why is the `IS NOT NULL` constraint on the new `_pgroll_new_description` column `NOT VALID`?  
 > Defining the constraint as `NOT VALID` means that the `users` table will not be scanned to enforce the `NOT NULL` constraint for existing rows. This means the constraint can be added quickly without locking rows in the table. `pgroll` assumes that the `up` SQL provided by the user will ensure that no `NULL` values are written to the `_pgroll_new_description` column.
 
 We'll talk about what the two triggers on the table do later.
@@ -352,7 +350,7 @@ The output should look like this:
 
 Notice that the trigger installed by `pgroll` has rewritten the `NULL` value inserted into the old schema by using the `up` SQL from the migration definition.
 
-> How do applications configure which version of the schema to use?
+> How do applications configure which version of the schema to use?  
 > `pgroll` allows old and new versions of an application to exist side-by-side during a migration. Each version of the application should be configured with the name of the correct version schema, so that the application sees the database schema that it expects.
 
 ### Completing the migration
@@ -411,8 +409,7 @@ A few things have happened:
 - The `description` column is now marked as `NOT NULL`.
 - The triggers to copy data back and forth between the old and new column have been removed.
 
-> How is the column made `NOT NULL` without locking?
->
+> How is the column made `NOT NULL` without locking?  
 > Because there is an existing `NOT NULL` constraint on the column, created when the migration was started, making the column `NOT NULL` when the migration is completed does not require a full table scan. See the Postgres [docs](https://www.postgresql.org/docs/current/sql-altertable.html#SQL-ALTERTABLE-DESC-SET-DROP-NOT-NULL) for `SET NOT NULL`.
 
 **At this point, the migration is complete. There is just one version schema in the database: `public_02_user_description_set_nullable` and the underlying `users` table has the expected schema.**
