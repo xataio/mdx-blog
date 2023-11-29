@@ -224,6 +224,9 @@ Triggers:
 The `_pgroll_new_description` column has a `NOT NULL` `CHECK` constraint, but the old `description` column is still nullable.
 
 > **Why is the `IS NOT NULL` constraint on the new `_pgroll_new_description` column `NOT VALID`?**\
+>
+> ---
+>
 > Defining the constraint as `NOT VALID` means that the `users` table will not be scanned to enforce the `NOT NULL` constraint for existing rows. This means the constraint can be added quickly without locking rows in the table. `pgroll` assumes that the `up` SQL provided by the user will ensure that no `NULL` values are written to the `_pgroll_new_description` column.
 
 We'll talk about what the two triggers on the table do later.
