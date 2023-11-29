@@ -12,8 +12,6 @@ slug: pgroll-internals
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/introducing-pgroll.jpg
 ---
 
-## pgroll Internals
-
 At the start of October we released [pgroll](https://github.com/xataio/pgroll), an open source tool for [zero-downtime, reversible schema migrations for Postgres](https://xata.io/blog/pgroll-schema-migrations-postgres).
 
 We've been hard at work on `pgroll` for the past couple of months, and now seems like the perfect time to delve deeper into `pgroll` and explore how it really works.
@@ -27,7 +25,7 @@ We've been hard at work on `pgroll` for the past couple of months, and now seems
 - **Easy rollbacks**: Rollbacks are simplified with `pgroll`, as it keeps two versions of your database schema during a migration. To rollback, you just need to remove the new schema version. Since the old version remains intact throughout, older client applications continue to work without any disruption
 - **Data backfilling**: During a migration, `pgroll` allows both old and new schema versions to coexist. It synchronizes any data changes between these versions. This means data added to the old schema is automatically updated in the new schema, and the reverse is also true. As a result, both old and new client applications can operate simultaneously without issues until the migration is complete.
 
-## A step by step example
+## A step-by-step example
 
 Let's see how `pgroll` works by walking through an example migration and seeing what `pgroll` does at each step of the migration process.
 
@@ -41,7 +39,7 @@ pgroll init
 
 A message is displayed confirming the successful configuration of pgroll.
 
-> What data does `pgroll` store?  
+> What data does `pgroll` store?\
 > `pgroll` stores its data in the `pgroll` schema. In this schema it creates:
 >
 > - A `migrations` table containing the version history for each schema in the database
@@ -100,8 +98,8 @@ To apply the migration to the database, run the following command:
 pgroll start sql/01_create_users_table.json --complete
 ```
 
-> What does the `--complete` flag do here?  
-> `pgroll` divides migration application into two steps: **start** and **complete**. During the **start** phase, both old and new versions of the database schema are available to client applications. After the **complete** phase, only the _most recent_ schema is available.  
+> What does the `--complete` flag do here?\
+> `pgroll` divides migration application into two steps: **start** and **complete**. During the **start** phase, both old and new versions of the database schema are available to client applications. After the **complete** phase, only the _most recent_ schema is available.\
 > As this is the first migration, there is no _old_ schema to maintain, so the migration can safely be started and completed in one step.
 
 The `users` table can be filled with sample data using this SQL command:
@@ -159,7 +157,7 @@ pgroll start 02_user_description_set_nullable.json
 
 After some progress updates you'll receive a message confirming the successful start of the migration.
 
-> What's happening behind the progress updates?  
+> What's happening behind the progress updates?\
 > In order to add the new `description` column, `pgroll` creates a temporary `_pgroll_new_description` column and copies over the data from the existing `description` column, using the `up` SQL from the migration. As we have 10^5 rows in our table, this process takes some time. This process is called _backfilling_ and it is performed in batches to avoid locking all rows in the table simultaneously.
 
 At this point it's useful to look at the table data and schema to see what `pgroll` has done. Let's look at the data first:
@@ -351,7 +349,7 @@ The output should look like this:
 
 Notice that the trigger installed by `pgroll` has rewritten the `NULL` value inserted into the old schema by using the `up` SQL from the migration definition.
 
-> How do applications configure which version of the schema to use?  
+> How do applications configure which version of the schema to use?\
 > `pgroll` allows old and new versions of an application to exist side-by-side during a migration. Each version of the application should be configured with the name of the correct version schema, so that the application sees the database schema that it expects.
 
 ### Completing the migration
@@ -410,10 +408,10 @@ A few things have happened:
 - The `description` column is now marked as `NOT NULL`.
 - The triggers to copy data back and forth between the old and new column have been removed.
 
-> How is the column made `NOT NULL` without locking?  
+> How is the column made `NOT NULL` without locking?\
 > Because there is an existing `NOT NULL` constraint on the column, created when the migration was started, making the column `NOT NULL` when the migration is completed does not require a full table scan. See the Postgres [docs](https://www.postgresql.org/docs/current/sql-altertable.html#SQL-ALTERTABLE-DESC-SET-DROP-NOT-NULL) for `SET NOT NULL`.
 
-**At this point, the migration is complete. There is just one version schema in the database: `public_02_user_description_set_nullable` and the underlying `users` table has the expected schema.**
+**At this point, the migration is complete**. There is just one version schema in the database: `public_02_user_description_set_nullable` and the underlying `users` table has the expected schema.
 
 ### Rollbacks
 
@@ -569,7 +567,7 @@ if err != nil {
 
 In practice, the `searchPath` variable would be provided to the application as an environment variable.
 
-### Get involved
+## Get involved
 
 `pgroll` is an open source project, and we're really excited to see more people getting involved. If you're interested in submitting issues, giving feedback, or contributing pull requests, our [repository](https://github.com/xataio/pgroll) is the place to be!
 
