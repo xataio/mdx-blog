@@ -122,7 +122,7 @@ This will insert 100,000 users into the `users` table. Roughly half of the users
 
 ### Second migration
 
-"Now that the `users` table is set up, let's apply a non-backwards-compatible schema change and see how `pgroll` assists in managing both the old and new schema versions simultaneously.
+Now that the `users` table is set up, let's apply a non-backwards-compatible schema change and see how `pgroll` assists in managing both the old and new schema versions simultaneously.
 
 We'd like to change the `users` table to disallow `NULL` values in the `description` field. We also want a `description` to be set explicitly for all new users, so we will not set a default value for this column.
 
