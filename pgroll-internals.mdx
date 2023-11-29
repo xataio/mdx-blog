@@ -1,0 +1,578 @@
+---
+title: How pgroll works under the hood
+description: 'Learn how pgroll implements zero-downtime schema changes by exploring an example.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/introducing-pgroll.jpg
+  alt: pgroll
+author: Andrew Farries
+date: 11-29-2023
+tags: ['open-source', 'postgres', 'postgresql', 'schema', 'engineering', 'product']
+published: true
+slug: pgroll-internals
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/introducing-pgroll.jpg
+---
+
+## pgroll Internals
+
+At the start of October we released [pgroll](https://github.com/xataio/pgroll), an open source tool for [zero-downtime, reversible schema migrations for Postgres](https://xata.io/blog/pgroll-schema-migrations-postgres).
+
+We've been hard at work on `pgroll` for the past couple of months, and now seems like the perfect time to delve deeper into `pgroll` and explore how it really works.
+
+## A brief recap
+
+`pgroll` is an open source schema migration tool that takes a different approach, using the [expand/contract pattern](https://openpracticelibrary.com/practice/expand-and-contract-pattern/), to solve some of the problems associated with schema migrations:
+
+- **Multiple schema versions**: `pgroll` keeps two versions of your schema active at the same time during a migration; the old schema and the new. This means that old versions of client applications can co-exist with new versions of client applications during an application rollout because each version of the application sees the version of the database schema that it expects to see.
+- **Lock free migrations**: A careful approach to locking to ensure that tables don't get locked for long periods during a migration.
+- **Easy rollbacks**: Rollbacks are simplified with `pgroll`, as it keeps two versions of your database schema during a migration. To rollback, you just need to remove the new schema version. Since the old version remains intact throughout, older client applications continue to work without any disruption
+- **Data backfilling**: During a migration, `pgroll` allows both old and new schema versions to coexist. It synchronizes any data changes between these versions. This means data added to the old schema is automatically updated in the new schema, and the reverse is also true. As a result, both old and new client applications can operate simultaneously without issues until the migration is complete.
+
+## A step by step example
+
+Let's see how `pgroll` works by walking through an example migration and seeing what `pgroll` does at each step of the migration process.
+
+### Initialization
+
+`pgroll` needs to store its own internal state somewhere in the target Postgres database. Initializing `pgroll` configures this store and makes `pgroll` ready for first use:
+
+```
+pgroll init
+```
+
+A message is displayed confirming the successful configuration of pgroll.
+
+> What data does `pgroll` store?
+> `pgroll` stores its data in the `pgroll` schema. In this schema it creates:
+>
+> - A `migrations` table containing the version history for each schema in the database
+> - Functions to capture the current database schema for a given schema name
+> - Triggers to capture DDL statements that run outside of `pgroll` migrations
+
+### First migration
+
+With `pgroll` initialized, let's run our first migration. Here is a migration that creates a table:
+
+```json
+{
+  "name": "01_create_users_table",
+  "operations": [
+    {
+      "create_table": {
+        "name": "users",
+        "columns": [
+          {
+            "name": "id",
+            "type": "serial",
+            "pk": true
+          },
+          {
+            "name": "name",
+            "type": "varchar(255)",
+            "unique": true
+          },
+          {
+            "name": "description",
+            "type": "text",
+            "nullable": true
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+Now, save this file as `sql/01_create_users_table.json`.
+
+The migration will create a `users` table with three columns. It is equivalent to the following SQL DDL statement:
+
+```sql
+CREATE TABLE users(
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) UNIQUE NOT NULL,
+  description TEXT
+)
+```
+
+To apply the migration to the database, run the following command:
+
+```
+pgroll start sql/01_create_users_table.json --complete
+```
+
+> What does the `--complete` flag do here?
+> `pgroll` divides migration application into two steps: **start** and **complete**. During the **start** phase, both old and new versions of the database schema are available to client applications. After the **complete** phase, only the _most recent_ schema is available.
+> As this is the first migration, there is no _old_ schema to maintain, so the migration can safely be started and completed in one step.
+
+The `users` table can be filled with sample data using this SQL command:
+
+```sql
+INSERT INTO users (name, description)
+ SELECT
+   'user_' || suffix,
+   CASE
+     WHEN random() < 0.5 THEN 'description for user_' || suffix
+     ELSE NULL
+   END
+ FROM generate_series(1, 100000) AS suffix;
+```
+
+This will insert 100,000 users into the `users` table. Roughly half of the users will have descriptions and the other half will have `NULL` descriptions.
+
+### Second migration
+
+"Now that the `users` table is set up, let's apply a non-backwards-compatible schema change and see how `pgroll` assists in managing both the old and new schema versions simultaneously.
+
+We'd like to change the `users` table to disallow `NULL` values in the `description` field. We also want a `description` to be set explicitly for all new users, so we will not set a default value for this column.
+
+There are two things that make this migration difficult:
+
+- We have existing `NULL` values in our `description` column that need to be updated to something not `NULL`.
+- Existing applications using the table are still running and may be inserting more `NULL` descriptions.
+
+`pgroll` helps solve both problems by maintaining old and new versions of the schema side-by-side and transferring or modifying data between them as needed.
+
+Here is the `pgroll` migration that will perform the migration to make the `description` column `NOT NULL`:
+
+```json
+{
+  "name": "02_user_description_set_nullable",
+  "operations": [
+    {
+      "alter_column": {
+        "table": "users",
+        "column": "description",
+        "nullable": false,
+        "up": "(SELECT CASE WHEN description IS NULL THEN 'description for ' || name ELSE description END)",
+        "down": "description"
+      }
+    }
+  ]
+}
+```
+
+Save this migration as `sql/02_user_description_set_nullable.json` and start the migration:
+
+```
+pgroll start 02_user_description_set_nullable.json
+```
+
+After some progress updates you'll receive a message confirming the successful start of the migration.
+
+> What's happening behind the progress updates?
+>
+> In order to add the new `description` column, `pgroll` creates a temporary `_pgroll_new_description` column and copies over the data from the existing `description` column, using the `up` SQL from the migration. As we have 10^5 rows in our table, this process takes some time. This process is called _backfilling_ and it is performed in batches to avoid locking all rows in the table simultaneously.
+
+At this point it's useful to look at the table data and schema to see what `pgroll` has done. Let's look at the data first:
+
+```sql
+SELECT * FROM users ORDER BY id LIMIT 10
+```
+
+You should see something like this:
+
+```
++-----+----------+-------------------------+--------------------------+
+| id  | name     | description             | _pgroll_new_description  |
++-----+----------+-------------------------+--------------------------+
+| 1   | user_1   | <null>                  | description for user_1   |
+| 2   | user_2   | description for user_2  | description for user_2   |
+| 3   | user_3   | <null>                  | description for user_3   |
+| 4   | user_4   | description for user_4  | description for user_4   |
+| 5   | user_5   | <null>                  | description for user_5   |
+| 6   | user_6   | description for user_6  | description for user_6   |
+| 7   | user_7   | <null>                  | description for user_7   |
+| 8   | user_8   | <null>                  | description for user_8   |
+| 9   | user_9   | description for user_9  | description for user_9   |
+| 10  | user_10  | description for user_10 | description for user_10  |
+```
+
+This is the "expand" phase of the [expand/contract pattern](https://openpracticelibrary.com/practice/expand-and-contract-pattern/) in action; `pgroll` has added a `_pgroll_new_description` field to the table and populated the field for all rows using the `up` SQL logic from the `02_user_description_set_nullable.json` file:
+
+```json
+"up": "(SELECT CASE WHEN description IS NULL THEN 'description for ' || name ELSE description END)",
+```
+
+This has copied over all `description` values into the `_pgroll_new_description` field, rewriting any `NULL` values using the provided SQL.
+
+Now let's look at the table schema:
+
+```
+DESCRIBE users
+```
+
+You should see something like this:
+
+```
++-------------------------+------------------------+-----------------------------------------------------------------+
+| Column                  | Type                   | Modifiers                                                       |
+|-------------------------+------------------------+-----------------------------------------------------------------|
+| id                      | integer                |  not null default nextval('_pgroll_new_users_id_seq'::regclass) |
+| name                    | character varying(255) |  not null                                                       |
+| description             | text                   |                                                                 |
+| _pgroll_new_description | text                   |                                                                 |
++-------------------------+------------------------+-----------------------------------------------------------------+
+Indexes:
+    "_pgroll_new_users_pkey" PRIMARY KEY, btree (id)
+    "_pgroll_new_users_name_key" UNIQUE CONSTRAINT, btree (name)
+Check constraints:
+    "_pgroll_add_column_check_description" CHECK (_pgroll_new_description IS NOT NULL) NOT VALID
+Triggers:
+    _pgroll_trigger_users__pgroll_new_description BEFORE INSERT OR UPDATE ON users FOR EACH ROW EXECUTE FUNCTION _pgroll_trigger_users__pgroll_new_description()
+    _pgroll_trigger_users_description BEFORE INSERT OR UPDATE ON users FOR EACH ROW EXECUTE FUNCTION _pgroll_trigger_users_description()
+```
+
+The `_pgroll_new_description` column has a `NOT NULL` `CHECK` constraint, but the old `description` column is still nullable.
+
+> Why is the `IS NOT NULL` constraint on the new `_pgroll_new_description` column `NOT VALID`?
+>
+> Defining the constraint as `NOT VALID` means that the `users` table will not be scanned to enforce the `NOT NULL` constraint for existing rows. This means the constraint can be added quickly without locking rows in the table. `pgroll` assumes that the `up` SQL provided by the user will ensure that no `NULL` values are written to the `_pgroll_new_description` column.
+
+We'll talk about what the two triggers on the table do later.
+
+For now, let's look at the schemas in the database:
+
+```
+\dn
+```
+
+You should see something like this:
+
+```
++-----------------------------------------+-------------------+
+| Name                                    | Owner             |
++-----------------------------------------+-------------------+
+| pgroll                                  | postgres          |
+| public                                  | pg_database_owner |
+| public_01_create_users_table            | postgres          |
+| public_02_user_description_set_nullable | postgres          |
++-----------------------------------------+-------------------+
+```
+
+We have two schemas: one corresponding to the old schema, `public_01_create_users_table`, and one for the migration we just started, `public_02_user_description_set_nullable`. Each schema contains one view on the `users` table. Let's look at the view in the first schema:
+
+```
+\d+ public_01_create_users_table.users
+```
+
+The output should contain something like this:
+
+```sql
+ SELECT users.id,
+    users.name,
+    users.description
+   FROM users;
+```
+
+and for the second view:
+
+```
+\d+ public_02_user_description_set_nullable.users
+```
+
+The output should contain something like this:
+
+```sql
+ SELECT users.id,
+    users.name,
+    users._pgroll_new_description AS description
+   FROM users;
+```
+
+The second view exposes the same three columns as the first, but its `description` field is mapped to the `_pgroll_new_description` field in the underlying table.
+
+By choosing to access the `users` table through either the `public_01_create_users_table.users` or `public_02_user_description_set_nullable.users` view, applications have a choice of which version of the schema they want to see; either the old version without the `NOT NULL` constraint on the `description` field or the new version with the constraint.
+
+When we looked at the schema of the `users` table, we saw that `pgroll` has created two triggers:
+
+```
+_pgroll_trigger_users__pgroll_new_description BEFORE INSERT OR UPDATE ON users FOR EACH ROW EXECUTE FUNCTION _pgroll_trigger_users__pgroll_new_description()
+_pgroll_trigger_users_description BEFORE INSERT OR UPDATE ON users FOR EACH ROW EXECUTE FUNCTION _pgroll_trigger_users_description()
+```
+
+These triggers are used by `pgroll` to ensure that any values written into the old `description` column are copied over to the `_pgroll_new_description` column (rewriting values using the `up` SQL command from the migration) and to copy values written to the `_pgroll_new_description` column back into the old `description` column (rewriting values using the `down` SQL command from the migration). Our migration did not specify any `down` SQL command, so the default behaviour is just to copy data from the `_pgroll_new_description` column into the `description` column without modification.
+
+Let's see the first of those triggers in action.
+
+First set the [search path](https://www.postgresql.org/docs/current/ddl-schemas.html#DDL-SCHEMAS-PATH) of the Postgres session to use the old schema:
+
+```sql
+SET search_path = 'public_01_create_users_table'
+```
+
+Now insert some data into the `users` table through the `users` view:
+
+```sql
+INSERT INTO users(name, description) VALUES ('Alice', 'this is Alice'), ('Bob', NULL)
+```
+
+This inserts two new users into the `users` table, one with a `description` and one without.
+
+Let's check that the data was inserted:
+
+```sql
+SELECT * FROM users WHERE name = 'Alice' or name = 'Bob'
+```
+
+Running this query should show:
+
+```
++--------+-------+---------------------+
+| id     | name  | description         |
++--------+-------+---------------------+
+| 100001 | Alice | this is Alice       |
+| 100002 | Bob   | NULL                |
++--------+-------+---------------------+
+```
+
+The trigger should have copied the data that was just written into the old `description` column (without the `NOT NULL` constraint) into the `_pgroll_new_description` column (with the `NOT NULL` constraint) using the `up` SQL from the migration.
+
+Let's check. Set the search path to the new version of the schema:
+
+```sql
+SET search_path = 'public_02_user_description_set_nullable'
+```
+
+Now, find the users we just inserted:
+
+```sql
+SELECT * FROM users WHERE name = 'Alice' or name = 'Bob'
+```
+
+The output should look like this:
+
+```
++--------+-------+---------------------+
+| id     | name  | description         |
++--------+-------+---------------------+
+| 100001 | Alice | this is Alice       |
+| 100002 | Bob   | description for Bob |
++--------+-------+---------------------+
+```
+
+Notice that the trigger installed by `pgroll` has rewritten the `NULL` value inserted into the old schema by using the `up` SQL from the migration definition.
+
+> How do applications configure which version of the schema to use?
+> `pgroll` allows old and new versions of an application to exist side-by-side during a migration. Each version of the application should be configured with the name of the correct version schema, so that the application sees the database schema that it expects.
+
+### Completing the migration
+
+Once the old version of the database schema is no longer required (for instance, the old applications that depend on the old schema are no longer running in production) the current migration can be completed:
+
+```
+pgroll complete
+```
+
+After the migration has completed, the old version of the schema is no longer present in the database:
+
+```
+\dn
+```
+
+shows something like:
+
+```
++-----------------------------------------+-------------------+
+| Name                                    | Owner             |
++-----------------------------------------+-------------------+
+| pgroll                                  | postgres          |
+| public                                  | pg_database_owner |
+| public_02_user_description_set_nullable | postgres          |
++-----------------------------------------+-------------------+
+```
+
+Only the new version schema `public_02_user_description_set_nullable` remains in the database.
+
+Let's look at the schema of the `users` table to see what's changed there:
+
+```sql
+DESCRIBE users
+```
+
+shows something like:
+
+```
++-------------+------------------------+-----------------------------------------------------------------+----------+--------------+-------------+
+| Column      | Type                   | Modifiers                                                       | Storage  | Stats target | Description |
++-------------+------------------------+-----------------------------------------------------------------+----------+--------------+-------------+
+| id          | integer                |  not null default nextval('_pgroll_new_users_id_seq'::regclass) | plain    | <null>       | <null>      |
+| name        | character varying(255) |  not null                                                       | extended | <null>       | <null>      |
+| description | text                   |  not null                                                       | extended | <null>       | <null>      |
++-------------+------------------------+-----------------------------------------------------------------+----------+--------------+-------------+
+Indexes:
+    "_pgroll_new_users_pkey" PRIMARY KEY, btree (id)
+    "_pgroll_new_users_name_key" UNIQUE CONSTRAINT, btree (name)
+```
+
+A few things have happened:
+
+- The extra `_pgroll_new_description` has been renamed to `description`.
+- The old `description` column has been removed.
+- The `description` column is now marked as `NOT NULL`.
+- The triggers to copy data back and forth between the old and new column have been removed.
+
+> How is the column made `NOT NULL` without locking?
+>
+> Because there is an existing `NOT NULL` constraint on the column, created when the migration was started, making the column `NOT NULL` when the migration is completed does not require a full table scan. See the Postgres [docs](https://www.postgresql.org/docs/current/sql-altertable.html#SQL-ALTERTABLE-DESC-SET-DROP-NOT-NULL) for `SET NOT NULL`.
+
+**At this point, the migration is complete. There is just one version schema in the database: `public_02_user_description_set_nullable` and the underlying `users` table has the expected schema.**
+
+### Rollbacks
+
+The expand/contract approach to migrations means that the old version of the database schema (`01_create_users_table` in this example) remains operational throughout the migration. This has two key benefits:
+
+- Old versions of client applications that rely on the old schema continue to work.
+- Rollbacks become trivial!
+
+Looking at the second of these items, rollbacks, let's see how to roll back a `pgroll` migration. We can start another migration now that our last one is complete:
+
+```json
+{
+  "name": "03_add_is_active_column",
+  "operations": [
+    {
+      "add_column": {
+        "table": "users",
+        "column": {
+          "name": "is_atcive",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true"
+        }
+      }
+    }
+  ]
+}
+```
+
+This migration adds a new column to the `users` table. As before, we can start the migration with this command:
+
+```
+pgroll start 03_add_is_active_column.json
+```
+
+Once again, this creates a new version of the schema:
+
+```
+\dn
+```
+
+Shows something like:
+
+```
++-----------------------------------------+-------------------+
+| Name                                    | Owner             |
+|-----------------------------------------+-------------------|
+| pgroll                                  | postgres          |
+| public                                  | pg_database_owner |
+| public_02_user_description_set_nullable | postgres          |
+| public_03_add_is_active_column          | postgres          |
++-----------------------------------------+-------------------+
+```
+
+And adds a new column with a temporary name to the `users` table:
+
+```
++-----------------------+------------------------+-----------------------------------------------------------------+----------+--------------+-------------+
+| Column                | Type                   | Modifiers                                                       | Storage  | Stats target | Description |
+|-----------------------+------------------------+-----------------------------------------------------------------+----------+--------------+-------------|
+| id                    | integer                |  not null default nextval('_pgroll_new_users_id_seq'::regclass) | plain    | <null>       | <null>      |
+| name                  | character varying(255) |  not null                                                       | extended | <null>       | <null>      |
+| description           | text                   |  not null                                                       | extended | <null>       | <null>      |
+| _pgroll_new_is_atcive | boolean                |  default true                                                   | plain    | <null>       | <null>      |
++-----------------------+------------------------+-----------------------------------------------------------------+----------+--------------+-------------+
+```
+
+The new column is not present in the view in the old version of the schema:
+
+```
+\d+ public_02_user_description_set_nullable.users
+```
+
+Shows:
+
+```
+ SELECT users.id,
+    users.name,
+    users.description
+   FROM users;
+```
+
+But is exposed by the new version.
+
+```
+\d+ public_03_add_is_active_column.user
+```
+
+Shows:
+
+```
+ SELECT users.id,
+    users.name,
+    users.description,
+    users._pgroll_new_is_atcive AS is_atcive
+   FROM users;
+```
+
+However, there's a typo in the column name: `isAtcive` instead of `isActive`. The migration needs to be rolled back:
+
+```
+pgroll rollback
+```
+
+The rollback has removed the old version of the schema:
+
+```
++-----------------------------------------+-------------------+
+| Name                                    | Owner             |
+|-----------------------------------------+-------------------|
+| pgroll                                  | postgres          |
+| public                                  | pg_database_owner |
+| public_02_user_description_set_nullable | postgres          |
++-----------------------------------------+-------------------+
+```
+
+And the new column has been removed from the underlying table:
+
+```
++-------------+------------------------+-----------------------------------------------------------------+----------+--------------+-------------+
+| Column      | Type                   | Modifiers                                                       | Storage  | Stats target | Description |
+|-------------+------------------------+-----------------------------------------------------------------+----------+--------------+-------------|
+| id          | integer                |  not null default nextval('_pgroll_new_users_id_seq'::regclass) | plain    | <null>       | <null>      |
+| name        | character varying(255) |  not null                                                       | extended | <null>       | <null>      |
+| description | text                   |  not null                                                       | extended | <null>       | <null>      |
++-------------+------------------------+-----------------------------------------------------------------+----------+--------------+-------------+
+```
+
+Since the original schema version, `02_user_description_set_nullable`, was never removed, existing client applications remain unaware of the migration and subsequent rollback.
+
+### Client applications
+
+`pgroll` uses the [expand/contract pattern](https://openpracticelibrary.com/practice/expand-and-contract-pattern/) to roll out schema changes. Each migration creates a new version schema in the database.
+
+In order to work with the multiple versioned schema that `pgroll` creates, clients need to be configured to work with one of them.
+
+This is done by having client applications configure the [search path](https://www.postgresql.org/docs/current/ddl-schemas.html#DDL-SCHEMAS-PATH) when they connect to the Postgres database.
+
+For example, this fragment for a Go client application shows how to set the `search_path` after a connection is established:
+
+```go
+db, err := sql.Open("postgres", "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable")
+if err != nil {
+    return nil, err
+}
+
+searchPath := "02_user_description_set_nullable"
+_, err = db.Exec(fmt.Sprintf("SET search_path = %s", pq.QuoteIdentifier(searchPath)))
+if err != nil {
+    return nil, fmt.Errorf("failed to set search path: %s", err)
+}
+```
+
+In practice, the `searchPath` variable would be provided to the application as an environment variable.
+
+### Get involved
+
+`pgroll` is an open source project, and we're really excited to see more people getting involved. If you're interested in submitting issues, giving feedback, or contributing pull requests, our [repository](https://github.com/xataio/pgroll) is the place to be!
+
+If you want to discuss further, find out more about projects at Xata, or just say hi, join us on [Discord](https://xata.io/discord) or follow us on [X | Twitter](https://twitter.com/xata). We're always ready to chat, answer questions, and keep you in the loop with the latest from Xata. We look forward to your input and ideas!
