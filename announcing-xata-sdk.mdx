@@ -1,0 +1,55 @@
+---
+title: 'Announcing first release of the Xata SDK'
+description: 'We are excited to share first version alpha version of the Xata Go SDK.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/announcing-xata-sdk-cover.jpg
+  alt: Xata Go SDK
+author: Philip Krauss
+date: 12-06-2023
+published: true
+slug: announcing-xata-go-sdk
+---
+
+We thrilled to announce the first release of our Xata Go SDK, and to open the doors to the growing Go community to Xata with an official SDK.
+The `v0.0.1` release will feature the most popular endpoints out of the box, to allow you to search a branch, use the ask endpoint with follow up questions, create a database, you name it.
+You can see the evolving endpoint coverage in the ticket [xata-go#1](https://github.com/xataio/xata-go/issues/1).
+
+If you want to get started right away, head over to the Go SDK [documentation](/docs/sdk/go/overview) and browse the code on [GitHub](https://github.com/xataio/xata-go).
+
+We have added examples in our docs to demonstrate how to use the Go SDK, as we have in place for TypeScript, Python, curl and SQL.
+
+## Anatomy the SDK
+
+The Go SDK is structured in namespaced clients, for example the `RecordsClient`. 
+All endpoints that are listed in our [API reference](/docs/api-reference/db/db_branch_name/transaction), are modelled within this client.
+
+The available clients are: 
+* `BranchClient`
+* `DatabasesClient`
+* `FilesClient`
+* `RecordsClient`
+* `SearchAndFilterClient`
+* `TableClient`
+* `UsersClient`
+* `WorkspaceClient`
+
+The code and corresponding test suites can be found in the [xata package](https://github.com/xataio/xata-go/tree/main/xata).
+
+```go
+xata.databases().createDatabase("new_db",
+  {
+    "region": "us-east-1",
+    "branchName": "main",
+  }
+)
+```
+
+## What’s next?
+
+The SDK is an alpha release, and not all [endpoints are covered](https://github.com/xataio/xata-go/issues/1), we continue to increase the API coverage of the SDK and provide bugfixes.
+
+If you want to contribute [code](https://github.com/xataio/xata-go), add an [example](https://github.com/xataio/xata-go/tree/main/examples) or you found a missing piece the [docs](/docs/sdk/go/overview), please open a PR or ticket and we will assist you with your open-source contribution.
+
+We can't do it without you! If you think something is missing or you found a bug, open a ticket in the [xata-go](https://github.com/xataio/xata-go) repository. All contributions are welcome. You can also follow us on [Twitter](https://twitter.com/xata) or join us in [Discord](https://xata.io/discord).
+
+Is there a language you wished we supported natively but don't today? Feel free to open up a [feature request](https://xata.canny.io/feature-requests) or check-in with our amazing community.
