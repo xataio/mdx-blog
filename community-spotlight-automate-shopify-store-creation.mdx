@@ -1,0 +1,60 @@
+---
+title: 'Automating the creation of Shopify stores with Xata'
+description: 'Putting the spotlight on Katriel Lucas, a software developer from Brazil, who is dramatically simplifying Shopify store creation for small business owners.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/community-spotlight-automate-shopify-store-creation.jpg
+  alt: Community Spotlight
+author: Alex Francoeur
+date: 12-04-2023
+tags: ['community']
+published: true
+slug: community-spotlight-automate-shopify-store-creation
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/community-spotlight-automate-shopify-store-creation.jpg
+---
+
+[Katriel Lucas](https://github.com/katriellucas) is a self taught, full stack developer out of Brazil who favors [SvelteKit](https://kit.svelte.dev/), [Astro](https://astro.build/) and serverless tools. He and the team at [Loja De Dropshipping Oficial](https://lojadedropshipping.com.br/) are looking to remove the technological barrier for any small business that wants to make a web store.
+
+## Making Shopify even more accessible
+
+[Shopify](https://www.shopify.com/), a platform that millions of entrepreneurs choose to build their business, operates in a market where approximately [23% of all online sales are fulfilled through dropshipping](https://marketsplash.com/dropshipping-statistics/) (MarketSplash, 2023). Their platform is wonderful for digital natives, but still requires you to have some technical knowledge to build a good store front and connect the dots. Katriel and Loja De Dropshipping Oficial (LDO) are looking to make the benefits of Shopify accessible to absolutely everyone.
+
+How are they planning to do this? By automating the creation of Shopify stores. Simply provide some information about your business and their solution will create a customized website for you that includes customer tracking, production statistics, and more.
+
+![Shopify store creation volume](/images/cs-spotify-01.png)
+
+## Serverless for the win
+
+Their solution is built on a modern serverless architecture with [SvelteKit](https://kit.svelte.dev/), [TypeScript](https://www.typescriptlang.org/), [Cloudflare Workers](https://workers.cloudflare.com/) and Xata as the chosen tech stack. Each customer gets their own table in Xata.
+
+Katriel initially came across Xata while searching for a serverless database to begin developing LDO's MVP. Xata was chosen because of the vertically integrated experience and generous free tier. What was originally meant to only be used for a prototype, eventually made it’s way to production because of the reliability and performance seen during the development phase.
+
+![Chat experience for store creation](/images/cs-spotify-02.png)
+
+When a customer buys the LDO services, a large JSON object is automatically created. This object includes customer information such as email, phone number, their Brazilian ID, address, product data, order status and much more. Further along in the process, users will be presented with a chat experience that helps them create their customized shop. It's here that specific details around the shop are collected such as credentials, their logo image, the URL, name, color schema, contact information and payment method. As LDO agents (on-staff personnel) help add the final touches to the shop, additional information is collected about them as well. This helps determine their productivity and output with the customer base.
+
+From shop metadata, to user permission models and roles, to business logo files and time series data related to agent productivity — all of this data is stored directly in Xata. Xata powers the entire application and all customizable aspects of the stores.
+
+![Store checker](/images/cs-spotify-03.png)
+
+> There were a lot of things that Xata solved for us. Our app is divided into three parts. Your shop profile with customer information, time series data for sales metrics and the images for the shop itself. All three use cases use only one database, Xata.\
+> _Katriel Lucas - Full Stack Developer_
+
+Katriel, [Dymas](https://github.com/dymas), [Heron](https://github.com/HeronNepomuceno), and the rest of the team at LDO are building out a new solution that lowers the barrier of entry for any store owner or entrepreneur to have an online presence. In addition to their automated approach to shop creation, the company also offers courses and mentoring to help people start a dropshipping business. Teaching their customers proven strategies that tend to convert more.
+
+Their success is already taking off and it’s tied directly to the speed at which they can introduce new features and provide value to their customers. Having a modern, serverless architecture empowers them to do much more with a smaller team.
+
+## Feedback and feature requests
+
+As the conversation steered towards what’s next, we asked Katriel to share some of his favorite parts about Xata and where he thinks we can improve. Here were some of the reasons Katriel chose Xata for this application.
+
+- **TypeScript SDK.** The TypeScript SDK is very easy to get started with and made development much quicker for Katriel and his team.
+- **Zero Ops.** There is no need to manage a database or infrastructure. This was huge for them because they could focus on the application and customer needs.
+- **File attachments.** File attachments really reduced the amount of tools we needed for image uploads and the logo definition process. The out of the box transformations were killer.
+
+When asked what he’d like to see from Xata, here’s what Katriel shared.
+
+- **\*Serverless functions.** Cloudflare is the only other service required to make this solution possible. If Xata supported serverless functions, they could consolidate all their tools.
+
+## Share your Xata story
+
+Do you have a similar story or community contribution you’d like to share? [Send us an email](mailto:communityspotlight@xata.io) or ping us on [Discord](https://xata.io/discord) if you’d like to be featured in our community spotlight. Until then, happy building 🦋
