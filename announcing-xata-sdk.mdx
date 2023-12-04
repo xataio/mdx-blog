@@ -37,10 +37,10 @@ The available clients are:
 
 The code and corresponding test suites can be found in the [xata package](https://github.com/xataio/xata-go/tree/main/xata).
 
-If you used our SDKs, you'll recognize patterns like the naming of the APIs but within a Go idomatic way. 
+If you used our SDKs, you'll recognize patterns like the naming of the APIs but within a Go idomatic way.
 To illustrate the usage of the Go SDK, we curated a couple of example, please browse to [our docs](/docs/sdk/get) to see the full bandwidth of examples.
 
-The following example shortly demonstrate, how to use the Ask endpoint. 
+The following example shortly demonstrate, how to use the Ask endpoint.
 For demo purposes we assume that the table `IMDB` contains all movies listed from [imdb.com](https://www.imdb.com/) and we want to learn how many Ace Venture movies exist.
 More complex queries and follow up questions examples can be found [here](/docs/sdk/ask).
 
@@ -65,7 +65,7 @@ results, _ := cli.SearchBranch(context.TODO(), xata.SearchBranchRequest{
 })
 ```
 
-The last example illustrates the use of the [transaction](/docs/sdk/transaction) endpoint. 
+The last example illustrates the use of the [transaction](/docs/sdk/transaction) endpoint.
 Transactions are a powerful way to do multiuple operations in one go.
 For the sake of the example, we solely want to create multiple records that list NBA players on a team.
 
@@ -102,7 +102,7 @@ result, _ := recordsClient.Transaction(context.TODO(), xata.TransactionRequest{
 
 The SDK is an alpha release, and not all [endpoints are covered](https://github.com/xataio/xata-go/issues/1), we continue to increase the API coverage of the SDK and provide bugfixes.
 
-We can't do it without you! If you want to contribute [code](https://github.com/xataio/xata-go), add an [example](https://github.com/xataio/xata-go/tree/main/examples) update the [docs](/docs/sdk/go/overview), or found a bug  please open a PR or issue and we will assist you. All contributions are welcome ✅ 
+We can't do it without you! If you want to contribute [code](https://github.com/xataio/xata-go), add an [example](https://github.com/xataio/xata-go/tree/main/examples) update the [docs](/docs/sdk/go/overview), or found a bug please open a PR or issue and we will assist you. All contributions are welcome ✅
 
 To stay up to date with that latest at Xata, follow us on [X /Twitter](https://twitter.com/xata) or pop in and say hi in [Discord](https://xata.io/discord).
 
