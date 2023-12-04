@@ -57,7 +57,7 @@ We are looking for the name _Philip_, but as there are multiple ways of writing 
 
 ```go
 searchClient, _ := xata.NewSearchAndFilterClient()
-results, _ := cli.SearchBranch(context.TODO(), xata.SearchBranchRequest{
+results, _ := searchClient.SearchBranch(context.TODO(), xata.SearchBranchRequest{
   Payload: xata.SearchBranchRequestPayload{
     Query:     "Philip",
     Fuzziness: xata.Int(2),
