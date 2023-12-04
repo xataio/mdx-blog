@@ -66,32 +66,26 @@ results, _ := searchClient.SearchBranch(context.TODO(), xata.SearchBranchRequest
 ```
 
 The last example illustrates the use of the [transaction](/docs/sdk/transaction) endpoint.
-Transactions are a powerful way to do multiuple operations in one go.
-For the sake of the example, we solely want to create multiple records that list NBA players on a team.
+Transactions are a powerful way to do multiple operations in one go.
+For the sake of the example, we solely want to create multiple records of actors that participated in the movie the Matrix.
 
 ```go
 recordsClient, _ := xata.NewRecordsClient()
 result, _ := recordsClient.Transaction(context.TODO(), xata.TransactionRequest{
   Operations: []xata.TransactionOperation{
     xata.NewInsertTransaction(xata.TransactionInsertOp{
-      Table: "Players",
+      Table: "Actors",
       Record: map[string]any{
-        "name": xata.String("Paul George"),
-        "team": xata.String("la_clippers"),
-        "position": xata.String("SF"),
-        "active": xata.Bool(true),
+        "name": xata.String("Keanu Charles Reeves"),
+        "movie": xata.String("the_matrix"),
       },
       Record: map[string]any{
-        "name": xata.String("Russell Westbrook"),
-        "team": xata.String("la_clippers"),
-        "position": xata.String("PG"),
-        "active": xata.Bool(true),
+        "name": xata.String("Carrie-Anne Moss"),
+        "movie": xata.String("the_matrix"),
       },
       Record: map[string]any{
-        "name": xata.String("Charles Barkley"),
-        "team": xata.String("houston_rockets"),
-        "position": xata.String("PF"),
-        "active": xata.Bool(false),
+        "name": xata.String("Laurence Fishburne"),
+        "movie": xata.String("the_matrix"),
       },
     }),
   },
