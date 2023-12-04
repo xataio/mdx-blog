@@ -41,7 +41,7 @@ If you're familiar with our SDKs, you'll notice familiar API naming patterns, ad
 To illustrate the usage of the Go SDK, we curated a couple of examples. Browse [our docs](/docs/sdk/get) to see the full bandwidth of examples.
 
 The following example succintly demonstrates, how to use the Ask endpoint.
-For demo purposes we assume that the table `IMDB` contains all movies listed from [imdb.com](https://www.imdb.com/) and we want to learn how many Ace Venture movies exist.
+For demo purposes we assume that the table `IMDB` contains all movies listed from [IMDB.com](https://www.imdb.com/) and we want to learn how many Ace Venture movies exist.
 More complex queries and follow up questions examples can be found [here](/docs/sdk/ask).
 
 ```go
@@ -52,8 +52,8 @@ result, _ := searchClient.Ask(context.TODO(), xata.AskRequest{
 })
 ```
 
-In this example, we have not normalized data in multiple tables in one branch and want to search across this whole branch.
-We are looking for a the name _Philip_, but as there are multiple ways of writing Philip, like _Filip_ or _Phillip_ or _Philippe_ we need apply fuzziness to our search.
+In this example, we have not normalized data in multiple tables in one branch and want to search across this entire branch.
+We are looking for the name _Philip_, but as there are multiple ways of writing Philip (such as _Filip_ or _Phillip_ or _Philippe_) we need to apply fuzziness to our search. `Fuzziness: xata.Int(2)` sets the search fuzziness level to a degree of 2, allowing for slight variations in the spelling of search terms.
 
 ```go
 searchClient, _ := xata.NewSearchAndFilterClient()
