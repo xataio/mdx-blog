@@ -224,20 +224,20 @@ if (Astro.request.method === 'POST') {
 	// ...
 	// Define our processing logic
 
-if (userEmail) {
-  response.userEmail = userEmail
+  if (userEmail) {
+    response.userEmail = userEmail
 
-  // Check if email contains the expected,
-  // if yes onboard the user to a new flow
-  if (percentage > 30 && userEmail.endsWith(contains)) {
-    response.onboarded = true
-  }
+    // Check if email contains the expected,
+    // if yes onboard the user to a new flow
+    if (percentage > 30 && userEmail.endsWith(contains)) {
+      response.onboarded = true
+    }
 
-  // If not, let's not onboard the user to the new flow
-  else {
-    response.onboarded = false
+    // If not, let's not onboard the user to the new flow
+    else {
+      response.onboarded = false
+    }
   }
-}
 
 }
 ---
