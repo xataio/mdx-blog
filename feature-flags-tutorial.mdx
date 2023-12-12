@@ -87,13 +87,13 @@ npm install
 
 To use Xata with Astro, install the Xata CLI globally:
 
-```bash
+```sh
 npm install @xata.io/cli -g
 ```
 
 Authorize the Xata CLI to associate with the logged in account:
 
-```bash
+```sh
 xata auth login
 ```
 
@@ -101,7 +101,7 @@ xata auth login
 
 Great! Initialize the project locally with the Xata CLI command with something like what is presented below:
 
-```bash
+```sh
 xata init --db https://Rishi-Raj-Jain-s-workspace-80514q.us-east-1.xata.sh/db/feature-flags-with-astro
 ```
 
@@ -113,17 +113,133 @@ Lastly, answer some quick prompts to make the integration with Astro seamless fo
 
 In this section, you'll learn how to customize an onboarding flow using feature flags set in Xata. You'll implement form actions in Astro routes, fetch feature flag from Xata, and define your own onboarding logic.
 
+```tsx
+import { ViewTransitions } from "astro:transitions";
+---
+
+<html>
+  <head>
+    <ViewTransitions handleForms />
+  </head>
+  <body>
+    <!-- Added info here -->
+  </body>
+</html>
+```
+
+This setup allows you to combine both backend and frontend flows for a page in Astro. Suppose you want to handle a form submission that includes the user's email, process it server-side, and display various outcomes based on your logic, all on the homepage. You can achieve this seamlessly within a single Astro route, like `src/pages/index.astro`:
+
+```tsx
+
+const response = { form: false }
+
+if (Astro.request.method === 'POST') {
+  try {
+    // Indicate that the request is being processed
+    response.form = true
+
+    // Get the user email from the form submissions
+    const data = await Astro.request.formData()
+    const userEmail = data.get('email') as string
+
+		// Fetch feature flag from Xata
+
+		// Define our own processing logic
+  } catch (e) {
+    // pass
+  }
+}
+---
+
+{response.form && <DisplayLogicComponent />}
+
+<form method="post" autocomplete="off">
+  <input
+    required
+    name="email"
+    type="email"
+    placeholder="Email Address (a demo)"
+  />
+  <button type="submit">
+    Proceed &rarr;
+  </button>
+</form>
+```
+
+### Fetching the feature flag object from Xata
+
+To customize the onboarding flow, the first step is to fetch the feature flag object from Xata. In this example, we’re gonna be using the `percentage` and `contains` properties of the feature flag to define our processing logic further. Using [Xata Read](https://xata.io/docs/sdk/get#getting-a-record-by-id), you can retrieve a record with a given ID, `the-flag` and destructure the relevant properties.
+
+```tsx
+// Import the Xata Client created by Xata CLI in src/xata.js
+import { XataClient } from '@/xata';
+
+if (Astro.request.method === 'POST') {
+  // ...
+  // Fetch Feature from Xata
+
+  // Create a Xata Client to fetch the flag from
+  const xata = new XataClient({
+    apiKey: import.meta.env.XATA_API_KEY,
+    branch: import.meta.env.XATA_BRANCH
+  });
+
+  // Get the percentage property set in the flag
+  // Get the contains property set in the flag
+  const { percentage, contains } = await xata.db['my-flag-name'].read('the-flag');
+
+  // Define your processing logic
+  // ...
+}
+```
+
+### Implementing your own onboarding logic
+
+Based on the extracted values from the feature flag object, we'll onboard users whose emails end with `@someone.com`, as specified in the `contains` variable, only if the `percentage` value for this feature flag in Xata is over 30. By adjusting the `percentage` value in the \[Xata dashboard] to be above or below 30, you can effectively switch this feature flag on or off.
+
+```tsx
+
+const response = { form: false, onboarded: false, userEmail: '' }
+
+if (Astro.request.method === 'POST') {
+
+	// ...
+	// Define our processing logic
+
+	if (userEmail) {
+	  response.userEmail = userEmail
+
+	  // Check if email contains the expected,
+	  // if yes onboard the user to a new flow
+	  if (percentage > 30 && userEmail.endsWith(contains)) {
+	    response.onboarded = true
+	  }
+
+	  // If not, let's not onboard the user to the new flow
+	  else {
+	    response.onboarded = false
+	  }
+	}
+
+}
+---
+<!-- Render conditional states using the onboarded flag -->
+{response.form && <>{response.onboarded ? <Success /> : <Failure />}</>}
+```
+
 ### Deploy to Vercel
 
 The repository, is now ready to deploy to Vercel. Use the following steps to deploy: 👇🏻
 
-1. Start by creating a GitHub repository containing your app's code.
-1. Then, go to the Vercel Dashboard and create a 'New Project.'
-1. Link this new project to the GitHub repository you just created.
-1. Scroll down in the settings and update the 'Environment Variables' to match those in your local '.env' file.
-1. Deploy! 🚀
+1.  Start by creating a GitHub repository containing your app's code.
+2.  Then, navigate to the Vercel Dashboard and create a **New Project**.
+3.  Link the new project to the GitHub repository you just created.
+4.  In **Settings**, update the _Environment Variables_ to match those in your local `.env` file.
+5.  Deploy! 🚀
+
+Congrats! You've now added feature flags to you Astro app with Xata and Vercel, equipping your app for further development and success!
 
 ## What's next??
 
 We'd love to hear from you if you have any feedback on this tutorial, if you'd like to know more about Xata, or if you would like to contribute a community blog or tutorial.
-Reach out to us on [Discord](/discord) or join us on [X | Twitter](https://twitter.com/xata). Happy building 🦋
+Reach out to us on [Discord](https://xata.io/discord) or join us on [X | Twitter](https://twitter.com/xata). Happy building 🦋
