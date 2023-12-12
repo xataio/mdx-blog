@@ -12,31 +12,33 @@ slug: feature-flags-tutorial
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/feature-flags-astro.png
 ---
 
-In this tutorial, we're going to show you how to incorporate feature flags into your Astro app using Xata and Vercel. Imagine you're working on a feature that processes various email domains like @someone.com and @gmail.com. We'll guide you through setting up these feature flags in Xata, allowing for a controlled rollout of new features. This enables you to gather feedback from a select group of users before launching it more broadly. So, let's get started on enhancing your app's functionality.
+In this tutorial, we're going to show you how to incorporate feature flags into your Astro app using Xata and Vercel. Imagine you're working on a feature, and you want to use email addresses to define the controlled rollout of the feature. We'll guide you through setting up these feature flags in Xata, allowing for a controlled rollout of new features. This enables you to gather feedback from a select group of users before launching it more broadly. So, let's get started on enhancing your app's functionality.
 
 ### What are feature flags?
 
-Feature flags are like digital switches that allow you to toggle features on and off at runtime without re-deploying your code. This enables teams to move faster, integrate custom workflows, and experiment with new functionalities on a certain set of users. In the event there's an issue, feature flags provide a quick mechanism for developers to disable problematic features without requiring a full code rollback.
+In this tutorial, we'll show you how to use feature flags in your Astro app with Xata and Vercel. Imagine you're working on a feature and want to control its release using email addresses. We'll guide you through setting up these feature flags in Xata, allowing for a controlled rollout of new features. This way, you can gather feedback from a select group of users before a broader release. Let's get started:
 
 ### Before you begin
 
-#### Tools you’ll be using
-
-- [Xata](https://xata.io) - A serverless database platform for data management.
-- [Astro](https://astro.build) - A framework that combines frontend and serverless backend capabilities for building modern web apps.
-- [Tailwind CSS](https://tailwindcss.com/)- A CSS framework for rapid and responsive styling.
-- [Vercel](https://vercel.com/) - A cloud platform for deploying and scaling web applications.
-
 #### Prerequisites
 
-- [Node.js 18](https://nodejs.org/en/blog/announcements/v18-release-announce)
-- A [Xata account](https://app.xata.io/signin)
+- You will need a [Xata account](https://app.xata.io/signin)
+- [Node.js 18](https://nodejs.org/en/blog/announcements/v18-release-announce) or later
+
+#### Tech stack
+
+| Tool                                     | Description                                                                                          |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| [Xata](https://xata.io)                  | A serverless database platform for data management.                                                  |
+| [Astro](https://astro.build)             | A framework that combines frontend and serverless backend capabilities for building modern web apps. |
+| [Tailwind CSS](https://tailwindcss.com/) | A CSS framework for rapid and responsive styling.                                                    |
+| [Vercel](https://vercel.com/)            | A cloud platform for deploying and scaling web applications.                                         |
 
 ### Configuring Xata
 
 Start by [creating a Xata account](https://app.xata.io/signin), then log in to create a database.
 
-! [](/images/feature-flags/signin_window.png)
+![](/images/feature-flags/signin_window.png)
 
 After creating your database, you'll need to make a table for your feature flag attributes.
 
