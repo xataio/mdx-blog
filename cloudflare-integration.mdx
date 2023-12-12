@@ -1,5 +1,5 @@
 ---
-title: 'Xata + Cloudflare: One Click Database Integration with a Worker'
+title: 'Connect your Cloudflare Worker with Xata in one click'
 description: 'Connecting a Cloudflare Worker with Xata is now possible from the Cloudflare dashboard.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-workers.png
@@ -11,24 +11,62 @@ published: true
 slug: cloudflare-integration
 ---
 
-In the world of web development, we're always on the lookout for solutions that make our lives easier. Today, we're excited to announce that we're teaming up with Cloudflare, a leading name in web performance and security to offer a new integration that will make it easier than ever before to connect your Cloudflare Worker with Xata.
-
-With the Xata and Cloudflare integration, developers can now connect their Cloudflare workers with Xata databases seamlessly - all with just one click from the Cloudflare dashboard. This user-friendly solution eliminates the need for developers to create an API key and configure their database connection manually.
-
-## What is Cloudflare Workers?
-
 Cloudflare Workers is a serverless platform that allows developers to run code at the edge of the network. This means that you can run code closer to your users, which results in faster response times and lower latency. Cloudflare Workers also provide a secure environment for running code, so you don't have to worry about isolating your code from other users on the same server.
 
-## How does the integration look like?
+Today, we're excited to announce that we're teaming up with Cloudflare to offer a one click integration from the Cloudflare dashboard. This user-friendly solution eliminates the need for developers to create an API key and configure their database connection manually.
 
-The integration is simple and straightforward, visit the Cloudflare dashboard and inside the "Integrations" tab, you will find the Xata integration. Click on the "Add integration" button and you will be redirected to the Xata dashboard where you can create a new database or select an existing one. Once you have selected the database, you will be redirected back to the Cloudflare dashboard and all the necessary environment variables will be automatically added to your worker.
+You can now just visit the Cloudflare dashboard and inside the "Integrations" tab, you will find the Xata integration.
+
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/cloudflare/images/cloudflare-integration-dashboard.png"
+  width="874"
+  height="509"
+  alt="Cloudflare Integration Image"
+  caption="Cloudflare dashboard with the Xata integration"
+  position="center"
+/>
+
+Click on the "Add integration" button and you will find a wizard that will guide you through the process of connecting your Cloudflare Worker with Xata.
 
 <ArticleImage
   src="https://raw.githubusercontent.com/xataio/mdx-blog/cloudflare/images/cloudflare-integration-setup.png"
-  width="923"
-  height="455"
-  alt="Cloudflare Integration"
+  width="456"
+  height="558"
+  alt="Cloudflare Integration Image"
   caption="Wizard to connect your Cloudflare Worker with Xata"
+  position="center"
+/>
+
+During the process you will be prompted to authorize Cloudflare to access your Xata account. Once you have authorized the integration, you will be able to select the database you want to connect to your worker.
+
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/cloudflare/images/cloudflare-integration-authorization.png"
+  width="580"
+  height="613"
+  alt="Cloudflare Integration Image"
+  caption="Page to authorize Cloudflare to access your Xata account"
+  position="center"
+/>
+
+Once you have authorized Cloudflare, you will be redirected back to the Cloudflare dashboard and you will be able to select the database you want to connect to your worker.
+
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/cloudflare/images/cloudflare-integration-selection.png"
+  width="810"
+  height="843"
+  alt="Cloudflare Integration Image"
+  caption="Page to select the database you want to connect to your worker"
+  position="center"
+/>
+
+all the necessary environment variables will be automatically added to your worker.
+
+<ArticleImage
+  src="https://raw.githubusercontent.com/xataio/mdx-blog/cloudflare/images/cloudflare-integration-secrets.png"
+  width="802"
+  height="371"
+  alt="Cloudflare Integration Image"
+  caption="List of environment variables added to your worker"
   position="center"
 />
 
