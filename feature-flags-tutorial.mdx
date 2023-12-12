@@ -128,7 +128,8 @@ With Astro, you can also allow [transitions on form submissions](https://docs.as
 
 Enable form actions with view transitions in `src/layouts/Layout.astro`:
 
-```tsx
+```astro
+---
 import { ViewTransitions } from "astro:transitions";
 ---
 
@@ -144,8 +145,8 @@ import { ViewTransitions } from "astro:transitions";
 
 This setup allows you to combine both backend and frontend flows for a page in Astro. Suppose you want to handle a form submission that includes the user's email, process it server-side, and display various outcomes based on your logic, all on the homepage. You can achieve this seamlessly within a single Astro route, like `src/pages/index.astro`:
 
-```tsx
-
+```astro
+---
 const response = { form: false }
 
 if (Astro.request.method === 'POST') {
@@ -185,7 +186,8 @@ if (Astro.request.method === 'POST') {
 
 To customize the onboarding flow, the first step is to fetch the feature flag object from Xata. In this example, we’re gonna be using the `percentage` and `contains` properties of the feature flag to define our processing logic further. Using [Xata Read](https://xata.io/docs/sdk/get#getting-a-record-by-id), you can retrieve a record with a given ID, `the-flag` and destructure the relevant properties.
 
-```tsx
+```astro
+---
 // Import the Xata Client created by Xata CLI in src/xata.js
 import { XataClient } from '@/xata';
 
@@ -212,8 +214,8 @@ if (Astro.request.method === 'POST') {
 
 Based on the extracted values from the feature flag object, we'll onboard users whose emails end with `@someone.com`, as specified in the `contains` variable, only if the `percentage` value for this feature flag in Xata is over 30. By adjusting the `percentage` value in the \[Xata dashboard] to be above or below 30, you can effectively switch this feature flag on or off.
 
-```tsx
-
+```astro
+---
 const response = { form: false, onboarded: false, userEmail: '' }
 
 if (Astro.request.method === 'POST') {
