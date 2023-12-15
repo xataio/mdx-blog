@@ -73,7 +73,7 @@ All necessary environment variables will be automatically added to your worker.
   position="center"
 />
 
-In the `src/worker.ts` file of your worker, add the environment variables to establish a connection with your database. The following script shows how a Cloudflare Worker can interact with a Xata database using environment variables for configuration and the Xata client library for database operations.
+In your worker, add the environment variables to establish a connection with your database. The following script shows how a Cloudflare Worker can interact with a Xata database using environment variables for configuration and the Xata client library for database operations.
 
 ```ts
 import { XataClient } from './xata';
