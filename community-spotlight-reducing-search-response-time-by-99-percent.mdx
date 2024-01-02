@@ -8,7 +8,7 @@ author: Alex Francoeur
 date: 01-09-2024
 tags: ['community']
 published: true
-slug: community-spotlight-reducing-search-response-time-by-99-percent
+slug: community-spotlight-reducing-search-time
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/community-spotlight-reducing-search-response-time-by-99-percent.jpg
 ---
 
@@ -18,9 +18,9 @@ After Precision Ecology didn’t pan out, he decided to go back to to school and
 
 ## Maps, for the people
 
-If you’re unfamiliar with the GIS world, it is full of disparate data sets, layers, shape and point files. Every industry, agency and region tend to have their own collection of open source assets available for download and use. This is great, because the data is available, but it can be a bit of a pain having the navigate the different web entities to find what you’re looking for.
+If you’re unfamiliar with the GIS world, it is full of disparate data sets, layers, shapes, and point files. Every industry, agency, and region tends to have its own collection of open-source assets available for download and use. This is great because the data is accessible, but navigating through various web entities to find what you’re looking for can be a bit of a pain.
 
-Cue [OpenSourceGISData.com](http://OpenSourceGISData.com) (OSGD), Parkers latest venture. OSGD is a website that contains geoportals and ArcREST servers for all the major federal agencies, states, counties and cities. After seeing some popularity on reddit and healthy daily traffic, he feels he scratched an itch for geospatial professionals.
+Cue [OpenSourceGISData.com](http://OpenSourceGISData.com) (OSGD), Parker's latest venture. OSGD is a website that contains geoportals and ArcREST servers for all the major federal agencies, states, counties, and cities. After seeing some popularity on Reddit and healthy daily traffic, he feels he scratched an itch for geospatial professionals.
 
 ![Open Source GIS Data](/images/cs-osgd.png)
 
@@ -32,9 +32,9 @@ Balancing straight A’s at the University of Central Florida with a budding sta
 
 ![GIS Data Search Engine](/images/cs-gisdata.png)
 
-In Parkers initial release of the search engine, he was pushing CSV directly to the client and used JavaScript code to search against it. This lead to many issues with timeouts and lag, and the search took a long time. He was OK with this, but knew he wanted to get the initial release out quickly given the interest from the GIS community.
+In the initial release of the search engine, Parker was pushing CSV directly to the client and used JavaScript code to search against it. This lead to many issues with timeouts and lag, and the search took a long time. He was OK with this, but knew he wanted to get the initial release out quickly given the interest from the GIS community.
 
-For awhile, he tried [MongoDB](https://www.mongodb.com/), but got lost in their documentation and trying to get full text search working for his use case. After a bit more searching (no pun intended), he discovered Xata as an alternative to MongoDB. Paired with [Vercel](https://vercel.com/), he was able to build out the initial powerful geospatial data search experience in a day. Since then, it’s been very easy to continue to iterate and focus on the pipeline with an ever growing data set.
+For a while, he tried [MongoDB](https://www.mongodb.com/), but got lost in their documentation and struggled to implement full-text search for his use case. After a bit more searching (no pun intended), he discovered Xata as an alternative to MongoDB. Paired with [Vercel](https://vercel.com/), he was able to build out the initial powerful geospatial data search experience in a day. Since then, it’s been very easy to continue to iterate and focus on the pipeline with an ever-growing data set.
 
 ![Geospatial Search](/images/cs-gis-search.png)
 
@@ -46,16 +46,16 @@ Parker has a larger vision for this platform beyond the GISData search engine. H
 
 ## Feedback and feature requests
 
-After talking about what’s on the horizon, we asked Parker to share some o his favorite parts about Xata and where he thinks we can improve. Here are some of the reason why Parker chose Xata for his application.
+After talking about what’s on the horizon, we asked Parker to share some of his favorite parts about Xata and where he thinks we can improve. Here are some of the reasons why Parker chose Xata for his application:
 
 - **Reducing time to market**. The simplicity and developer experience Xata provided significantly reduced the time it took to take the GISData search implementation to production.
 - **Zero database management.** Databases can be tricky and complex. Because Xata is serverless, there is zero-ops needed.
-- **More intelligent search.** Parker is interested in using Xata [ask endpoint](https://xata.io/docs/sdk/ask) to augment his current search experience with chat like experiences.
+- **More intelligent search.** Parker is interested in using the Xata [`ask` endpoint](https://xata.io/docs/sdk/ask) to augment his current search experience with chat like experiences.
 
-When asked what he’d like to see form Xata, here’s what Parker shared.
+When asked what he’d like to see from Xata, here’s what Parker shared:
 
 - **Dagster integration.** Using Dagster for orchestration, he’d love to see a [native integration](https://xata.canny.io/feature-requests/p/dagster-guide-or-integration) similar to [Airbyte](https://xata.io/docs/integrations/airbyte).
-- **URL rich data type.** While he currently has URLs stored as strings, it would be useful to have them stored as URLs that checks the validity of them.
+- **URL rich data type.** While he currently has URLs stored as strings, it would be useful to have a data type that stores URLs and checks their validity.
 
 ## Share your Xata story
 
