@@ -1,6 +1,6 @@
 ---
 title: 'Reducing search response time by 99.98% with Xata'
-description: 'Putting the spotlight on Parker Dinkins, a young founder with a love for geospatial data who recently launched OpenSourceGISData.com.'
+description: 'Putting the spotlight on Parker Dinkins, a young founder with a love for geospatial data who recently launched GISData.io.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/community-spotlight-reducing-search-response-time-by-99-percent.jpg
   alt: Community Spotlight
@@ -12,7 +12,7 @@ slug: community-spotlight-reducing-search-response-time-by-99-percent
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/community-spotlight-reducing-search-response-time-by-99-percent.jpg
 ---
 
-[Parker Dinkins](https://github.com/pdinkins), is a young entrepreneur out of Florida. As a self taught developer, he initially founded a startup with some friends back in 2022 called Precision Ecology. It was a digital mapping data solutions company focused on providing data for sustainable development and environmental management. They were flying a [Wingtra](https://wingtra.com/) drone collecting aerial images across large amounts of acreage and Parker was responsible for the processing of the data. This is where he fell in love with geospatial data and GIS.
+[Parker Dinkins](https://www.linkedin.com/in/john-parker-dinkins/), is a young entrepreneur out of Florida. As a self taught developer, he initially founded a startup with some friends back in 2022 called Precision Ecology. It was a digital mapping data solutions company focused on providing data for sustainable development and environmental management. They were flying a [Wingtra](https://wingtra.com/) drone collecting aerial images across large amounts of acreage and Parker was responsible for the processing of the data. This is where he fell in love with geospatial data and GIS.
 
 After Precision Ecology didn’t pan out, he decided to go back to to school and learn about Environmental Studies to focus on GIS. So what does he do when he’s a student back at school? Launch another startup of course.
 
@@ -24,30 +24,23 @@ Cue [OpenSourceGISData.com](http://OpenSourceGISData.com) (OSGD), Parkers latest
 
 ![Open Source GIS Data](/images/cs-osgd.png)
 
-About a year after launching the OSGD website, he officially launched a sister search engine [GISData](https://gisdata.io/). GISData has indexed over 750,000 layers from 2,000 different sources and counting. The goal was to provide a single source of truth where users can search across all disparate data sources. And so far, it’s proven to be a hit.
+About a year after launching the OSGD website, he officially launched a sister search engine [GISData](https://gisdata.io/). GISData has indexed over 740,000 layers from 1,700 different sources and counting. The goal was to provide a single source of truth where users can search across all disparate data sources. And so far, it’s proven to be a hit.
 
 ## An evolving architecture for geospatial data search
 
 Balancing straight A’s at the University of Central Florida with a budding startup is no easy task, but some how Parker is managing it just fine.
 
-![GIS Data Search Engine](/images/cs-gisdata.png)
-
 In Parkers initial release of the search engine, he was pushing CSV directly to the client and used JavaScript code to search against it. This lead to many issues with timeouts and lag, and the search took a long time. He was OK with this, but knew he wanted to get the initial release out quickly given the interest from the GIS community.
 
 For awhile, he tried [MongoDB](https://www.mongodb.com/), but got lost in their documentation and trying to get full text search working for his use case. After a bit more searching (no pun intended), he discovered Xata as an alternative to MongoDB. Paired with [Vercel](https://vercel.com/), he was able to build out the initial powerful geospatial data search experience in a day. Since then, it’s been very easy to continue to iterate and focus on the pipeline with an ever growing data set.
 
-<ArticleVideo
-  platform="html"
-  src="https://raw.githubusercontent.com/xataio/mdx-blog/main/images/cs-geo-search-results.mp4"
-  width="854"
-  height="480"
-/>
+![GIS Data Search Engine](/images/cs-gisdata.png)
 
 The search behind GISData is built on a modern technology stack. It’s currently using [Dagster](https://dagster.io/) for orchestration, Python for indexing scripts, Xata as the database, JavaScript and [UIkit](https://getuikit.com/) for the frontend and Vercel for application deployment. This stack is optimized for speed and minimal operational maintenance.
 
 ## Just getting started
 
-Parker has a larger vision for this platform beyond the GISData search engine. He’s planning to roll out a free and paid version of the GIS API that enables developers to integrate geospatial data discovery into their own applications. For less technical users, he’s aiming to a create a simple mapping platform where users with little to no experience can find data and create simple maps for their own personal use case. We also discussed the possibility of introducing an AI geo assistant, which is another avenue of monetization. While he’ll likely be focusing on the next few months on foundational elements to support those features, there’s a bright future ahead for the OSGD platform.
+Parker has a larger vision for this platform beyond the GISData search engine. He’s planning to roll out a free and paid version of the [GIS API](https://docs.gisapi.io/) that enables developers to integrate geospatial data discovery into their own applications. For less technical users, he’s aiming to a create a simple mapping platform where users with little to no experience can find data and create simple maps for their own personal use case. We also discussed the possibility of introducing an AI geo assistant, which is another avenue of monetization. While he’ll likely be focusing on the next few months on foundational elements to support those features, there’s a bright future ahead for the [Omniverse.xyz](https://Omniverse.XYZ) GIS platform.
 
 ## Feedback and feature requests
 
