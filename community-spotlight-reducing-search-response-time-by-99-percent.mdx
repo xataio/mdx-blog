@@ -14,7 +14,7 @@ ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/community
 
 [Parker Dinkins](https://www.linkedin.com/in/john-parker-dinkins/), is a young entrepreneur out of Florida. As a self taught developer, he initially founded a startup with some friends back in 2022 called Precision Ecology. It was a digital mapping data solutions company focused on providing data for sustainable development and environmental management. They were flying a [Wingtra](https://wingtra.com/) drone collecting aerial images across large amounts of acreage and Parker was responsible for the processing of the data. This is where he fell in love with geospatial data and GIS.
 
-After Precision Ecology didn’t pan out, he decided to go back to to school and learn about Environmental Studies to focus on GIS. So what does he do when he’s a student back at school? Launch another startup of course.
+After Precision Ecology didn’t pan out, he decided to go back to to school and study Environmental Studies to focus on GIS. So what does he do when he’s a student back at school? Launch another startup of course.
 
 ## Maps, for the people
 
@@ -30,11 +30,13 @@ About a year after launching the OSGD website, he officially launched a sister s
 
 Balancing straight A’s at the University of Central Florida with a budding startup is no easy task, but some how Parker is managing it just fine.
 
+![GIS Data Search Engine](/images/cs-gisdata.png)
+
 In Parkers initial release of the search engine, he was pushing CSV directly to the client and used JavaScript code to search against it. This lead to many issues with timeouts and lag, and the search took a long time. He was OK with this, but knew he wanted to get the initial release out quickly given the interest from the GIS community.
 
 For awhile, he tried [MongoDB](https://www.mongodb.com/), but got lost in their documentation and trying to get full text search working for his use case. After a bit more searching (no pun intended), he discovered Xata as an alternative to MongoDB. Paired with [Vercel](https://vercel.com/), he was able to build out the initial powerful geospatial data search experience in a day. Since then, it’s been very easy to continue to iterate and focus on the pipeline with an ever growing data set.
 
-![GIS Data Search Engine](/images/cs-gisdata.png)
+![Geospatial Search](/images/cs-gis-search.png)
 
 The search behind GISData is built on a modern technology stack. It’s currently using [Dagster](https://dagster.io/) for orchestration, Python for indexing scripts, Xata as the database, JavaScript and [UIkit](https://getuikit.com/) for the frontend and Vercel for application deployment. This stack is optimized for speed and minimal operational maintenance.
 
