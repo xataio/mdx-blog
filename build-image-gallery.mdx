@@ -1,13 +1,123 @@
 ---
-title: 'Build your own image gallery CMS with Xata, Astro and Cloudflare Pages'
-description: 'Learn how we solved the issue of broken internal links in our documentation, once and for all.'
+title: 'Build your own image gallery CMS'
+description: 'Learn how create a custom image gallery CMS using Xata, Astro, and Cloudflare Pages .'
 image:
-  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/bulletproof-docs-links.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/image-gallery-cloudflare/gallery-cms-astro-cloudflare.png
   alt: Xata
-author: Rishi
+author: Rishi Raj Jain
 date: 01-04-2023
 published: true
-slug: build-image-gallery
+slug: build-image-gallery-astro-cloudflare
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/image-gallery-cloudflare/gallery-cms-astro-cloudflare.png
 ---
 
-In this post, I talk about how to create an Image Gallery CMS with Astro, Xata and Cloudflare Pages. We learn how to set up Xata, create Schema with different column types, resize and blur images on the go, fetch all the records without pagination and handle forms in Astro via View Transitions.
+In this post, I talk about how to create an image gallery CMS with Astro, Xata and Cloudflare Pages. You'll learn how to:
+
+- Set up Xata
+- Create a schema with different column types
+- Resize and blur images
+- Fetch all records without pagination
+- Handle forms in Astro using view transitions
+
+## Before you begin
+
+## Prerequisites
+
+You'll need the following:
+
+- A [Xata](https://app.xata.io/signin) account
+- [Node.js 18](https://nodejs.org/en/download) or later
+- A [Cloudflare](https://workers.cloudflare.com/) Account
+
+### Tech stack
+
+| Technology                                          | Description                                                                   |
+| --------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [Xata](https://xata.io)                             | Serverless database platform for scalable, real-time applications.            |
+| [Astro](https://astro.build)                        | Framework for building fast, modern websites with serverless backend support. |
+| [Tailwind CSS](https://tailwindcss.com/)            | Utility-first CSS framework for building custom designs directly in markup.   |
+| [Cloudflare Pages](https://workers.cloudflare.com/) | Platform for deploying and hosting web apps with global distribution.         |
+
+## Setting up a Xata database
+
+After you've created a Xata account and are logged in, create a database.
+
+![]/images/build-image-gallery/image1.png)
+
+The next step is to create a table, in this instance `uploads`, that contains all the uploaded images.
+
+![](/images/build-image-gallery/image2.png)
+
+Great! Now, click **Schema** in the left sidebar and create two more tables `profiles` and `photographs`. You can do this by clicking **Add a table**. The newly created tables will contain user profile data and user uploaded photograph(s) data respectively.
+
+![](/images/build-image-gallery/image3.png)
+
+With that completed, you will see the schema.
+
+![](/images/build-image-gallery/image4.png)
+
+Let’s move on to adding relevant columns in the tables you've just created.
+
+## Creating the schema
+
+In the `uploads` table, you want to store all the images only (and no other attributes) so that you can create references to the same image object again, if needed.
+
+Let’s proceed with adding the column named `image`. This column is responsible for storing the `file` type objects. In our case, the `file` type object is for images, but you can use this for storing any kind of blob (e.g. PDF, fonts, etc.) that’s sized up to 1 GB.
+
+First, let’s click **+ Add column** and select `File`.
+
+![](/images/build-image-gallery/image5.png)
+
+Set the column name to be `image` and to make files public - (so that they can be shown to users when they visit the image gallery), check the `Make files public by default` option.
+
+![](/images/build-image-gallery/image6.png)
+
+In the `profiles` table, we want to store the attributes such as user’s unique slug (the path of the url where gallery will be displayed of that user), their name, their image with it’s dimension, and it’s transformed image’s base64 hash. We’ll reap the benefits of storing the hash to create literally 0 Cumulative Layout Shift (CLS) page(s).
+
+Let’s proceed with adding the column named, `slug` that’d be responsible to maintain uniqueness of each profile that gets created. Click on `+ Add a column`, select `String` type and enter the column name as `slug`. To associate a slug with only one user, we check the `Unique` attribute to make sure that duplicate entries do not get inserted.
+
+![](/images/build-image-gallery/image7.png)
+
+In similar fashion, create `name`, `image`, `height` and `width` columns as `String` type (but not `Unique`).
+
+Great, we’d also store `imageHash` as `Text` type so that we can instantly retrieve image’s blur hash sized upto `200 KB`. While `String` is a great default type, storing more than 2048 characters would require us to switch to the `Text` type. Read more about the limits in [Xata Column limits](https://xata.io/docs/rest-api/limits#column-limits).
+
+Click on `+ Add a column` and select `Text` type.
+
+![](/images/build-image-gallery/image8.png)
+
+Enter the column name as `imageHash` and press `Create column`.
+
+![](/images/build-image-gallery/image9.png)
+
+Much similar what we did above, in the `photographs` table, we create `name`, `tagline`, `image`, `height`, `width`, `profile-slug`, and `slug` as `String` type and `imageHash` as the `Text` type column. The columns `slug` and `profile-slug` refer to photograph’s and user profile’s slug respectively.
+
+Lovely! With all that done, the final schema shall be as below 👇🏻
+
+![](/images/build-image-gallery/image10.png)
+
+## Setting up your project
+
+To set up, clone the app repo and follow this tutorial to learn everything that's in it. To fork the project, run:
+
+```bash
+git clone https://github.com/rishi-raj-jain/image-gallery-cms-with-astro-xata-cloudflare
+cd image-gallery-cms-with-astro-xata-cloudflare
+pnpm install
+```
+
+## Configure Xata with Astro
+
+To use Xata with Astro seamlessly, install the Xata CLI globally:
+
+```bash
+npm install @xata.io/cli -g
+```
+
+Then, authorize the Xata CLI so it is associated with the logged in account:
+
+```bash
+xata auth login
+```
+
+![](/images/build-image-gallery/image11.png)
