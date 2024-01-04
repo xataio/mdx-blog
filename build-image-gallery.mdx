@@ -131,3 +131,327 @@ xata init --db https://Rishi-Raj-Jain-s-workspace-80514q.ap-southeast-2.xata.sh/
 Answer some quick one-time questions from the CLI to integrate with Astro.
 
 ![Xata init with Astro project](/images/build-image-gallery/image12.png)
+
+## Implementing form actions in Astro
+
+Here’s an example of the enabled form actions with view transitions in `src/layouts/Layout.astro`:
+
+```tsx
+---
+// File: src/layouts/Layout.astro
+
+import { ViewTransitions } from "astro:transitions";
+---
+
+<html>
+  <head>
+    <ViewTransitions />
+    <!-- stuff here -->
+  </head>
+  <body>
+    <!-- stuff here -->
+  </body>
+</html>
+```
+
+This allows you to colocate the backend and frontend flow for a given page in Astro. Say, you accept a form submission containing the name, slug, and the image URL of the user, process it on the server to generate a blur Base64 hash, and sync it with your Xata serverless database. Here’s how you’d do all of that in a single Astro route (`src/pages/profie/create.astro`).
+
+```tsx
+---
+// File: src/pages/profile/create.astro
+
+const response = { form: false, message: '', created: false, redirect: null }
+
+// ...
+
+if (Astro.request.method === 'POST') {
+  try {
+    // Indicate that the request is being processed
+    response.form = true
+
+    // Get the user email from the form submissions
+    const data = await Astro.request.formData()
+
+		// Get the user slug, name, and image: URL, width, and height from the form submissions
+    const userSlug = data.get('slug') as string
+    const userName = data.get('name') as string
+    const userImage = data.get('custom_upload_user__uploaded_image_url') as string
+    const userImageW = data.get('custom_upload_user__uploaded_w') as string
+    const userImageH = data.get('custom_upload_user__uploaded_h') as string
+
+		// Create a blur url of the user image
+
+		// Create the user record with the slug
+
+		// Redirect user to the next step
+  } catch (e) {
+    // pass
+  }
+}
+---
+
+<form method="post" autocomplete="off">
+  <Upload selector="user" />
+  <input required name="name" type="text" placeholder="Name" />
+  <input
+    required
+    name="slug"
+    type="text"
+    placeholder="Slug (e.g. rishi-raj-jain)"
+  />
+  <button type="submit">
+    Create Profile &rarr;
+  </button>
+</form>
+```
+
+## Handling image uploads server-side with the Xata SDK
+
+![(/photograph/create - where users upload their photographs)](/images/build-image-gallery/image13.png)
+
+(/photograph/create - where users upload their photographs)
+
+As Cloudflare Pages request body size allows up to 100 MB, you’ll be able to handle image uploads on the server-side. Create an Astro endpoint (`src/pages/api/upload/index.ts`) to receive POST requests containing image binaries and use the Xata SDK to store them in the `uploads` table.
+
+After doing sanity checks on the request body, first create a new (empty) record in your `uploads` table, and then use it as a reference to place the image (buffer) using the Xata TypeScript SDK. Once successfully completed, the endpoint responds with the image’s `public URL`, `height` and `width` back to the front-end to include in the form fields.
+
+```tsx
+// File: src/pages/api/upload/index.ts
+
+import { json } from '@/lib/response';
+import { getXataClient } from '@/xata';
+import type { APIContext } from 'astro';
+
+// Import the Xata Client created by the Xata CLI in src/xata.ts
+const xata = getXataClient();
+
+export async function POST({ request }: APIContext) {
+  const data = await request.formData();
+  const file = data.get('file');
+
+  // Do sanity checks on file
+
+  try {
+    // Obtain the uploaded file as an ArrayBuffer
+    const fileBuffer = await file.arrayBuffer();
+
+    // Create an empty record in the uploads table
+    const record = await xata.db.uploads.create({});
+    // Using the id of the record, insert the file using upload method
+    await xata.files.upload({ table: 'uploads', record: record.id, column: 'image' }, fileBuffer, {
+      mediaType: file.type
+    });
+
+    // Read the inserted image
+    const { image } = await xata.db.uploads.read(record.id);
+
+    // Destructure it's dimension and public URL
+    const { url, attributes } = image;
+    const { height, width } = attributes;
+    return json({ height, width, url }, 200);
+  } catch (error) {
+    // Handle errors
+  }
+}
+```
+
+## Using Xata image transformations to create blurred images
+
+Once a user submits their profile on the `/profile/create` page, before creating a record in the `profiles` table, generate a Base64 buffer of their blurred images. To create blured images from the originals, use Xata image transformations. With Xata image transformations, you’re able to request an on-demand public URL which resizes the image to given height and width, and blur the image. In this particular example, you can resize the image to 100 x 100 dimensions and blur it up to 75% from the original.
+
+```tsx
+---
+// File: src/pages/profile/create.astro
+
+// Import the Xata Client created by the Xata CLI in src/xata.ts
+import { getXataClient } from '@/xata'
+
+// Import the transformImage function by Xata Client
+import { transformImage } from '@xata.io/client'
+
+const response = { form: false, message: '', created: false, redirect: null }
+
+// ...
+
+if (Astro.request.method === 'POST') {
+
+	// Fetch the Xata instance
+	const xata = getXataClient()
+
+	// ...
+
+	// Create a blur URL of the user image
+
+  // Using Xata image transformations to obtain the image URL
+	// with a fixed height and width and 75% of it blurred
+  const userBlurURL = transformImage(userImageURL, {
+    blur: 75,
+    width: 100,
+    height: 100,
+  })
+
+  // Create a Base64 hash of the blur image URL
+  const userBlurHash = await createBlurHash(userBlurURL)
+
+	// Create the user record with the slug
+
+	// Redirect user to the next step
+}
+---
+```
+
+## Syncing profiles using the Xata SDK
+
+After you have generated blurred images, the last step in publishing profiles (similar to what’s done in publishing photographs) is to create a user record with relevant details using the Xata TypeScript SDK’s `create` command. In Astro, we then set the successful message for the user before they are redirected to the photograph upload page. The integrated conditional rendering ensures a visual cue of the operation's success or failure, providing a responsive and user-friendly experience.
+
+```tsx
+---
+// File: src/pages/profile/create.astro
+
+// Import the Xata Client created by Xata CLI in src/xata.ts
+import { getXataClient } from '@/xata'
+
+const response = { form: false, message: '', created: false, redirect: null }
+
+// ...
+
+if (Astro.request.method === 'POST') {
+
+	// ...
+
+	// Create the user record with the slug
+  await xata.db.profiles.create({
+    slug: userSlug,
+    name: userName,
+    image: userImage,
+    width: userImageW,
+    height: userImageH,
+    imageHash: userBlurHash,
+  })
+
+	// Send the user to photograph upload page
+  response.redirect = '/photograph/create'
+
+  // Set the relevant message for the user
+  response.message = 'Published profile succesfully. Redirecting you to upload your first photograph...'
+}
+---
+
+<!-- Render conditional states using the onboarded flag -->
+{
+  response.form &&
+    (response.created ? (
+      <p class="rounded bg-green-100 px-3 py-1">{response.message}</p>
+    ) : (
+      <p class="rounded bg-red-100 px-3 py-1">{response.message}</p>
+    ))
+}
+
+<!-- Profile Form -->
+
+<!-- Redirect user to the next location -->
+<script define:vars={{ success: response.created, location: response.redirect }}>
+  if (success) {
+    setTimeout(() => {
+      window.location.href = location
+    }, 1000)
+  }
+</script>
+```
+
+## Using Xata query
+
+The user profile page (`src/pages/[profile]/index.astro`) leverages the Xata Client to dynamically fetch and display all the photographs (not paginated) for a specific user profile. To engage users visually as soon as they open the gallery, we use the stored `imageHash` value as the background of the images (to be loaded). To prevent CLS, we use the stored `width` and `height` values to inform the browser of the expected dimensions of the images.
+
+```tsx
+---
+// File: src/pages/[profile]/index.astro
+
+// Import the Xata Client created by Xata CLI in src/xata.ts
+import { getXataClient } from '@/xata'
+
+import Layout from '@/layouts/Layout.astro'
+
+// Get the profile slug from url path
+const { profile } = Astro.params
+
+// Fetch the Xata instance
+const xata = getXataClient()
+
+// Get all the photographs related to the profile
+const profilePhotographs = await xata.db.photographs
+														// Filter the results to the specific profile
+														.filter({ 'profile-slug': profile })
+														// Get all the photographs
+														.getAll()
+---
+
+<Layout className="flex flex-col">
+  <div class="columns-1 gap-0 md:columns-2 lg:columns-3">
+    {
+      profilePhotographs.map(
+        ({ width: photoW, height: photoH, name: photoName, image: photoImageURL, tagline: photoTagline, imageHash: photoImageHash }, _) => (
+					{/* Destructure the width and height to prevent CLS */}
+          <img
+            width={photoW}
+            height={photoH}
+            alt={photoName}
+            src={photoImageURL}
+						{/* Do not lazy load the first image that's loaded into the DOM */}
+            loading={_ === 0 ? 'eager' : 'lazy'}
+            class="transform bg-cover bg-center bg-no-repeat will-change-auto"
+						{/* Create a blur effect with the imageHash stored */}
+            style={`background-image: url(${photoImageHash}); transform: translate3d(0px, 0px, 0px);`}
+          />
+        ),
+      )
+    }
+  </div>
+</Layout>
+```
+
+![(Image Gallery - Presenting Blur Images Initially)](/images/build-image-gallery/image15.png)
+
+(Image Gallery - Presenting Blur Images Initially)
+
+![(Image Gallery - After Image Loads Complete)](/images/build-image-gallery/image15.png)
+
+(Image Gallery - After Image Loads Complete)
+
+## Deploy to Cloudflare Pages
+
+The repository is ready to deploy to Cloudflare. Follow the steps below to deploy seamlessly with Cloudflare 👇🏻
+
+1. Create a GitHub repository with the app code.
+1. Click **Create application** in the Workers & Pages section of Cloudflare dashboard.
+1. Navigate to the **Pages** tab and select **Connect to Git**.
+1. Link the created GitHub repository` as your new project.
+1. Scroll down and update the **Framework preset** to **Astro**.
+1. Update the environment variables from the `.env` locally.
+1. Click **Save and Deploy** and go back to the project **Settings** > **Functions**.
+1. Add `nodejs_compat` to the **Compatibility flags** section
+1. Deploy! 🚀
+
+### Why Cloudflare Pages?
+
+Cloudflare Pages stood out for this particular use case as it [offers up to 100 MB request body size in their Free plan](https://developers.cloudflare.com/workers/platform/limits/#request-limits). This helped to bypass the 4.5MB request body size limit in various serverless hosting providers.
+
+![](/images/build-image-gallery/image16.png)
+
+## More information
+
+For a more comprehensive understanding and detailed insights, explore the references cited in this post.
+
+| Demo Image Gallery          | https://image-gallery-cms-with-astro-xata-cloudflare.pages.dev/rishi           |
+| --------------------------- | ------------------------------------------------------------------------------ |
+| GitHub Repo                 | https://github.com/rishi-raj-jain/image-gallery-cms-with-astro-xata-cloudflare |
+| Astro with Xata             | https://xata.io/docs/getting-started/astro                                     |
+| Astro View Transition Forms | https://docs.astro.build/en/guides/view-transitions/#transitions-with-forms    |
+| Xata File Attachments       | https://xata.io/docs/sdk/file-attachments#upload-a-file-using-file-apis        |
+| Xata Transformations        | https://xata.io/docs/sdk/image-transformations                                 |
+| Xata Get Records            | https://xata.io/docs/sdk/get#the-typescript-sdk-functions-for-querying         |
+| Cloudflare Workers Limits   | https://developers.cloudflare.com/workers/platform/limits/#request-limits      |
+
+## What's next?
+
+We'd love to hear from you if you have any feedback on this tutorial, would like to know more about Xata, or if you'd like to contribute a community blog or tutorial. Reach out to us on [Discord](https://discord.com/invite/kvAcQKh7vm) or join us on [X | Twitter](https://twitter.com/xata). Happy building 🦋
