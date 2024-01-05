@@ -1,9 +1,9 @@
 ---
 title: 'Build your own image gallery CMS'
-description: 'Learn how create a custom image gallery CMS using Xata, Astro, and Cloudflare Pages .'
+description: 'Learn how to create a custom image gallery CMS using Xata, Astro, and Cloudflare Pages.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/image-gallery-cloudflare/gallery-cms-astro-cloudflare.png
-  alt: Xata
+  alt: Xata image gallery
 author: Rishi Raj Jain
 date: 01-04-2023
 published: true
@@ -35,7 +35,7 @@ You'll need the following:
 | --------------------------------------------------- | ----------------------------------------------------------------------------- |
 | [Xata](https://xata.io)                             | Serverless database platform for scalable, real-time applications.            |
 | [Astro](https://astro.build)                        | Framework for building fast, modern websites with serverless backend support. |
-| [Tailwind CSS](https://tailwindcss.com/)            | Utility-first CSS framework for building custom designs directly in markup.   |
+| [Tailwind CSS](https://tailwindcss.com/)            | CSS framework for building custom designs                                     |
 | [Cloudflare Pages](https://workers.cloudflare.com/) | Platform for deploying and hosting web apps with global distribution.         |
 
 ## Setting up a Xata database
@@ -64,15 +64,15 @@ In the `uploads` table, you want to store all the images only (and no other attr
 
 Let’s proceed with adding the column named `image`. This column is responsible for storing the `file` type objects. In our case, the `file` type object is for images, but you can use this for storing any kind of blob (e.g. PDF, fonts, etc.) that’s sized up to 1 GB.
 
-First, let’s click **+ Add column** and select `File`.
+First, click **+ Add column** and select **File**.
 
 ![](/images/build-image-gallery/image5.png)
 
-Set the column name to be `image` and to make files public - (so that they can be shown to users when they visit the image gallery), check the `Make files public by default` option.
+Set the column name to `image` and to make files public (so that they can be shown to users when they visit the image gallery), check the **Make files public by default** option.
 
 ![](/images/build-image-gallery/image6.png)
 
-In the `profiles` table, we want to store the attributes such as user’s unique slug (the path of the url where gallery will be displayed of that user), their name, their image with it’s dimension, and it’s transformed image’s base64 hash. We’ll reap the benefits of storing the hash to create literally 0 Cumulative Layout Shift (CLS) page(s).
+In the `profiles` table, we want to store the attributes such as user’s unique slug (the path of the url where gallery will be displayed of that user), their name, their image with it’s dimension, and it’s transformed image’s base64 hash. You’ll reap the benefits of storing the hash to create literally 0 Cumulative Layout Shift (CLS) page(s).
 
 Let’s proceed with adding the column named, `slug` that’d be responsible to maintain uniqueness of each profile that gets created. Click on `+ Add a column`, select `String` type and enter the column name as `slug`. To associate a slug with only one user, we check the `Unique` attribute to make sure that duplicate entries do not get inserted.
 
