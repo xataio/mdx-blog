@@ -137,7 +137,7 @@ Answer some quick one-time questions from the CLI to integrate with Astro.
 You can also allow transitions on form submissions by adding the `ViewTransitions` component.
 Here’s an example of the enabled form actions with view transitions in `src/layouts/Layout.astro`:
 
-```tsx
+```astro
 ---
 // File: src/layouts/Layout.astro
 
@@ -157,7 +157,7 @@ import { ViewTransitions } from "astro:transitions";
 
 This allows you to colocate the backend and frontend flow for a given page in Astro. Say, you accept a form submission containing the name, slug, and the image URL of the user, process it on the server to generate a blur Base64 hash, and sync it with your Xata serverless database. Here’s how you’d do all of that in a single Astro route (`src/pages/profie/create.astro`).
 
-```tsx
+```astro
 ---
 // File: src/pages/profile/create.astro
 
@@ -210,8 +210,6 @@ if (Astro.request.method === 'POST') {
 
 ![(/photograph/create - where users upload their photographs)](/images/build-image-gallery/image13.png)
 
-(/photograph/create - where users upload their photographs)
-
 As Cloudflare Pages request body size allows up to 100 MB, you’ll be able to handle image uploads on the server-side. Create an Astro endpoint (`src/pages/api/upload/index.ts`) to receive POST requests containing image binaries and use the Xata SDK to store them in the `uploads` table.
 
 After doing sanity checks on the request body, first create a new (empty) record in your `uploads` table, and then use it as a reference to place the image (buffer) using the Xata TypeScript SDK. Once successfully completed, the endpoint responds with the image’s `public URL`, `height` and `width` back to the front-end to include in the form fields.
@@ -246,7 +244,7 @@ export async function POST({ request }: APIContext) {
     // Read the inserted image
     const { image } = await xata.db.uploads.read(record.id);
 
-    // Destructure it's dimension and public URL
+    // Destructure its dimension and public URL
     const { url, attributes } = image;
     const { height, width } = attributes;
     return json({ height, width, url }, 200);
@@ -260,7 +258,7 @@ export async function POST({ request }: APIContext) {
 
 Once a user submits their profile on the `/profile/create` page, before creating a record in the `profiles` table, generate a Base64 buffer of their blurred images. To create blured images from the originals, use Xata image transformations. With Xata image transformations, you’re able to request an on-demand public URL which resizes the image to given height and width, and blur the image. In this particular example, you can resize the image to 100 x 100 dimensions and blur it up to 75% from the original.
 
-```tsx
+```astro
 ---
 // File: src/pages/profile/create.astro
 
@@ -305,7 +303,7 @@ if (Astro.request.method === 'POST') {
 
 After you have generated blurred images, the last step in publishing profiles (similar to what’s done in publishing photographs) is to create a user record with relevant details using the Xata TypeScript SDK’s `create` command. In Astro, we then set the successful message for the user before they are redirected to the photograph upload page. The integrated conditional rendering ensures a visual cue of the operation's success or failure, providing a responsive and user-friendly experience.
 
-```tsx
+```astro
 ---
 // File: src/pages/profile/create.astro
 
@@ -364,7 +362,7 @@ if (Astro.request.method === 'POST') {
 
 The user profile page (`src/pages/[profile]/index.astro`) leverages the Xata Client to dynamically fetch and display all the photographs (not paginated) for a specific user profile. To engage users visually as soon as they open the gallery, we use the stored `imageHash` value as the background of the images (to be loaded). To prevent CLS, we use the stored `width` and `height` values to inform the browser of the expected dimensions of the images.
 
-```tsx
+```astro
 ---
 // File: src/pages/[profile]/index.astro
 
