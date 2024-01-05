@@ -155,7 +155,7 @@ import { ViewTransitions } from "astro:transitions";
 </html>
 ```
 
-This allows you to colocate the backend and frontend flow for a given page in Astro. Say, you accept a form submission containing the name, slug, and the image URL of the user, process it on the server to generate a blur Base64 hash, and sync it with your Xata serverless database. Here’s how you’d do all of that in a single Astro route (`src/pages/profie/create.astro`).
+This allows you to colocate the backend and frontend flow for a given page in Astro. Say, you accept a form submission containing the name, slug, and the image URL of the user, process it on the server to generate a blur Base64 hash, and sync it with your Xata serverless database. Here’s how you’d do all of that in a single Astro route (`src/pages/profile/create.astro`).
 
 ```astro
 ---
@@ -208,7 +208,7 @@ if (Astro.request.method === 'POST') {
 
 ## Handling image uploads server-side with the Xata SDK
 
-![(/photograph/create - where users upload their photographs)](/images/build-image-gallery/image13.png)
+![`/photograph/create` - where users upload their photographs](/images/build-image-gallery/image13.png)
 
 As Cloudflare Pages request body size allows up to 100 MB, you’ll be able to handle image uploads on the server-side. Create an Astro endpoint (`src/pages/api/upload/index.ts`) to receive POST requests containing image binaries and use the Xata SDK to store them in the `uploads` table.
 
