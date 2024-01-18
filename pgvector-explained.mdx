@@ -29,7 +29,7 @@ Using PostgreSQL for vector search, instead of a traditional vector database, ha
 
 [Pgvector](https://github.com/pgvector/pgvector) is an extension for PostgreSQL. It enhances PostgreSQL's capabilities by allowing you to work with high-dimensional vectors directly within the database. `pgvector` adds a `vector` data type, designed to handle high-dimensional vectors in your database. For instance, you can have a music-related table where you can create a "genres_features" column with the "vector" data type to store feature vectors for each song.
 
-The `pgvector` extensionintroduces 3 new operators that can be used to calculate similarity:
+The `pgvector` extension introduces 3 new operators that can be used to calculate similarity:
 
 | Operator | Description            |
 | -------- | ---------------------- |
@@ -63,6 +63,18 @@ The `pgvector` extensionintroduces 3 new operators that can be used to calculate
 - **Image and video retrieval**: In media platforms, pgvector can be used to quickly retrieve images or videos similar to a user's interests or previous searches, improving the user experience by providing more of what interests them.
 - **Natural language processing**: NLP applications, such as sentiment analysis or topic modeling, can benefit from pgvector's efficient similarity search to compare text documents and group them by semantic similarity.
 - **Research**: pgvector can assist in clustering or finding relationships between different data points based on their vector representations.
+
+### Data types
+
+pgvector introduces several data types to PostgreSQL to represent vectors. These data types are specifically designed to store and manipulate vector data efficiently. Here are some of the key data types used in pgvector:
+
+- `vector`: The `vector` data type is a fundamental data type in pgvector. It represents a vector of real numbers. You can use this type to store numeric vectors, such as embeddings or feature vectors.
+
+- `l2vector`: The `l2vector` data type is an extension of the vector data type. It represents a vector of real numbers, similar to vector, but it is designed for L2-normalized vectors. L2 normalization ensures that the vector has a length of 1, which is often useful in similarity calculations.
+
+- `vector_search`: The `vector_search` data type is used to represent vector search indexes. It's not a type for storing vectors directly but rather for creating indexes on vector columns. This data type is essential for optimizing vector similarity searches.
+
+- `vector_index`: The `vector_index` data type is used to store vector indexes. It is associated with a vector column and allows for efficient similarity search operations.
 
 ### How to use pgvector?
 
@@ -165,4 +177,4 @@ CREATE INDEX idx_songs_embedding ON songs USING ivfflat(embedding);
 
 ```
 
-Want to add to the discussion? Reach out to us on [Discord](https://xata.io/discord) or follow us on [Twitter](https://twitter.com/xata). We'd love to hear your thoughts, answer your questions, and keep you updated on the latest at Xata.
+So, are you ready to try pgvector for your next project? Reach out to us on [Discord](https://xata.io/discord) or follow us on [Twitter](https://twitter.com/xata). We'd love to hear your thoughts, answer your questions, and keep you updated on the latest at Xata.
