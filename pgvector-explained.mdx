@@ -28,3 +28,139 @@ Using PostgreSQL for vector search, instead of a traditional vector database, ha
 - Its SQL capabilities enable complex queries that combine vector search with relational data, which offers more flexibility.
 
 [Pgvector](https://github.com/pgvector/pgvector) is an extension for PostgreSQL. It enhances PostgreSQL's capabilities by allowing you to work with high-dimensional vectors directly within the database. `pgvector` adds a `vector` data type, designed to handle high-dimensional vectors in your database. For instance, you can have a music-related table where you can create a "genres_features" column with the "vector" data type to store feature vectors for each song.
+
+The `pgvector` extensionintroduces 3 new operators that can be used to calculate similarity:
+
+| Operator | Description            |
+| -------- | ---------------------- |
+| `<->`    | Euclidean distance     |
+| `<#>`    | Negative inner product |
+| `<=>`    | Cosine distance        |
+
+#### Euclidean distance (`<->`):
+
+- **Description:** This operator computes the Euclidean distance between two vectors. The Euclidean distance is the "straight line" distance between two points in a multi-dimensional space.
+
+- **Use cases:** It's widely used in clustering algorithms and nearest neighbor searches. In the context of machine learning, it helps in tasks like anomaly detection, where the distance from a norm is calculated.
+
+#### Negative inner product (`<#>`):
+
+- **Description:** The negative inner product operator calculates the dot product of two vectors and then negates the result. The inner product measures the extent to which two vectors point in the same direction.
+
+- **Use case:** It's useful in scenarios where the alignment of vectors is more important than their magnitude, such as in certain types of recommendation systems or in semantic analysis.
+
+#### Cosine distance (`<=>`):
+
+- **Description:** This operator computes the cosine similarity between two vectors, which is then subtracted from 1 to give the cosine distance. It measures the cosine of the angle between two vectors, providing a measure of orientation, irrespective of magnitude.
+
+- **Use case:** Cosine distance is particularly useful in text analysis and natural language processing, where it helps to determine how similar two documents or words are based on their vector representations.
+
+### Applications of pgvector
+
+- **Content recommendation**: Pgvector can be used to create recommendation systems, where users are recommended products based on their browsing history or on similarity to items they have shown interest in.
+- **Search engines**: For internal knowledge bases or document collections, pgvector can enhance search capabilities by allowing the system to find and recommend documents that are semantically similar to a search query, which can improve the relevance of search results.
+- **Extending chatbots**: By embedding company documents and using pgvector to find the closest matches to a user query, businesses can create chatbots that provide answers based on internal company knowledge, effectively using the chatbot as an interactive FAQ or helpdesk.
+- **Image and video retrieval**: In media platforms, pgvector can be used to quickly retrieve images or videos similar to a user's interests or previous searches, improving the user experience by providing more of what interests them.
+- **Natural language processing**: NLP applications, such as sentiment analysis or topic modeling, can benefit from pgvector's efficient similarity search to compare text documents and group them by semantic similarity.
+- **Research**: pgvector can assist in clustering or finding relationships between different data points based on their vector representations.
+
+### How to use pgvector?
+
+Before installing pgvector, ensure you have PostgreSQL installed on your system.
+
+**1. Install pgvector**
+
+1.  **Clone the repository:**
+    First, you'll need to clone the pgvector GitHub repository to your local machine. Open your terminal and run the following command:
+
+    ```bash
+
+    git clone https://github.com/pgvector/pgvector.git
+    ```
+
+2.  **Navigate to the directory:**
+    Change your working directory to the pgvector folder:
+
+    ```bash
+
+    cd pgvector
+    ```
+
+3.  **Build and install:**
+    Now, you can build and install pgvector. Use the following commands:
+
+    ```go
+
+    make
+    make install
+    ```
+
+4.  **Create extension in PostgreSQL:**
+    Connect to your PostgreSQL database, and then create the pgvector extension:
+
+    ```sql
+
+    CREATE EXTENSION pgvector
+    ```
+
+5.  **Verify installation:**
+    You can check if the extension is installed correctly by running:
+
+    ```sql
+
+    SELECT * FROM pg_extension WHERE extname = 'pgvector';
+    ```
+
+    If it returns a row with the extension name 'pgvector,' you've successfully installed it.
+
+_Now you have pgvector installed and ready to use with your PostgreSQL database._
+
+**2. Create a pgvector column**
+
+In your PostgreSQL database, you can create a table with a pgvector column to store vector data. For example, if you want to store song embeddings for a music recommendation system, you can create a table like this:
+
+```sql
+sqlCopy code
+CREATE TABLE songs (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    artist VARCHAR(255) NOT NULL,
+    embedding PGVECTOR -- Define a pgvector column
+);
+```
+
+**3. Insert vector data:**
+
+You can insert vector data into the pgvector column just like any other data type. For instance:
+
+```sql
+
+INSERT INTO songs (title, artist, embedding)
+VALUES
+('Song A', 'Artist A', '0.75,0.60,0.33,0.90,0.40'::PGVECTOR),
+('Song B', 'Artist B', '0.45,0.50,0.20,0.85,0.30'::PGVECTOR);
+
+```
+
+**4. Perform similarity search:**
+
+You can use pgvector's similarity search functions to find similar vectors efficiently. For example, to find songs similar to a given query song, you can use the **`pgvector_cosine`** function:
+
+```sql
+
+SELECT title, artist
+FROM songs
+WHERE pgvector_cosine(embedding, '0.65,0.55,0.30,0.88,0.42'::PGVECTOR) > 0.8;
+
+```
+
+This query will retrieve songs that are similar to the query vector based on a similarity threshold using cosine distancing.
+
+**5. Index for performance (Optional):**
+
+For improved performance, you can create an index on the pgvector column. This is especially useful when dealing with large datasets:
+
+```sql
+CREATE INDEX idx_songs_embedding ON songs USING ivfflat(embedding);
+
+```
