@@ -1,15 +1,30 @@
 ---
----
-
 title: 'Pgvector - What is it?'
-description: 'Using pgvector with your PostgreSQL databse'
+description: 'Using pgvector with your PostgreSQL database'
 image:
 src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgvector.jpg
 alt: Vectors
 author: J Edwards
-date: 12-22-2023
-tags: \['postgres', 'education']
+date: 01-18-2024
+tags: ['postgres', 'education']
 published: true
 slug: pgvector-explained
-
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgvector.jpg
 ---
+
+For AI-focused developers, vector databases are often used for handling complex data. However, moving to an entirely new system just for vector features isn't always practical.
+Pgvector addresses this by enhancing PostgreSQL with vector search capabilities, allowing the use of AI functionalities within a familiar SQL framework. It's an efficient solution for developers needing advanced vector features in the PostgreSQL environment.
+
+## Postgres for vector search
+
+A vector database is used to store numerical arrays, ideal for tasks like finding similar items in AI. While it's effective for complex data, it has limitations such as restricted query types, high computational demands, and a potentially steep learning curve for new users.
+
+Using PostgreSQL for vector search, instead of a traditional vector database, has distinct advantages.
+
+- First, it's a familiar choice for many who already using PostgreSQL as their database system - so very little need to reinvent the wheel.
+
+- PostgreSQL is cost-effective since it's open source. It also offers scalability, allowing it to handle large datasets and grow with your needs.
+
+- Its SQL capabilities enable complex queries that combine vector search with relational data, which offers more flexibility.
+
+[Pgvector](https://github.com/pgvector/pgvector) is an extension for PostgreSQL. It enhances PostgreSQL's capabilities by allowing you to work with high-dimensional vectors directly within the database. `pgvector` adds a `vector` data type, designed to handle high-dimensional vectors in your database. For instance, you can have a music-related table where you can create a "genres_features" column with the "vector" data type to store feature vectors for each song.
