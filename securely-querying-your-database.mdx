@@ -30,7 +30,7 @@ A browser is a **public** interface. Whatever data and code an app has in the br
 
 ## Querying Xata
 
-To make things more ergonomic, Xata has a [Software Development Kit (SDK)](https://xata.io/docs/sdk/getting-started) we call [client-ts](https://github.com/xataio/client-ts). Under the hood, there are many best practices we enforce. It also generates TypeScript types for your data request and responses based on your schema - that is the Object Relational Mapping (ORM) side of our SDK.
+To make things more ergonomic, Xata has a [Software Development Kit (SDK)](https://xata.io/docs/sdk/typescript/overview) we call [client-ts](https://github.com/xataio/client-ts). Under the hood, there are many best practices we enforce. It also generates TypeScript types for your data request and responses based on your schema - that is the Object Relational Mapping (ORM) side of our SDK.
 
 But arguably, the most important aspect of our SDK is that it will securely query Xata using your environment variables (`process.env`) the `XATA_API_KEY`, which is the key required to query your database. There multiple different ways to expose this environment variable to your running app, for example:
 
@@ -62,7 +62,7 @@ error Error: Option apiKey is required
 
 If on a Node.js environment, this means the SDK cannot read your API key. You can solve this by using one of the methods mentioned above to expose your access key to your runtime. If using the `.env` approach, you may need a package like [dotenv](https://www.npmjs.com/package/dotenv) to read those values.
 
-If on a browser environment, this error \***\*\*\*\*\***\*\*\***\*\*\*\*\***\*\*\***\*\*\*\*\***\*\*\***\*\*\*\*\***should not be “fixed”\***\*\*\*\*\***\*\*\***\*\*\*\*\***\*\*\***\*\*\*\*\***\*\*\***\*\*\*\*\***. As explained in the first section of this article: exposing your Xata API keys to a client-side runtime like a browser is a huge security issue. For more information, read our documentation about [Securely Talking to Xata](https://xata.io/docs/quickstart/updating-data-with-xata#securely-talking-to-xata).
+If on a browser environment, this error \***\*\*\*\*\***\*\*\***\*\*\*\*\***\*\*\***\*\*\*\*\***\*\*\***\*\*\*\*\***should not be “fixed”\***\*\*\*\*\***\*\*\***\*\*\*\*\***\*\*\***\*\*\*\*\***\*\*\***\*\*\*\*\***. As explained in the first section of this article: exposing your Xata API keys to a client-side runtime like a browser is a huge security issue. For more information, read our documentation about [Securely Talking to Xata](https://xata.io/docs/getting-started/installation#working-with-client-sdks).
 
 ## Creating apps and connecting to Xata
 
@@ -92,7 +92,7 @@ export default function handler (request, response) {
 
 To understand how to create one, and how to design your API, we have a [Vercel Serverless Function Sample](https://github.com/xataio/examples/tree/main/apps/starter-vercel-serverless-functions) in our example repository. Do not forget to create and add your API Keys to the deployment routines within your dashboard, otherwise the Xata Client will not have a key to fire requests with.
 
-For a more involved example, refer to the [Quickstart in our documentation](https://xata.io/docs/quickstart/updating-data-with-xata).
+For a more involved example, refer to the [working with client SDKs](https://xata.io/docs/getting-started/installation#working-with-client-sdks).
 
 ## Conclusion
 
