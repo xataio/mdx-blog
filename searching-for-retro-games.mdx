@@ -45,7 +45,7 @@ Xata is a serverless data platform that's new on the Jamstack scene, and aims to
 
 Sign up for a free account at [xata.io](https://xata.io) to get started.
 
-Then, from the command line install the [CLI](https://xata.io/docs/cli/getting-started) and authenticate with your Xata account:
+Then, from the command line install the [CLI](https://xata.io/docs/getting-started/cli) and authenticate with your Xata account:
 
 ```bash
 npm i --location=global @xata.io/cli
@@ -180,7 +180,7 @@ In order to fetch the data we'll need for these, we first need to set up the Xat
 
 ### Connect to Xata
 
-In the new directory created by `create-next-app`, [initialize a Xata project](https://xata.io/docs/cli/getting-started#project-mode) with the command:
+In the new directory created by `create-next-app`, [initialize a Xata project](https://xata.io/docs/getting-started/cli#project-mode) with the command:
 
 ```bash
 xata init
@@ -219,7 +219,7 @@ const xata = getXataClient();
 
 Now, we can query our data with the Xata SDK by calling methods on `xata.db[tableName]`, in our case `xata.db.games`.
 
-To retrieve a game by its ID, for example, we can use [`.read()`](https://xata.io/docs/sdk/reference#reading-records):
+To retrieve a game by its ID, for example, we can use [`.read()`](https://xata.io/docs/sdk/get):
 
 ```tsx
 const clashAtDemonhead = await xata.db.games.read('123');
@@ -484,8 +484,8 @@ In the process of building our app to search retro games data, we've covered a l
 
 There is still a lot more Xata functionality we haven't had time to explore. Check out [search-retro-games.vercel.app](https://search-retro-games.vercel.app) for an enhanced version of this [project](https://github.com/vakila/search-retro-games) featuring:
 
-- [Filtering](https://xata.io/docs/api-guide/filtering) search results by console
-- [Aggregating](https://xata.io/docs/api-guide/aggregate) to count the total number of games
+- [Filtering](https://xata.io/docs/sdk/filtering) search results by console
+- [Aggregating](https://xata.io/docs/sdk/aggregate) to count the total number of games
 - Debounced search input to avoid over-fetching
 - More details in search results & game pages
 

@@ -34,11 +34,11 @@ The hard data problems include running PostgreSQL at scale and with high availab
   position="center"
 />
 
-We call the type of service we’re building at Xata a [Serverless Data Platform](https://xata.io/docs/intro/serverless-data-platform), and we think it’s the next logical evolution after Database as a Service (DBaaS). Similar to how platforms like Vercel, Netlify, or Cloudflare Pages leverage CDNs, serverless and edge functions, to host your app globally and give you a simple developer experience, Xata does the same for the data infrastructure.
+We call the type of service we’re building at Xata a [Serverless Data Platform](https://xata.io/docs/concepts/serverless-data-platform), and we think it’s the next logical evolution after Database as a Service (DBaaS). Similar to how platforms like Vercel, Netlify, or Cloudflare Pages leverage CDNs, serverless and edge functions, to host your app globally and give you a simple developer experience, Xata does the same for the data infrastructure.
 
 When we say that we offer them to you in the most easy-to-use way possible, we mean things like:
 
-- as serverless as it gets (see our blog post on [serverless databases](https://xata.io/blog/what-is-a-serverless-database))
+- as serverless as it gets (see our blog post on [serverless databases](https://xata.io/blog/what-is-a-serverless-database)
 - a single consistent API across multiple types of data stores (relational DB, search/analytics engine, in the future caching and queues)
 - a web UI that makes working with the data easy during and after development
 - ORM-like high-level clients for the most popular programming languages
@@ -84,7 +84,7 @@ In the above, because `team.*` was explicitly requested, the results will return
 
 You know what’s the best part about the above? If you’re using TypeScript, both the parameters and the results are fully typed. So you can easily use auto-complete to get column names, for example, and the types are going to catch mismatches between the code and the database schema. Type safety with no effort!
 
-You can see a lot more examples of how to use both the API and the TypeScript SDK in our [API Guide](https://xata.io/docs/api-guide/get).
+You can see a lot more examples of how to use both the API and the TypeScript SDK in our [API Guide](https://xata.io/docs/sdk/get).
 
 _Psst, there’s an easier way!_
 
@@ -117,11 +117,11 @@ Because we have control over the data model and because Xata has native concepts
 
 As we have shown earlier, we store the data in PostgreSQL, but we also replicate it to Elasticsearch. This enables us to offer significantly more advanced free-text search compared to the free-text-search support from PostgreSQL. This includes:
 
-- [fuzinness control](https://xata.io/docs/api-guide/search#fuzziness-and-typo-tolerance) so that you can have typo tolerance in your search.
-- [column weights](https://xata.io/docs/api-guide/search#column-weights), so you can value matches in some columns more. For example, you can boost matches in the “title” column more than matches in the rest of the columns.
-- [numeric boosters](https://xata.io/docs/api-guide/search#numeric-booster), so you can boost records by a numeric field, for example by “rating”.
-- [date boosters](https://xata.io/docs/api-guide/search#date-booster), so you can boost records that are more recent in time.
-- [value boosters](https://xata.io/docs/api-guide/search#exact-value-booster), so you can boost records with a particular column value, for example, by “category”.
+- [fuzinness control](https://xata.io/docs/sdk/search#fuzziness-and-typo-tolerance) so that you can have typo tolerance in your search.
+- [column weights](https://xata.io/docs/sdk/search#column-weights), so you can value matches in some columns more. For example, you can boost matches in the “title” column more than matches in the rest of the columns.
+- [numeric boosters](https://xata.io/docs/sdk/search#numeric-booster), so you can boost records by a numeric field, for example by “rating”.
+- [date boosters](https://xata.io/docs/sdk/search#date-booster), so you can boost records that are more recent in time.
+- [value boosters](https://xata.io/docs/sdk/search#exact-value-booster), so you can boost records with a particular column value, for example, by “category”.
 
 This allows you to build the perfect search experience for your users, without having to use a different service or product and worrying about how to replicate the data.
 
@@ -133,7 +133,7 @@ Since relevancy tuning can be tricky business, we provide a UI so you can do it 
 
 Xata offers two ways to aggregate your data: summaries, which are executed in PostgreSQL, and aggregations, which are executed in Elasticsearch.
 
-An example of a relatively complex visualization that can be created with the [Aggregation API](https://xata.io/docs/api-guide/aggregate) could be: a multi-line chart, where each line represents a movie genre, and the Y axis represents the average rating of the movies in that genre, per year. This chart can be obtained with a single aggregation request, looking something like this:
+An example of a relatively complex visualization that can be created with the [Aggregation API](https://xata.io/docs/sdk/aggregate) could be: a multi-line chart, where each line represents a movie genre, and the Y axis represents the average rating of the movies in that genre, per year. This chart can be obtained with a single aggregation request, looking something like this:
 
 ```tsx
 const results = await xata.db.titles.aggregate({
@@ -161,11 +161,11 @@ const results = await xata.db.titles.aggregate({
 })
 ```
 
-You can find more examples in the [API guide](https://xata.io/docs/api-guide/aggregate). We’d don’t yet have a UI to help you build this type of aggregations, but if you know us by now, we’re going to have one soon.
+You can find more examples in the [API guide](https://xata.io/docs/sdk/aggregate). We’d don’t yet have a UI to help you build this type of aggregations, but if you know us by now, we’re going to have one soon.
 
 ### And we’re just getting started
 
-With today’s public launch, it is day 0 at Xata. Our mission to simplify the way developers work with data gives us a strong focus on what features to add to the product. We believe that Xata, as a [serverless data platform](https://xata.io/docs/intro/serverless-data-platform), is the perfect companion for full-stack frameworks like Next.js, Remix.run, SvelteKit and others.
+With today’s public launch, it is day 0 at Xata. Our mission to simplify the way developers work with data gives us a strong focus on what features to add to the product. We believe that Xata, as a [serverless data platform](https://xata.io/docs/concepts/serverless-data-platform), is the perfect companion for full-stack frameworks like Next.js, Remix.run, SvelteKit and others.
 
 We’re very excited about upcoming features like Edge Functions and Caching (currently in private Beta, see more here), integrations into Vercel and Netlify, global data replication, and many others. [Stay tuned](https://twitter.com/xata), there’s so much more to come.
 
@@ -173,7 +173,7 @@ We’re very excited about upcoming features like Edge Functions and Caching (cu
 
 Many DBaaS and BaaS vendors offer a free-tier plan, but usually, it doesn’t include redundancy or high availability, and it’s often “for development” only with limitations based on activity.
 
-Our [free tier](https://xata.io/pricing) is explicitly recommended for production. We want you to build your personal projects, non-profit web apps, and fun apps on top of Xata, and you shouldn’t have to pay for it. You can also freely collaborate with others and be part of multiple teams (up to 40 workspaces per user). The limitations of the service are clearly stated on the [pricing page](https://xata.io/pricing) and on the [limits](https://xata.io/docs/concepts/limits) page in the docs.
+Our [free tier](https://xata.io/pricing) is explicitly recommended for production. We want you to build your personal projects, non-profit web apps, and fun apps on top of Xata, and you shouldn’t have to pay for it. You can also freely collaborate with others and be part of multiple teams (up to 40 workspaces per user). The limitations of the service are clearly stated on the [pricing page](https://xata.io/pricing) and on the [limits](https://xata.io/docs/rest-api/limits) page in the docs.
 
 If you are a seed-stage startup, a non-profit, or you were in our Beta program, we can increase the limits further, [contact us](mailto:info@xata.io) and we’d be happy to discuss. You can think of us as your team of DevOps people experts in databases.
 
