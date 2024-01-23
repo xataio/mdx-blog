@@ -64,18 +64,6 @@ The `pgvector` extension introduces 3 new operators that can be used to calculat
 - **Natural language processing**: NLP applications, such as sentiment analysis or topic modeling, can benefit from pgvector's efficient similarity search to compare text documents and group them by semantic similarity.
 - **Research**: pgvector can assist in clustering or finding relationships between different data points based on their vector representations.
 
-### Data types
-
-pgvector introduces several data types to PostgreSQL to represent vectors. These data types are specifically designed to store and manipulate vector data efficiently. Here are some of the key data types used in pgvector:
-
-- `vector`: The `vector` data type is a fundamental data type in pgvector. It represents a vector of real numbers. You can use this type to store numeric vectors, such as embeddings or feature vectors.
-
-- `l2vector`: The `l2vector` data type is an extension of the vector data type. It represents a vector of real numbers, similar to vector, but it is designed for L2-normalized vectors. L2 normalization ensures that the vector has a length of 1, which is often useful in similarity calculations.
-
-- `vector_search`: The `vector_search` data type is used to represent vector search indexes. It's not a type for storing vectors directly but rather for creating indexes on vector columns. This data type is essential for optimizing vector similarity searches.
-
-- `vector_index`: The `vector_index` data type is used to store vector indexes. It is associated with a vector column and allows for efficient similarity search operations.
-
 ### How to use pgvector?
 
 Before installing pgvector, ensure you have PostgreSQL installed on your system.
