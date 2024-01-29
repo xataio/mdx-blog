@@ -18,7 +18,12 @@ jobs:
           # This makes git push to work and other workflows to run
           token: ${{ secrets.GIT_TOKEN }}
 
-      - uses: ./.github/shared
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install Node.js dependencies
+        run: pnpm install
 
       - name: Prettier format changed files
         continue-on-error: true
