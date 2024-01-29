@@ -5,7 +5,7 @@ image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/gallery-cms-astro-cloudflare.png
   alt: Xata CMS
 author: Rishi Raj Jain
-date: 01-29-2024
+date: 02-01-2024
 published: true
 slug: content-management-system-remix-xata
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/gallery-cms-astro-cloudflare.png
@@ -21,9 +21,9 @@ In this post, you'll create a content CMS using Xata, Remix, Novel, LiteLLM, and
 - Implement content-wide search
 - Create dynamic content routes with Remix
 
-# Before you begin
+## Before you begin
 
-## Prerequisites
+### Prerequisites
 
 You'll need the following:
 
@@ -32,7 +32,7 @@ You'll need the following:
 - An [OpenAI](https://platform.openai.com) account
 - A [Vercel](https://vercel.com) Account
 
-## Tech Stack
+### Tech Stack
 
 | Technology                         | Description                                                                     |
 | ---------------------------------- | ------------------------------------------------------------------------------- |
@@ -43,7 +43,7 @@ You'll need the following:
 | https://tailwindcss.com/           | CSS framework for building custom designs                                       |
 | https://vercel.com                 | A cloud platform for deploying and scaling web applications.                    |
 
-# Setting up a Xata Database
+## Setting up a Xata Database
 
 After you've created a Xata account and are logged in, create a database.
 
@@ -53,15 +53,13 @@ The next step is to create a table, in this instance `uploads`, that contains al
 
 ![Create uploads table](/images/cms-remix-xata-02.png)
 
-![View table schema](/images/cms-remix-xata-03.png)
-
 Great, now click on **Schema** in the left sidebar and create one more table `content`. You can do this by clicking **Add a table**. The tables will contain user content and user uploaded photographs. With that completed, you will see the schema as below.
 
 ![View uploads and content schema](/images/cms-remix-xata-04.png)
 
 Let’s move on to adding relevant columns in the tables you've just created.
 
-# Creating the Schema
+## Creating the Schema
 
 In the `uploads` table, you want to store all the images only (and no other attributes) so that you can create references to the same image object again, if needed.
 
@@ -89,7 +87,7 @@ Lovely! With all that done, the final schema shall be as below 👇🏻
 
 ![Add more CMS columns](/images/cms-remix-xata-08.png)
 
-# Setting up the project
+## Setting up the project
 
 Clone the app repository and follow this tutorial; you can fork the project by running the following command:
 
@@ -99,7 +97,7 @@ cd remix-wysiwyg-litellm-xata-vercel
 npm install
 ```
 
-# Configure Xata with Remix
+## Configure Xata with Remix
 
 To seamlessly use Xata with Remix, install the Xata CLI globally:
 
@@ -125,7 +123,7 @@ Answer some quick one-time questions from the CLI to integrate with Remix.
 
 ![Xata CLI](/images/cms-remix-xata-10.png)
 
-# Implementing form actions in Remix
+## Implementing form actions in Remix
 
 With Remix, [Route Actions](https://reactrouter.com/en/main/route/action) are the way to process form `POST` request(s). Here’s how we’ve enabled form actions to process the form submissions and insert records into the Xata database.
 
@@ -186,7 +184,7 @@ export default function Index() {
 }
 ```
 
-# Handling Client Side Image Uploads with Xata
+## Handling Client Side Image Uploads with Xata
 
 To let user add their own custom OG Image with the content, we use Xata [Upload URLs](https://xata.io/docs/sdk/file-attachments#upload-urls) to handle image uploads on the client side. There are 2 steps to make a successful client side image upload with Xata and Remix:
 
@@ -239,7 +237,7 @@ const uploadFile = (e: ChangeEvent<HTMLInputElement>) => {
 };
 ```
 
-# Using an AI powered WYSIWYG Editor
+## Using an AI powered WYSIWYG Editor
 
 For making it easier to write content, users need a reliable and user-friendly AI powered WYSIWYG editor. We’re using Novel, a Notion-Style WYSIWYG Editor providing a seamless experience with intuitive features and real-time preview of the content being written. To get the content being written as HTML, we use Novel’s `onUpdate` callback and set the HTML string to an input inside the form element.
 
@@ -270,7 +268,7 @@ export default function Index() {
 }
 ```
 
-# Implementing autocompletion using LiteLLM
+## Implementing autocompletion using LiteLLM
 
 Under the hood, Novel makes a POST request to `/api/generate` expecting a stream of tokens from OpenAI API. Well, let’s see how we’ve customised the endpoint to get the flexibility of using any AI API provider with LiteLLM. With LiteLLM, you can call 100+ LLMs with the same OpenAI-like input and output. To implement autocompletion with streaming, we use the `completion` method with `stream` flag set to `true` and further return the response obtained as a [ReadableStream](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream).
 
@@ -333,7 +331,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 ```
 
-# **Implementing Content Wide Search with Xata Search**
+## **Implementing Content Wide Search with Xata Search**
 
 To let user search through the entire collection of the content, we use Remix Route Actions with Xata Search to retrieve relevant records from the database. With Xata Search, you can choose the tables to **search through**, in this instance, `content` and set the targets to **search on**, in this instance, `title`, `slug`, `content` and `author_name`.
 
@@ -364,7 +362,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 ```
 
-# Creating Dynamic Routes in Remix
+## Creating Dynamic Routes in Remix
 
 To create a page dynamically for each content, we're gonna use Remix Dynamic Routes and Route Loaders. Creating a page with **$** in it, in this instance, content\_.**$id**.tsx specifies a dynamic route where each part of the URL for e.g. for `/content/a`, `/content/b` or `/content/anything` captures the last segment into the **id** param.
 
@@ -426,7 +424,7 @@ export default function Pic() {
 }
 ```
 
-# Deploy to Vercel
+## Deploy to Vercel
 
 The repository, is now ready to deploy to Vercel. Use the following steps to deploy: 👇🏻
 
@@ -436,7 +434,7 @@ The repository, is now ready to deploy to Vercel. Use the following steps to dep
 - In **Settings**, update the _Environment Variables_ to match those in your local `.env` file.
 - Deploy! 🚀
 
-# More Information
+## More Information
 
 For more detailed insights, explore the references cited in this post.
 
@@ -448,6 +446,6 @@ For more detailed insights, explore the references cited in this post.
 | Remix Route Actions   | https://remix.run/docs/en/main/discussion/data-flow#route-action        |
 | Remix Route Loaders   | https://remix.run/docs/en/main/discussion/data-flow#route-loader        |
 
-# What’s next?
+## What’s next?
 
 We'd love to hear from you if you have any feedback on this tutorial, would like to know more about Xata, or if you'd like to contribute a community blog or tutorial. Reach out to us on [Discord](https://discord.com/invite/kvAcQKh7vm) or join us on [X | Twitter](https://twitter.com/xata). Happy building 🦋
