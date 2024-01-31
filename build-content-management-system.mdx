@@ -34,14 +34,14 @@ You'll need the following:
 
 ### Tech Stack
 
-| Technology                                    | Description                                                                     |
-| --------------------------------------------- | ------------------------------------------------------------------------------- |
-| [Xata](https://xata.io)                       | Serverless database platform for scalable, real-time applications.              |
-| [Remix](https://remix.run)                    | Framework for building full-stack web applications with focus on Web Standards. |
-| [litelln](https://github.com/BerriAI/litellm) | Call all LLM APIs using the OpenAI format.                                      |
-| [Nove](https://novel.sh)                      | A Notion-style WYSIWYG editor with AI-powered autocompletion                    |
-| [TailwindCSS](https://tailwindcss.com/)       | CSS framework for building custom designs                                       |
-| [Vercel](https://vercel.com)                  | A cloud platform for deploying and scaling web applications.                    |
+| Technology                         | Description                                                                     |
+| ---------------------------------- | ------------------------------------------------------------------------------- |
+| https://xata.io                    | Serverless database platform for scalable, real-time applications.              |
+| https://remix.run                  | Framework for building full-stack web applications with focus on Web Standards. |
+| https://github.com/BerriAI/litellm | Call all LLM APIs using the OpenAI format.                                      |
+| https://novel.sh                   | A Notion-style WYSIWYG editor with AI-powered autocompletion                    |
+| https://tailwindcss.com/           | CSS framework for building custom designs                                       |
+| https://vercel.com                 | A cloud platform for deploying and scaling web applications.                    |
 
 ## Setting up a Xata Database
 
@@ -67,38 +67,17 @@ Proceed with adding the column named `image`. This column is responsible for sto
 
 First, click **+ Add column** and select **File**.
 
-<ArticleImage
-  src="/images/cms-remix-xata-05.png"
-  width="454"
-  height="541"
-  alt="Add a column"
-  caption="Add a column"
-  position="center"
-/>
+![Add a column](/images/cms-remix-xata-05.png)
 
 Set the column name to `photo` and to make files public (so that they can be shown to users when they visit the image gallery), check the **Make files public by default** option.
 
-<ArticleImage
-  src="/images/cms-remix-xata-06.png"
-  width="450"
-  height="306"
-  alt="Make files public by default"
-  caption="Make files public by default"
-  position="center"
-/>
+![Make files public by default](/images/cms-remix-xata-06.png)
 
 In the `content` table, we want to store the attributes such as content’s unique slug (the path of the url where content will be displayed), title, author name, author’s image with it’s dimensions, and content’s og image with it’s dimensions.
 
 Proceed with adding the column named `slug`. It is responsible for maintaining the uniqueness of each content that gets created. Click **+ Add a column**, select `String` type and enter the column name as `slug`. To associate a slug with only one content, check the `Unique` attribute to make sure that duplicate entries do not get inserted.
 
-<ArticleImage
-  src="/images/cms-remix-xata-07.png"
-  width="417"
-  height="241"
-  alt="Add slug column"
-  caption="Add slug column"
-  position="center"
-/>
+![Add slug column](/images/cms-remix-xata-07.png)
 
 In similar fashion, create `title`, `author_name`, `author_image_url`, `og_image_url`, `author_image_w`, `author_image_h`, `og_image_w`, `og_image_h` as `String` type (but not `Unique`).
 
@@ -106,14 +85,7 @@ Great, you can also store the user `content` as `Text` type. While `String` is a
 
 Lovely! With all that done, the final schema shall be as below 👇🏻
 
-<ArticleImage
-  src="/images/cms-remix-xata-08.png"
-  width="548"
-  height="540"
-  alt="Add more CMS columns"
-  caption="Add more CMS columns"
-  position="center"
-/>
+![Add more CMS columns](/images/cms-remix-xata-08.png)
 
 ## Setting up the project
 
@@ -141,7 +113,7 @@ xata auth login
 
 ![Create new API key](/images/cms-remix-xata-09.png)
 
-Great! Now, initialize your project locally with the Xata CLI command. In this command, you will need to use the database URL for the database that you just created. You can copy the URL from the Settings page of the database.
+Great! Now, initialize your project locally with the Xata CLI command:
 
 ```bash
 xata init --db https://Rishi-Raj-Jain-s-workspace-80514q.us-east-1.xata.sh/db/remix-wysiwyg-litellm-xata-vercel
@@ -149,14 +121,7 @@ xata init --db https://Rishi-Raj-Jain-s-workspace-80514q.us-east-1.xata.sh/db/re
 
 Answer some quick one-time questions from the CLI to integrate with Remix.
 
-<ArticleImage
-  src="/images/cms-remix-xata-10.png"
-  width="400"
-  height="400"
-  alt="Xata CLI"
-  caption="Xata CLI"
-  position="center"
-/>
+![Xata CLI](/images/cms-remix-xata-10.png)
 
 ## Implementing form actions in Remix
 
