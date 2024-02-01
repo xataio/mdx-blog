@@ -100,7 +100,7 @@ Both [Liquibase](https://liquibase.com/) and [Flyway](https://flywaydb.org/) hav
 Last but not least is [Reshape](https://github.com/fabianlindfors/reshape). This is a relatively new open source tool that provides a novel way for handling schema migrations. Though unlike these other tools, it doesn’t support multiple databases. The tool is only for Postgres
 This means it can take advantage of capabilities specific to Postgres moreso than other solutions. Reshape inspired the next tools we'll dive into: pgroll.
 
-## Introducing pgroll:  zero-downtime, reversible schema migrations for Postgres
+## Introducing pgroll: zero-downtime, reversible schema migrations for Postgres
 
 At Xata, we recently sought to tackle this problem with a brand new solution, [pgroll](https://github.com/xataio/pgroll). pgroll is an open source command-line tool that offers safe and reversible schema migrations for PostgreSQL by serving multiple schema versions simultaneously. It takes care of the complex migration operations to ensure that client applications continue working while the database schema is being updated. This includes ensuring changes are applied without locking the database, and that both old and new schema versions work simultaneously. This removes risks related to schema migrations, and greatly simplifies client application rollout, also allowing for instant rollbacks.
 
