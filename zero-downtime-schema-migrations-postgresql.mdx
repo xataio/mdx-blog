@@ -29,8 +29,7 @@ This pattern comes from fear of breaking the application, which is fair. Though 
 
 If you aren’t familiar with Postgres, locking is a way to control concurrent access to data in tables. Locks are used pretty heavily when modifying your schema and [there are many types of different locks](https://www.postgresql.org/docs/current/explicit-locking.html) available in Postgres.
 
-As an example, any ALTER TABLE statements will require the ACCESS EXCLUSIVE lock which conflicts with all other lock types.
-Meaning, most changes to your table essentially make it inaccessible for writes. When talking abour production applications, the general goal is to reduce the time during which Postgres tables are locked as much as possible. Unless you have the same exact data in your staging or preview environments as you do production, realistic locking scenarios can be relatively hard to test for.
+As an example, any ALTER TABLE statements will require the ACCESS EXCLUSIVE lock which conflicts with all other lock types. Meaning, most changes to your table essentially make it inaccessible for writes. When talking abour production applications, the general goal is to reduce the time during which Postgres tables are locked as much as possible. Unless you have the same exact data in your staging or preview environments as you do production, realistic locking scenarios can be relatively hard to test for.
 
 **Deploying application changes**
 
@@ -42,8 +41,7 @@ Ensuring data consistency between the changes, avoiding schema drift and backfil
 
 **Rolling back your changes**
 
-If you have downtime because of changes made to your database, what do you do? Rollback of course. Rolling back your schema changes in production is probably the only thing scarier than rolling them out in the first place. If your schema changes were a long multi-step process,
-you can assume that rolling those changes back will be even more difficult.
+If you have downtime because of changes made to your database, what do you do? Rollback of course. Rolling back your schema changes in production is probably the only thing scarier than rolling them out in the first place. If your schema changes were a long multi-step process, you can assume that rolling those changes back will be even more difficult.
 
 Because of this difficulty, rollbacks typically aren’t tested before deploying to production. In the best case scenario you have a short unplanned maintenance window. Depending on the size or complexity of the data, it could take hours to revert.
 
