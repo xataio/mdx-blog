@@ -1,6 +1,6 @@
 ---
-title: 'How to perform Postgres schema changes in production with zero downtime'
-description: "Schema migrations are a pain. In this workshop we'll review the problem space and tools available to make reversible schema changes in production with zero downtime."
+title: 'How to perform Postgres schema changes in production with zero-downtime'
+description: "Schema migrations are a pain. Let's review the problem space and tools available to make reversible schema changes in production with zero-downtime."
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/images/pgroll-internal.jpeg
   alt: Zero-downtime schema migrations in PostgreSQL
@@ -13,7 +13,7 @@ slug: zero-downtime-schema-migrations-postgresql
 
 <ArticleVideo platform="youtube" src="https://www.youtube.com/embed/-1aO6UznfI0?si=qLv09ZanA_UMQf0w" />
 
-[Schema migrations are a pain](https://xata.io/blog/postgres-schema-changes-pita). They typically require multi-step playbooks to roll out in production and migrate your data over. In this workshop we review the problem space and tools available to make reversible schema changes in production with zero downtime.
+[Schema migrations are a pain](https://xata.io/blog/postgres-schema-changes-pita). They typically require multi-step playbooks to roll out in production and migrate your data over. In this workshop we review the problem space and tools available to make reversible schema changes in production with zero-downtime.
 
 ## Common pitfalls to rolling out schema changes
 
@@ -23,14 +23,14 @@ There are a number of gotchas we typically see folks run into when trying to rol
 
 If you’ve ever worked with a production database, I’m sure you’ve run into this one. We’ve interviewed many developers and architects about schema migrations and the one thing they’ll all admit is that they’d rather add columns than remove them. It’s the safe play, destructive changes can be complex, but things can get out of hand very quickly. A single column can very quickly turn into multiple versions with different variations.
 
-This pattern comes from fear of breaking the application, which is fair. Though at the end up the day, having a table with hundred of columns can lead to a few issues. You can end up with performance implications returning certain queries, having long living compatibility code in your application and general confusion for anyone new to the database.
+This pattern comes from fear of breaking the application, which is fair. Though at the end up the day, having a table with hundreds of columns can lead to a few issues. You can encounter performance issues when executing certain queries, maintain compatibility code in your application for an extended period, and create confusion for anyone new to the database
 
 **The locking minefield**
 
 If you aren’t familiar with Postgres, locking is a way to control concurrent access to data in tables. Locks are used pretty heavily when modifying your schema and [there are many types of different locks](https://www.postgresql.org/docs/current/explicit-locking.html) available in postgres.
 
-As an example, any ALTER TABLE statements will require the ACCESS EXCLUSIVE lock which conflicts with all other lock types.
-Meaning, most changes to your table essentially make it inaccessible. When talking abour production applications, the general goal is to reduce the time in which postgres is locked as much as possible. Unless you have the same exact data in your staging or preview environments as you do production, realistic locking scenarios can be relatively hard to test for.
+As an example, any `ALTER TABLE` statements will require the `ACCESS EXCLUSIVE` lock which conflicts with all other lock types.
+Meaning, most changes to your table essentially make it inaccessible. When talking about production applications, the general goal is to reduce the time in which postgres is locked as much as possible. Unless you have the same exact data in your staging or preview environments as you do production, realistic locking scenarios can be relatively hard to test for.
 
 **Deploying application changes**
 
@@ -38,12 +38,11 @@ Now, this parts always fun. The ordering of deployment for changes in your appli
 
 ![Hilarious Dwight meme](/images/zdt-schema-application-deploy.jpeg)
 
-Having data consistency between the changes, avoiding schema drift and backfilling the appropriate data correctly are some the complexities that can lead to downtime. That’s why the more complex the application, the more complex the deployment process ends up being for database changes.
+Having data consistency between the changes, avoiding schema drift and backfilling the appropriate data correctly are some of the complexities that can lead to downtime. That’s why the more complex the application, the more complex the deployment process ends up being for database changes.
 
 **Rolling back your changes**
 
-If you have down time because of changes made to your database, what do you do? Rollback of course. Rolling back your schema changes in production is probably the only thing scarier than rolling them out in the first place. If your schema changes were a long multi-step process,
-you can assume that rolling those changes back will be even more difficult.
+If you have downtime because of changes made to your database, what do you do? Rollback of course. Rolling back your schema changes in production is probably the only thing scarier than rolling them out in the first place. If your schema changes were a long multi-step process, you can assume that rolling those changes back will be even more difficult.
 
 Because of this difficulty, rollbacks typically aren’t tested before deploying to production. In the best case scenario you have a short unplanned maintenance. Depending on the size or complexity of the data, it could take hours to revert.
 
@@ -57,19 +56,19 @@ There are some battle-tested ways to roll out schema changes in production envir
 
 **Version controlled SQL scripts**
 
-Relational databases have been for awhile, and some practices have stood the test of time. It is not uncommon for an entire database schema history to be stored in a widely accessible folder, with well ordered SQL files and manual, well documented process to roll out changes. Just don't let your intern near it 😉
+Relational databases have been around for a while, and some practices have stood the test of time. It is not uncommon for an entire database schema history to be stored in a widely accessible folder, with well ordered SQL files and manual, well documented process to roll out changes. Just don't let your intern near it 😉
 
-This is a trusted solution for keeping a history, making changes and quickly being able to rebuild your database. Putting these files behind version control systems like git / GitHub allow for some change management process. While maybe not for everyone, this is good enough for more businesses than you’d think -- and at a variety of scales.
+This is a trusted solution for keeping a history, making changes, and quickly being able to rebuild your database. Putting these files behind version control systems like git / GitHub allow for some change management process. While maybe not for everyone, this is good enough for more businesses than you’d think -- and at a variety of scales.
 
 **Frameworks & ORMs**
 
 There are generally two ways to deploy your database alongside your application. Coupling the two together, or decoupling them. When your application is coupled together with your database, you typically see an ORM or framework in use.
 
-ORMs like [Prisma](https://www.prisma.io/) or [Drizzle](https://orm.drizzle.team/) and frameworks like [Django](https://www.djangoproject.com/), [Ruby on Rails](https://rubyonrails.org/) or [Laravel](https://laravel.com/) will not just generate schema migrations for your application, but deploy the changes at the same time. This works well at a smaller scale, but as you grow there end up being a number of downsides. Ranging from collaboration features to having less control over the schema migrations themselves.
+ORMs like [Prisma](https://www.prisma.io/) or [Drizzle](https://orm.drizzle.team/) and frameworks like [Django](https://www.djangoproject.com/), [Ruby on Rails](https://rubyonrails.org/) or [Laravel](https://laravel.com/) will not just generate schema migrations for your application, but deploy the changes at the same time. This works well at a smaller scale, but as you grow, a number of downsides emerge, ranging from limited collaboration features to having less control over the schema migrations themselves.
 
 **Expand & contract**
 
-The expand and contract strategy, also known as [parallel change](https://martinfowler.com/bliki/ParallelChange.html), is a pattern used to migrate your schemas with zero downtime. This pattern is usually seen in decoupled architectures and is proven to work well at scale.
+The expand and contract strategy, also known as [parallel change](https://martinfowler.com/bliki/ParallelChange.html), is a pattern used to migrate your schemas with zero-downtime. This pattern is usually seen in decoupled architectures and is proven to work well at scale.
 
 It works by applying changes in a specific series of steps that add in the new schema and data, with the application aware of both schemas for a given period of time. Then, deleting the old schema after the data has been backfilled. This approach is backwards compatible and reversible and a pattern we see used regularly in modern applications.
 
@@ -87,13 +86,13 @@ Then, there’s always the possibility that downtime is acceptable for your appl
 
 ## Tools available for schema migrations
 
-When you start seriously considering more destructive changes to your schema, thrid party tooling becomes more of a necessity to keep track of the changes, version them and perform the migrations. Since this problem has been around for awhile, there are a variety of tools. We won't go into details for each one, but some solutions have been around for nearly two decades and others popped up in the last few years.
+When you start seriously considering more destructive changes to your schema, thrid party tooling becomes more of a necessity to keep track of the changes, version them and perform the migrations. Since this problem has been around for a while, there are a variety of tools. We won't go into details for each one, but some solutions have been around for nearly two decades and others popped up in the last few years.
 
 ![Tools for schema migrations](/images/zdt-schema-tools.png)
 
 Both [Liquibase](https://liquibase.com/) and [Flyway](https://flywaydb.org/) have been in this space for some time, Liquibase having been here the longest since 2006. Both of these offerings have a free open source solution. That being said, there are numerous features ranging from rollbacks to schema diffs that are gated at the paid tier. Liquibase is more geared towards enterprise use cases, and Flyway being a bit more developer oriented. Both solutions can use SQL to write migration scripts (though Liquibase supports other formats – YAML, XML, JSON.) and support a wide variety of databases.
 
-[Sqitch](https://sqitch.org/) is interesting because it’s positioned itself as a standalone change management system. It is unopinionated about your application framework, database engine or development environment. Unlike liquibase or flyway, there is no need to number or name your migrations a certain way. Sqitch handles this for you. It’s a unique solution that is aims to make it easy to integrate into your existing environment
+[Sqitch](https://sqitch.org/) is interesting because it’s positioned itself as a standalone change management system. It is unopinionated about your application framework, database engine or development environment. Unlike liquibase or flyway, there is no need to number or name your migrations a certain way. Sqitch handles this for you. It’s a unique solution that aims to make it easy to integrate into your existing environment.
 
 [Atlas](https://atlasgo.io/) and [Bytebase](https://bytebase.com/) are very much the new kids on the block and lean into developer experience and database as code. Both have open source and cloud offerings and aim to do much more than schema migrations, supporting multiple databases.
 
@@ -110,7 +109,7 @@ If you're interested in learning more about why we built this solution, how it's
 
 ## Coming soon to Xata
 
-We are in the process of integrating pgroll directly to Xata. This will open the door to [many more migrations](https://github.com/xataio/pgroll/tree/main/docs#operations-reference) that can be rolled out in production, with zero downtime.
+We are in the process of integrating pgroll directly to Xata. This will open the door to [many more migrations](https://github.com/xataio/pgroll/tree/main/docs#operations-reference) that can be rolled out in production, with zero-downtime.
 
 ![Tools for schema migrations](/images/zdt-schema-xata.png)
 
