@@ -127,7 +127,7 @@ OPENAI_API_KEY="sk-..."
 
 With LiteLLM, you can call 100+ LLMs with the same OpenAI-like input and output. To create embedding vector from a string content, we use the `embedding` method from `litellm` with `text-embedding-3-small` as the model. By default, the length of the embedding vector will be `1536` for text-embedding-3-small. Using the OpenAI output format, we obtain the embedding vector from the first object in the `data` array returned.
 
-```tsx
+```typescript
 // File: src/routes/api/chat/+server.ts
 
 import { embedding } from 'litellm'
@@ -151,7 +151,7 @@ export async function POST({ request }: RequestEvent) {
 
 We’ll use the Xata Serverless database platform (powered by PostgreSQL) to store the content from which the embedding vector was created, and the embedding vector itself. It’s as easy as inserting a record in your database. Here’s the code on how to add each vector with it’s content to the `vectors` table in your Xata database.
 
-```tsx
+```typescript
 // Upsert the vector with description to be used further
 // as the context to upcoming questions
 xata.db.vectors.create({
@@ -162,7 +162,7 @@ xata.db.vectors.create({
 
 Storing vectors in a database help us create context when generating chatbot responses on the fly including the latest content added. To add embedding vectors along with metadata dynamically, we create a [Server Side Rendered SvelteKit endpoint](https://kit.svelte.dev/docs/routing#server) to accept `messages` (a string array) in the POST request. Using messages, we create embeddings and insert them into our Xata database.
 
-```tsx
+```typescript
 // File: src/routes/api/context/warm/+server.ts
 
 import { embedding } from 'litellm'
@@ -197,7 +197,7 @@ export async function POST({ request }: RequestEvent) {
 
 We’ll use the Xata Vector Search to perform similarity search on your data based on the latest query’s dynamically generated embedding vector. It’s as easy as retrieving a record in your database. Here’s the code on how to find the 5 most similar embedding vectors to the latest user query vector in your Xata database.
 
-```tsx
+```typescript
 // Fetch the relevant set of records based on the embedding
 const relevantRecords = await xata.db.vectors.vectorSearch(
 	// Column Name
@@ -211,7 +211,7 @@ const relevantRecords = await xata.db.vectors.vectorSearch(
 
 With each relevant embedding vector, each record of your Xata database is returned. This allows us to obtain the metadata associated with these vectors and use them to create the context for the AI to answer with. In the code below, we simply create a string containing all the metadata from the relevant vectors returned in our search.
 
-```tsx
+```typescript
 // File: src/routes/api/context/warm/+server.ts
 
 import { embedding } from 'litellm'
@@ -245,7 +245,7 @@ export async function POST({ request }: RequestEvent) {
 
 To prompt Meta’s LLAMA 2 70B Chat model, we’ll use Replicate which allows us to run the model with just an API call. In our case, we make use of the `replicate` package, saving us from the need to write a fetch api by ourselves and handle streaming responses natively. We need to make sure that the `REPLICATE_API_TOKEN` is set as an environment variable. Go to your [Replicate’s Account Settings > API tokens](https://replicate.com/account/api-tokens) to obtain your Replicate API token.
 
-```tsx
+```typescript
 import Replicate from 'replicate'
 
 // Instantiate the Replicate API
@@ -260,7 +260,7 @@ Using Vercel’s AI SDK baked-in `experimental_buildLlama2Prompt` function, we�
 2. Pass the dynamically generated context (as string) for the AI to consider before generating responses. This is done via creating a message with the role of `system` and passing our relevant context string in the `content` field.
 3. Pass the whole conversation between user and chatbot as `messages`, which contains each message with it’s relevant `content` and `role` field.
 
-```tsx
+```typescript
 import { experimental_buildLlama2Prompt } from 'ai/prompts'
 
 // Now use Replicate LLAMA 70B streaming to perform the autocompletion with context
@@ -298,7 +298,7 @@ Using Vercel's AI SDK we’re able to save tremendous time in setting up a react
 
 ```html
 <script>
-	// File: src/routes/+page.svelte
+  // File: src/routes/+page.svelte
   import { useChat } from 'ai/svelte'
   import MemoizedMD from '@/markdown/MemoizedMD.svelte'
   import ChevronRight from '@/icons/ChevronRight.svelte'
@@ -334,7 +334,7 @@ Using the `svelte-markdown` package, we’re able to visually format the respons
 
 ```html
 <script lang="ts">
-	// File: src/markdown/MemomizedMD.svelte
+  // File: src/markdown/MemomizedMD.svelte
   import Code from './Code.svelte'
   import SvelteMarkdown from 'svelte-markdown'
   
@@ -348,7 +348,7 @@ Using `svelte-highlight` package, we’ll specifically highlight the code blocks
 
 ```html
 <script lang="ts">
-	// File: src/markdown/Code.svelte
+  // File: src/markdown/Code.svelte
   import Highlight from 'svelte-highlight'
   import typescript from 'svelte-highlight/languages/typescript'
 
@@ -363,7 +363,7 @@ To make sure the specific HTML classes have their respective CSS styles present,
 
 ```html
 <script lang="ts">
-	// File: src/routes/+layout.svelte
+  // File: src/routes/+layout.svelte
   import github from 'svelte-highlight/styles/github'
 </script>
 
