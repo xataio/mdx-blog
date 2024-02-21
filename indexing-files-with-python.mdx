@@ -13,7 +13,7 @@
 ---
 
 
-The all-new [File Attachments](https://xata.io/docs/concepts/file-attachments) column types enable storing files in your database alongside other common [column data types](https://xata.io/docs/concepts/data-model#column-types). Once uploaded, the attachment lives in Xata’s object store and it can be reached as a column value with additional metadata such as `mediaType`, `size` and `attributes`, which can be used in queries, filters and summaries. Xata’s API provides several methods for [File Access](https://xata.io/docs/concepts/file-attachments#file-access-urls), including [Authenticated](https://xata.io/docs/concepts/file-attachments#authenticated-urls), [Public](https://xata.io/docs/concepts/file-attachments#public-urls) and [Signed](https://xata.io/docs/concepts/file-attachments#signed-urls) URLs.
+The all-new [File Attachments](https://xata.io/docs/sdk/file-attachments) column types enable storing files in your database alongside other common [column data types](https://xata.io/docs/concepts/data-model#column-types). Once uploaded, the attachment lives in Xata’s object store and it can be reached as a column value with additional metadata such as `mediaType`, `size` and `attributes`, which can be used in queries, filters and summaries. Xata’s API provides several methods for [File Access](https://xata.io/docs/sdk/file-attachments#file-access-urls), including [Authenticated](https://xata.io/docs/sdk/file-attachments#authenticated-urls), [Public](https://xata.io/docs/sdk/file-attachments#public-urls) and [Signed](https://xata.io/docs/sdk/file-attachments#signed-urls) URLs.
 
 The actual file content is not indexed by default, though. Indexing refers to the process of extracting a file’s text content and storing it under a text column, where it can be queried and searched. How can we use Xata’s advanced features such as [free-text search](https://xata.io/docs/sdk/search) and [Ask AI](https://xata.io/docs/sdk/ask) on our file attachment’s actual content?
 
@@ -41,7 +41,7 @@ Note that the Python version in your system (`python --version`) should be 3.8 o
 
 Now that we’ve covered how to use Xata with Python, let’s jump straight to the point of how to index file attachments.
 
-We will assume that you’ve already uploaded some files in your database under the `file` or `file[]` column type. Check out the [File Attachments documentation](https://xata.io/docs/concepts/file-attachments) for more details on those column types.
+We will assume that you’ve already uploaded some files in your database under the `file` or `file[]` column type. Check out the [File Attachments documentation](https://xata.io/docs/sdk/file-attachments) for more details on those column types.
 
 Our [script](https://github.com/xataio/xtools/tree/main/xfileindex) scrolls through the Xata database, looks for `file` or `file[]` columns with text, CSV or PDF content (*mediaType*), extracts the text and writes it into text columns in a target table. This is all you need to put the file content to work with query, search, and Ask AI features!
 
