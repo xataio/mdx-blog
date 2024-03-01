@@ -298,7 +298,7 @@ Using Vercel's AI SDK we’re able to save tremendous time in setting up a react
   import { useChat } from 'ai/svelte';
   import MemoizedMD from '@/markdown/MemoizedMD.svelte';
   import ChevronRight from '@/icons/ChevronRight.svelte';
-  import Input from '@/lib/components/ui/input/input.svelte';
+  import InputElement from '@/lib/components/ui/input/input.svelte';
 
   const { input, handleSubmit, messages } = useChat();
 </script>
@@ -306,7 +306,7 @@ Using Vercel's AI SDK we’re able to save tremendous time in setting up a react
 <div>
   <div>
     <form on:submit="{handleSubmit}">
-      <input
+      <InputElement
         id="message"
         type="message"
         autocomplete="off"
