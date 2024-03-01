@@ -299,7 +299,7 @@ const response = await replicate.predictions.create({
 Using Vercel's AI SDK we’re able to save tremendous time in setting up a reactive chatbot UI in SvelteKit. The `useChat` utility from `ai/svelte` encapsulates the frontend logic to maintaining the array of messages exchanged between the user and the chatbot, submitting form responses to the relevant API endpoint with the messages exchanged, and stream content right into the UI from the streaming API response.
 
 ```html
-<script>
+<script lang="ts">
   // File: src/routes/+page.svelte
   import { useChat } from 'ai/svelte';
   import MemoizedMD from '@/markdown/MemoizedMD.svelte';
@@ -307,25 +307,37 @@ Using Vercel's AI SDK we’re able to save tremendous time in setting up a react
   import InputElement from '@/lib/components/ui/input/input.svelte';
 
   const { input, handleSubmit, messages } = useChat();
+
+  function capitalizeFirstLetter(input: string) {
+    return input.charAt(0).toUpperCase() + input.slice(1);
+  }
 </script>
 
-<div>
-  <div>
-    <form on:submit="{handleSubmit}">
+<div class="flex flex-col items-center">
+  <div class="relative flex w-full max-w-lg flex-col items-start overflow-hidden px-5">
+    <form on:submit="{handleSubmit}" class="fixed bottom-4 flex w-[75vw] max-w-[500px] flex-row items-center space-x-2">
       <InputElement
         id="message"
         type="message"
         autocomplete="off"
         bind:value="{$input}"
         placeholder="What's your next question?"
+        class="rounded border-black/25 placeholder:text-black/75 hover:border-black"
       />
-      <button type="submit">
+      <button
+        class="absolute right-3 flex size-6 flex-col items-center justify-center rounded-full border border-black/50 hover:bg-black hover:text-white"
+        type="submit"
+      >
         <ChevronRight />
       </button>
     </form>
-    <div>
+    <div class="flex max-h-[90vh] w-full flex-col overflow-y-scroll">
       {#each $messages as message}
+      <div class="mt-3 h-[1px] w-full bg-white" />
+      <span class="max-w-max rounded border px-2 py-1 text-xs"> {capitalizeFirstLetter(message.role)} </span>
+      <div class="mt-2 h-[1px] w-full bg-white" />
       <MemoizedMD message="{message.content}" />
+      <div class="mt-3 h-[1px] bg-black/10" />
       {/each}
     </div>
   </div>
