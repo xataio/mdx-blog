@@ -73,7 +73,7 @@ Given that free plans across the industry tend to die early recently, you might 
 First, the Xata architecture was built from the start to be able to offer a free tier sustainably, thanks to the use of shared clusters and auto-scaling. Currently, a free **active** database with constant traffic within the rate limits costs us less than $1.5/month. That includes not only Postgres but also Elasticsearch and the replication between them, as well as running a replica for high-availability.
 This is possible thanks to our shared clusters (see [The implementation](#the-implementation)) and this cost per free database will go down significantly as we disable search and replication if not used at all, offload databases to cold storage if inactive for several months, and so on. In other words, the cost of a mostly inactive database is close to zero.
 
-Secondly, the free tier is important to me personally because of the company history. The idea of Xata was born out of a non-profit, when we realized that managing databases is a limiting factor for many small projects. Today I'm proud to say that multiple non-profits are building on top of Xata, some on the free tier.
+Secondly, the free tier is important to us because of the company history. The idea of Xata was born out of a [non-profit](https://www.tupu.io/), when we realised that managing databases is a limiting factor for many small projects. Today I'm proud to say that multiple non-profits are building on top of Xata, some on the free tier.
 
 ## The platform
 
