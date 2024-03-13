@@ -64,7 +64,7 @@ Xata achieves cost efficiency for as many use cases as possible by offering a hi
 
 At small scale, we offer a free tier that includes high-availability and read replicas, no cold-starts, and no instance-pausing-after-a-few-days. We can offer this sustainably because the free tier makes use of [shared clusters]() and auto-scaling.
 
-At large scale, when using [dedicated clusters]() you pay for the resources you use and you have a high degree of control. For example, for predictable load, you can configure a particular instance size, while for unpredictable load, auto-scaling will likely be more cost-efficient. Similarly, you can choose between standard storage and I/O optimized storage, which is more cost-efficient for I/O-heavy workloads.
+At large scale, when using [dedicated clusters]() (currently in private alpha) you pay for the resources you use and you have a high degree of control. For example, for predictable load, you can configure a particular instance size, while for unpredictable load, auto-scaling will likely be more cost-efficient. Similarly, you can choose between standard storage and I/O optimized storage, which is more cost-efficient for I/O-heavy workloads.
 
 ## The free tier
 
@@ -88,5 +88,37 @@ Data is automatically replicated, including schema changes, via logical replicat
 If file attachments or full-text search or vector/hybrid search are important for your application, Xata will likely offer you a better platform to build on top than a classical DBaaS. And it's only the beginning, we are planning to have similar tightly-integrated solutions for time-series, intelligent caching, queuing, and more.
 
 ## The implementation
+
+One key concept in the Xata implementation is the notion of _logical database branches_. A database can have multiple branches, and always has at least one, called by default `main`. A database branch is represented in Postgres as a [schema](https://www.postgresql.org/docs/current/ddl-schemas.html), and can be allocated on one of many Postgres clusters around the world, as well as moved from one cluster to another.
+
+This results in a level of decoupling between the logical databases and branches as experienced by the application, and the underlying Postgres instances where they are running. Because the clusters are already provisioned, logical databases and branches can be started instantly and allocated and moved depending on the business needs. This unlocks some interesting use-cases, like sharding per tenant where every tenant is a branch, or using a logical database for each micro-service, or automatically creating developer branches for each pull request. Or, and this is important for our free tier, have many small databases and branches share the same relatively large underlying Postgres cluster.
+
+![Database branches scheduled on various Postgres clusters](images/branches-clusters.png)
+
+In order to make this possible, however, we had to solve several challenges: route traffic to the correct cluster based on metadata about the database branch, ensure that a branch level connection can only access that single branch, ensure that attackers can't call dangerous SQL functions, and limit noisy-neighbour issues in the shared clusters.
+
+#### SQL Proxy
+
+The key to the solution for most of these issues is our SQL Proxy technology. While there are many Postgres proxies available (e.g. pgbouncer), the Xata SQL Proxy not only speaks the Postgres wire protocol, but also understands the SQL being executed at a fairly deep level. It can, for example, know which tables are accessed, which columns are requests, which functions are being called, with which parameters, and so on. This allows us to block actions that we know would be dangerous for the Postgres cluster. While the security is mostly ensured via Postgres roles, the Proxy can enforce rate and concurrency limits on shared clusters (we don't do that for dedicated clusters).
+
+The Proxy allows us to "virtualize" access not only to the branch, but also to the Postgres catalog of tables, functions, sequences, and so on. ORMs like Prisma and Drizzle do fairly complex introspection to see the tables and columns that are currently defined, and we wanted to make sure they work without any modifications.
+
+You might be wondering why we chose to represent database branches as Postgres schemas rather than Postgres database. The reason has to do with logical replication, which is a key component of the data platform, because reliable change-data-capture (CDC) is such an important feature keeping multiple data stores in sync. Individual databases would have forced us to do a replication slot for each.
+
+#### Logical replication events
+
+Speaking of logical replication, another challenge that we had to solve was getting not only data events but also schema events from Postgres. A well known limitation of the Postgres logical replication system is that it only includes data changes, no DDL changes. Yet, having schema changes in the same stream of events simplifies significantly the downstream consumers for the logical replication events. The way we solve this is by installing [DDL event triggers](https://www.postgresql.org/docs/current/event-triggers.html) that are writing the schema changes to an "out-box" table, which gets replicated via the same replication slot.
+
+We think this tech will be useful for many Postgres applications, so we are planning to open source it soon as its own project.
+
+#### Integrated pgroll
+
+Finally, we have integrated [pgroll]() in our platform. pgroll is our open-source project for zero-downtime, reversable schema migrations. While `pgroll` is CLI tool, in order to integrated it seamlesly in the Xata platform, we have developed a server API for it, which integrates with our control plane. For now, this allows us to keep track of all DDL statements that are being executed and opens the door to a much better schema-changes workflow. Look out for a detailed blog post this week about pgroll and how we integrated it into Xata.
+
+## Get started
+
+The Xata Postgres service is currently in public Beta. You can opt-in to the Beta by flipping a flag in your [workspace's settings](). Once you have enabled the flag, when creating a new database, you can select whether you want to have Postgres direct access or not. Because the underlying changes are significant, at the moment, it's not possible to migrate existing Xata database to the Postgres kind. However, we are planning to provide a migration path during the Beta period.
+
+If you don't yet have a Xata account, there's no better time to [create one](https://app.xata.io/signup)!
 
 [launch-week-blog]: https://xata.io/blog/...
