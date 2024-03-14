@@ -13,43 +13,49 @@ slug: prisma-integration
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/prisma-integration/any.jpg
 ---
 
-Prisma is a Node.js and TypeScript ORM that provides typesafe access to your database, automated migrations, and a custom data model definition.
+[Prisma](https://www.prisma.io/) is a Node.js and TypeScript ORM that provides typesafe access to your database, automated migrations, and a custom data model definition.
 
 With the release of Xata 2.0 you are able to connect to your Xata database with Prisma over our SQL wire protocol. You can use the default Prisma ORM connector or Prisma driver adapters (`@prisma/adapter-pg`)
 
 ## Setting up with Xata
 
-Before starting you will need an empty Xata database that has direct access to Postgres enabled. You will need to provide the postgresql connection string to Prisma.
+Before starting you will need an empty Xata database that has direct access to Postgres enabled.
 
 ### Creating a new database
 
-Before starting, you will need to enable the “Enable direct access to Postgres” in your workspace settings \[link] and when you create your new database.
+You will first need to enable the “enable direct access to Postgres” in your workspace settings.
 
 ![Enable direct access for your workspace](/images/pgroll-integration/workspace.png)
 
+You will also need to "enable direct access to Postgres" when you create your new database.
+
 ![Enable direct access for your database](/images/pgroll-integration/database.png)
 
-After this point you will be able to see your Xata database connection string in when navigating to database settings. It will look like this:
+After this point you will be able to see your Xata database connection string when navigating to database settings. It will look like this:
 
-`postgresql://<YOUR_WORKSPACE_ID>:<YOUR_API_KEY>@<YOUR_REGION>.sql.xata.sh:5432/<YOUR_DATABASE_NAME>:<YOUR_BRANCH_NAME>`
+```bash
+postgresql://<YOUR_WORKSPACE_ID>:<YOUR_API_KEY>@<YOUR_REGION>.sql.xata.sh:5432/<YOUR_DATABASE_NAME>:<YOUR_BRANCH_NAME>
+```
 
 Keep a copy of this somewhere safe and secure for later use in your Prisma application.
 
 ### Generating some tables via CSV
 
-You’ll want some data in your tables, we recommend using the examples in the [xata-py repo](https://github.com/xataio/xata-py/tree/main/examples/datasets/stock-prices). For the example here we’ll use [companies-med-250](https://github.com/xataio/xata-py/blob/main/examples/datasets/stock-prices/companies_med_250.csv) and [prices-small-250](https://github.com/xataio/xata-py/blob/main/examples/datasets/stock-prices/prices_small_250.csv). These can imported via the Import CSV function in the web application.
+You’ll want some data in your tables, we recommend using the examples in the [xata-py repo](https://github.com/xataio/xata-py/tree/main/examples/datasets/stock-prices). For the example here we’ll use [companies_med_250](https://github.com/xataio/xata-py/blob/main/examples/datasets/stock-prices/companies_med_250.csv) and [prices_med_2500](https://github.com/xataio/xata-py/blob/main/examples/datasets/stock-prices/prices_med_2500.csv). These can imported via the Import CSV function in the web application.
 
 ## Setting up with Prisma
 
-There are 2 ways to set up Prisma: using the default ORM connector or the Driver Adapters. If you are using the driver Adapters you will need to follow a few additional steps.
+There are 2 ways to set up Prisma: using the default ORM connector or the Driver Adapters. If you are using the Driver Adapters you will need to follow a few additional steps.
 
-Scaffold a Prisma project by following their from scratch setup guide here \[https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgresql]
+Scaffold a Prisma project by following their from scratch [setup guide](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgresql).
 
-A `.env` file should be created at the root of your project with a variable named `DATABASE_URL` . Replace the value with the connection URL from above.
+After completing their setup guide, a `.env` file should be created at the root of your project with a variable named `DATABASE_URL` . Replace the value with the connection URL from above.
 
-⚡ Important: Xata wire procol requires ssl for it’s connections so your connection URL defined here will need to contain `?sslmode=require` at the end.
+**Xata wire procol requires SSL, so your connection URL defined here will need to contain `?sslmode=require` at the end.**
 
+```bash
 DATABASE_URL=`postgresql://<YOUR_WORKSPACE_ID>:<YOUR_API_KEY>@<YOUR_REGION>.sql.xata.sh:5432/<YOUR_DATABASE_NAME>:<YOUR_BRANCH_NAME>?sslmode=require`
+```
 
 ### Using Driver Adapters (Optional)
 
@@ -57,11 +63,11 @@ If you choose to use the drivers adapter you will also need to run:
 
 `npm install @prisma/adapter-pg pg`
 
-## Generating the schema
+## Generating the database schema
 
-Prisma `db push` and `db pull` should work out of the box.
+Prisma `db push` and `db pull` should work with Xata out of the box.
 
-After defining your connection string, run `prisma db pull`. This will turn your database schema into a Prisma schema.
+After setting your connection string, run `prisma db pull`. This will run introspect on your remote Xata database and write your Prisma Schema file. You will be able to use this file to subsequently manage migrations.
 
 After running this your `schema.prisma` file should look like:
 
@@ -116,13 +122,11 @@ model prices_med_2500 {
 
 ## Generating the Client
 
-After generating your schema. You’ll need to run
-
-`npx prisma generate`
+After generating your schema. You’ll need to run `npx prisma generate` to get typesafety in your application code.
 
 ## Running queries
 
-Create an `index.ts file` at the project root with the following:
+Create an `index.ts` file at the project root with the following:
 
 ```jsx
 import { PrismaClient } from '@prisma/client';
@@ -192,7 +196,7 @@ You may want to add, delete, or modify your tables and your fields. Changes can 
 
 ```jsx
 model companies_med_250 {
-	city            String? // This field is new.
+  city            String? // This field is new.
   address         String?
   catch_phrase    String?
   ceo             String?
