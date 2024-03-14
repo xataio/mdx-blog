@@ -1,5 +1,5 @@
 ---
-title: 'Why a new Postgres platform?'
+title: 'A new serverless Postgres platform'
 alternate_titles:
   - Why are we opening up our Postgres service?
   - Why are we launching a new Postgres platform?
@@ -95,7 +95,11 @@ This results in a level of decoupling between the logical databases and branches
 
 ![Database branches scheduled on various Postgres clusters](images/branches-clusters.png)
 
+<<<<<<< HEAD
 In order to make this possible, however, we had to solve several challenges:
+=======
+In order to make this possible, we had to solve several challenges:
+>>>>>>> ceeeabb (Expanded the pgroll section)
 
 - route traffic to the correct cluster based on metadata about the database branch
 - ensure that a branch level connection can only access that single branch
@@ -118,11 +122,17 @@ We think this tech will be useful for many Postgres applications, so we are plan
 
 #### Integrated pgroll
 
-Finally, we have integrated [pgroll]() in our platform. pgroll is our open-source project for zero-downtime, reversible schema migrations. While `pgroll` is a CLI tool, in order to integrated it seamlessly in the Xata platform, we have developed a server API for it, which integrates with our control plane. For now, this allows us to keep track of all DDL statements that are being executed and opens the door to a much better schema-changes workflow. Look out for a detailed blog post this week about pgroll and how we integrated it into Xata.
+Finally, we have integrated [pgroll](https://github.com/xataio/pgroll) in our platform. pgroll is our open-source project for zero-downtime, reversible schema migrations.
+
+While `pgroll` is a CLI tool, we have developed a server API for it, which integrates with our control plane. This allows us to offer some of the benefits of pgroll as native in the Xata platform, without you even having to know that you are using pgroll!
+
+The benefits that are already enabled include maintain a history of the schema migrations, avoiding [locking issues](https://xata.io/blog/postgres-schema-changes-pita) automatically, and enabling more complex migrations that require data backfill. We don't yet expose multiple versions of the schema at the same time, but we'll be working on that next!
+
+Look out for a detailed blog post this week about pgroll and how we integrated it into Xata.
 
 ## Get started
 
-The Xata Postgres service is currently in public Beta. You can opt-in to the Beta by flipping a flag in your [workspace's settings](). Once you have enabled the flag, when creating a new database, you can select whether you want to have Postgres direct access or not. Because the underlying changes are significant, at the moment, it's not possible to migrate existing Xata database to the Postgres kind. However, we are planning to provide a migration path during the Beta period.
+The Xata Postgres service is currently in public Beta. You can opt-in to the Beta by flipping a flag in your [workspace's settings](https://app.xata.io/workspaces/settings). Once you have enabled the flag, when creating a new database, you can select whether you want to have Postgres direct access or not. Because the underlying changes are significant, at the moment, it's not possible to migrate existing Xata database to the Postgres kind. However, we are planning to provide a migration path during the Beta period.
 
 ## Learn more
 
