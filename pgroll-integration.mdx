@@ -15,7 +15,7 @@ ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-in
 
 In a typical development workflow, schema changes to an application’s database can take a long time, and roll backs are often error prone. That’s why we’ve created [pgroll](https://github.com/xataio/pgroll) - an open source Postgres tool for zero-downtime and reversible schema migrations.
 
-With our public beta today, pgroll is now the underlying technology used behind our schema change APIs for the Xata web application ([app.xata.io](http://app.xata.io)), CLI and SDK. Using pgroll behind the scenes allows us to dogfood our product, as well as de-risk migrations by providing a standardized API. It also means that users will have more find grained control over their databases.
+With our public beta today, pgroll is now the underlying technology used behind our schema change APIs for the Xata [web application](http://app.xata.io), CLI and SDK. Using pgroll behind the scenes allows us to dogfood our product, as well as de-risk migrations by providing a standardized API. It also means that users will have more find grained control over their databases.
 
 ## New features
 
@@ -35,15 +35,15 @@ In order to access the new features users must first do two things.
 
     1. Enable direct access for your workspace
 
-    ![Enabled direct access for your workspace](/images/pgroll-integration/workspace.png)
+    ![Enable direct access for your workspace](/images/pgroll-integration/workspace.png)
 
     2. Enable direct access when creating their database
 
-        ![Enabled direct access for your database](/images/pgroll-integration/database.png)
+        ![Enable direct access for your database](/images/pgroll-integration/database.png)
 
 ## New migration experience
 
-Once done, there will be new options to edit columns on the table view and schema view.
+Once done, there will be new options to edit columns on the Table view and Schema view.
 
 ![New edit column functionality](/images/pgroll-integration/edit.png)
 
@@ -57,7 +57,7 @@ The Schema History tab has also had makeover. The Schema History tab contains a 
 
 Note that our internal columns have been renamed. We now use `xata_id` rather than `id` as the table's primary key, and `xata_updatedat`, `xata_createdat`, and `xata_version` for internal metadata.
 
-![Internal columns were renamed](/images/pgroll-integration/rename.png)
+![New internal column names](/images/pgroll-integration/rename.png)
 
 ## SDK and CLI changes
 
