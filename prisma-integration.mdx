@@ -13,7 +13,7 @@ slug: prisma-postgres-xata-integration
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/prisma-integration/prisma-integration.jpg
 ---
 
-[Prisma](https://www.prisma.io/) is very popular a Node.js and TypeScript ORM that provides typesafe access to your database, automated migrations, and a custom data model definition.
+[Prisma](https://www.prisma.io/) is a very popular Node.js and TypeScript ORM that provides typesafe access to your database, automated migrations, and a custom data model definition.
 
 With [today's beta release of Xata's Postgres service](https://xata.io/blog/why-postgres) you are now able to connect to your Xata database with Prisma over the Postgres wire protocol. You can simply use the default Prisma ORM connector or Prisma driver adapters (`@prisma/adapter-pg`). This integration is
 
@@ -128,7 +128,7 @@ After generating your schema. You’ll need to run `npx prisma generate` to get 
 
 Create an `index.ts` file at the project root with the following:
 
-```jsx
+```ts
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -158,7 +158,7 @@ main()
 
 Client initialisation for driver adapters is slightly different:
 
-```jsx
+```ts
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
