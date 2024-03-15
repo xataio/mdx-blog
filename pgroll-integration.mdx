@@ -55,10 +55,6 @@ The Schema History tab has also had makeover. The Schema History tab contains a 
 
 ![New Migration History tab](/images/pgroll-integration/history.png)
 
-Note that our internal columns have been renamed. We now use `xata_id` rather than `id` as the table's primary key, and `xata_updatedat`, `xata_createdat`, and `xata_version` for internal metadata.
-
-![New internal column names](/images/pgroll-integration/rename.png)
-
 ## SDK and CLI changes
 
 For users that do not have direct access to Postgres enabled for their workspace, there will be no changes to the existing APIs when using our CLI and SDK.
@@ -66,6 +62,8 @@ For users that do not have direct access to Postgres enabled for their workspace
 For users that do choose to enable “direct access to Postgres” in their workspace, they will need to update to the latest CLI and SDK version and create a new, empty database (also with direct access to Postgres enabled). We do not currently support enabling direct Postgres access on existing databases. Users will then have to run `xata db pull` .
 
 The only things that change for these new Postgres enabled databases in terms of our API are primary key names and internal meta data field names. The `id` field has been renamed to `xata_id`, and `xata.createdAt`, `xata.updatedAt`, and `xata.version` fields have been renamed to `xata_createdat`, `xata_updatedat`, and `xata_version`.
+
+![New internal column names](/images/pgroll-integration/rename.png)
 
 ## Technical challenges
 
