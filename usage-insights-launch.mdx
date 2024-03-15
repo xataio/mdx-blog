@@ -50,7 +50,7 @@ For events caused by user actions we rely on the fact we store metadata about th
 
 **On disk compression**
 
-One of the most impressive aspects of Clickhouse in practice is how well data is compressed on disk which is thanks in a large part to its decision to store data by column. (Can we provide some real world data here, or is that private?). If values in a column don’t change that frequently over time, which is often the case, then the column data can be very easily compressed.
+One of the most impressive aspects of Clickhouse in practice is how well data is compressed on disk which is thanks in a large part to its decision to store data by column. If values in a column don’t change that frequently over time, which is often the case, then the column data can be very easily compressed.
 
 For example, let’s take the case of tracking Postgres disk usage over time. We’re tracking four pieces of data each time we take a snapshot:
 
@@ -61,6 +61,4 @@ For example, let’s take the case of tracking Postgres disk usage over time. We
 
 Because we take snapshots of this data, each row in a single snapshot will all contain the same timestamp. In practice this means that Clickhouse only needs to store the value once as well as a corresponding counter to indicate how many rows it applies to.
 
-Also, because we have chosen to use the [Merge Tree](https://clickhouse.com/docs/en/engines/table-engines/mergetree-family/mergetree) backend on Clickhouse it will occasionally merge snapshots together allowing it to further combine rows for the same worspace or branch together.
-
-TODO: Do we want to talk about anything else? Rollups? Future work?
+Also, because we have chosen to use the [Merge Tree](https://clickhouse.com/docs/en/engines/table-engines/mergetree-family/mergetree) backend on Clickhouse it will occasionally merge snapshots together allowing it to further combine rows for the same worspace or branch together. This allows Clickhouse to effeciently store data that has a relativley low cardinality, but at the same time doesn't stop it from being able to also store high cardinaltiy data.
