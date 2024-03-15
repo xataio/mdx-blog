@@ -1,6 +1,6 @@
 ---
 title: 'A new serverless Postgres platform'
-description: "We're announcing the next major evolution for the Xata data platform, serverless Postgres."
+description: "We're announcing the next major evolution for the Xata database platform, serverless Postgres."
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/xata-public-release.png
   alt: PostgreSQL
@@ -31,7 +31,7 @@ Last but not least, we have open sourced [pgroll](https://github.com/xataio/pgro
 
 ## The serverless Postgres service
 
-This brings us to today's launch: a new serverless Postgres service at the center of the Xata platform. Looking at the Postgres service in isolation (ignoring everything else in the Xata platform), it fares pretty well:
+This brings us to today's launch: a new serverless Postgres service at the center of the Xata platform. Looking at the Postgres service in isolation, ignoring everything else in the Xata platform, it has the following features:
 
 - Separation of compute and storage, providing bottomless storage.
 - Optional automatic scaling up and down depending on the load.
@@ -62,6 +62,8 @@ At small scale, we offer a free tier that includes high-availability and read re
 
 At large scale, when using [dedicated clusters](/docs/dedicated-cluster) (currently in private alpha) you pay for the resources you use and you have a high degree of control. For example, for predictable load, you can configure a particular instance size, while for unpredictable load, auto-scaling will likely be more cost-efficient. Similarly, you can choose between standard storage and I/O optimized storage, which is more cost-efficient for I/O-heavy workloads.
 
+Our [pricing](https://xata.io/pricing) for the dedicated clusters matches the AWS Aurora pricing exactly, with no markup. The shared clusters pricing works by bundling the compute in the storage cost per GB.
+
 ## The free tier
 
 Given that free plans across the industry tend to die early recently, you might be looking a bit skeptically at our 15GB free storage, HA included, no-cold-starts, too-good-to-be-true free tier. We know that trust is won over many years (and lost in minutes), that we are a startup doing startup-y things, that interest rates _something something_, but we think there are a couple things that are worth saying now.
@@ -73,11 +75,11 @@ Secondly, the free tier is important to us because of the company history. The i
 
 ## The platform
 
-It's quite possible to use Xata as a Postgres service and nothing else, and we couldn't be more happy if you do. However, the way we think about Xata is not as a Postgres DBaaS, but as a **data platform for PostgreSQL**: multiple services and tools, integrated together much closer than in a classical cloud provider, simplifying the way developers build data-centric applications and manage databases.
+It's quite possible to use Xata as a Postgres service and nothing else, and we couldn't be more happy if you do. However, the way we think about Xata is not as a Postgres DBaaS, but as a **database platform for PostgreSQL**: multiple services and tools, integrated together much closer than in a classical cloud provider, simplifying the way developers build data-centric applications and manage databases.
 
 This is the Xata platform at the high level:
 
-![Xata data platform diagram](images/xata-platform.png)
+![Xata database platform diagram](images/xata-platform.png)
 
 Data is automatically replicated, including schema changes, via logical replication to Elasticsearch, which serves our search, vector search, and aggregations endpoints, so the areas in which it excels. Files are stored in S3 and served through the Cloudflare CDN. The replication events are used to keep a reference count of the files, so they can be shared between branches, yet deleted when they are no longer needed.
 
@@ -102,7 +104,7 @@ In order to make this possible, we had to solve several challenges:
 
 The key to the solution for most of these issues is our SQL Proxy technology. While there are many Postgres proxies available (e.g. pgbouncer), the Xata SQL Proxy not only speaks the Postgres wire protocol, but also understands the SQL being executed at a fairly deep level. It can, for example, know which tables are accessed, which columns are requested, which functions are being called, with which parameters, and so on. This allows us to block actions that would be dangerous for the Postgres cluster. While the security is mostly ensured via Postgres roles, the Proxy can enforce rate and concurrency limits on shared clusters (we don't do that for dedicated clusters).
 
-The Proxy allows us to "virtualize" access not only to the branch, but also to the Postgres catalog of tables, functions, sequences, and so on. ORMs like Prisma and Drizzle do fairly complex introspection to see the tables and columns that are currently defined, and we wanted to make sure they work without any modifications.
+The Proxy allows us to "virtualize" access not only to the branch, but also to the Postgres catalog of tables, functions, sequences, and so on. ORMs like Prisma and Drizzle do fairly complex introspection to see the tables and columns that are currently defined, and we wanted to make sure they work without any modifications. Because the Postgres catalog is global, and we wanted to present a partial view of it, we had to do the virtualization of it in a "shadow catalog".
 
 You might be wondering why we chose to represent database branches as Postgres schemas rather than Postgres database. The reason has to do with logical replication, which is a key component of the database platform, because reliable change-data-capture (CDC) is such an important feature keeping multiple data stores in sync. Individual databases would have forced us to do a replication slot for each.
 
