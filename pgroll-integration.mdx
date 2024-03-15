@@ -1,65 +1,67 @@
 ---
-title: Pgroll Integration
-description: 'The pgroll integration behind our latest public beta'
+title: Powering up schema migrations with pgroll
+description: 'Integrating pgroll into Xata to provide zero-downtime, reversible schema migrations.'
 author: Emily Morgan
 authorEmail: emily@xata.io
-date: 03-14-2024
-tags: ['engineering', 'pgroll']
+date: 03-19-2024
+tags: ['engineering', 'pgroll', 'announcement', 'launch-week']
 published: true
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-integration/pgroll-blog-header.jpeg
   alt: 'pgroll Integration'
-slug: pgroll-integration
+slug: pgroll-postgres-xata-integration
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-integration/pgroll-blog-header.jpeg
 ---
 
-In a typical development workflow, schema changes to an application’s database can take a long time, and roll backs are often error prone. That’s why we’ve created [pgroll](https://github.com/xataio/pgroll) - an open source Postgres tool for zero-downtime and reversible schema migrations.
+In a typical development workflow, schema changes to an application’s database can take a long time, and rollbacks are often error prone. That’s why we’ve created [pgroll](https://github.com/xataio/pgroll) - an open source Postgres tool for zero-downtime and reversible schema migrations.
 
-With our public beta today, pgroll is now the underlying technology used behind our schema change APIs for the Xata [web application](http://app.xata.io), CLI and SDK. Using pgroll behind the scenes allows us to dogfood our product, as well as de-risk migrations by providing a standardized API. It also means that users will have more find grained control over their databases.
+With our public beta today, pgroll is now the underlying technology used behind our schema change APIs for the Xata [web application](http://app.xata.io), CLI and SDK. Using pgroll behind the scenes allows us to dogfood our product, as well as de-risk migrations by providing a standardized API. It also means that users will have more fine grained control over their databases.
 
 ## New features
 
-Users have consistently voiced a number of pain points, from adding constraints, to column editing, to having more flexible schemas during the initial data modelling phases. Using the capability pgroll provides behind our direct access to postgres feature allows us to address a lot of these issues.
+Users have consistently voiced a number of pain points, from adding constraints, to column editing, to having more flexible schemas during the initial data modeling phases. Using the capabilities pgroll provides on top of Postgres allows us to address a lot of these issues.
 
-Users will notice some new features such as:
+Xata users will now notice some new features such as:
 
 - **The ability to add and remove constraints after creating columns**
   - For example, modifying a column to be not null or unique after a column has been created and contains data is now possible.
-- **The ability to create columns that are not nullable with no defaults**
+- **The ability to create columns that are not nullable without defaults**
   - These columns will be populated with a “zero” column value depending on the column’s type.
-- **The ability to run raw arbitrary SQL migrations on the underlying database to create column types outside of the known Xata types, as well as constraints, foreign keys, and other Postgres native supported objects.**
+- **The ability to run raw arbitrary SQL migrations on the underlying Postgres database**
+  - You can now create column types outside of rich Xata types, as well as constraints, foreign keys, and other Postgres native supported objects.
 
 ## Enabling direct Postgres access
 
 In order to access the new features users must first do two things.
 
-    1. Enable direct access for your workspace
+The first is to flip the feature flag and enable direct access to Postgres for your workspace.
 
     ![Enable direct access for your workspace](/images/pgroll-integration/workspace.png)
 
-    2. Enable direct access when creating their database
+The second is to enable direct access to Postgres when creating a new database.
 
         ![Enable direct access for your database](/images/pgroll-integration/database.png)
 
-## New migration experience
+Once the database is created, you're all set. You now have a brand new Postgres database with pgroll enabled 🐘 
+## A more powerful migration experience
 
-Once done, there will be new options to edit columns on the Table view and Schema view.
+When using a pgroll enabled database, there will be new options to edit columns on the Table and Schema views.
 
 ![New edit column functionality](/images/pgroll-integration/edit.png)
 
-There will also be a new tab called Migration Editor on the Schema view page. Users can run arbitrary migrations with type safe completions. A set of examples can be found in the [pgroll repository](https://github.com/xataio/pgroll/tree/main/examples).
+There will also be a new tab called Migration Editor on the Schema view page. Users can now run numerous arbitrary migrations with type safe completions. From additive changes like creating new columns, to destructive changes like changing column types. All operations supported can be found [here](https://github.com/xataio/pgroll/tree/main/docs#operations-reference) with a long list of examples [here](https://github.com/xataio/pgroll/tree/main/examples).
 
 ![New Migration Editor](/images/pgroll-integration/editor.png)
 
-The Schema History tab has also had makeover. The Schema History tab contains a list of all the migration operations that have been run a the user’s database schema up until now. Information such as the migrations status, migration type (whether it was run using pgroll or directly with SQL), and contents can also be viewed.
+We've also introduced a new schema history tab that contains a list of all the migration operations that have been run a the user’s database schema up until now. Information such as the migrations status, migration type (whether it was run using pgroll or directly with SQL), and contents can be viewed by clicking into it. Every single change made to the database is listed here and can be used for auditing purposes.
 
 ![New Migration History tab](/images/pgroll-integration/history.png)
 
 ## SDK and CLI changes
 
-For users that do not have direct access to Postgres enabled for their workspace, there will be no changes to the existing APIs when using our CLI and SDK.
+For users that have not enabled this feature flag for their workspace, there will be no changes to the existing APIs when using our CLI and SDK.
 
-For users that do choose to enable “direct access to Postgres” in their workspace, they will need to update to the latest CLI and SDK version and create a new, empty database (also with direct access to Postgres enabled). We do not currently support enabling direct Postgres access on existing databases. Users will then have to run `xata db pull` .
+For users that have enabled this functionality, they will need to update to the latest CLI and SDK version and create a new, empty database with Postgres enabled. We do not currently support enabling direct Postgres access on existing databases. Users will then have to run `xata db pull` .
 
 The only things that change for these new Postgres enabled databases in terms of our API are primary key names and internal meta data field names. The `id` field has been renamed to `xata_id`, and `xata.createdAt`, `xata.updatedAt`, and `xata.version` fields have been renamed to `xata_createdat`, `xata_updatedat`, and `xata_version`.
 
@@ -76,10 +78,25 @@ Integrating pgroll within our web application and developer packages has posed s
 - **Detecting when a migration is complete**
   - pgroll does not allow for referencing items created in previous operations in subsequent operations within the same migration. This means that running an `alter_column` operation after an `add_column` operation, or running a `rename_constraint` operation (requires a table name) after a `rename_table` operation within the same migration request is not currently possible. This is due to the fact that the first operation in the list is guaranteed to compete before the second operation completes, but the first operation is not guaranteed to complete before the second operation starts. Since the backend provides an asynchronous `apply` endpoint which responds with a `jobId`, we decided that the frontend would use the returned `jobId` as input to a second new endpoint called `status` which would return the state of that migration. The frontend polls the status endpoint until the migration in question succeedes or fails before moving forward with dependent migrations.
 
-## Plans for GA
+## Path to General Availability
 
-- Migrate all databases to pgroll
-- More information about migrations, for example we only show successful and pending migrations in the migrations tab and we would like to show more information.
-- The ability to change a columns underlying type after creating it.
-- multiple schema version
-- migration workflows (GH is currently disabled)
+While this is a very exciting release for us, there's still a bit more we need to do before getting this integration over the finish line.
+
+The magic ✨ of pgroll is that it provides the ability to write to two schemas at the same time while your application migrates over to the new schema. For our initial release, this functionality didn't make the cut and instead we wanted to focus on unlocking new types of migrations for our users. Before we GA this integration and approach to schema migrations, we'll provide support for multiple schemas.
+
+At the moment, complex migrations require JSON definition in the schema editor. As we start to see adoption of these new Postgres databases and the types of migrations our users do more frequently, we'll prioritize more form based and developer friendly ways to define them.
+
+There are still some limitations of frameworks and ORMs we want pgroll to work with such as Django, Prisma and Drizzle. Full functionality for at least these sets of tools is part of our goals for GA.
+
+In addition to these new features, there is also some work that we need to do on the backend to migrate all existing databases, provide more context around the status of migrations and enhance our existing migration workflows. Needless to say, we're just getting started but cannot wait for what lies ahead.
+
+## Learn more and try it out today
+
+Want to learn more about the development of this service, the folks that built it and watch a quick demo of it in action? Check out our latest meet the makers session here.
+
+<ArticleVideo platform="youtube" src="https://www.youtube.com/embed/eFmr5gzhI_A?si=YA859wLKUSHru63-" />
+
+Pop into [Discord](https://xata.io/discord) and say hi if you'd like to dig in further 👋
+
+Interested in trying out for yourself? [Sign up today](https://app.xata.io/signup)! Happy building 🦋 
+```suggestion
