@@ -1,5 +1,5 @@
 ---
-title: Integrating Prisma with Xata
+title: Use Prisma with Xata's Postgres service
 description: 'Get started with Prisma ORM and Xata'
 author: Emily Morgan
 authorEmail: emily@xata.io
@@ -9,13 +9,13 @@ published: true
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/prisma-integration/prisma-integration.jpg
   alt: 'Prisma Integration'
-slug: prisma-integration
+slug: prisma-postgres-xata-integration
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/prisma-integration/prisma-integration.jpg
 ---
 
-[Prisma](https://www.prisma.io/) is a Node.js and TypeScript ORM that provides typesafe access to your database, automated migrations, and a custom data model definition.
+[Prisma](https://www.prisma.io/) is very popular a Node.js and TypeScript ORM that provides typesafe access to your database, automated migrations, and a custom data model definition.
 
-With the release of Xata 2.0 you are able to connect to your Xata database with Prisma over our SQL wire protocol. You can use the default Prisma ORM connector or Prisma driver adapters (`@prisma/adapter-pg`)
+With [today's beta release of Xata's Postgres service](https://xata.io/blog/why-postgres) you are now able to connect to your Xata database with Prisma over the Postgres wire protocol. You can simply use the default Prisma ORM connector or Prisma driver adapters (`@prisma/adapter-pg`). This integration is 
 
 ## Setting up with Xata
 
@@ -45,13 +45,13 @@ You’ll want some data in your tables, we recommend using the examples in the [
 
 ## Setting up with Prisma
 
-There are 2 ways to set up Prisma: using the default ORM connector or the Driver Adapters. If you are using the Driver Adapters you will need to follow a few additional steps.
+There are two ways to set up Prisma: using the default ORM connector or the Driver Adapters. If you are using the Driver Adapters you will need to follow a few additional steps.
 
 Scaffold a Prisma project by following their from scratch [setup guide](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgresql).
 
 After completing their setup guide, a `.env` file should be created at the root of your project with a variable named `DATABASE_URL` . Replace the value with the connection URL from above.
 
-**Xata wire procol requires SSL, so your connection URL defined here will need to contain `?sslmode=require` at the end.**
+**Xata wire protocol requires SSL, so your connection URL defined here will need to contain `?sslmode=require` at the end.**
 
 ```bash
 DATABASE_URL=`postgresql://<YOUR_WORKSPACE_ID>:<YOUR_API_KEY>@<YOUR_REGION>.sql.xata.sh:5432/<YOUR_DATABASE_NAME>:<YOUR_BRANCH_NAME>?sslmode=require`
@@ -213,6 +213,8 @@ model companies_med_250 {
 
 After saving this file, run `prisma db push` . The column should be added to your remote database and your Prisma Client should be aware of the new field available on your model.
 
-## Get access
+## Get started
 
-This functionality is only available in our public beta Xata 2.0 version as it relies on our new wire protocol. Sign up for the public beta [here](). Happy coding!
+And that's it, it's that easy to connect Prisma to your Xata database. This functionality is currently only available with the public beta of our Postges service. 
+
+[Sign up today](https://app.xata.io/signin?mode=signup) to get started! We're always around if you have any questions. Pop into pop into [Discord ](https://xata.io/discord) and say hi or reach out on [X | Twitter](https://twitter.com/xata). Happy building 🦋
