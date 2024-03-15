@@ -13,7 +13,7 @@ slug: prisma-postgres-xata-integration
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/prisma-integration/prisma-integration.jpg
 ---
 
-[Prisma](https://www.prisma.io/) is a very popular Node.js and TypeScript ORM that provides typesafe access to your database, automated migrations, and a custom data model definition.
+[Prisma](https://www.prisma.io/) is a very popular Node.js and TypeScript ORM that provides type safe access to your database, automated migrations, and a custom data model definition.
 
 With [today's beta release of Xata's Postgres service](https://xata.io/blog/why-postgres) you are now able to connect to your Xata database with Prisma over the Postgres wire protocol. You can simply use the default Prisma ORM connector or Prisma driver adapters (`@prisma/adapter-pg`).
 
@@ -23,7 +23,7 @@ Before starting you will need an empty Xata database that has direct access to P
 
 ### Creating a new database
 
-You will first need to enable the “enable direct access to Postgres” in your workspace settings.
+You will first need to “enable direct access to Postgres” in your workspace settings.
 
 ![Enable direct access for your workspace](/images/pgroll-integration/workspace.png)
 
@@ -41,7 +41,7 @@ Keep a copy of this somewhere safe and secure for later use in your Prisma appli
 
 ### Generating some tables via CSV
 
-You’ll want some tables with data inside, we recommend using the examples in the [xata-py repo](https://github.com/xataio/xata-py/tree/main/examples/datasets/stock-prices). For the example here we’ll use [companies_med_250](https://github.com/xataio/xata-py/blob/main/examples/datasets/stock-prices/companies_med_250.csv) and [prices_med_2500](https://github.com/xataio/xata-py/blob/main/examples/datasets/stock-prices/prices_med_2500.csv). These can imported via the Import CSV function in the web application.
+You’ll want some tables that contain data, we recommend using the examples in the [xata-py repo](https://github.com/xataio/xata-py/tree/main/examples/datasets/stock-prices). For the example here we’ll use [companies_med_250](https://github.com/xataio/xata-py/blob/main/examples/datasets/stock-prices/companies_med_250.csv) and [prices_med_2500](https://github.com/xataio/xata-py/blob/main/examples/datasets/stock-prices/prices_med_2500.csv). These can imported via the Import CSV function in the web application.
 
 ## Setting up with Prisma
 
@@ -49,9 +49,9 @@ There are two ways to set up Prisma: using the default ORM connector or the Driv
 
 Scaffold a Prisma project by following their from scratch [setup guide](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgresql).
 
-After completing their setup guide, a `.env` file should be created at the root of your project with a variable named `DATABASE_URL`. Replace the value with the connection URL from above.
+After completing their setup guide, a `.env` file should be created at the root of your project with a variable named `DATABASE_URL`. Replace that value with the connection URL from above.
 
-**Xata wire protocol requires SSL, so your connection URL defined here will need to contain `?sslmode=require` at the end.**
+**Note that your connection URL defined here will need to contain `?sslmode=require` at the end.**
 
 ```bash
 DATABASE_URL=`postgresql://<YOUR_WORKSPACE_ID>:<YOUR_API_KEY>@<YOUR_REGION>.sql.xata.sh:5432/<YOUR_DATABASE_NAME>:<YOUR_BRANCH_NAME>?sslmode=require`
@@ -69,7 +69,7 @@ Prisma `db push` and `db pull` should work with Xata out of the box.
 
 After setting your connection string, run `prisma db pull`. This will run introspect on your remote Xata database and write your Prisma Schema file. You will be able to use this file to subsequently manage migrations.
 
-After running this your `schema.prisma` file should look like:
+After running this command your `schema.prisma` file should look like:
 
 ```jsx
 // This is your Prisma schema file,
@@ -122,7 +122,7 @@ model prices_med_2500 {
 
 ## Generating the Client
 
-After generating your schema. You’ll need to run `npx prisma generate` to get typesafety in your application code.
+After generating your schema. You’ll need to run `npx prisma generate` to get type-safety in your application code.
 
 ## Running queries
 
@@ -192,7 +192,7 @@ main()
 
 ## Changing the schema
 
-You may want to add, delete, or modify your tables and your fields. Changes can come from the Prisma Schema file and be `pushed` onto the remote database, or they can come from the remote database and be `pulled` into the Prisma Schema file which would update your Prisma Client types. Here is an example of how you could add a new field to your existing database schema via the Prisma Schema file and have those changes applied to your remote database.
+You may want to add, delete, or modify your tables or fields. Changes can come from the Prisma Schema file and be `pushed` onto the remote database, or they can come from the remote database and be `pulled` into the Prisma Schema file which would update your Prisma Client types. Here is an example of how you could add a new field to your existing database schema via the Prisma Schema file and have those changes applied to your remote database.
 
 ```jsx
 model companies_med_250 {
