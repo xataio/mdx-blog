@@ -44,7 +44,7 @@ We have designed the Postgres service to optimize for **reliability**, **scalabi
 
 #### Reliability
 
-The Xata Postgres service is using AWS Aurora under the hood, a battle-tested service that has been around for a few years and is used by many very large installations. We have been using AWS Aurora since the initial Xata launch and we have a very [good track record]() in terms of reliability. We are now also have an official [SLA]().
+The Xata Postgres service is using AWS Aurora under the hood, a battle-tested service that has been around for a few years and is used by many very large installations. We have been using AWS Aurora since the initial Xata launch and we have a very [good track record](https://www.xatastatus.com/) in terms of reliability. We are now also have an official [SLA](/docs/appendix/sla).
 
 Even on the free tier we offer high-availability and redundancy, with replicas running in multiple availability zones. The failover from the primary instance to a replica is automatic and it's guaranteed to have no data loss. At the storage layer, the data is synchronously replicated to six storage nodes across three availability zones.
 
@@ -52,15 +52,15 @@ Even on the free tier we offer high-availability and redundancy, with replicas r
 
 Available instance types in Xata go up to 128 vCPUs and 1TB of RAM. Storage can be scaled up to 128TiB per cluster. That is quite a lot of headroom for vertical scaling.
 
-When it comes to horizontal scaling, the fact that you can create databases and branches instantly and that you can move them between clusters without downtime, opens up several architectural possibilities. For example, you can create a logical database for each of your customers, and place them in different regions. This is possible thanks to our [global control plane and logical databases]().
+When it comes to horizontal scaling, the fact that you can create databases and branches instantly and that you can move them between clusters without downtime, opens up several architectural possibilities. For example, you can create a logical database for each of your customers, and place them in different regions. This is possible thanks to our [global control plane and logical databases](/docs/concepts/serverless-data-platform#global-control-plane-for-databases-and-branches).
 
 #### Cost efficiency
 
 Xata achieves cost efficiency for as many use cases as possible by offering a high degree of **optionality**. The innovation of the Xata service is that we make it really easy to move from one type of cluster to another, without downtime. This means that you can easily try your workload on different types of clusters and see which one is the most cost-efficient for you.
 
-At small scale, we offer a free tier that includes high-availability and read replicas, no cold-starts, and no instance-pausing-after-a-few-days. We can offer this sustainably because the free tier makes use of [shared clusters]() and auto-scaling.
+At small scale, we offer a free tier that includes high-availability and read replicas, no cold-starts, and no instance-pausing-after-a-few-days. We can offer this sustainably because the free tier makes use of [shared clusters](/docs/concepts/serverless-data-platform#shared-postgres-clusters) and auto-scaling.
 
-At large scale, when using [dedicated clusters]() (currently in private alpha) you pay for the resources you use and you have a high degree of control. For example, for predictable load, you can configure a particular instance size, while for unpredictable load, auto-scaling will likely be more cost-efficient. Similarly, you can choose between standard storage and I/O optimized storage, which is more cost-efficient for I/O-heavy workloads.
+At large scale, when using [dedicated clusters](/docs/dedicated-cluster) (currently in private alpha) you pay for the resources you use and you have a high degree of control. For example, for predictable load, you can configure a particular instance size, while for unpredictable load, auto-scaling will likely be more cost-efficient. Similarly, you can choose between standard storage and I/O optimized storage, which is more cost-efficient for I/O-heavy workloads.
 
 ## The free tier
 
@@ -69,7 +69,7 @@ Given that free plans across the industry tend to die early recently, you might 
 First, the Xata architecture was built from the start to be able to offer a free tier sustainably, thanks to the use of shared clusters and auto-scaling. Currently, a free **active** database with constant traffic within the rate limits costs us less than $1.5/month. That includes not only Postgres but also Elasticsearch and the replication between them, as well as running a replica for high-availability.
 This is possible thanks to our shared clusters (see [The implementation](#the-implementation)) and this cost per free database will go down significantly as we disable search and replication if not used at all, offload databases to cold storage if inactive for several months, and so on. In other words, the cost of a mostly inactive database is close to zero.
 
-Secondly, the free tier is important to us because of the company history. The idea of Xata was born out of a [non-profit](https://www.tupu.io/), when we realised that managing databases is a limiting factor for many small projects. Today I'm proud to say that multiple non-profits are building on top of Xata, some on the free tier.
+Secondly, the free tier is important to us because of the company history. The idea of Xata was born out of a [non-profit](https://www.tupu.io/), when we realized that managing databases is a limiting factor for many small projects. Today I'm proud to say that multiple non-profits are building on top of Xata, some on the free tier.
 
 ## The platform
 
@@ -100,7 +100,7 @@ In order to make this possible, we had to solve several challenges:
 
 #### SQL Proxy
 
-The key to the solution for most of these issues is our SQL Proxy technology. While there are many Postgres proxies available (e.g. pgbouncer), the Xata SQL Proxy not only speaks the Postgres wire protocol, but also understands the SQL being executed at a fairly deep level. It can, for example, know which tables are accessed, which columns are requested, which functions are being called, with which parameters, and so on. This allows us to block actions that we know would be dangerous for the Postgres cluster. While the security is mostly ensured via Postgres roles, the Proxy can enforce rate and concurrency limits on shared clusters (we don't do that for dedicated clusters).
+The key to the solution for most of these issues is our SQL Proxy technology. While there are many Postgres proxies available (e.g. pgbouncer), the Xata SQL Proxy not only speaks the Postgres wire protocol, but also understands the SQL being executed at a fairly deep level. It can, for example, know which tables are accessed, which columns are requested, which functions are being called, with which parameters, and so on. This allows us to block actions that would be dangerous for the Postgres cluster. While the security is mostly ensured via Postgres roles, the Proxy can enforce rate and concurrency limits on shared clusters (we don't do that for dedicated clusters).
 
 The Proxy allows us to "virtualize" access not only to the branch, but also to the Postgres catalog of tables, functions, sequences, and so on. ORMs like Prisma and Drizzle do fairly complex introspection to see the tables and columns that are currently defined, and we wanted to make sure they work without any modifications.
 
