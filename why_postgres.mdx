@@ -13,7 +13,9 @@ slug: why-postgres
 
 Starting today, Xata databases and branches are also serverless Postgres databases. This means you can connect to them using any Postgres client and generally use them as you would use any other Postgres database, while **still keeping** everything that you loved about Xata. This includes instant DB/branch creation, zero cold starts, no pausing/sleeping in case of inactivity, the full-text search engine, the file attachments, and more.
 
-Making this possible was an interesting and large technical challenge, and we'll go into more detail in this blog post. The new Postgres-enabled databases are in public beta, and you can try them out now using the instructions below.
+Making this possible was an interesting technical challenge and is the result of several Postgres-related projects coming together. We'll go into more detail in this blog post.
+
+The new Postgres-enabled databases are in public beta, and you can try them out now using the instructions below.
 
 <DocsEnablePostgres />
 
@@ -66,8 +68,8 @@ At large scale, when using [dedicated clusters](/docs/dedicated-cluster) (curren
 
 Given that free plans across the industry tend to die early recently, you might be looking a bit skeptically at our 15GB free storage, HA included, no-cold-starts, too-good-to-be-true free tier. We know that trust is won over many years (and lost in minutes), that we are a startup doing startup-y things, that interest rates _something something_, but we think there are a couple things that are worth saying now.
 
-First, the Xata architecture was built from the start to be able to offer a free tier sustainably, thanks to the use of shared clusters and auto-scaling. Currently, a free **active** database with constant traffic within the rate limits costs us less than $1.5/month. That includes not only Postgres but also Elasticsearch and the replication between them, as well as running a replica for high-availability.
-This is possible thanks to our shared clusters (see [The implementation](#the-implementation)) and this cost per free database will go down significantly as we disable search and replication if not used at all, offload databases to cold storage if inactive for several months, and so on. In other words, the cost of a mostly inactive database is close to zero.
+First, the Xata architecture was built from the start to be able to offer a free tier sustainably, thanks to the use of shared clusters and auto-scaling. Currently, a free **active** database with constant traffic within the rate limits costs us less than $1.5/month. That includes not only Postgres but also Elasticsearch and the replication between them, as well as running two replicas for high-availability.
+This is possible thanks to our shared clusters (see [The implementation](#the-implementation)). The cost per database will go further down as we disable search and replication if not used at all, offload databases to cold storage if inactive for several months, and so on. In other words, while an active free-tier database that makes use of all the features might cost us a couple of dollars per month, the cost of a mostly inactive free database will come close to zero.
 
 Secondly, the free tier is important to us because of the company history. The idea of Xata was born out of a [non-profit](https://www.tupu.io/), when we realized that managing databases is a limiting factor for many small projects. Today I'm proud to say that multiple non-profits are building on top of Xata, some on the free tier.
 
@@ -100,9 +102,9 @@ In order to make this possible, we had to solve several challenges:
 
 #### SQL Proxy
 
-The key to the solution for most of these issues is our SQL Proxy technology. While there are many Postgres proxies available (e.g. pgbouncer), the Xata SQL Proxy not only speaks the Postgres wire protocol, but also understands the SQL being executed at a fairly deep level. It can, for example, know which tables are accessed, which columns are requested, which functions are being called, with which parameters, and so on. This allows us to block actions that would be dangerous for the Postgres cluster. While the security is mostly ensured via Postgres roles, the Proxy can enforce rate and concurrency limits on shared clusters (we don't do that for dedicated clusters).
+The key to the solution for most of these issues is our SQL Proxy technology. While there are many Postgres proxies (e.g. pgbouncer, pgcat, Supavisor) serving various goals, the Xata SQL Proxy not only speaks the Postgres wire protocol, but also understands the SQL being executed at a fairly deep level. It can, for example, know which tables are accessed, which columns are requested, which functions are being called, with which parameters, and so on. This allows us to block actions that would be dangerous for the Postgres cluster. While the security is mostly ensured via Postgres roles, the Proxy can enforce rate and concurrency limits on shared clusters (we don't do that for dedicated clusters).
 
-The Proxy allows us to "virtualize" access not only to the branch, but also to the Postgres catalog of tables, functions, sequences, and so on. ORMs like Prisma and Drizzle do fairly complex introspection to see the tables and columns that are currently defined, and we wanted to make sure they work without any modifications.
+The Proxy allows us to "virtualize" access not only to the data in the branch, but also to the Postgres catalog of tables, functions, sequences, and so on. ORMs like Prisma and Drizzle do fairly complex introspection to see the tables and columns that are currently defined, and we wanted to make sure they work without any modifications.
 
 You might be wondering why we chose to represent database branches as Postgres schemas rather than Postgres database. The reason has to do with logical replication, which is a key component of the database platform, because reliable change-data-capture (CDC) is such an important feature keeping multiple data stores in sync. Individual databases would have forced us to do a replication slot for each.
 
@@ -114,11 +116,11 @@ We think this tech will be useful for many Postgres applications, so we are plan
 
 #### Integrated pgroll
 
-Finally, we have integrated [pgroll](https://github.com/xataio/pgroll) in our platform. pgroll is our open-source project for zero-downtime, reversible schema migrations.
+Another key piece of the new Xata architecture is [pgroll](https://github.com/xataio/pgroll), our open-source project for zero-downtime, reversible, schema migrations.
 
-While `pgroll` is a CLI tool, we have developed a server API for it, which integrates with our control plane. This allows us to offer some of the benefits of pgroll as native in the Xata platform, without you even having to know that you are using pgroll!
+While `pgroll` is a CLI tool, in order to offer its benefits to all the Xata users, we have developed a server wrapper for it, which integrates with our control plane. This servers offers an API more specific migrations as well as automatically intercepts DDLs executed over the wire protocol. This allows us to offer some of the benefits of pgroll as native in the Xata platform, without you even having to know that you are using pgroll!
 
-The benefits that are already enabled include maintain a history of the schema migrations, avoiding [locking issues](https://xata.io/blog/postgres-schema-changes-pita) automatically, and enabling more complex migrations that require data backfill. We don't yet expose multiple versions of the schema at the same time, but we'll be working on that next!
+While there is still work to do fully integrate pgroll, we already get some important benefits: maintaining a history of the schema migrations, avoiding [locking issues](https://xata.io/blog/postgres-schema-changes-pita) automatically, and enabling more complex migrations that require data backfill. We don't yet expose multiple versions of the schema at the same time, but we are planning to do so in the future. This will be key to enabling a simple and safe workflow for schema migrations of all kinds, and we're kind excited for that future.
 
 Look out for a detailed blog post this week about pgroll and how we integrated it into Xata.
 
