@@ -106,7 +106,7 @@ The key to the solution for most of these issues is our SQL Proxy technology. Wh
 
 The Proxy allows us to "virtualize" access not only to the data in the branch, but also to the Postgres catalog of tables, functions, sequences, and so on. ORMs like Prisma and Drizzle do fairly complex introspection to see the tables and columns that are currently defined, and we wanted to make sure they work without any modifications.
 
-You might be wondering why we chose to represent database branches as Postgres schemas rather than Postgres database. The reason has to do with logical replication, which is a key component of the database platform, because reliable change-data-capture (CDC) is such an important feature keeping multiple data stores in sync. Individual databases would have forced us to do a replication slot for each.
+You might be wondering why we chose to represent database branches as Postgres schemas rather than separate Postgres databases. The reason has to do with logical replication, which is a key component of the database platform, because reliable change-data-capture (CDC) is such an important feature keeping multiple data stores in sync. Individual databases would have forced us to do a replication slot for each.
 
 #### Logical replication events
 
