@@ -11,17 +11,21 @@ published: false
 slug: usage-insights-launch
 ---
 
-## Backend details
+Usage monitoring is a new feature that visualizes usage of the Xata resources available to users. This beta release lets users explore their usage metric data at a workspace level for the first time.
 
-We track the following metrics over time so that customers can gain insight into their usage of Xata:
+Xata tracks and displays the following metrics so that customers can gain insight into their usage of Xata:
 
-- Disk space used by Postgres
-- Disk space used for search indexing
-- Disk space used by file attachments
-- The number of database branches
-- The number of AI questions asked
+- Data storage: The storage on disk consumed by Postgres
+- Search storage: The storage on disk dedicated search indexing
+- File storage: The storage on disk consumed by file attachments
+- AI questions: The number of questions sent to the `ask` endpoint - an integration with OpenAI and ChatGPT
+- Total branches: The current total number of of database branches
 
-As you would expect, this data comes from a variety of sources and we wanted to collect it all into a single place.
+We are actively working on enhancements to the usage monitoring feature. We will shortly expose these metrics on a database branch level, and we plan to release further metric insights in time.
+
+## Technical details
+
+As you would expect, the data we track comes from a variety of sources and we wanted to collect it all into a single place.
 
 In order to power this feature we had to choose a database that is well suited to collect and report time series data and also met our usage requirements:
 
