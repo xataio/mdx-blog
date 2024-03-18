@@ -83,7 +83,7 @@ This is the Xata platform at the high level:
 
 Data is automatically replicated, including schema changes, via logical replication to Elasticsearch, which serves our search, vector search, and aggregations endpoints, so the areas in which it excels. Files are stored in S3 and served through the Cloudflare CDN. The replication events are used to keep a reference count of the files, so they can be shared between branches, yet deleted when they are no longer needed.
 
-If file attachments or full-text search or vector/hybrid search are important for your application, Xata will likely offer you a better platform to build on top than a classical DBaaS. And it's only the beginning, we are planning to have similar tightly-integrated solutions for time-series, intelligent caching, queuing, and more.
+If file attachments or full-text search or vector/hybrid search are important for your application, Xata will likely offer you a better platform to build on top of than a classical DBaaS. And it's only the beginning, we are planning to have similar tightly-integrated solutions for time-series, intelligent caching, queuing, and more.
 
 ## The implementation
 
