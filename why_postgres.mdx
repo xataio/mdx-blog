@@ -110,7 +110,7 @@ You might be wondering why we chose to represent database branches as Postgres s
 
 #### Logical replication events
 
-Speaking of logical replication, another challenge that we had to solve was getting not only data events but also schema events from Postgres. A well known limitation of the Postgres logical replication system is that it only includes data changes, not DDL changes. Yet, having schema changes in the same stream of events significantly simplifies the downstream consumers for the logical replication events. The way we solve this is by installing [DDL event triggers](https://www.postgresql.org/docs/current/event-triggers.html) that are writing the schema changes to an "out-box" table, which gets replicated via the same replication slot.
+Speaking of logical replication, another challenge that we had to solve was getting not only data events, but also schema events from Postgres. A well known limitation of the Postgres logical replication system is that it only includes data changes, not DDL changes. Yet, having schema changes in the same stream of events significantly simplifies the downstream consumers for the logical replication events. The way we solve this is by installing [DDL event triggers](https://www.postgresql.org/docs/current/event-triggers.html) that are writing the schema changes to an "out-box" table, which gets replicated via the same replication slot.
 
 We think this tech will be useful for many Postgres applications, so we are planning to open source it soon as its own project.
 
