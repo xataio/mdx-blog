@@ -1,0 +1,220 @@
+---
+title: Using Prisma with Xata's Postgres service
+description: 'Get started with Prisma ORM and Xata'
+author: Emily Morgan
+authorEmail: emily@xata.io
+date: 03-18-2024
+tags: ['engineering', 'prisma', 'announcements', 'launch-week']
+published: false
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/prisma-integration/prisma-integration.jpg
+  alt: 'Prisma Integration'
+slug: prisma-postgres-xata-integration
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/prisma-integration/prisma-integration.jpg
+---
+
+[Prisma](https://www.prisma.io/) is a very popular Node.js and TypeScript ORM that provides type safe access to your database, automated migrations, and a custom data model definition.
+
+With [today's beta release of Xata's Postgres service](https://xata.io/blog/why-postgres) you are now able to connect to your Xata database with Prisma over the Postgres wire protocol. You can simply use the default Prisma ORM connector or Prisma driver adapters (`@prisma/adapter-pg`).
+
+## Setting up with Xata
+
+Before starting you will need an empty Xata database that has direct access to Postgres enabled.
+
+### Creating a new database
+
+You will first need to enable direct access to Postgres in your workspace settings.
+
+![Enable direct access for your workspace](/images/prisma-integration/workspace.png)
+
+You will also need to enable direct access to Postgres when you create your new database.
+
+![Enable direct access for your database](/images/prisma-integration/database.png)
+
+After this point you will be able to see your Xata database connection string when navigating to database settings. It will look like this:
+
+```bash
+postgresql://<YOUR_WORKSPACE_ID>:<YOUR_API_KEY>@<YOUR_REGION>.sql.xata.sh:5432/<YOUR_DATABASE_NAME>:<YOUR_BRANCH_NAME>
+```
+
+Keep a copy of this somewhere safe and secure for later use in your Prisma application.
+
+### Generating some tables via CSV
+
+You’ll want some tables that contain data, we recommend using the examples in the [xata-py repo](https://github.com/xataio/xata-py/tree/main/examples/datasets/stock-prices). For the example here we’ll use [companies_med_250](https://github.com/xataio/xata-py/blob/main/examples/datasets/stock-prices/companies_med_250.csv) and [prices_med_2500](https://github.com/xataio/xata-py/blob/main/examples/datasets/stock-prices/prices_med_2500.csv). These can imported via the Import CSV function in the web application.
+
+## Setting up with Prisma
+
+There are two ways to set up Prisma: using the default ORM connector or the Driver Adapters. If you are using the Driver Adapters you will need to follow a few additional steps.
+
+Scaffold a Prisma project by following their from scratch [setup guide](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgresql).
+
+After completing their setup guide, a `.env` file should be created at the root of your project with a variable named `DATABASE_URL`. Replace that value with the connection URL from above.
+
+**Note that your connection URL defined here will need to contain `?sslmode=require` at the end.**
+
+```bash
+DATABASE_URL=`postgresql://<YOUR_WORKSPACE_ID>:<YOUR_API_KEY>@<YOUR_REGION>.sql.xata.sh:5432/<YOUR_DATABASE_NAME>:<YOUR_BRANCH_NAME>?sslmode=require`
+```
+
+### Using Driver Adapters (Optional)
+
+If you choose to use the drivers adapter you will also need to run:
+
+`npm install @prisma/adapter-pg pg`
+
+## Generating the database schema
+
+Prisma `db push` and `db pull` should work with Xata out of the box.
+
+After setting your connection string, run `prisma db pull`. This will run introspect on your remote Xata database and write your Prisma Schema file. You will be able to use this file to subsequently manage migrations.
+
+After running this command your `schema.prisma` file should look like:
+
+```jsx
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider        = "prisma-client-js"
+  // The following line will need to be added if
+  // using driver adapters.
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("DATABASE_URL")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model companies_med_250 {
+  address         String?
+  catch_phrase    String?
+  ceo             String?
+  phone           String?
+  email           String?
+  exchange        String?
+  xata_updatedat  DateTime          @default(now()) @db.Timestamptz(6)
+  xata_id         String            @unique(map: "_pgroll_new_companies_med_250_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version    Int               @default(0)
+  xata_createdat  DateTime          @default(now()) @db.Timestamptz(6)
+  prices_med_2500 prices_med_2500[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model prices_med_2500 {
+  timestamp         DateTime?          @db.Timestamptz(6)
+  symbol            String?
+  price             Float?
+  delta             Float?
+  percentage        Float?
+  xata_id           String             @unique(map: "_pgroll_new_prices_med_2500_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version      Int                @default(0)
+  xata_createdat    DateTime           @default(now()) @db.Timestamptz(6)
+  xata_updatedat    DateTime           @default(now()) @db.Timestamptz(6)
+  companies_med_250 companies_med_250? @relation(fields: [symbol], references: [xata_id], onUpdate: NoAction, map: "symbol_link")
+}
+
+```
+
+## Generating the Client
+
+After generating your schema. You’ll need to run `npx prisma generate` to get type-safety in your application code.
+
+## Running queries
+
+Create an `index.ts` file at the project root with the following:
+
+```ts
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+async function main() {
+  const record = await prisma.prices_med_2500.findMany({
+    where: {
+      symbol: {
+        equals: 'PATT'
+      }
+    }
+  });
+  console.log('record', record);
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
+```
+
+### Driver Adapters (Optional)
+
+Client initialisation for driver adapters is slightly different:
+
+```ts
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '@prisma/client';
+
+const connectionString = `${process.env.DATABASE_URL}`;
+
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
+async function main() {
+  const record = await prisma.prices_med_2500.findMany({
+    where: {
+      symbol: {
+        equals: 'PATT'
+      }
+    }
+  });
+  console.log('record', record);
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
+```
+
+## Changing the schema
+
+You may want to add, delete, or modify your tables or fields. Changes can come from the Prisma Schema file and be `pushed` onto the remote database, or they can come from the remote database and be `pulled` into the Prisma Schema file which would update your Prisma Client types. Here is an example of how you could add a new field to your existing database schema via the Prisma Schema file and have those changes applied to your remote database.
+
+```jsx
+model companies_med_250 {
+  city            String? // Add a new field and a type like so.
+  address         String?
+  catch_phrase    String?
+  ceo             String?
+  phone           String?
+  email           String?
+  exchange        String?
+  xata_updatedat  DateTime          @default(now()) @db.Timestamptz(6)
+  xata_id         String            @unique(map: "_pgroll_new_companies_med_250_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version    Int               @default(0)
+  xata_createdat  DateTime          @default(now()) @db.Timestamptz(6)
+  prices_med_2500 prices_med_2500[]
+}
+```
+
+After saving this file, run `prisma db push`. The column should be added to your remote database and your Prisma Client should be aware of the new field available on your model.
+
+## Get started
+
+And that's it, it's that easy to connect Prisma to your Xata database. This functionality is currently only available with the public beta of our Postges service.
+
+[Sign up today](https://app.xata.io/signin?mode=signup) to get started! We're always around if you have any questions. Pop into [Discord ](https://xata.io/discord) and say hi or reach out on [X | Twitter](https://twitter.com/xata). Happy building 🦋
