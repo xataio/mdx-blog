@@ -13,7 +13,7 @@ slug: introducing-pgzx
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/introducing-pgroll.jpg
 ---
 
-As part of the [Xata launch week](), we are introducing [pgzx](https://github.com/xataio/pgzx), an open-source framework for developing PostgreSQL extensions written in Zig. It provides a set of utilities (e.g. error handling, memory allocators, wrappers) as well as a build and development environment that simplify integrating with the Postgres code base.
+As part of the [Xata launch week](https://xata.io/launch-week-unleash-the-elephant), we are introducing [pgzx](https://github.com/xataio/pgzx), an open-source framework for developing PostgreSQL extensions written in Zig. It provides a set of utilities (e.g. error handling, memory allocators, wrappers) as well as a build and development environment that simplify integrating with the Postgres code base.
 
 ## Why Zig for Postgres extensions
 
@@ -31,10 +31,10 @@ We have some experience with the first option because that's how our current Xat
 
 The next node in our decision tree was the programming language. The main options we considered were C, Rust, and Zig. C is the obvious choice because Postgres is written in C and so are most of its major extensions. It still is our fall-back option, but we wanted to see if we could try a newer language first.
 
-Rust is becoming increasingly popular for writing Postgres extensions thanks to the [pgrx](https://github.com/pgcentralfoundation/pgrx) project. Our main concern was `pgrx` would necessarily limit the APIs from Postgres that we could use, but also we felt that the key advantages of Rust are less relevant when working inside Postgres. Yurii Rashkovskii, the author of [Omnigres](https://github.com/omnigres/omnigres) seems to have gone through a [similar thought process](https://yrashk.medium.com/why-not-rust-for-omnigres-faa6fda7d1ec). To quote from his blog post:
+Rust is becoming increasingly popular for writing Postgres extensions thanks to the [pgrx](https://github.com/pgcentralfoundation/pgrx) project. The fact that Rust is on its way to become a "trusted language", meaning that extensions written in it will be able to be loaded by cloud providers without the need to vet them is really exciting to us.\_createMdxContent
 
-> Postgres is inherently **single-threaded**; therefore, “fearless concurrency” is not buying us much. Sure, you can build an extension that’ll communicate with other processes and threads over shared memory, but this is not much of a concern at the core database level.
+Our main concern was that `pgrx` would necessarily limit the APIs from Postgres that we could use, and we wanted to be able to. `pgrx` needs to to wrappers for each piece of functionality in Postgres. Another thing to consider also we felt that the key advantages of Rust are less relevant when working inside Postgres. Yurii Rashkovskii, the author of [Omnigres](https://github.com/omnigres/omnigres) seems to have gone through a [similar thought process](https://yrashk.medium.com/why-not-rust-for-omnigres-faa6fda7d1ec).
 
-> Postgres has its own **memory management** story, which is quite good. Instead of having a single allocation pool, it has memory contexts that are established temporarily or for a scope. When they are deleted, all the memory allocated in them is released. So memory leaks are not necessarily a concern. Rust doesn’t necessarily consider leaks a safety issue, but it’s nice to know we will not crash the server with an OOM.
+While we haven't picked
 
 The main reason we considered Zig for this project is its ability to interoperate with C code. Zig supports the C ABI, can work with C pointers and data types, including NULL terminated strings, and can even translate C header files into Zig code. While the automatic translating of C macros to Zig is not perfect yet, it can still help a great deal. This makes Zig a great choice for working with very large C code bases, like Postgres happens to be.
