@@ -95,10 +95,10 @@ This results in a level of decoupling between the logical databases and branches
 
 In order to make this possible, we had to solve several challenges:
 
-- route traffic to the correct cluster based on metadata about the database branch
-- ensure that a branch level connection can only access that single branch
-- ensure that attackers can't call dangerous SQL functions
-- limit noisy-neighbor issues in the shared clusters
+- Route traffic to the correct cluster based on metadata about the database branch.
+- Ensure that a branch level connection can only access that single branch.
+- Ensure that attackers can't call dangerous SQL functions.
+- Limit noisy-neighbor issues in the shared clusters.
 
 #### SQL Proxy
 
