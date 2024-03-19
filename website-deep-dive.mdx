@@ -1,0 +1,113 @@
+---
+title: 'Website deep dive: A fresh website for a new future'
+description: 'Learn about our brand refresh and the technical challenges we overcame.'
+author: Elizabet Oliveira
+date: 03-23-2024
+tags: ['launch-week', 'design', 'website']
+published: false
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/website-deep-dive/lw-06-blog-website-deep-dive@2x.jpg
+  alt: 'Website Deep Dive: A fresh website for a new future'
+slug: website-deep-dive
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/website-deep-dive/lw-06-blog-website-deep-dive@2x.jpg
+---
+
+Notice the recent changes to our website? We've revamped it to reflect the next major evolution of the Xata data platform, now featuring a serverless Postgres service. This project kicked off in January 2024, and it went live just a few days before our launch week, scheduled from March 18th to March 22nd, 2024.
+
+To embark on this journey, we formed a trio, kind of like the Avengers of website renovations! Alex was our leader, not only assuming the title of product manager but also wearing the capes of a marketeer and UX expert. Monica, our CEO, also decided to join the action, balancing her role as CEO with that of marketing and UX specialist. And then we have Elizabet, the product designer, who put on her unicorn suit and became a designer, developer, and marketeer.
+Together, we undertook the mission of refreshing the website. With passion in our hearts and coffee in hand, we faced all challenges head-on, from programming puzzles to marketing madness.
+
+During the website makeover, we undertook various tasks, including:
+Creating a new messaging.
+Refreshing our brand.
+Implementing the technical aspects of the redesign.
+
+Along the way, we also made interesting decisions and overcame technical challenges. Now, let's dive into these topics.
+
+## Creating a new messaging
+
+Creating a fresh message is tough as we aimed to stand out from competitors and be innovative. Our previous headline, "Serverless database platform powered by Postgres," while descriptive, was similar to our competitors'. Could we find something unique? That's when "Postgres, Powered up" emerged.
+
+The process of arriving at the final texts and messages was a lengthy one, which we conducted through Whimsical. Today, we can proudly say we're all Whimsical pros. As you can see in the following image, we assumed the roles of FBI detectives to uncover the best messages.
+
+![Whimsical](/images/website-deep-dive/whimsical@2x.png)
+
+The entire process involved creating text for:
+
+- Landing page
+
+A set of feature pages:
+
+- Files Attachments page
+- Branching page
+- Full text search page
+- Schema migrations page
+- Generative AI page
+- Serverless Postgres
+
+Two pages for the new open-source projects:
+
+- Pgroll page
+- Pgzz page
+
+And a page for:
+
+- Launch week.
+
+The process involved suggesting... suggesting, and suggesting... until we found texts that we felt effectively explained the product, its new features, and also suggested illustrations to complement the communication.
+
+## Refreshing our brand
+
+Our brand has also undergone some changes. For quite some time, we've aimed for our brand to communicate the following:
+
+- **Innovation** - We aimed for the website to reflect our identity as an innovative platform, showcasing cutting-edge technologies and forward-thinking solutions.
+- **Femininity** - Recognizing that many tech websites lean towards a masculine aesthetic, we aimed to bring a feminine touch to our brand, promoting inclusivity and diversity in the tech industry.
+- **Fun** - We wanted to infuse our website with a sense of playfulness and lightheartedness, ensuring that visitors feel engaged and entertained while navigating through our platform. This approach helps us break away from the typical seriousness often associated with tech websites, making our brand more approachable and relatable.
+
+For those familiar with the previous version of our site, you may recall we had a button to switch between light and dark color modes. Initially, we aimed for a site that focused on both color modes, but in attempting to please both, we found it challenging to meet our goals.
+
+Therefore, we decided to focus solely on the dark mode. The dark background conveys a sense of innovation. Paired with colors like pink and purple, we bring in femininity. And our mascots bring the "fun" we strive for.
+
+![Website hero section](/images/website-deep-dive/website-hero-section@2x.png)
+
+We had to adjust some of the color tokens, which affected our design system, impacting our documentation and app.
+However, we decided that the documentation and app should continue to have two color modes, prioritizing a good Developer Experience (DX). This decision ensures that users have the flexibility to choose the color mode that best suits their preferences and enhances their overall experience with our platform.
+
+![Documentation color mode](/images/website-deep-dive/documentation-color-mode@2x.png)
+
+## Implementing the technical aspects of the redesign
+
+Our website is part of a monorepo where apps are developed using Next.js, a decision we've elaborated on in another post: [Using Next.js to improve speed and efficiency at Xata](/blog/nextjs-to-improve-speed-and-efficiency).
+
+As we implemented, we took certain considerations into account. If a component needed to be used across the website, docs, and app, it would be included in our design system. For instance, the logos.
+
+![Xata Design System logo page](/images/website-deep-dive/design-system-logos@2x.png)
+
+If the component is solely for the website, then it remains within the website scope. We prioritized ensuring that the site is responsive and achieves good performance, accessibility, best practices, and SEO.
+
+Currently, it's not without its flaws, but at Xata, one of our guiding philosophies is Wabi Sabi, the Japanese concept known as the art of imperfection. We recognize that perfection is not always possible, and we embrace the beauty of imperfection. As time goes on, we'll continue to refine our work while proudly embracing its imperfections.
+
+## Technical challenges
+
+And of course, there were many challenges along the way. One example is the animation that we called `TextDistortion`. This animation is created using two SVG filters, `FeDisplacementMap` and `feTurbulence`. And for those familiar with the world of development, Safari is the new Internet Explorer, which means. The animation doesn't work in this browser.
+
+<ArticleVideo
+  platform="html"
+  src="https://us-east-1.storage.xata.sh/otuc9g5lmd6g3828hgs2mbe60o"
+  width="1000"
+  height="600"
+/>
+
+We faced many other challenges where we had to seek help from more experienced colleagues, such as Cezzaine, who helped refine many of the texts, while Richard and Dave assisted in improving the code.
+
+## Learn more
+
+Learn more about the development of this service from the folks that built it, and watch a quick demo to see it in action. Check out our latest meet the makers session here:
+
+<ArticleVideo platform="youtube" src="https://www.youtube.com/embed/4TOq1D3Wjho?si=N8UeUegcyrP9EbEJ" />
+
+Pop into [Discord](https://xata.io/discord) and say hi if you'd like to dig in further 👋
+
+If you don't yet have a Xata account, there's no better time to [create one](https://app.xata.io/signup)!
+
+[launch-week-blog]: https://xata.io/blog/...
