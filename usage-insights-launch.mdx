@@ -90,13 +90,13 @@ bytes_on_disk:               1.13 GiB
 
 You can see here that data has been compressed by around 12x. Additionally, because we include the workspace as part of our primary key, the number of actual rows we need to scan when querying is relatively low.
 
-```text
+```sql
 SELECT count(*)
 FROM postgres_disk
-WHERE workspace_id = 'REDACTED'
+WHERE workspace_id = 'abc'
+```
 
-count() = 10881
-
+```
 1 row in set. Elapsed: 0.355 sec. Processed 45.69 thousand rows, 685.32 KB (128.57 thousand rows/s., 1.93 MB/s.)
 ```
 
