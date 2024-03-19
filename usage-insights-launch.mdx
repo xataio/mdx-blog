@@ -78,7 +78,7 @@ Because we take snapshots of this data, each row in a single snapshot will all c
 
 Also, because we have chosen to use the [Merge Tree](https://clickhouse.com/docs/en/engines/table-engines/mergetree-family/mergetree) backend on Clickhouse, it will occasionally merge snapshots together allowing it to further combine rows for the same workspace or branch together. This allows Clickhouse to efficiently store data that has a relatively low cardinality, but at the same time doesn't stop it from being able to also store high cardinality data.
 
-Clickhouse stores data in what it calls "parts", which equate in practice to a set of files on disk. Here's a snapshot from a real part showing the number of rows and space consumed both compressed and uncompressed:
+Clickhouse stores data in what it calls "parts", which equate in practice to a set of files on disk. Here's a snapshot from a real part showing the number of rows and space consumed – both compressed and uncompressed:
 
 ```text
 rows:                        300.25 million
