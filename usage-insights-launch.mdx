@@ -78,6 +78,33 @@ Because we take snapshots of this data, each row in a single snapshot will all c
 
 Also, because we have chosen to use the [Merge Tree](https://clickhouse.com/docs/en/engines/table-engines/mergetree-family/mergetree) backend on Clickhouse it will occasionally merge snapshots together allowing it to further combine rows for the same workspace or branch together. This allows Clickhouse to efficiently store data that has a relatively low cardinality, but at the same time doesn't stop it from being able to also store high cardinality data.
 
+Clickhouse stores data in what it calls "parts", which equate in practice to a set of files on disk. Here's a snapshot from a real part showing the number of rows and space consumed both compressed and uncompressed:
+
+```text
+rows:                        300.25 million
+data_uncompressed_bytes:     12.86 GiB
+data_compressed_bytes:       1.13 GiB
+primary_key_bytes_in_memory: 2.03 MiB
+marks:                       36653
+bytes_on_disk:               1.13 GiB
+```
+
+You can see here that data has been compressed by around 12x. Additionally, because we include the workspace as part of our primary key the number of actual rows we need to scan when querying is relatively low.
+
+```sql
+SELECT count(*)
+FROM postgres_disk
+WHERE workspace_id = 'REDACTED'
+
+┌─count()─┐
+│   10881 │
+└─────────┘
+
+1 row in set. Elapsed: 0.355 sec. Processed 45.69 thousand rows, 685.32 KB (128.57 thousand rows/s., 1.93 MB/s.)
+```
+
+Note here that instead of scanning approximately 300 million rows, we only needed to scan around 45k.
+
 ## Learn more and try it out today
 
 Want to learn more about the development of this feature, the folks that built it and watch a quick demo of it in action? Check out our latest meet the makers session here.
