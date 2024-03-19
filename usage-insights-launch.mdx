@@ -85,7 +85,6 @@ rows:                        300.25 million
 data_uncompressed_bytes:     12.86 GiB
 data_compressed_bytes:       1.13 GiB
 primary_key_bytes_in_memory: 2.03 MiB
-marks:                       36653
 bytes_on_disk:               1.13 GiB
 ```
 
@@ -96,9 +95,7 @@ SELECT count(*)
 FROM postgres_disk
 WHERE workspace_id = 'REDACTED'
 
-┌─count()─┐
-│   10881 │
-└─────────┘
+count() = 10881
 
 1 row in set. Elapsed: 0.355 sec. Processed 45.69 thousand rows, 685.32 KB (128.57 thousand rows/s., 1.93 MB/s.)
 ```
