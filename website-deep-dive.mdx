@@ -2,6 +2,7 @@
 title: 'Website deep dive: A fresh website for a new future'
 description: 'Learn about our brand refresh and the technical challenges we overcame.'
 author: Elizabet Oliveira
+authorEmail: elizabet@xata.io
 date: 03-23-2024
 tags: ['launch-week', 'design', 'website']
 published: false
@@ -18,55 +19,22 @@ To embark on this journey, we formed a trio, kind of like the Avengers of websit
 Together, we undertook the mission of refreshing the website. With passion in our hearts and coffee in hand, we faced all challenges head-on, from programming puzzles to marketing madness.
 
 During the website makeover, we undertook various tasks, including:
-Creating a new messaging.
-Refreshing our brand.
-Implementing the technical aspects of the redesign.
+
+- Refreshing our brand.
+- Implementing the technical aspects of the redesign.
+- Creating a new messaging.
 
 Along the way, we also made interesting decisions and overcame technical challenges. Now, let's dive into these topics.
 
-## Creating a new messaging
-
-Creating a fresh message is tough as we aimed to stand out from competitors and be innovative. Our previous headline, "Serverless database platform powered by Postgres," while descriptive, was similar to our competitors'. Could we find something unique? That's when "Postgres, Powered up" emerged.
-
-The process of arriving at the final texts and messages was a lengthy one, which we conducted through Whimsical. Today, we can proudly say we're all Whimsical pros. As you can see in the following image, we assumed the roles of FBI detectives to uncover the best messages.
-
-![Whimsical](/images/website-deep-dive/whimsical@2x.png)
-
-The entire process involved creating text for:
-
-- Landing page
-
-A set of feature pages:
-
-- Files Attachments page
-- Branching page
-- Full text search page
-- Schema migrations page
-- Generative AI page
-- Serverless Postgres
-
-Two pages for the new open-source projects:
-
-- Pgroll page
-- Pgzz page
-
-And a page for:
-
-- Launch week.
-
-The process involved suggesting... suggesting, and suggesting... until we found texts that we felt effectively explained the product, its new features, and also suggested illustrations to complement the communication.
-
 ## Refreshing our brand
 
-Our brand has also undergone some changes. For quite some time, we've aimed for our brand to communicate the following:
+Our brand has undergone some changes. For a while now, we've been working hard to ensure that our brand effectively communicates the following:
 
 - **Innovation** - We aimed for the website to reflect our identity as an innovative platform, showcasing cutting-edge technologies and forward-thinking solutions.
 - **Femininity** - Recognizing that many tech websites lean towards a masculine aesthetic, we aimed to bring a feminine touch to our brand, promoting inclusivity and diversity in the tech industry.
 - **Fun** - We wanted to infuse our website with a sense of playfulness and lightheartedness, ensuring that visitors feel engaged and entertained while navigating through our platform. This approach helps us break away from the typical seriousness often associated with tech websites, making our brand more approachable and relatable.
 
-For those familiar with the previous version of our site, you may recall we had a button to switch between light and dark color modes. Initially, we aimed for a site that focused on both color modes, but in attempting to please both, we found it challenging to meet our goals.
-
-Therefore, we decided to focus solely on the dark mode. The dark background conveys a sense of innovation. Paired with colors like pink and purple, we bring in femininity. And our mascots bring the "fun" we strive for.
+As you'll see in the video below, our design choices reflect our brand's growth. The dark background represents innovation, showing we're forward-thinking. Colors like pink and purple adds a "feminity" touch, welcoming diversity in tech. Plus, our playful mascots in the video make sure visitors have fun and enjoy their time on our platform. Together, these elements show what our brand is all about.
 
 <ArticleVideo
   platform="html"
@@ -75,10 +43,36 @@ Therefore, we decided to focus solely on the dark mode. The dark background conv
   height="1080"
 />
 
-We had to adjust some of the color tokens, which affected our design system, impacting our documentation and app.
-However, we decided that the documentation and app should continue to have two color modes, prioritizing a good Developer Experience (DX). This decision ensures that users have the flexibility to choose the color mode that best suits their preferences and enhances their overall experience with our platform.
+### Color modes
+
+To refresh our brand we did a few adjustments to our color tokens. This had a ripple effect, influencing both our documentation and app. Additionally, we made a bold choice to exclusively design in dark mode, a decision we elaborated on in the "Navigating challenges and collaborative solutions" section.
+
+However, amidst these changes, we collectively decided to maintain two color modes for our documentation and app, prioritizing an exceptional Developer Experience (DX). This thoughtful decision ensures that our users have the freedom to select the color mode that aligns best with their preferences, thus elevating their overall journey with our platform.
 
 ![Documentation color mode](/images/website-deep-dive/documentation-color-mode@2x.png)
+
+### Illustrations
+
+We also introduced new illustrations to our website, which we created using Figma. For each feature page, we designed unique hero illustration to represent the feature.
+
+![Feature pages hero images](/images/website-deep-dive/fp-hero-images@2x.png)
+
+We also created a set of illustrations to represent the different features of our platform.
+
+![Feature pages images](/images/website-deep-dive/fp-illustrations@2x.png)
+
+### Embracing fun and welcoming Vibes
+
+As we explained earlier, one of the things we were eager to bring with our brand was "fun." We wanted to break away from seriousness a bit. And since our logo is a butterfly, we wanted it to somehow be present on our website and brand. Also, as a startup, we wanted our users to feel welcomed. So we decided to add a bit of fun but also not go overboard.
+
+That's why, when scrolling the landing page, you can find some small animations. An example of this is when hovering over the "start free" button, the butterfly emits some hearts. This is because we want to show our users that we're happy they're signing up for our product.
+
+<ArticleVideo
+  platform="html"
+  src="https://us-east-1.storage.xata.sh/naluvjnrtt2gvfpnkhhouk8nek"
+  width="3852"
+  height="1080"
+/>
 
 ## Implementing the technical aspects of the redesign
 
@@ -94,9 +88,41 @@ If the component is solely for the website, then it remains within the website s
 
 Currently, it's not without its flaws, but at Xata, one of our guiding philosophies is Wabi Sabi, the Japanese concept known as the art of imperfection. We recognize that perfection is not always possible, and we embrace the beauty of imperfection. As time goes on, we'll continue to refine our work while proudly embracing its imperfections.
 
-## Technical challenges
+## Creating a new messaging
 
-And of course, there were many challenges along the way. One example is the animation that we called `TextDistortion`. This animation is created using two SVG filters, `FeDisplacementMap` and `feTurbulence`. And for those familiar with the world of development, Safari is the new Internet Explorer, which means. The animation doesn't work in this browser.
+Creating a fresh message is tough as we aimed to stand out from competitors and be innovative. Our previous headline, "Serverless database platform powered by Postgres," while descriptive, was similar to our competitors. Could we find something unique? That's when "Postgres, Powered up" emerged.
+
+The process of arriving at the final texts and messages was a lengthy one, which we conducted through Whimsical. Today, we can proudly say we're all Whimsical pros. As you can see in the following image, we assumed the roles of FBI detectives to uncover the best messages.
+
+![Whimsical](/images/website-deep-dive/whimsical@2x.png)
+
+This entire process involved creating text for:
+
+- [Landing page](/)
+
+A set of feature pages:
+
+- [Files Attachments page](/store-images)
+- [Branching page](/branching)
+- [Full text search page](/full-text-search)
+- [Schema migrations page](/schema-migrations)
+- [Generative AI page](/chatgpt)
+- [Serverless Postgres](/serverless-postgres)
+
+Two pages for the new open-source projects:
+
+- [pgroll page](/pgroll)
+- [pgzx page](/pgzx)
+
+And a page for:
+
+- [Launch week - Unleashing the Elephant page](/launch-week-unleash-the-elephant)
+
+We shared ideas until we found the right texts to explain our product and its exciting features. We also worked together to come up with illustrations ideas that would make our communication even better!
+
+## Navigating challenges and collaborative solutions
+
+Of course, we encountered several challenges along the way. One instance is our TextDistortion animation. This animation uses two SVG filters: FeDisplacementMap and feTurbulence. Unfortunately, due to Safari's limitations, the animation doesn't work properly in this browser.
 
 <ArticleVideo
   platform="html"
@@ -105,16 +131,16 @@ And of course, there were many challenges along the way. One example is the anim
   height="1080"
 />
 
+For those familiar with the previous version of our site, you may recall we had a button to switch between light and dark color modes. Initially, we aimed for a site that focused on both color modes, but in attempting to please both, we found it challenging to meet our goals. Therefore, we decided to focus solely on the dark mode. Also the dark mode gives a more innovative look to the website, which is what we wanted to convey.
+
 We faced many other challenges where we had to seek help from more experienced colleagues, such as Cezzaine, who helped refine many of the texts, while Richard and Dave assisted in improving the code.
 
 ## Learn more
 
-Learn more about the development of this service from the folks that built it, and watch a quick demo to see it in action. Check out our latest meet the makers session here:
+Learn more about the development of our website from the folks that built it, and watch a quick demo to see it in action. Check out our latest meet the makers session here:
 
 <ArticleVideo platform="youtube" src="https://www.youtube.com/embed/4TOq1D3Wjho?si=N8UeUegcyrP9EbEJ" />
 
 Pop into [Discord](https://xata.io/discord) and say hi if you'd like to dig in further 👋
 
-If you don't yet have a Xata account, there's no better time to [create one](https://app.xata.io/signup)!
-
-[launch-week-blog]: https://xata.io/blog/...
+Interested in trying out for yourself? [Sign up today](https://app.xata.io/signup)! Happy building 🦋
