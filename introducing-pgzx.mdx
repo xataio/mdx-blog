@@ -2,7 +2,7 @@
 title: 'Introducing pgzx: create PostgreSQL extensions using Zig'
 description: 'We are excited to introduce pgzx, a framework for creating Postgres extensions using the Zig programming language.'
 image:
-  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/introducing-pgroll.jpg
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/introducing-pgzx.jpg
   alt: pgzx
 author: Tudor Golubenco, Steffen Siering
 authorEmail: tudor@xata.io
@@ -10,7 +10,7 @@ date: 3-21-2024
 tags: ['open-source', 'postgres', 'fpPgzx', 'oss']
 published: true
 slug: introducing-pgzx
-ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/introducing-pgroll.jpg
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/introducing-pgzx.jpg
 ---
 
 As part of the [Xata launch week](https://xata.io/launch-week-unleash-the-elephant), we are introducing [pgzx](https://github.com/xataio/pgzx), an open-source framework for developing PostgreSQL extensions written in Zig. It provides a set of utilities (e.g. error handling, memory allocators, wrappers) as well as a build and development environment that simplify integrating with the Postgres code base.
@@ -92,7 +92,7 @@ server closed the connection unexpectedly
 The connection to the server was lost. Attempting reset: Failed.
 ```
 
-In C code, this type buffer overflow bug could trigger a segmentation fault or even a security vulnerability. If you try this with the `char_count_zig` extension, the Postgres process still crashes (not the full server, just the process serving the connection), but if you check the logs you'll see an error message like this:
+In C code, this type of buffer overflow bug could trigger a segmentation fault or even a security vulnerability. If you try this with the `char_count_zig` extension, the Postgres process still crashes (not the full server, just the process serving the connection), but if you check the logs you'll see an error message like this:
 
 ```zig
 thread 70501513 panic: index out of bounds: index 0, len 0
@@ -162,7 +162,7 @@ Then load the nix shell with:
 nix develop
 ```
 
-The dev environment includes commands to relocate the Postgres source code, to start the server, and so on. The template also comes with a minimal extension and a `build.zig` file with a few common tasks. See the template [README](https://github.com/xataio/pgzx/tree/main/nix/templates/init) for how to build the extension form this point.
+The dev environment includes commands to relocate the Postgres binaries in your development environment, to start the server, and so on. The template also comes with a minimal extension and a `build.zig` file with a few common tasks. See the template [README](https://github.com/xataio/pgzx/tree/main/nix/templates/init) for how to build the extension form this point.
 
 ### Unit tests
 
