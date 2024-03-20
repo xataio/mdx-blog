@@ -3,19 +3,19 @@ title: Using Prisma with Xata's Postgres service
 description: 'Get started with Prisma ORM and Xata'
 author: Emily Morgan
 authorEmail: emily@xata.io
-date: 03-18-2024
+date: 03-20-2024
 tags: ['engineering', 'prisma', 'announcements', 'launch-week']
 published: false
 image:
-  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/prisma-integration/prisma-integration.jpg
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-integrations/prisma-integration.jpg
   alt: 'Prisma Integration'
 slug: prisma-postgres-xata-integration
-ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/prisma-integration/prisma-integration.jpg
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-integrations/prisma-integration.jpg
 ---
 
 [Prisma](https://www.prisma.io/) is a very popular Node.js and TypeScript ORM that provides type safe access to your database, automated migrations, and a custom data model definition.
 
-With [today's beta release of Xata's Postgres service](https://xata.io/blog/why-postgres) you are now able to connect to your Xata database with Prisma over the Postgres wire protocol. You can simply use the default Prisma ORM connector or Prisma driver adapters (`@prisma/adapter-pg`).
+With [this week's beta release of Xata's Postgres service](https://xata.io/blog/why-postgres) you are now able to connect to your Xata database with Prisma over the Postgres wire protocol. You can simply use the default Prisma ORM connector or Prisma driver adapters (`@prisma/adapter-pg`).
 
 ## Setting up with Xata
 
@@ -25,11 +25,11 @@ Before starting you will need an empty Xata database that has direct access to P
 
 You will first need to enable direct access to Postgres in your workspace settings.
 
-![Enable direct access for your workspace](/images/prisma-integration/workspace.png)
+![Enable direct access for your workspace](/images/postgres-integrations/workspace.png)
 
 You will also need to enable direct access to Postgres when you create your new database.
 
-![Enable direct access for your database](/images/prisma-integration/database.png)
+![Enable direct access for your database](/images/postgres-integrations/database.png)
 
 After this point you will be able to see your Xata database connection string when navigating to database settings. It will look like this:
 
@@ -214,6 +214,6 @@ After saving this file, run `prisma db push`. The column should be added to your
 
 ## Get started
 
-And that's it, it's that easy to connect Prisma to your Xata database. This functionality is currently only available with the public beta of our Postges service.
+And that's it, it's that easy to [connect Prisma to your Xata database](https://xata.io/docs/integrations/prisma). This functionality is currently only available with the public beta of our Postgres service.
 
 [Sign up today](https://app.xata.io/signin?mode=signup) to get started! We're always around if you have any questions. Pop into [Discord ](https://xata.io/discord) and say hi or reach out on [X | Twitter](https://twitter.com/xata). Happy building 🦋
