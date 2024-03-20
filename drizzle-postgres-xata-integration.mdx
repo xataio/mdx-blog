@@ -1,0 +1,108 @@
+---
+title: Using Drizzle with Xata's Postgres service
+description: 'Get started with Drizzle ORM and Xata'
+author: Alexis Rico
+authorEmail: alexis@xata.io
+date: 03-20-2024
+tags: ['engineering', 'drizzle', 'announcements', 'launch-week']
+published: false
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-integrations/drizzle-integration.jpg
+  alt: 'Drizzle Integration'
+slug: drizzle-postgres-xata-integration
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-integrations/drizzle-integration.jpg
+---
+
+[Drizzle ORM](https://orm.drizzle.team/) is a very popular TypeScript ORM that provides type safe access to your database, automated migrations, and a custom data model definition.
+
+With [this week's beta release of Xata's Postgres service](https://xata.io/blog/why-postgres) you are now able to connect to your Xata database with Drizzle over the Postgres wire protocol too with the `drizzle-orm/node-postgres` or `drizzle-orm/postgres-js` drivers.
+
+Also, we are excited to announce that we have added support for the `drizzle-orm/xata-http` driver. This driver allows you to connect to your Xata database using the Xata HTTP API. This is a great option if you are using Drizzle in a serverless environment or if you are using a language that does not have a native Postgres driver.
+
+## Setting up with Xata
+
+Before starting you will need an empty Xata database that has direct access to Postgres enabled.
+
+### Creating a new database
+
+You will first need to enable direct access to Postgres in your workspace settings.
+
+![Enable direct access for your workspace](/images/postgres-integrations/workspace.png)
+
+You will also need to enable direct access to Postgres when you create your new database.
+
+![Enable direct access for your database](/images/postgres-integrations/database.png)
+
+After this point you will want to update your Xata SDK to the `next` release to ensure you have the latest beta features.
+
+```bash
+$ npm install @xata.io/client@next # yarn install or pnpm install
+```
+
+## Setting up Drizzle
+
+There are two ways to set up Drizzle: using the native Postgres adapters or the Xata HTTP adapter.
+
+### node-postgres
+
+To use Drizzle with the `node-postgres` driver, you will need to install the `drizzle-orm` and `pg` packages.
+
+```bash
+$ npm install drizzle-orm pg # yarn install or pnpm install
+```
+
+After that, you can use Drizzle as you normally would, but with the `node-postgres` driver.
+
+```ts
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { getXataClient } from './xata'; // Generated client
+import { Client } from 'pg';
+
+const xata = getXataClient();
+const client = new Client({ connectionString: xata.sql.connectionString });
+const db = drizzle(client);
+```
+
+### postgres-js
+
+To use Drizzle with the `postgres-js` driver, you will need to install the `drizzle-orm` and `postgres-js` packages.
+
+```bash
+$ npm install drizzle-orm postgres # yarn install or pnpm install
+```
+
+After that, you can use Drizzle as you normally would, but with the `postgres-js` driver.
+
+```ts
+import { drizzle } from 'drizzle-orm/postgres-js';
+import { getXataClient } from './xata'; // Generated client
+import postgres from 'postgres';
+
+const xata = getXataClient();
+const client = postgres(xata.sql.connectionString);
+const db = drizzle(queryClient);
+```
+
+### xata-http
+
+To use Drizzle with the `xata-http` driver, you will need to install the `drizzle-orm` package.
+
+```bash
+$ npm install drizzle-orm # yarn install or pnpm install
+```
+
+After that, you can use Drizzle as you normally would, but with the `xata-http` driver.
+
+```ts
+import { drizzle } from 'drizzle-orm/xata-http';
+import { getXataClient } from './xata'; // Generated client
+
+const xata = getXataClient();
+const db = drizzle(xata);
+```
+
+## Get started
+
+And that's it, it's that easy to [connect Drizzle to your Xata database](https://xata.io/docs/integrations/drizzle). This functionality is currently only available with the public beta of our Postgres service.
+
+[Sign up today](https://app.xata.io/signin?mode=signup) to get started! We're always around if you have any questions. Pop into [Discord ](https://xata.io/discord) and say hi or reach out on [X | Twitter](https://twitter.com/xata). Happy building 🦋
