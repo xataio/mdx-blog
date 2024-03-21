@@ -40,9 +40,11 @@ postgres=# select char_count_zig('hi hii', 'i');
 (1 row)
 ```
 
-Here is the Zig code:
+Here is the `char_count` extension written in Zig and in C.
 
-```zig
+<CodeCompare>
+
+```zig title="char_count written in Zig"
 const std = @import("std");
 const pgzx = @import("pgzx");
 
@@ -71,7 +73,57 @@ fn char_count_zig(input_text: []const u8, target_char: []const u8) !u32 {
 }
 ```
 
-If you compare it with the [C version of the same extension](https://gist.github.com/tsg/2ddbf7ecff7d13e8a8bf92b6b8c5e7fa), you will notice it's quite similar, but the Zig version is actually a bit more concise. This is partially because Zig is more expressive, but also because `pgzx` does a bit more of the work.
+```c title="char_count written in C"
+#include "postgres.h"
+#include "fmgr.h"
+#include "utils/builtins.h"
+
+PG_MODULE_MAGIC;
+
+PG_FUNCTION_INFO_V1(char_count_c);
+
+Datum
+char_count_c(PG_FUNCTION_ARGS)
+{
+        int charCount = 0;
+        int i = 0;
+        text * inputText = PG_GETARG_TEXT_PP(0);
+        text * targetChar = PG_GETARG_TEXT_PP(1);
+
+        int inputText_sz = VARSIZE(inputText)-VARHDRSZ;
+        int targetChar_sz = VARSIZE(targetChar)-VARHDRSZ;
+        char * cp_inputText = NULL;
+        char * cp_targetChar = NULL;
+
+        if ( targetChar_sz > 1 )
+        {
+                elog(ERROR, "arg1 must be 1 char long");
+        }
+
+        cp_inputText = (char *) palloc ( inputText_sz + 1);
+        cp_targetChar = (char *) palloc ( targetChar_sz + 1);
+        memcpy(cp_inputText, VARDATA(inputText), inputText_sz);
+        memcpy(cp_targetChar, VARDATA(targetChar), targetChar_sz);
+
+        elog(INFO, "arg0 length is %d, value %s", (int)strlen(cp_inputText), cp_inputText );
+        elog(INFO, "arg1 length is %d, value %s", (int)strlen(cp_targetChar), cp_targetChar );
+
+        while ( i < strlen(cp_inputText) )
+        {
+                if( cp_inputText[i] == cp_targetChar[0] )
+                        charCount++;
+                i++;
+        }
+
+        pfree(cp_inputText);
+        pfree(cp_targetChar);
+        PG_RETURN_INT32(charCount);
+}
+```
+
+</CodeCompare>
+
+Whilst they're similar, the Zig version is actually a bit more concise. This is partially because Zig is more expressive, but also because `pgzx` does a bit more of the work.
 
 Registered SQL functions receive their arguments serialized and some code is needed to deserialize them. In C you do that with the help of the `G_GETARG_*` macros, however with `pgzx` you simply receive them as normal parameters already deserialized. How? By having a `comptime` function that generates the necessary boilerplate code at compile time. If you are curious about it, check out the [pgCall](https://github.com/xataio/pgzx/blob/9825dde752ee4ace2cbc594332eba100292aafd5/src/pgzx/fmgr.zig#L77-L102) function, it's a nice example for the power of Zig's `comptime` execution.
 
