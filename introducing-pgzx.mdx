@@ -13,30 +13,31 @@ slug: introducing-pgzx
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/introducing-pgzx.jpg
 ---
 
-As part of the [Xata launch week](https://xata.io/launch-week-unleash-the-elephant), we are introducing [pgzx](https://github.com/xataio/pgzx), an open-source framework for developing PostgreSQL extensions written in Zig. It provides a set of utilities (e.g. error handling, memory allocators, wrappers) as well as a build and development environment to simplify integrating with the Postgres code base.
+As part of the [Xata launch week](https://xata.io/launch-week-unleash-the-elephant), we are introducing [pgzx](https://github.com/xataio/pgzx), an open-source framework for developing PostgreSQL extensions written in Zig. It provides a set of utilities (e.g. error handling, memory allocators, wrappers) as well as a build and development environment to simplify integrating with the Postgres codebase.
 
 ## What is Zig
 
-[Zig](https://ziglang.org/) is described on its website as a general-purpose programming language and toolchain for maintaining **robust**, **optimal** and **reusable** software. Zig is a new language (pre 1.0), but it has been gaining popularity in the systems programming community. It is fair to think of it as a "modern C", providing safe(r) memory management, compilation time code execution (comptime), and a rich standard library. We'll show some of these features in the context of Postgres extensions in the next sections.
+[Zig](https://ziglang.org/) is a new programming language which has been gaining popularity in the systems programming community. You can think of it as a modern alternative to C, providing safer memory management, compilation time code execution (comptime), and a rich standard library. We'll show some of these features in the context of Postgres extensions below.
 
-A major reason to use Zig for Postgres development is its ability to interoperate with C code. Zig supports the C ABI, can work with C pointers and data types, including NULL terminated strings, and can even translate C header files into Zig code. While the automatic translating of C macros to Zig is not perfect yet, it can still help a great deal. This makes Zig a great choice for working with very large C code bases, like Postgres happens to be.
+A major reason to use Zig for Postgres development is its ability to interoperate with C code. Zig supports the C ABI, works with C pointers and data types including NULL terminated strings, and can even translate C header files into Zig code. Zig's automatic translation of C macros to Zig code is not yet perfect (Zig is still pre 1.0), but it's still helpful. This makes Zig a great choice for working with large C codebases, like Postgres.
 
 ## A walkthrough of pgzx
 
-Because Zig can call any C function and translate C macros to inline Zig functions, you can write Postgres extensions in Zig without any additional tooling by following the same steps you would for a C extension. However, in practice, a framework like `pgzx` simplifies the process significantly by providing a development environment, a set of utilities and wrappers for Postgres APIs, common error handling, and more.
+Because Zig can call any C function and translate C macros to inline Zig functions, you can write Postgres extensions in Zig without any additional tooling by following the same steps you would for a C extension. However, `pgzx` simplifies the process significantly by providing a development environment, a set of utilities and wrappers for Postgres APIs, common error handling, and more.
 
 ### A sample extension
 
-`pgzx` has at the moment 2 sample extensions that you can take inspiration from. [char_count_zig](https://github.com/xataio/pgzx/tree/main/examples/char_count_zig) is a minimal extension, while [pg_audit_zig](https://github.com/xataio/pgzx/tree/main/examples/pgaudit_zig) is more complex and shows more of the features of pgzx.
+`pgzx` has 2 sample extensions that you can take inspiration from. [char_count_zig](https://github.com/xataio/pgzx/tree/main/examples/char_count_zig) is a minimal extension, while [pg_audit_zig](https://github.com/xataio/pgzx/tree/main/examples/pgaudit_zig) is more complex and shows more of the features of pgzx.
 
-Let's look at the `char_count_zig`, which is only slightly more than a "Hello, World!" of Postgres extensions. It adds a functions that counts how many times a character appears in a string. This was inspired by [this tutorial](https://www.highgo.ca/2019/10/01/a-guide-to-create-user-defined-extension-modules-to-postgres/), which shows how to do this in plpqsql and C.
+Let's look `char_count_zig`, the "Hello, World!" of Postgres extensions. It adds a function that counts how many times a character appears in a string. This was inspired by [this tutorial](https://www.highgo.ca/2019/10/01/a-guide-to-create-user-defined-extension-modules-to-postgres/), which shows how to do this in plpqsql and C.
 
 ```sql
-postgres=# select char_count_zig('hi hii', 'i');
+select char_count_zig('hi hii', 'i');
 
- char_count_zig
-----------------
-              3
+
+char_count_zig
+--------------
+             3
 (1 row)
 ```
 
@@ -73,19 +74,23 @@ fn char_count_zig(input_text: []const u8, target_char: []const u8) !u32 {
 
 If you compare it with the [C version of the same extension](https://gist.github.com/tsg/2ddbf7ecff7d13e8a8bf92b6b8c5e7fa), you will notice it's quite similar, but the Zig version is actually a bit more concise. This is partially because Zig is more expressive, but also because `pgzx` does a bit more of the work.
 
-Registered SQL functions receive their arguments serialized and some code is needed to deserialize them. In C you do that with the help of the `G_GETARG_*` macros, however with `pgzx` you simply receive them as normal parameters already deserialized. How? By having a `comptime` function that generates the necessary boilerplate code at compile time. If you are curious about it, check out the [pgCall](https://github.com/xataio/pgzx/blob/9825dde752ee4ace2cbc594332eba100292aafd5/src/pgzx/fmgr.zig#L77-L102) function, it's a nice example for the power of Zig's `comptime` execution.
+Registered SQL functions receive their arguments serialized and some code is needed to deserialize them. In C you do that with the help of the `G_GETARG_*` macros, however with `pgzx` you simply receive them as normal parameters already deserialized. How? By having a `comptime` function that generates the necessary boilerplate code at compile time. If you are curious, check out the [pgCall](https://github.com/xataio/pgzx/blob/9825dde752ee4ace2cbc594332eba100292aafd5/src/pgzx/fmgr.zig#L77-L102) function, it's a nice example for the power of Zig's `comptime` execution.
 
-The `PG_MODULE_MAGIC` and `PG_FUNCTION_INFO_V1` functions are a second example of `comptime` usage. They export the required symbols needed for Postgres to recognize this as an extension and to register the function as a SQL function. In this case, `comptime` acts pretty much like the C macros.
+The `PG_MODULE_MAGIC` and `PG_FUNCTION_INFO_V1` functions are a second example of `comptime` usage. They export the required symbols needed for Postgres to recognize the extension and to register the function as a SQL function. In this case, `comptime` acts pretty much like the corresponding C macros.
 
 ### Run-time memory safety
 
-If you looked carefully at the code above, you might have noticed that it contains a bug. It checks for the `target_char` to not have more than 1 character, but it doesn't check if it has 0 characters. Later in the code, it accesses `target_char[0]`, so if the string is the empty string, it is a buffer overflow error. We left that bug intentionally in so you can see what happens when bugs like that happen in the extension.
+If you looked carefully at the code above, you might have noticed that it contains a bug. It does not check if the `target_char.len` is `0`. Later, the code accesses `target_char[0]`, so if the string is the empty string, there will be a buffer overflow error.
 
-To trigger the bug, you would call something like this:
+You can trigger the bug with this SQL:
 
 ```sql
-postgres=# select char_count_zig('hi hii', '');
+select char_count_zig('hi hii', '');
+```
 
+Which responds:
+
+```text
 server closed the connection unexpectedly
         This probably means the server terminated abnormally
         before or while processing the request.
@@ -109,17 +114,17 @@ thread 70501513 panic: index out of bounds: index 0, len 0
 ???:?:?: 0x10326bacf in _eval_const_expressions_mutator (???)
 ```
 
-It points exactly where the error happened! This happens because Zig has runtime checks depending on the [build mode](https://ziglang.org/documentation/master/#Build-Mode). The `ReleaseSafe` mode, for example, trades a bit of performance for more safety checks.
+It points exactly where the error happened! This happens because Zig has runtime checks if you're using the `ReleaseSafe` [build mode](https://ziglang.org/documentation/master/#Build-Mode). This trades-off safety checking with a bit of performance.
 
-It's worth pointing out that the stacktrace worked so well because the error was in Zig code. When building Postgres extensions, you often have to call Postgres APIs and you can still cause segmentation faults if you use them incorrectly.
+This stacktrace worked so well because the error was in Zig code. When building Postgres extensions, you often have to call Postgres APIs which will still segmentation fault if you use them incorrectly.
 
 ### Memory management
 
-Postgres uses [allocator arenas](https://en.wikipedia.org/wiki/Region-based_memory_management) to manage memory. In the Postgres source code, the arenas are called [memory contexts](https://github.com/postgres/postgres/blob/master/src/backend/utils/mmgr/README). Memory allocated in a "context" can be freed all at once (for example, when a query execution is finished), which simplifies memory management significantly, because you only need to track contexts, not individual allocations. Contexts are also hierarchical, so you can create a context that is a child of another context, and when the parent context is freed, all children are freed as well. This makes memory leaks rather unlikely.
+Postgres uses [allocator arenas](https://en.wikipedia.org/wiki/Region-based_memory_management) to manage memory. In the Postgres source code, the arenas are called [memory contexts](https://github.com/postgres/postgres/blob/master/src/backend/utils/mmgr/README). Memory allocated in a "context" can be freed all at once (for example, when a query execution is finished). This simplifies memory management significantly, because you only need to track contexts, not individual allocations. Contexts are also hierarchical, you can create a context that is a child of another context, and when the parent context is freed, all children are freed as well. This makes memory leaks less likely.
 
-Another advantage of memory contexts is that they improve [memory monitoring](https://www.postgresql.org/docs/current/view-pg-backend-memory-contexts.html), because context have names and you can see how much memory is used by each context. This is useful for debugging large memory usage.
+Another advantage of memory contexts is [memory monitoring](https://www.postgresql.org/docs/current/view-pg-backend-memory-contexts.html), because contexts have names and you can see how much memory is used by each context. This is useful for debugging large memory usage.
 
-This model of using an arena/context allocator happens to match really good with Zig. One reason is Zig's convention to have all functions/objects that allocate memory receive an allocator as a parameter. This makes allocations [more explicit](https://notes.eatonphil.com/2024-03-15-zig-rust-and-other-languages.html) but also makes it easy to use a custom allocator. `pgzx` defines custom allocators that wrap the Postgres memory contexts and make them available to Zig code.
+This model of using an arena/context allocator works well with Zig. Zig has a convention for all functions/objects that allocate memory receive an allocator as a parameter. This makes allocations [more explicit](https://notes.eatonphil.com/2024-03-15-zig-rust-and-other-languages.html) but also makes it easy to use a custom allocator. `pgzx` defines custom allocators that wrap the Postgres memory contexts and make them available to Zig code.
 
 Here is an example that creates a new context as a child of the current context and gets the allocator for it:
 
@@ -130,17 +135,17 @@ const allocator = memctx.allocator();
 
 ### Error handling
 
-Another Postgres API that you will very likely need to know about in a more complex extension is the error handling. Postgres implements "exceptions" in C via `setjmp/longjmp` and provides a set of macros to throw and catch them ([PG_TRY/PG_CATCH](https://github.com/postgres/postgres/blob/master/src/include/utils/elog.h#L318)).
+Postgres implements "exceptions" in C via `setjmp/longjmp` and provides a set of macros to throw and catch them ([PG_TRY/PG_CATCH](https://github.com/postgres/postgres/blob/master/src/include/utils/elog.h#L318)).
 
-The issue is that long jumps could bypass the Zig control flow, for example `errdefer` blocks might not be executed. This means that if your extension calls into Postgres APIs, and those APIs can throw errors, long jumps might skip your `defer` and `errdefer` blocks!
+These long jumps could bypass the Zig control flow. If your extension calls a Postgres API, and the API throws an error, long jumps might skip your `defer` and `errdefer` blocks.
 
-Luckily, pgzx is here to help. It provides a set of functions that allow you to catch the Postgres exceptions and convert them into Zig errors. For example:
+`pgzx` provides a helpful set of functions that allow you to catch the Postgres exceptions and convert them into Zig errors.
 
-```zig
+```zig title="example.zig"
 var errctx = pgzx.err.Context.init();
 defer errctx.deinit();
 if (errctx.pg_try()) {
-    // zig code that calls several Postgres C functions.
+    // Call Postgres C functions
 } else {
     return errctx.errorValue();
 }
@@ -148,7 +153,7 @@ if (errctx.pg_try()) {
 
 ### Development Environment
 
-pgzx comes with a [Nix flakes](https://nixos.wiki/wiki/Flakes) based development environment for developing extensions as well as `pgzx` itself. It also comes with a project template which you can use to set up this environment in a new repository. To use it, [install Nix](https://github.com/DeterminateSystems/nix-installer) and then run:
+`pgzx` comes with a [Nix flakes](https://nixos.wiki/wiki/Flakes) based development environment for developing extensions as well as `pgzx` itself. It also comes with a project template which you can use to set up this environment in a new repository. To use it, [install Nix](https://github.com/DeterminateSystems/nix-installer) and then run:
 
 ```bash
 mkdir my_extension
@@ -162,15 +167,15 @@ Then load the nix shell with:
 nix develop
 ```
 
-The dev environment includes commands to relocate the Postgres binaries in your development environment, to start the server, and so on. The template also comes with a minimal extension and a `build.zig` file with a few common tasks. See the template [README](https://github.com/xataio/pgzx/tree/main/nix/templates/init) for how to build the extension form this point.
+The dev environment includes commands to relocate the Postgres binaries in your development environment, to start the server, and so on. The template also comes with a minimal extension and a `build.zig` file with a few common tasks. See the template [README](https://github.com/xataio/pgzx/tree/main/nix/templates/init) for how to build the extension from this point.
 
 ### Unit tests
 
 Postgres extensions are typically tested via a tool called `pg_regress`. This is supported by `pgzx` as well, simply call `zig build pg_regress`.
 
-But we also wanted to have unit tests. This is a bit tricky because the tests need to be compiled and run in the **context of a Postgres instance**. Otherwise, they won't be able to interact with the Postgres APIs.
+But we also wanted to have unit tests. This is a bit tricky because the tests need to be compiled and run in the context of a Postgres instance. Otherwise, they won't be able to interact with Postgres' APIs.
 
-In order to solve this, pgzx registers a custom `run_tests` function via the Function manager. This function can be called from SQL (`SELECT run_tests();`) and it will run the unit tests. A test suite is a Zig struct for which each function whose name starts with test is a unit test. To register a test suite, you would typically do something like this:
+In order to solve this, `pgzx` registers a custom `run_tests` function. You can then run your tests from SQL with `SELECT run_tests();`. A test suite is a Zig struct with functions starting with `test`. To register a test suite, you would typically do something like this:
 
 ```zig
 comptime {
@@ -178,29 +183,29 @@ comptime {
 }
 ```
 
-The [registerTests](https://github.com/xataio/pgzx/blob/9825dde752ee4ace2cbc594332eba100292aafd5/src/pgzx/testing.zig#L39) function is another example of `comptime` usage. It iterates over all the fields of a struct and generates the call to run the tests where the `run_tests()` function is called over SQL.
+The [registerTests](https://github.com/xataio/pgzx/blob/9825dde752ee4ace2cbc594332eba100292aafd5/src/pgzx/testing.zig#L39) function is another example of `comptime` usage. It iterates over all the fields of a struct and generates the call to run the tests when the `run_tests()` function is called in SQL.
 
 ### And there's more..
 
-This walkthrough covered some of the more interesting functionality exposed by `pgzx`, but there's more on offer: wrappers for the Postgres data structures ([lists](https://xataio.github.io/pgzx/#A;pgzx:list), hashtables), [SPI](https://xataio.github.io/pgzx/#A;pgzx:spi), [shared memory access](https://xataio.github.io/pgzx/#A;pgzx:shmem), [connection management](https://xataio.github.io/pgzx/#A;pgzx:pq), and more.
+This walkthrough covered some of the more interesting functionality exposed by `pgzx`, but there's more on offer: wrappers for the Postgres data structures ([lists](https://xataio.github.io/pgzx/#A;pgzx:list), hashtables), [SPI](https://xataio.github.io/pgzx/#A;pgzx:spi), [shared memory access](https://xataio.github.io/pgzx/#A;pgzx:shmem), [connection management](https://xataio.github.io/pgzx/#A;pgzx:pq), and more...
 
-## Why did we start pgzx
+## Why did we start `pgzx`
 
-At Xata, we have been working on a new Postgres project, which doesn't really have a name yet, so let's call it _"Xata's take at distributed Postgres"_. It is only in its very early stages, however we'll be open sourcing it soon and we're planning to [build it in public](). It will be somewhat similar to Citus, yet with some different choices, especially around usage and DX, based on what we learned running Xata for the past couple of years.
+At Xata, we have been working on a new Postgres project, which doesn't really have a name yet, so let's call it _"Xata's take on distributed Postgres"_. It's in its very early stages, however we'll be open sourcing it soon and we're planning to [build it in public](). It will be somewhat similar to Citus, but with some different choices, especially around usage and DX, based on what we learned running Xata for the past couple of years.
 
-For this project, we considered two potential implementation directions:
+For this project, we considered three possible implementation directions:
 
 1.  as an external proxy, like Vitess does for MySQL.
 2.  as a Postgres extension, like Citus.
 3.  as a fork of Postgres, like Greenplum.
 
-We have some experience with the first option because that's how our current Xata Proxy works, see more details in this [blog post](https://xata.io/blog/serverless-postgres-platform), so we were almost biased towards it. We knew we can speak the Postgres wire protocol, parse the incoming queries and understand them to a fairly deep level, as well as create distributed transactions via 2PC. However, we also knew that if we were able to leverage existing Postgres code it will open up more options and we'll avoid having to reimplement some very difficult parts. Given the long term vision of the project, and that we didn't want to maintain a fork, we decided to go with the second option.
+We have some experience with the first option because that's [how Xata's current Proxy works](https://xata.io/blog/serverless-postgres-platform). We know we can speak the Postgres wire protocol, parse the incoming queries and understand them at a deep level, as well as create distributed transactions via 2PC. However, we know that leveraging existing Postgres code will open up more options and avoid us having to reimplement some very difficult parts. Given the long term vision of Xata, and that we didn't want to maintain a fork, we decided to go with the second option.
 
-The next node in our decision tree was the **programming language**. The main options we considered were C, Rust, and Zig. While there are pros and cons to each of these options, which we might cover in detail a future blog post, we decided to go with Zig. The main "pros" for Zig were:
+The next decision was the programming language. We considered C, Rust, and Zig. While there are pros and cons to each of these options, which we might cover in detail a future blog post, we decided to go with Zig. The main "pros" for Zig were:
 
 - It allows us to call into the Postgres APIs almost directly, so we have the same power as using C.
 - It offers more memory safety than C, it's a bit more expressive, and a bit more fun (we think).
-- It fits well with the Postgres code base, for example when it comes to memory management and string handling.
+- It fits well with the Postgres codebase, for example when it comes to memory management and string handling.
 
 As we started working, we realized that an equivalent for Rust's [pgrx](https://github.com/pgcentralfoundation/pgrx) would be needed for Zig as well, so we started `pgzx`.
 
@@ -218,4 +223,4 @@ Learn more about the development of this project from the folks that built it, a
 
 <ArticleVideo platform="youtube" src="https://www.youtube.com/embed/oUvAfia7gjE?si=P5ApXa2moZR3NfL8" />
 
-Want to keep up with pgzx, the distributed Postgres projects, or other open-source projects from Xata? We have set up an email newsletter just for that. You can subscribe [here]().
+Want to keep up with `pgzx` the distributed Postgres projects, or other open-source projects from Xata? We have set up an email newsletter just for that. You can subscribe [here]().
