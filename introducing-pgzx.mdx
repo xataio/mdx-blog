@@ -247,9 +247,9 @@ At Xata, we have been working on a new Postgres project, which doesn't really ha
 
 For this project, we considered three possible implementation directions:
 
-1.  as an external proxy, like Vitess does for MySQL.
-2.  as a Postgres extension, like Citus.
-3.  as a fork of Postgres, like Greenplum.
+1.  An external proxy, like Vitess does for MySQL.
+2.  A Postgres extension, like Citus.
+3.  A fork of Postgres, like Greenplum.
 
 We have some experience with the first option because that's [how Xata's current Proxy works](https://xata.io/blog/serverless-postgres-platform). We know we can speak the Postgres wire protocol, parse the incoming queries and understand them at a deep level, as well as create distributed transactions via 2PC. However, we know that leveraging existing Postgres code will open up more options and avoid us having to reimplement some very difficult parts. Given the long term vision of Xata, and that we didn't want to maintain a fork, we decided to go with the second option.
 
