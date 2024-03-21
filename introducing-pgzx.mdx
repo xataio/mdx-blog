@@ -40,10 +40,10 @@ postgres=# select char_count_zig('hi hii', 'i');
 (1 row)
 ```
 
-Here is the `char_count` extensions written in Zig and in C.
+Here is the `char_count` extension written in Zig and in C.
 
 <CodeCompare>
-  ```zig title="char_count_zig written in Zig"
+  ```zig title="char_count written in Zig"
   const std = @import("std");
   const pgzx = @import("pgzx");
 
@@ -75,7 +75,7 @@ return pgzx.elog.Error(@src(), "Target char is more than one byte", .{});
 
 ````
 
-```c title="char_count_c written in C"
+```c title="char_count written in C"
 #include "postgres.h"
 #include "fmgr.h"
 #include "utils/builtins.h"
