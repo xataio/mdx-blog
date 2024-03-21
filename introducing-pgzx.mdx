@@ -184,9 +184,9 @@ The [registerTests](https://github.com/xataio/pgzx/blob/9825dde752ee4ace2cbc5943
 
 This walkthrough covered some of the more interesting functionality exposed by `pgzx`, but there's more on offer: wrappers for the Postgres data structures ([lists](https://xataio.github.io/pgzx/#A;pgzx:list), hashtables), [SPI](https://xataio.github.io/pgzx/#A;pgzx:spi), [shared memory access](https://xataio.github.io/pgzx/#A;pgzx:shmem), [connection management](https://xataio.github.io/pgzx/#A;pgzx:pq), and more.
 
-## Why did we start pgzx
+## Why did we create pgzx
 
-At Xata, we have been working on a new Postgres project, which doesn't really have a name yet, so let's call it _"Xata's take at distributed Postgres"_. It is only in its very early stages, however we'll be open sourcing it soon and we're planning to [build it in public](). It will be somewhat similar to Citus, yet with some different choices, especially around usage and DX, based on what we learned running Xata for the past couple of years.
+At Xata, we have been working on a new Postgres project, which doesn't really have a name yet, so let's call it _"Xata's take at distributed Postgres"_. It is only in its very early stages, however we'll be open sourcing it soon and we're planning to [build it in public](https://mailchi.mp/xata/2zoy27tx2e). It will be somewhat similar to Citus, yet with some different choices, especially around usage and DX, based on what we learned running Xata for the past couple of years.
 
 For this project, we considered two potential implementation directions:
 
@@ -206,16 +206,16 @@ As we started working, we realized that an equivalent for Rust's [pgrx](https://
 
 While Zig and `pgzx` might not be the best choice for every Postgres extension, we think it's a reasonable choice for our project and perhaps for some others as well.
 
-# Status and next steps
+## Status and next steps
 
 `pgzx` is new and should be considered "alpha" as of now. However, if you want to build a Postgres extension and you want to use Zig, it's going to be a lot easier with `pgzx` than without it. A status of the covered functionality is in the [README](https://github.com/xataio/pgzx). If you need help or you'd like to contribute, please join us on the [Xata Discord](https://xata.io/discord).
 
 Also, if this blog post has sparked your interest in Zig and you want to give it a try, why not develop a Postgres extension? Let us know about it and we'll include it in the list of examples!
 
-# Learn more
+## Learn more
 
 Learn more about the development of this project from the folks that built it, and watch a quick demo to see it in action. Check out our latest meet the makers session here:
 
 <ArticleVideo platform="youtube" src="https://www.youtube.com/embed/oUvAfia7gjE?si=P5ApXa2moZR3NfL8" />
 
-Want to keep up with pgzx, the distributed Postgres projects, or other open-source projects from Xata? We have set up an email newsletter just for that. You can subscribe [here]().
+Want to keep up with pgzx, the distributed Postgres projects, or other open-source projects from Xata? We have set up an email newsletter just for that. You can subscribe [here](https://mailchi.mp/xata/2zoy27tx2e).
