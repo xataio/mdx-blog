@@ -131,7 +131,7 @@ The `PG_MODULE_MAGIC` and `PG_FUNCTION_INFO_V1` functions are a second example o
 
 ### Run-time memory safety
 
-If you looked carefully at the code above, you might have noticed that it contains a bug. It checks for the `target_char` to not have more than 1 character, but it doesn't check if it has 0 characters. Later, the code accesses `target_char[0]`, so if the string is the empty string, there will be a buffer overflow error. We left that bug intentionally in so you can see what happens when bugs like that happen in the extension.
+If you looked carefully at the code above, you might have noticed that it contains a bug. It checks for the `target_char` to not have more than 1 character, but it doesn't check if it has 0 characters. Later, the code accesses `target_char[0]`, so if the string is the empty string, there will be a out of bounds access error. We left that bug intentionally in so you can see what happens when bugs like that happen in the extension.
 
 You can trigger the bug with this SQL:
 
@@ -148,7 +148,7 @@ server closed the connection unexpectedly
 The connection to the server was lost. Attempting reset: Failed.
 ```
 
-In C code, this type of buffer overflow bug could trigger a segmentation fault or even a security vulnerability. If you try this with the `char_count_zig` extension, the Postgres process still crashes (not the full server, just the process serving the connection), but if you check the logs you'll see an error message like this:
+In C code, this type of bug could trigger a segmentation fault or even a security vulnerability. If you try this with the `char_count_zig` extension, the Postgres process still crashes (not the full server, just the process serving the connection), but if you check the logs you'll see an error message like this:
 
 ```text
 thread 70501513 panic: index out of bounds: index 0, len 0
