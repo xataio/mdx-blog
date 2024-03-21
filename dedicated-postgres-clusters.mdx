@@ -89,7 +89,7 @@ If that happens, the operation will be considered as Timed Out after a while and
 
 ### Provisioning on-demand infrastructure takes time
 
-I know this seems pretty obvious, but anything that takes time cannot be a synchronous operation. This means API implementation has to make way for asynchronous operations. The way we do this is we return from the API call immediately after storing the user intention to provision a cluster or stop it or restart it. Then, using the cluster ID, the user can get updates on the evolution of the creation process via the Xata UI.
+We know this seems pretty obvious, but anything that takes time cannot be a synchronous operation. This means API implementation has to make way for asynchronous operations. The way we do this is we return from the API call immediately after storing the user intention to provision a cluster or stop it or restart it. Then, using the cluster ID, the user can get updates on the evolution of the creation process via the Xata UI.
 
 From a user perspective, we care primarily about one thing in this context of on-demand infrastructure: when is everything up and ready and available for use? Out of the box, Crossplane doesn't directly inform us when reconciliation has been completed, at least not without being interrogated on its current view of the world. We created our own custom Crossplane Composition Function that is called every time Crossplane itself checks internally on state reconciliation. When all the resources we care about are reported to have been created and are marked as ready, we fire off a Kubernetes Event that we then consume and use internally to mark the dedicated cluster as ready for use. This final step marks the dedicated clusters as “Ready” in the Xata UI, at which point they can be used and have databases and branches created on, or moved to them.
 
@@ -101,7 +101,7 @@ Even without explicitly planning to, we kept talking about cluster states a coup
 
 We added a state machine in code to deal with cluster states. The actual code could have happily existed on its own, but adding this layer of abstraction has made explaining how things work and adding new states to the state machine a lot easier.
 
-### Using a dedicated cluster
+### Allocating branches to a dedicated cluster
 
 Well this was fun, we managed to create a dedicated cluster on demand! But that is not our end goal. Our end goal is that we are able to use a dedicated cluster seamlessly as if it were a shared cluster.
 
