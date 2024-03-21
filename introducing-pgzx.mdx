@@ -123,7 +123,7 @@ char_count_c(PG_FUNCTION_ARGS)
 
 </CodeCompare>
 
-Whilst they're the Zig version is actually a bit more concise. This is partially because Zig is more expressive, but also because `pgzx` does a bit more of the work.
+Whilst they're similar, the Zig version is actually a bit more concise. This is partially because Zig is more expressive, but also because `pgzx` does a bit more of the work.
 
 Registered SQL functions receive their arguments serialized and some code is needed to deserialize them. In C you do that with the help of the `G_GETARG_*` macros, however with `pgzx` you simply receive them as normal parameters already deserialized. How? By having a `comptime` function that generates the necessary boilerplate code at compile time. If you are curious about it, check out the [pgCall](https://github.com/xataio/pgzx/blob/9825dde752ee4ace2cbc594332eba100292aafd5/src/pgzx/fmgr.zig#L77-L102) function, it's a nice example for the power of Zig's `comptime` execution.
 
