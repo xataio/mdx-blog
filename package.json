@@ -30,7 +30,7 @@
   "lint-staged": {
     "*.{js,ts,tsx,mdx,md}": [
       "prettier --config=.prettierrc.precommit.js --write",
-      "eslint --cache --fix"
+      "eslint --cache"
     ],
     "*.{css,json,md,yml,yaml,mdx,md}": [
       "prettier --write"
