@@ -63,7 +63,7 @@ A dedicated cluster is a regional entity that needs to be known at the workspace
 
 That leaves us with three data stores that we need to keep in sync.
 
-![The control plane and its data stores](images/dedicated-clusters-stores.png)
+![The control plane and its data stores](images/dedicated-clusters-stores-1.png)
 
 To solve this, we observed the following: The data stores do not need the same data replicated in all of them. They hold different views on the cluster and these views need to be coherent.
 
@@ -79,7 +79,7 @@ We then applied a series of well-known patterns/best practices to ensure we show
 2. The storage layer visible to the user will be the last to be updated.
 3. Updating these storages never happens in sync, but one after the other. Let's explain for instance how starting an instance works:
 
-![The control flow between components](images/dedicated-clusters-flow.png)
+![The control flow between components](images/dedicated-clusters-flow-1.png)
 
 As you can see, we always make sure to update one view after another. Of course, any of these updates can fail, sometimes in an unrecoverable way, in which case the final state of the cluster will get updated to a failure state.
 
