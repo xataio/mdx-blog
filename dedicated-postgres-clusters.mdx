@@ -23,7 +23,7 @@ The key features of dedicated clusters are:
 - You can configure dedicated clusters with a configurable number of read replicas, and you can ask for them to be in different availability zones.
 - You can choose between a wide range of [instance types](/docs/dedicated-cluster#provisioned-instances) or you can define a minimum and maximum CPU/RAM configuration and let [auto-scaling](/docs/dedicated-cluster#auto-scaling-instances) choose the right size dynamically based on load. Scaling up is almost instant and scaling down is done automatically in a matter of minutes.
 - The per-GB cost of storage is significantly cheaper (20 times less!) than the storage cost for shared clusters.
-- The dedicated clusters are free from limitations we impose on our shared clusters to protect from abuse: rate and concurrency limits as well as some limitations on the SQL commands you can execute. You can see a comparison table in the [docs](https://xata.io/docs/postgres#supported-statements).
+- A dedicated cluster is free from all limitations we impose on our shared clusters to protect from abuse: [rate and concurrency limits](/docs/rest-api/limits) as well as some limitations on the [SQL commands](/docs/postgres#supported-statements) you can execute.
 
 Before we dive into the specifics of dedicated clusters, let's take a step back and provide some insight into our current architecture so you can understand the difference and the importance of having optionality.
 
