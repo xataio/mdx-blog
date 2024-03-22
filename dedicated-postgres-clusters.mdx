@@ -49,7 +49,7 @@ Under the hood, we use Kubernetes to manage both infrastructure and networking v
 
 All of the supporting Xata cell services are uniquely created on a per-cell basis for dedicated clusters, and these also run in Kubernetes. These are created and managed alongside the infrastructure that Crossplane manages. These services are not shared between every dedicated cluster within a workspace but serve traffic only to that single dedicated cluster, allowing more granular control over considerations like traffic management, scaling, and deployments.
 
-## Dedicated Clusters Challenges
+## Challenges
 
 When implementing the backend support for dedicated clusters, we had some architectural challenges to deal with.
 
