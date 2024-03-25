@@ -5,7 +5,7 @@ image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/bulletproof-docs-links.png
   alt: Xata
 author: Rishi Raj Jain
-date: 08-03-2024
+date: 08-27-2024
 published: true
 slug: cache-openai-langchain
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/cms-cover.jpeg
@@ -32,12 +32,12 @@ You'll need the following:
 
 The following technologies are used in this guide:
 
-| Technology | Description |
-| --- | --- |
-| [Express.js](https://expressjs.com/) | Fast, unopinionated, minimalist web framework for Node.js. |
-| [Xata](https://xata.io/) | Serverless database platform for scalable, real-time applications. |
-| [OpenAI](https://openai.com/) | OpenAI is an artificial intelligence research lab focused on developing advanced AI technologies. |
-| [LangChain](https://js.langchain.com/) | Framework for developing applications powered by language models. |
+| Technology                             | Description                                                                                       |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| [Express.js](https://expressjs.com/)   | Fast, unopinionated, minimalist web framework for Node.js.                                        |
+| [Xata](https://xata.io/)               | Serverless database platform for scalable, real-time applications.                                |
+| [OpenAI](https://openai.com/)          | OpenAI is an artificial intelligence research lab focused on developing advanced AI technologies. |
+| [LangChain](https://js.langchain.com/) | Framework for developing applications powered by language models.                                 |
 
 ## Why Cache OpenAI API Responses?
 
@@ -65,7 +65,7 @@ pnpm add express
 pnpm add -D dotenv
 ```
 
-The above command installs the packages passed to the `install` command, with the `-D` flag specifying the libraries intended for development purposes only.
+The above command installs the packages passed to the `install` command, with the `-D` flag specifying the libraries intended for development purposes only.
 
 The libraries installed include:
 
@@ -80,16 +80,18 @@ Finally, create an `index.js` file with the following code:
 ```tsx
 // File: index.js
 
-require("dotenv/config");
+require('dotenv/config');
 
 const PORT = 3005;
 
-const express = require("express");
+const express = require('express');
 const app = express();
 
 app.use(express.json());
 
-app.get("/", (req, res) => { res.send("Home"); });
+app.get('/', (req, res) => {
+  res.send('Home');
+});
 
 app.listen(PORT, () => {
   console.log(`Listening on http://localhost:${PORT}`);
@@ -104,7 +106,7 @@ To start running the application, execute the following command in your terminal
 node index.js
 ```
 
-The app should be running on [localhost:3005](http://localhost:3005). Currently, it just displays `Home` on the `/` page.
+The app should be running on [localhost:3005](http://localhost:3005). Currently, it just displays `Home` on the `/` page.
 
 ## Setting up a Xata Database
 
@@ -144,8 +146,8 @@ xata init --db https://Rishi-Raj-Jain-s-workspace-80514q.us-east-1.xata.sh/db/ca
 
 Use the following answers to the Xata CLI one-time setup question prompts to integrate Xata with Express.js:
 
-- `Yes` when prompted to add `.env` to `.gitignore`.
-- `JavaScript require syntax` when prompted to select the language to generate code and types from your Xata database.
+- `Yes` when prompted to add `.env` to `.gitignore`.
+- `JavaScript require syntax` when prompted to select the language to generate code and types from your Xata database.
 - `xata.js` when prompted to enter the output path for the generated code by the Xata CLI.
 - `No` when prompted to generate the TypeScript declarations.
 
@@ -159,17 +161,17 @@ Just like any other machine, a Large Language Model (LLM) response to a user que
 
 ### Creating the Schema
 
-Go to the **Schema** tab in your Xata database, and update the `responses` table to have two `text` fields, named `input` and `answer`. To do so, click on `+ Add a column` and select column type as `Text`. Finally, enter the column name and click `Create column`. 
+Go to the **Schema** tab in your Xata database, and update the `responses` table to have two `text` fields, named `input` and `answer`. To do so, click on `+ Add a column` and select column type as `Text`. Finally, enter the column name and click `Create column`.
 
 ![Make schema changes](/images/cache-openai-langchain/Screenshot_2024-03-08_at_1.08.52_AM.png)
 
-The `xata pull` command pulls down schema changes, generates a migration file along with client files that your application may require. Execute the following command to bring in changes from the schema updates we did above:
+The `xata pull` command pulls down schema changes, generates a migration file along with client files that your application may require. Execute the following command to bring in changes from the schema updates we did above:
 
 ```bash
 xata pull main
 ```
 
-This would update files in `xata.js` and `.xata/migrations` with the schema changes.
+This would update files in `xata.js` and `.xata/migrations` with the schema changes.
 
 ### Creating a Cached ChatOpenAI Response Endpoint using Callbacks
 
@@ -188,27 +190,27 @@ Then, add the following code snippet to the existing `index.js` file:
 
 // ...
 
-const { ChatOpenAI } = require("@langchain/openai");
+const { ChatOpenAI } = require('@langchain/openai');
 
-const { ConversationChain } = require("langchain/chains");
+const { ConversationChain } = require('langchain/chains');
 
 // ...
 
-app.post("/query-callback-method", async (req, res) => {
+app.post('/query-callback-method', async (req, res) => {
   const { input } = req.body;
-  
+
   // Set headers before piping the stream
-  res.setHeader("Transfer-Encoding", "chunked")
-  res.setHeader("Content-Type", "text/plain; charset=utf-8")
-  
+  res.setHeader('Transfer-Encoding', 'chunked');
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+
   const encoder = new TextEncoder();
-  
+
   const model = new ChatOpenAI({
     streaming: true,
     callbacks: [
       {
         async handleLLMStart() {
-          res.write(encoder.encode("[MISS] "));
+          res.write(encoder.encode('[MISS] '));
         },
         handleLLMNewToken(token) {
           res.write(encoder.encode(token));
@@ -216,9 +218,9 @@ app.post("/query-callback-method", async (req, res) => {
         async handleLLMEnd(output) {
           // End the response
           res.end();
-        },
-      },
-    ],
+        }
+      }
+    ]
   });
   const chain = new ConversationChain({ llm: model });
   await chain.call({ input });
@@ -229,7 +231,7 @@ app.post("/query-callback-method", async (req, res) => {
 
 The code above, creates an endpoint `/query-callback-method` which can be `POST`-ed to. Then, it destructures `input` from the request body. Then, it sets the `Content-Type` and `Transfer-Encoding` header which indicate creation of a streaming response from this endpoint to the client. Further, it creates a LLM via a `ChatOpenAI` instance with LangChain using multiple callbacks as follows:
 
-- **handleLLMStart**:  It’s called when the Chat Model begins working on a prompt
+- **handleLLMStart**: It’s called when the Chat Model begins working on a prompt
 - **handleLLMNewToken**: It’s called whenever the Chat Model in `streaming` mode generates a new token while processing a request
 - **handleLLMEnd**: It’s called when the Chat Model finishes processing a request to generate its final output
 
@@ -251,13 +253,13 @@ To save repetitive calls to the OpenAI API that will mount onto your existing co
 
 app.post("/query-callback-method", async (req, res) => {
   const { input } = req.body;
-  
+
   // Set headers before piping the stream
   res.setHeader("Transfer-Encoding", "chunked")
   res.setHeader("Content-Type", "text/plain; charset=utf-8")
-  
+
   const encoder = new TextEncoder();
-  
+
   const model = new ChatOpenAI({
     streaming: true,
     callbacks: [
@@ -268,7 +270,7 @@ app.post("/query-callback-method", async (req, res) => {
 +           .filter({ input })
 +           .select(["answer"])
 +           .getFirst();
-    
+
 +         // If cached response found, return as is
 +         if (cachedResponse) {
 +          res.write("[HIT] " + cachedResponse.answer);
@@ -305,10 +307,7 @@ The code above, starts with importing the `getXataClient` method from the genera
 
 ```tsx
 // Look for cached response in Xata
-const cachedResponse = await xata.db.responses
-	.filter({ input })
-	.select(["answer"])
-	.getFirst();
+const cachedResponse = await xata.db.responses.filter({ input }).select(['answer']).getFirst();
 ```
 
 The code above gets a single row matching the value of input of the user from the responses table in your Xata database.
@@ -319,7 +318,7 @@ The code above gets a single row matching the value of input of the user from th
 // Once the response is sent, cache it in Xata
 await xata.db.responses.create({
   input,
-  answer: output.generations[0][0].text,
+  answer: output.generations[0][0].text
 });
 ```
 
@@ -333,7 +332,7 @@ curl --location 'http://localhost:3005/query-callback-method' \
 }'
 ```
 
-The output in your terminal window would start with a **[MISS]** indicating that it’s not a cached response.
+The output in your terminal window would start with a **\[MISS]** indicating that it’s not a cached response.
 
 ![MISS response](/images/cache-openai-langchain/Screenshot_2024-03-08_at_2.41.13_AM.png)
 
@@ -361,7 +360,7 @@ As you’ve learned earlier, execute the following command to bring in changes f
 xata pull main
 ```
 
-This would update files in `xata.js` and `.xata/migrations` with the schema changes.
+This would update files in `xata.js` and `.xata/migrations` with the schema changes.
 
 ### Creating Cached ChatOpenAI Response Endpoint using the Cache Layer
 
@@ -383,31 +382,26 @@ Let’s start by creating a file named `langchain-xata-cache.js` that will overr
 ```tsx
 // File: langchain-xata-cache.js
 
-const {
-  BaseCache,
-  deserializeStoredGeneration,
-  getCacheKey,
-  serializeGeneration,
-} = require("@langchain/core/caches");
+const { BaseCache, deserializeStoredGeneration, getCacheKey, serializeGeneration } = require('@langchain/core/caches');
 
 class XataCache extends BaseCache {
-	// A Xata Client
+  // A Xata Client
   xataClient;
-  
+
   // Constructor for XataCache class
   // Avails xataClient to class methods
   constructor(props) {
     super();
     this.xataClient = props.client;
   }
-  
+
   // A function to filter and return the
   // cached response of model invocation
   async makeValue(key) {
     const tmp = await this.xataClient.db.invocations.filter({ key }).getFirst();
     if (tmp) return tmp.answer;
   }
-  
+
   /**
    * Lookup LLM generations in cache by prompt and associated LLM key.
    */
@@ -433,7 +427,7 @@ class XataCache extends BaseCache {
       const key = getCacheKey(prompt, llmKey, String(i));
       await this.xataClient.db.invocations.create({
         key,
-        answer: JSON.stringify(serializeGeneration(value[i])),
+        answer: JSON.stringify(serializeGeneration(value[i]))
       });
     }
   }
@@ -452,32 +446,32 @@ To use this cache class, add the following code snippet to the existing `index.j
 // ...
 
 // XataCache class built on top of LangChain's BaseCache
-const { XataCache } = require("./langchain-xata-cache.js");
+const { XataCache } = require('./langchain-xata-cache.js');
 
-const { ChatOpenAI } = require("@langchain/openai");
+const { ChatOpenAI } = require('@langchain/openai');
 
-const { getXataClient } = require("./xata");
+const { getXataClient } = require('./xata');
 
 // Global Xata Client Instance
 const xata = getXataClient();
 
 // ...
 
-app.post("/query-cache-method", async (req, res) => {
+app.post('/query-cache-method', async (req, res) => {
   const { input } = req.body;
 
   // Use LangChain Xata Cache Adapter
   const model = new ChatOpenAI({
-    cache: new XataCache({ client: xata }),
+    cache: new XataCache({ client: xata })
   });
-  
+
   console.time();
-  
+
   // Perform a cached-response first AI model invocation
   const response = await model.invoke(input);
-  
+
   console.timeEnd();
-  
+
   res.write(response.content);
   res.end();
 });
@@ -512,12 +506,12 @@ In this guide, you learned different ways of caching OpenAI API responses using 
 
 For more detailed insights, explore the references cited in this post.
 
-| Resource | Link |
-| --- | --- |
-| GitHub Repo | https://github.com/rishi-raj-jain/xata-cache-openai-langchain |
-| Caching - LangChain Chat Models | https://js.langchain.com/docs/modules/model_io/chat/caching |
-| Callbacks - LangChain Modules | https://js.langchain.com/docs/modules/callbacks/ |
+| Resource                        | Link                                                          |
+| ------------------------------- | ------------------------------------------------------------- |
+| GitHub Repo                     | https://github.com/rishi-raj-jain/xata-cache-openai-langchain |
+| Caching - LangChain Chat Models | https://js.langchain.com/docs/modules/model\_io/chat/caching  |
+| Callbacks - LangChain Modules   | https://js.langchain.com/docs/modules/callbacks/              |
 
 ## What’s next?
 
-We'd love to hear from you if you have any feedback on this guide, would like to know more about Xata, or if you'd like to contribute a community blog or tutorial. Reach out to us on [Discord](https://discord.com/invite/kvAcQKh7vm) or join us on [X | Twitter](https://twitter.com/xata). Happy building 🦋
+We'd love to hear from you if you have any feedback on this guide, would like to know more about Xata, or if you'd like to contribute a community blog or tutorial. Reach out to us on [Discord](https://discord.com/invite/kvAcQKh7vm) or join us on [X | Twitter](https://twitter.com/xata). Happy building 🦋
