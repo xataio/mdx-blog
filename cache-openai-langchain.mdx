@@ -2,13 +2,13 @@
 title: 'Caching OpenAI Chat API Responses with LangChain and Xata'
 description: 'Learn how to cache OpenAI Chat API responses in LangChain with Xata.'
 image:
-  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/bulletproof-docs-links.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/cache-openai-langchain/cache-openai-langchain-xata.jpg
   alt: Xata
 author: Rishi Raj Jain
 date: 03-27-2024
 published: true
 slug: cache-openai-langchain-xata
-ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/cms-cover.jpeg
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/cache-openai-langchain/cache-openai-langchain-xata.jpg
 ---
 
 In this guide, you'll learn how to cache OpenAI Chat API responses in different ways using LangChain and Xata. You’ll learn how to:
@@ -52,7 +52,7 @@ mkdir xata-cache-openai-langchain
 cd xata-cache-openai-langchain
 ```
 
-Then, create a blank npm project by executing the following command:
+Then, create a blank `npm` project by executing the following command:
 
 ```bash
 npm init -y
@@ -239,7 +239,7 @@ Finally, it creates a single message conversation between user and AI, and await
 
 To save repetitive calls to the OpenAI API that will mount onto your existing cost of running the chat responses, cache the user queries with their responses using Xata. To do so, perform the following additions in your `index.js` file:
 
-```diff
+```tsx {5,9-10,26-37,44-48}
 // File: index.js
 
 // ...
