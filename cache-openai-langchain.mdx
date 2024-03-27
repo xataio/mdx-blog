@@ -235,7 +235,7 @@ The code above, creates an endpoint `/query-callback-method` which can be `POST`
 - **handleLLMNewToken**: It’s called whenever the Chat Model in `streaming` mode generates a new token while processing a request
 - **handleLLMEnd**: It’s called when the Chat Model finishes processing a request to generate its final output
 
-Finally, it creates a single message conversation between user and AI, and awaits the complete response by AI to the user query.
+Finally, it creates a single message conversation between the user and AI, and awaits the complete response by AI to the user query.
 
 To save repetitive calls to the OpenAI API that will mount onto your existing cost of running the chat responses, cache the user queries with their responses using Xata. To do so, perform the following additions in your `index.js` file:
 
@@ -303,7 +303,7 @@ app.post("/query-callback-method", async (req, res) => {
 
 The code above, starts with importing the `getXataClient` method from the generated `xata.js` file. Then, it creates a global instance of the Xata client. Further, it updates the LangChain callbacks as follows:
 
-- handleLLMStart: As the LLM is started to the respond to the user query, it first looks for a cached response in your Xata database’s `responses` table. This is implemented via the following:
+- handleLLMStart: As the LLM starts to respond to the user query, it first looks for a cached response in your Xata database’s `responses` table. This is implemented via the following:
 
 ```tsx
 // Look for cached response in Xata
