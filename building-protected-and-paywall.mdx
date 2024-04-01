@@ -5,7 +5,7 @@ image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/gallery-cms-astro-cloudflare.png
   alt: Xata image gallery
 author: Rishi Raj Jain
-date: 04-24-2024
+date: 04-17-2024
 published: true
 slug: protected-and-paid-pages
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/gallery-cms-astro-cloudflare.png
@@ -34,11 +34,11 @@ You'll need the following:
 
 Following technologies are used in this guide:
 
-| Technology | Description |
-| --- | --- |
-| [Xata](https://xata.io/) | Serverless database platform for scalable, real-time applications. |
-| [Astro](https://astro.build/) | Framework for building fast, modern websites with serverless backend support. |
-| [Stripe](https://stripe.com) | A platform to accept payments globally. |
+| Technology                            | Description                                                                        |
+| ------------------------------------- | ---------------------------------------------------------------------------------- |
+| [Xata](https://xata.io/)              | Serverless database platform for scalable, real-time applications.                 |
+| [Astro](https://astro.build/)         | Framework for building fast, modern websites with serverless backend support.      |
+| [Stripe](https://stripe.com)          | A platform to accept payments globally.                                            |
 | [Lucia Auth](https://lucia-auth.com/) | An authentication library that abstracts away the complexity of handling sessions. |
 
 # Steps
@@ -162,7 +162,7 @@ xata init --db https://Rishi-Raj-Jain-s-workspace-80514q.us-east-1.xata.sh/db/as
 
 Use the following answers to the Xata CLI one-time setup question prompts to integrate Xata with Astro:
 
-- `Yes` when prompted to add `.env` to `.gitignore`.
+- `Yes` when prompted to add `.env` to `.gitignore`.
 - `src/xata.ts` when prompted to enter the output path for the generated code by the Xata CLI.
 
 ![Setup Astro project with Xata CLI](/images/building-protected-and-paywall/cli.png)
@@ -189,7 +189,7 @@ export const prerender = true
   </head>
   <body class="font-display overflow-x-hidden">
     <form class="p-12" method="post" action="/api/stripe/checkout">
-      <button class="rounded border border-black px-4 py-2 duration-150 hover:scale-105"> Get My Product &rarr; </button>
+      <button class="rounded border border-black px-4 py-2 duration-150 hover:scale-105">Get My Product &rarr;</button>
     </form>
   </body>
 </html>
@@ -200,13 +200,13 @@ The code above creates an index route in the Astro application containing a form
 ```tsx
 // File: src/pages/api/stripe/checkout.ts
 
-import Stripe from 'stripe'
-import type { APIContext } from 'astro'
+import Stripe from 'stripe';
+import type { APIContext } from 'astro';
 
 export async function POST({ redirect }: APIContext) {
-  const STRIPE_SECRET_KEY = import.meta.env.STRIPE_SECRET_KEY
-  if (!STRIPE_SECRET_KEY) return new Response(null, { status: 500 })
-  const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: '2023-10-16' })
+  const STRIPE_SECRET_KEY = import.meta.env.STRIPE_SECRET_KEY;
+  if (!STRIPE_SECRET_KEY) return new Response(null, { status: 500 });
+  const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: '2023-10-16' });
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     payment_method_configuration: 'pmc_1O2qH3SE9voLRYpuz5FLmkvn',
@@ -216,13 +216,13 @@ export async function POST({ redirect }: APIContext) {
         price_data: {
           unit_amount: 0,
           currency: 'usd',
-          product: 'prod_OqWkk7Rz9Yw18f',
-        },
-      },
+          product: 'prod_OqWkk7Rz9Yw18f'
+        }
+      }
     ],
-    success_url: 'http://localhost:4321',
-  })
-  return redirect(session.url)
+    success_url: 'http://localhost:4321'
+  });
+  return redirect(session.url);
 }
 ```
 
@@ -244,65 +244,65 @@ Upon a successful purchase, Stripe fires a webhook POST request. To handle the w
 ```tsx
 // File: src/pages/api/stripe/webhook.ts
 
-import Stripe from 'stripe'
-import { getXataClient } from '@/xata'
-import type { APIContext } from 'astro'
+import Stripe from 'stripe';
+import { getXataClient } from '@/xata';
+import type { APIContext } from 'astro';
 
 // Process rawBody from the request Object
 async function getRawBody(request: Request) {
-  let chunks = []
-  let done = false
-  const reader = request.body.getReader()
+  let chunks = [];
+  let done = false;
+  const reader = request.body.getReader();
   while (!done) {
-    const { value, done: isDone } = await reader.read()
+    const { value, done: isDone } = await reader.read();
     if (value) {
-      chunks.push(value)
+      chunks.push(value);
     }
-    done = isDone
+    done = isDone;
   }
-  const bodyData = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0))
-  let offset = 0
+  const bodyData = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
+  let offset = 0;
   for (const chunk of chunks) {
-    bodyData.set(chunk, offset)
-    offset += chunk.length
+    bodyData.set(chunk, offset);
+    offset += chunk.length;
   }
-  return Buffer.from(bodyData)
+  return Buffer.from(bodyData);
 }
 
 // Stripe API Reference
 // https://stripe.com/docs/webhooks#webhook-endpoint-def
 export async function POST({ request }: APIContext) {
   try {
-    const STRIPE_SECRET_KEY = import.meta.env.STRIPE_SECRET_KEY
-    const STRIPE_WEBHOOK_SIG = import.meta.env.STRIPE_WEBHOOK_SIG
-    if (!STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SIG) return new Response(null, { status: 500 })
-    const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: '2023-10-16' })
-    const rawBody = await getRawBody(request)
-    let event = JSON.parse(rawBody.toString())
-    const sig = request.headers.get('stripe-signature')
+    const STRIPE_SECRET_KEY = import.meta.env.STRIPE_SECRET_KEY;
+    const STRIPE_WEBHOOK_SIG = import.meta.env.STRIPE_WEBHOOK_SIG;
+    if (!STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SIG) return new Response(null, { status: 500 });
+    const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: '2023-10-16' });
+    const rawBody = await getRawBody(request);
+    let event = JSON.parse(rawBody.toString());
+    const sig = request.headers.get('stripe-signature');
     try {
-      event = stripe.webhooks.constructEvent(rawBody, sig, STRIPE_WEBHOOK_SIG)
+      event = stripe.webhooks.constructEvent(rawBody, sig, STRIPE_WEBHOOK_SIG);
     } catch (err) {
-      console.log(err.message)
-      return new Response(`Webhook Error: ${err.message}`, { status: 400 })
+      console.log(err.message);
+      return new Response(`Webhook Error: ${err.message}`, { status: 400 });
     }
     if (event.type === 'checkout.session.completed' || event.type === 'payment_intent.succeeded') {
-      const email = event.data.object?.customer_details?.email
+      const email = event.data.object?.customer_details?.email;
       if (email) {
-        const xata = getXataClient()
-        const existingRecord = await xata.db.user.filter({ email }).getFirst()
+        const xata = getXataClient();
+        const existingRecord = await xata.db.user.filter({ email }).getFirst();
         if (existingRecord) {
-          await xata.db.user.update(existingRecord.id, { paid: true })
+          await xata.db.user.update(existingRecord.id, { paid: true });
         } else {
-          await xata.db.user.create({ email, paid: true })
+          await xata.db.user.create({ email, paid: true });
         }
-        return new Response('marked the user as paid', { status: 200 })
+        return new Response('marked the user as paid', { status: 200 });
       }
-      return new Response('no email of the user is found', { status: 200 })
+      return new Response('no email of the user is found', { status: 200 });
     }
-    return new Response(JSON.stringify(event), { status: 404 })
+    return new Response(JSON.stringify(event), { status: 404 });
   } catch (e) {
-    return new Response(e.message || e.toString(), { status: 500 })
+    return new Response(e.message || e.toString(), { status: 500 });
   }
 }
 ```
@@ -327,7 +327,7 @@ To start authenticating users and managing their sessions, install Lucia and Osl
 pnpm add lucia oslo dotenv
 ```
 
-The above command installs the packages passed to the `install` command. The libraries installed include:
+The above command installs the packages passed to the `install` command. The libraries installed include:
 
 - `lucia`: An open source authentication library that abstracts away the complexity of handling sessions.
 - `dotenv`: A library for handling environment variables.
@@ -358,7 +358,7 @@ export default defineConfig({
 The code additions above do the following:
 
 - Imports dotenv which makes all the environment variables accessible via the `process.env` object.
-- Uses vite's [optimizeDeps](https://vitejs.dev/config/dep-optimization-options#optimizedeps-exclude) to exclude the  `oslo` library from being pre-bundled, effectively, using the library as is.
+- Uses vite's [optimizeDeps](https://vitejs.dev/config/dep-optimization-options#optimizedeps-exclude) to exclude the `oslo` library from being pre-bundled, effectively, using the library as is.
 
 Then, create a lucia directory in the src directory by running the following command:
 
@@ -375,8 +375,15 @@ Create a `src/lucia/xata.ts` file with the following code:
 ```tsx
 // File: src/lucia/xata.ts
 
-import { getXataClient } from '@/xata'
-import type { Adapter, DatabaseSession, RegisteredDatabaseSessionAttributes, DatabaseUser, RegisteredDatabaseUserAttributes, UserId } from 'lucia'
+import { getXataClient } from '@/xata';
+import type {
+  Adapter,
+  DatabaseSession,
+  RegisteredDatabaseSessionAttributes,
+  DatabaseUser,
+  RegisteredDatabaseUserAttributes,
+  UserId
+} from 'lucia';
 ```
 
 The code above imports the `getXataClient` utility to retrieve the in-memory Xata instance. It then imports the relevant types from `lucia` module. Append the following code:
@@ -387,13 +394,13 @@ The code above imports the `getXataClient` utility to retrieve the in-memory Xat
 // ...
 
 interface UserSchema extends RegisteredDatabaseUserAttributes {
-  id: string
+  id: string;
 }
 
 interface SessionSchema extends RegisteredDatabaseSessionAttributes {
-  id: string
-  user_id: string
-  expires_at: Date
+  id: string;
+  user_id: string;
+  expires_at: Date;
 }
 ```
 
@@ -410,25 +417,26 @@ Append the following code to handle data transformations to Lucia's expected str
 // ...
 
 function transformIntoDatabaseSession(raw: SessionSchema): DatabaseSession {
-  const { id, user_id: userId, expires_at: expiresAt, ...attributes } = raw
+  const { id, user_id: userId, expires_at: expiresAt, ...attributes } = raw;
   return {
     id,
     userId,
     expiresAt,
-    attributes,
-  }
+    attributes
+  };
 }
 
 function transformIntoDatabaseUser(raw: UserSchema): DatabaseUser {
-  const { id, ...attributes } = raw
+  const { id, ...attributes } = raw;
   return {
     id,
-    attributes,
-  }
+    attributes
+  };
 }
 ```
 
 The code above defines the following methods:
+
 - `transformIntoDatabaseSession`: returns the `SessionSchema` object in the shape of `DatabaseSession` type.
 - `transformIntoDatabaseUser`: returns the `UserSchema` object in the shape of `DatabaseUser` type.
 
@@ -440,8 +448,8 @@ Append the following code to create the XataAdapter class:
 // ...
 
 export class XataAdapter implements Adapter {
-  private controller = getXataClient()
-  
+  private controller = getXataClient();
+
   // ...
 }
 ```
@@ -454,13 +462,11 @@ The code above defines a class XataAdapter based on Lucia's Adapter class. Then,
 // ...
 
 export class XataAdapter implements Adapter {
-
   // ...
-  
-  public async deleteSession(sessionId: string): Promise<void> {
-    await this.controller.sql`DELETE FROM "session" WHERE id=${sessionId}`
-  }
 
+  public async deleteSession(sessionId: string): Promise<void> {
+    await this.controller.sql`DELETE FROM "session" WHERE id=${sessionId}`;
+  }
 }
 ```
 
@@ -472,13 +478,11 @@ The code above defines a `deleteSession` method that uses Xata SQL queries to de
 // ...
 
 export class XataAdapter implements Adapter {
-
   // ...
 
   public async deleteUserSessions(userId: UserId): Promise<void> {
-    await this.controller.sql`DELETE FROM "session" WHERE user_id=${userId}`
+    await this.controller.sql`DELETE FROM "session" WHERE user_id=${userId}`;
   }
-
 }
 ```
 
@@ -490,16 +494,14 @@ The code above defines a `deleteUserSessions` method that uses Xata SQL queries 
 // ...
 
 export class XataAdapter implements Adapter {
-
   // ...
 
   public async getUserSessions(user_id: UserId): Promise<DatabaseSession[]> {
-    const records = await this.controller.db.session.filter({ user_id }).getAll()
+    const records = await this.controller.db.session.filter({ user_id }).getAll();
     return records.map((val) => {
-      return transformIntoDatabaseSession(val)
-    })
+      return transformIntoDatabaseSession(val);
+    });
   }
-
 }
 ```
 
@@ -511,7 +513,6 @@ The code above defines a `getUserSessions` method that uses Xata SDK methods to 
 // ...
 
 export class XataAdapter implements Adapter {
-
   // ...
 
   public async setSession(databaseSession: DatabaseSession): Promise<void> {
@@ -519,10 +520,9 @@ export class XataAdapter implements Adapter {
       id: databaseSession.id,
       user_id: databaseSession.userId,
       expires_at: databaseSession.expiresAt,
-      ...databaseSession.attributes,
-    })
+      ...databaseSession.attributes
+    });
   }
-
 }
 ```
 
@@ -534,13 +534,11 @@ The code above defines a `setSession` method that uses Xata SDK methods to inser
 // ...
 
 export class XataAdapter implements Adapter {
-
   // ...
 
   public async updateSessionExpiration(sessionId: string, expiresAt: Date): Promise<void> {
-    await this.controller.sql`UPDATE "session" SET expires_at=${expiresAt} WHERE id=${sessionId}`
+    await this.controller.sql`UPDATE "session" SET expires_at=${expiresAt} WHERE id=${sessionId}`;
   }
-
 }
 ```
 
@@ -552,13 +550,11 @@ The code above defines an `updateSessionExpiration` method that uses Xata SQL qu
 // ...
 
 export class XataAdapter implements Adapter {
-
   // ...
 
   public async deleteExpiredSessions(): Promise<void> {
-    await this.controller.sql`DELETE FROM "session" WHERE expires_at <=${new Date()}`
+    await this.controller.sql`DELETE FROM "session" WHERE expires_at <=${new Date()}`;
   }
-
 }
 ```
 
@@ -570,14 +566,12 @@ The code above defines a `deleteExpiredSessions` method that uses Xata SQL query
 // ...
 
 export class XataAdapter implements Adapter {
-
   // ...
 
   private async getSession(session_id: string): Promise<DatabaseSession | null> {
-    const records = await this.controller.db.session.filter({ session_id }).getFirst()
-    return transformIntoDatabaseSession(records)
+    const records = await this.controller.db.session.filter({ session_id }).getFirst();
+    return transformIntoDatabaseSession(records);
   }
-
 }
 ```
 
@@ -589,23 +583,21 @@ The code above defines a `getSession` method that uses Xata SDK method to retrie
 // ...
 
 export class XataAdapter implements Adapter {
-
   // ...
 
   private async getUserFromSessionId(session_id: string): Promise<DatabaseUser | null> {
-    const theSession = await this.controller.db.session.filter({ session_id }).getFirst()
+    const theSession = await this.controller.db.session.filter({ session_id }).getFirst();
     if (theSession) {
-      const { user_id } = theSession
-      const getUser = await this.controller.db.user.filter({ user_id }).getFirst()
-      if (getUser) return transformIntoDatabaseUser(getUser)
+      const { user_id } = theSession;
+      const getUser = await this.controller.db.user.filter({ user_id }).getFirst();
+      if (getUser) return transformIntoDatabaseUser(getUser);
     }
-    return null
+    return null;
   }
-
 }
 ```
 
-The code above defines a `getUserFromSessionId` method that uses Xata SDK method to retrieve a single matching record for a given session from your database. If a session is found, it further queries to obtain the user associated  with the session. Otherwise, it returns `null`.
+The code above defines a `getUserFromSessionId` method that uses Xata SDK method to retrieve a single matching record for a given session from your database. If a session is found, it further queries to obtain the user associated with the session. Otherwise, it returns `null`.
 
 ```tsx
 // File: src/lucia/xata.ts
@@ -613,14 +605,17 @@ The code above defines a `getUserFromSessionId` method that uses Xata SDK method
 // ...
 
 export class XataAdapter implements Adapter {
-
   // ...
 
-  public async getSessionAndUser(sessionId: string): Promise<[session: DatabaseSession | null, user: DatabaseUser | null]> {
-    const [databaseSession, databaseUser] = await Promise.all([this.getSession(sessionId), this.getUserFromSessionId(sessionId)])
-    return [databaseSession, databaseUser]
+  public async getSessionAndUser(
+    sessionId: string
+  ): Promise<[session: DatabaseSession | null, user: DatabaseUser | null]> {
+    const [databaseSession, databaseUser] = await Promise.all([
+      this.getSession(sessionId),
+      this.getUserFromSessionId(sessionId)
+    ]);
+    return [databaseSession, databaseUser];
   }
-
 }
 ```
 
@@ -635,24 +630,24 @@ To use Xata with Lucia, create a file `index.ts` inside the `lucia` directory wi
 ```tsx
 // File: src/lucia/index.ts
 
-import { Lucia } from 'lucia'
-import { XataAdapter } from './xata'
+import { Lucia } from 'lucia';
+import { XataAdapter } from './xata';
 
-const adapter = new XataAdapter()
+const adapter = new XataAdapter();
 
 export const lucia = new Lucia(adapter, {
   sessionCookie: {
     attributes: {
-      secure: import.meta.env.PROD,
-    },
+      secure: import.meta.env.PROD
+    }
   },
   getUserAttributes: (attributes) => {
     return {
       paid: attributes.paid,
-      email: attributes.email,
-    }
-  },
-})
+      email: attributes.email
+    };
+  }
+});
 ```
 
 The code above does the following:
@@ -670,14 +665,14 @@ To create type definitions for the user and session associated, append the follo
 // ...
 
 interface DatabaseUserAttributes {
-  email: string
-  paid: boolean | null
+  email: string;
+  paid: boolean | null;
 }
 
 declare module 'lucia' {
   interface Register {
-    Lucia: typeof lucia
-    DatabaseUserAttributes: DatabaseUserAttributes
+    Lucia: typeof lucia;
+    DatabaseUserAttributes: DatabaseUserAttributes;
   }
 }
 ```
@@ -694,21 +689,21 @@ To retrieve the authentication status of the session, you would need to obtain t
 ```tsx
 // File: src/lucia/user.ts
 
-import { lucia } from '.'
-import type { User } from 'lucia'
-import type { AstroCookies } from 'astro'
+import { lucia } from '.';
+import type { User } from 'lucia';
+import type { AstroCookies } from 'astro';
 
 export function getSessionID(cookies: AstroCookies): string | null {
-  const auth_session = cookies.get('auth_session')
-  if (!auth_session) return null
-  return lucia.readSessionCookie(`auth_session=${auth_session.value}`)
+  const auth_session = cookies.get('auth_session');
+  if (!auth_session) return null;
+  return lucia.readSessionCookie(`auth_session=${auth_session.value}`);
 }
 
 export async function getUser(cookies: AstroCookies): Promise<User | null> {
-  const session_id = getSessionID(cookies)
-  if (!session_id) return null
-  const { user } = await lucia.validateSession(session_id)
-  return user
+  const session_id = getSessionID(cookies);
+  if (!session_id) return null;
+  const { user } = await lucia.validateSession(session_id);
+  return user;
 }
 ```
 
@@ -758,30 +753,30 @@ The code above creates an sign up route in the Astro application containing a fo
 ```tsx
 // File: src/pages/api/sign/up.ts
 
-import { generateId } from 'lucia'
-import { lucia } from '@/lucia/index'
-import { getXataClient } from '@/xata'
-import type { APIContext } from 'astro'
-import { Argon2id } from 'oslo/password'
+import { generateId } from 'lucia';
+import { lucia } from '@/lucia/index';
+import { getXataClient } from '@/xata';
+import type { APIContext } from 'astro';
+import { Argon2id } from 'oslo/password';
 
 export async function POST({ request, redirect, cookies }: APIContext): Promise<Response> {
-  const xata = getXataClient()
-  const user_id = generateId(15)
-  const formData = await request.formData()
-  const email = (formData.get('email') as string).trim()
-  const password = formData.get('password') as string
-  const hashed_password = await new Argon2id().hash(password)
-  const existingRecord = await xata.db.user.filter({ email }).getFirst()
+  const xata = getXataClient();
+  const user_id = generateId(15);
+  const formData = await request.formData();
+  const email = (formData.get('email') as string).trim();
+  const password = formData.get('password') as string;
+  const hashed_password = await new Argon2id().hash(password);
+  const existingRecord = await xata.db.user.filter({ email }).getFirst();
   if (existingRecord) {
-    if (existingRecord.hashed_password !== null) return redirect('/signin')
-    await xata.db.user.update(existingRecord.id, { user_id, hashed_password })
+    if (existingRecord.hashed_password !== null) return redirect('/signin');
+    await xata.db.user.update(existingRecord.id, { user_id, hashed_password });
   } else {
-    await xata.db.user.create({ email, user_id, hashed_password })
+    await xata.db.user.create({ email, user_id, hashed_password });
   }
-  const session = await lucia.createSession(user_id, {})
-  const sessionCookie = lucia.createSessionCookie(session.id)
-  cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
-  return redirect('/')
+  const session = await lucia.createSession(user_id, {});
+  const sessionCookie = lucia.createSessionCookie(session.id);
+  cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+  return redirect('/');
 }
 ```
 
@@ -831,24 +826,24 @@ The code above creates an sign in route in the Astro application containing a fo
 ```tsx
 // File: src/pages/api/sign/in.ts
 
-import { lucia } from '@/lucia/index'
-import { getXataClient } from '@/xata'
-import type { APIContext } from 'astro'
-import { Argon2id } from 'oslo/password'
+import { lucia } from '@/lucia/index';
+import { getXataClient } from '@/xata';
+import type { APIContext } from 'astro';
+import { Argon2id } from 'oslo/password';
 
 export async function POST({ request, cookies, redirect }: APIContext): Promise<Response> {
-  const xata = getXataClient()
-  const formData = await request.formData()
-  const email = (formData.get('email') as string).trim()
-  const password = formData.get('password') as string
-  const existingRecord = await xata.db.user.filter({ email }).getFirst()
-  if (!existingRecord) return new Response('Incorrect email or password', { status: 400 })
-  const validPassword = await new Argon2id().verify(existingRecord.hashed_password, password)
-  if (!validPassword) return new Response('Incorrect email or password', { status: 400 })
-  const session = await lucia.createSession(existingRecord.user_id, {})
-  const sessionCookie = lucia.createSessionCookie(session.id)
-  cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
-  return redirect('/')
+  const xata = getXataClient();
+  const formData = await request.formData();
+  const email = (formData.get('email') as string).trim();
+  const password = formData.get('password') as string;
+  const existingRecord = await xata.db.user.filter({ email }).getFirst();
+  if (!existingRecord) return new Response('Incorrect email or password', { status: 400 });
+  const validPassword = await new Argon2id().verify(existingRecord.hashed_password, password);
+  if (!validPassword) return new Response('Incorrect email or password', { status: 400 });
+  const session = await lucia.createSession(existingRecord.user_id, {});
+  const sessionCookie = lucia.createSessionCookie(session.id);
+  cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+  return redirect('/');
 }
 ```
 
@@ -858,7 +853,7 @@ The code above does the following:
 - Exports a POST HTTP handler to only respond to incoming POST request(s).
 - Obtains the email and password from the request's form data.
 - Looks for an existing record with the email in user table of your database.
-- If not found, it returns a 400 Bad Request response. 
+- If not found, it returns a 400 Bad Request response.
 - Otherwise, it uses `Argon2id` to verify the hashed password.
 - If the hashed password does not match, it returns a 400 Bad Request response.
 - Otherwise, it creates a session using `createSession` helper utility by Lucia and sets the cookie.
@@ -871,15 +866,15 @@ To sign out users in your Astro application, create a `src/pages/api/sign/out.ts
 ```tsx
 // File: src/pages/api/sign/out.ts
 
-import { lucia } from '@/lucia/index'
-import type { APIContext } from 'astro'
-import { getSessionID } from '@/lucia/user'
+import { lucia } from '@/lucia/index';
+import type { APIContext } from 'astro';
+import { getSessionID } from '@/lucia/user';
 
 export async function GET({ cookies, redirect }: APIContext): Promise<Response> {
-  await lucia.invalidateSession(getSessionID(cookies))
-  const sessionCookie = lucia.createBlankSessionCookie()
-  cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
-  return redirect('/')
+  await lucia.invalidateSession(getSessionID(cookies));
+  const sessionCookie = lucia.createBlankSessionCookie();
+  cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+  return redirect('/');
 }
 ```
 
@@ -971,4 +966,4 @@ For more detailed insights, explore the references cited in this post.
 
 ## What’s next?
 
-We'd love to hear from you if you have any feedback on this tutorial, would like to know more about Xata, or if you would like to contribute a community blog or tutorial. Reach out to us on [Discord](https://discord.com/invite/kvAcQKh7vm) or join us on [X | Twitter](https://twitter.com/xata). Happy building 🦋
+We'd love to hear from you if you have any feedback on this tutorial, would like to know more about Xata, or if you would like to contribute a community blog or tutorial. Reach out to us on [Discord](https://discord.com/invite/kvAcQKh7vm) or join us on [X | Twitter](https://twitter.com/xata). Happy building 🦋
