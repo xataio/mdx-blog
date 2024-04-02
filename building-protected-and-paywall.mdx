@@ -15,7 +15,7 @@ In this post, you'll learn how to authenticate users using Xata, create Stripe c
 
 - Set up Xata
 - Create a schema with different column types
-- Programtically create Stripe checkout sessions
+- Programmatically create Stripe checkout sessions
 - Respond to Stripe webhooks
 - Authenticate users with Lucia Auth
 
@@ -32,11 +32,11 @@ You'll need the following:
 
 ### Tech Stack
 
-Following technologies are used in this guide:
+The following technologies are used in this guide:
 
 | Technology                            | Description                                                                        |
 | ------------------------------------- | ---------------------------------------------------------------------------------- |
-| [Xata](https://xata.io/)              | Serverless database platform for scalable, real-time applications.                 |
+| [Xata](https://xata.io/)              | Serverless Postgres database platform for scalable, real-time applications.                 |
 | [Astro](https://astro.build/)         | Framework for building fast, modern websites with serverless backend support.      |
 | [Stripe](https://stripe.com)          | A platform to accept payments globally.                                            |
 | [Lucia Auth](https://lucia-auth.com/) | An authentication library that abstracts away the complexity of handling sessions. |
@@ -47,16 +47,16 @@ To complete this guide, you will need to follow these steps:
 
 - [Create a new Astro application](#create-a-new-astro-application)
 - [Add Tailwind CSS to the application](#add-tailwind-css-to-the-application)
-- [Enabling Server Side Rendering in Astro](#enabling-server-side-rendering-in-astro)
-- [Setting up a Xata Database](#setting-up-a-xata-database)
+- [Enable Server Side Rendering in Astro](#enabling-server-side-rendering-in-astro)
+- [Set up a Xata Database](#setting-up-a-xata-database)
   - [Install the Xata CLI](#install-the-xata-cli)
 - [Create Stripe Checkout Sessions](#create-stripe-checkout-sessions)
 - [Respond to Stripe Webhooks](#respond-to-stripe-webhooks)
-- [Authenticating users with Lucia Auth and Xata](#authenticating-users-with-lucia-auth-and-xata)
-  - [Building Xata Adapter for Lucia Auth](#building-xata-adapter-for-lucia-auth)
+- [Authenticate users with Lucia Auth and Xata](#authenticating-users-with-lucia-auth-and-xata)
+  - [Build a Xata Adapter for Lucia Auth](#building-xata-adapter-for-lucia-auth)
   - [Initialize Lucia with Xata](#initialize-lucia-with-xata)
   - [Create Utilities for User Authentication Status](#create-utilities-for-user-authentication-status)
-  - [Building Authentication Routes with Lucia Auth](#building-authentication-routes-with-lucia-auth)
+  - [Build Authentication Routes with Lucia Auth](#building-authentication-routes-with-lucia-auth)
     - [Build the Sign Up HTML and API Route](#build-the-sign-up-html-and-api-route)
     - [Build the Sign In HTML and API Route](#build-the-sign-in-html-and-api-route)
     - [Build the Sign Out API Route](#build-the-sign-out-api-route)
@@ -76,7 +76,7 @@ pnpm create astro@latest protected-and-paid-stripe-xata
 When prompted, choose:
 
 - `Empty` when prompted on how to start the new project.
-- `Yes` when prompted if plan to write Typescript.
+- `Yes` when prompted if you plan to write using Typescript.
 - `Strict` when prompted how strict Typescript should be.
 - `Yes` when prompted to install dependencies.
 - `Yes` when prompted to initialize a git repository.
@@ -92,7 +92,7 @@ The app should be running on [localhost:4321](http://localhost:4321/). Now, let'
 
 ## Add Tailwind CSS to the application
 
-For styling the app, you will use Tailwind CSS. Install and set up Tailwind at the root of our project's directory by running:
+For styling the app, you will use Tailwind CSS. Install and set up Tailwind at the root of your project's directory by running:
 
 ```bash
 pnpm astro add tailwind
@@ -102,9 +102,9 @@ When prompted, choose:
 
 - `Yes` when prompted to install the Tailwind dependencies.
 - `Yes` when prompted to generate a minimal `tailwind.config.mjs` file.
-- `Yes` when prompted to make changes to Astro configuration file.
+- `Yes` when prompted to make changes to the Astro configuration file.
 
-With choices as above, the command finishes integrating TailwindCSS into your Astro project. It installed the following dependency:
+The command then finishes integrating TailwindCSS into your Astro project. It installed the following dependency:
 
 - `tailwindcss`: TailwindCSS as a package to scan your project files to generate corresponding styles.
 - `@astrojs/tailwind`: The adapter that brings Tailwind's utility CSS classes to every `.astro` file and framework component in your project.
@@ -113,7 +113,7 @@ Now, let's move on to enabling server side rendering in the application.
 
 ## Enabling Server Side Rendering in Astro
 
-To create checkouts using Stripe API dynamically, you would need to server-side render your Astro application. Enable server side rendering in your Astro project by executing the following command in your terminal:
+To create checkouts using the Stripe API dynamically, you will need to server-side render your Astro application. Enable server side rendering in your Astro project by executing the following command in your terminal:
 
 ```bash
 pnpm add @astrojs/vercel
@@ -122,7 +122,7 @@ pnpm add @astrojs/vercel
 When prompted, choose:
 
 - `Yes` when prompted to install the Vercel dependencies.
-- `Yes` when promted to make changes to Astro configuration file.
+- `Yes` when prompted to make changes to the Astro configuration file.
 
 The command above installed the following dependency:
 
@@ -138,22 +138,22 @@ After you've created a Xata account and are logged in, create a database by clic
 
 ### Install the Xata CLI
 
-Obtain the Xata initialization command by clicking on a table (say, `user`), and then on `Get code snippet` button.
+Obtain the Xata initialization command by clicking on a table (say, `user`), and then on the `Get code snippet` button.
 
 ![View User Table](/images/building-protected-and-paywall/user-table.png)
 
-A modal titled `Code snippets` is presented which contains set of commands to integrate Xata into your project, locally.
+A modal titled `Code snippets` is presented which contains a set of commands to integrate Xata into your project, locally.
 
 ![Code Snippet for Xata CLI](/images/building-protected-and-paywall/code-snippet.png)
 
-For interacting with Xata database using their TypeScript SDK, install the Xata CLI globally by executing the following command in your terminal:
+For interacting with your Xata database using the TypeScript SDK, install the Xata CLI globally by executing the following command in your terminal:
 
 ```bash
 # Installs the CLI globally
 npm install -g @xata.io/cli
 ```
 
-Then, link the Xata project to your Astro application by executing the following command in your terminal window:
+Then, link your Xata project to your Astro application by executing the following command in your terminal window:
 
 ```bash
 # Initialize your project locally with the Xata CLI
@@ -167,7 +167,7 @@ Use the following answers to the Xata CLI one-time setup question prompts to int
 
 ![Setup Astro project with Xata CLI](/images/building-protected-and-paywall/cli.png)
 
-Now, let’s move on to the creating API endpoints that create checkouts dynamically using Stripe.
+Now, let’s move onto creating API endpoints that create checkouts dynamically using Stripe.
 
 ## Create Stripe Checkout Sessions
 
@@ -309,7 +309,7 @@ export async function POST({ request }: APIContext) {
 
 The code above does the following:
 
-- Imports the Stripe class from it's SDK, `APIContext` type by Astro and `getXataClient` to access the in-memory Xata instance.
+- Imports the Stripe class from its SDK, `APIContext` type by Astro and `getXataClient` to access the in-memory Xata instance.
 - Exports a POST HTTP handler to only respond to incoming POST request(s).
 - Validates the presence of `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SIG` environment variables.
 - Creates a Stripe webhook event from the incoming Stripe webhook request body.
@@ -317,7 +317,7 @@ The code above does the following:
 - If a record is found, the `paid` attribute is set to `true`.
 - Otherwise, it creates a record with the email and `paid` attribute as `true`.
 
-Let's move on to authenticating users with Xata database and Lucia library.
+Let's move on to authenticating users with your Xata database and a Lucia library.
 
 ## Authenticating users with Lucia Auth and Xata
 
@@ -360,15 +360,15 @@ The code additions above do the following:
 - Imports dotenv which makes all the environment variables accessible via the `process.env` object.
 - Uses vite's [optimizeDeps](https://vitejs.dev/config/dep-optimization-options#optimizedeps-exclude) to exclude the `oslo` library from being pre-bundled, effectively, using the library as is.
 
-Then, create a lucia directory in the src directory by running the following command:
+Now, create a Lucia directory in the src directory by running the following command:
 
 ```bash
 mkdir src/lucia
 ```
 
-Now, let's move on to creating a Xata adapter for Lucia library.
+Let's now move on to creating a Xata adapter for our Lucia library.
 
-### Building Xata Adapter for Lucia Auth
+### Building a Xata Adapter for Lucia Auth
 
 Create a `src/lucia/xata.ts` file with the following code:
 
@@ -386,7 +386,7 @@ import type {
 } from 'lucia';
 ```
 
-The code above imports the `getXataClient` utility to retrieve the in-memory Xata instance. It then imports the relevant types from `lucia` module. Append the following code:
+The code above imports the `getXataClient` utility to retrieve the in-memory Xata instance. It then imports the relevant types from the `lucia` module. Append the following code:
 
 ```tsx
 // File: src/lucia/xata.ts
@@ -407,7 +407,7 @@ interface SessionSchema extends RegisteredDatabaseSessionAttributes {
 The code above defines the following types:
 
 - `UserSchema`: A type created with `RegisteredDatabaseUserAttributes` type definition alongwith `id` attribute as a string.
-- `SessionSchema`: A type created with `RegisteredDatabaseSessionAttributes` type definition alongwith `id` attribute as a string, `user_id` attribute as a string and `expires_at` attribute as a Date.
+- `SessionSchema`: A type created with `RegisteredDatabaseSessionAttributes` type definition along with `id` attribute as a string, `user_id` attribute as a string and `expires_at` attribute as a Date.
 
 Append the following code to handle data transformations to Lucia's expected structure:
 
@@ -454,7 +454,7 @@ export class XataAdapter implements Adapter {
 }
 ```
 
-The code above defines a class XataAdapter based on Lucia's Adapter class. Then, it sets a `controller` private class variable equivalent to Xata instance obtained from `getXataClient` method. Define a method to delete a session by appending the following code:
+The code above defines a class XataAdapter based on Lucia's Adapter class. Then, it sets a `controller` private class variable equivalent to the Xata instance obtained from the `getXataClient` method. Define a method to delete a session by appending the following code:
 
 ```tsx
 // File: src/lucia/xata.ts
@@ -526,7 +526,7 @@ export class XataAdapter implements Adapter {
 }
 ```
 
-The code above defines a `setSession` method that uses Xata SDK methods to insert a record in session table in your database. Define a method to update a session by appending the following code:
+The code above defines a `setSession` method that uses Xata SDK methods to insert a record in a session table in your database. Define a method to update a session by appending the following code:
 
 ```tsx
 // File: src/lucia/xata.ts
@@ -542,7 +542,7 @@ export class XataAdapter implements Adapter {
 }
 ```
 
-The code above defines an `updateSessionExpiration` method that uses Xata SQL query to update the `expires_at` attribute in a particular session in your database. Define a method to delete all expired sessions by appending the following code:
+The code above defines an `updateSessionExpiration` method that uses a Xata SQL query to update the `expires_at` attribute in a particular session in your database. Define a method to delete all expired sessions by appending the following code:
 
 ```tsx
 // File: src/lucia/xata.ts
@@ -558,7 +558,7 @@ export class XataAdapter implements Adapter {
 }
 ```
 
-The code above defines a `deleteExpiredSessions` method that uses Xata SQL query to delete all the sessions whose `expires_at` attribute have expired. Define a method to obtain a session by appending the following code:
+The code above defines a `deleteExpiredSessions` method that uses a Xata SQL query to delete all the sessions whose `expires_at` attribute have expired. Define a method to obtain a session by appending the following code:
 
 ```tsx
 // File: src/lucia/xata.ts
@@ -575,7 +575,7 @@ export class XataAdapter implements Adapter {
 }
 ```
 
-The code above defines a `getSession` method that uses Xata SDK method to retrieve a single matching record for a given session from your database. Define a method to obtain a user associated with a session by appending the following code:
+The code above defines a `getSession` method that uses Xata SDK methods to retrieve a single matching record for a given session from your database. Define a method to obtain a user associated with a session by appending the following code:
 
 ```tsx
 // File: src/lucia/xata.ts
@@ -597,7 +597,7 @@ export class XataAdapter implements Adapter {
 }
 ```
 
-The code above defines a `getUserFromSessionId` method that uses Xata SDK method to retrieve a single matching record for a given session from your database. If a session is found, it further queries to obtain the user associated with the session. Otherwise, it returns `null`.
+The code above defines a `getUserFromSessionId` method that uses Xata SDK methods to retrieve a single matching record for a given session from your database. If a session is found, it further queries to obtain the user associated with the session. Otherwise, it returns `null`.
 
 ```tsx
 // File: src/lucia/xata.ts
@@ -654,10 +654,10 @@ The code above does the following:
 
 - Imports the Lucia and XataAdapter classes.
 - Creates a new instance of XataAdatper as `adapter`.
-- Uses the `adapter` to create a new Lucia instance wherein the session cookie set to `Secure` if the application is running in the production environment.
+- Uses the `adapter` to create a new Lucia instance wherein the session cookie is set to `Secure` if the application is running in the production environment.
 - The `lucia` instance defines the `getUserAttributes` function to only fetch `paid` and `email` attributes from the user record(s).
 
-To create type definitions for the user and session associated, append the following code:
+To create type definitions for the associated user and session, append the following code:
 
 ```tsx
 // File: src/lucia/index.ts
@@ -679,12 +679,12 @@ declare module 'lucia' {
 
 The code above defines the following types:
 
-- `DatabaseUserAttributes`: An object that would contain `email` attribute as a `string`, and `paid` attribute as `boolean` or `null`.
+- `DatabaseUserAttributes`: An object that would contain an `email` attribute as a `string`, and `paid` attribute as `boolean` or `null`.
 - `Lucia`: As the type of the lucia instance created.
 
 ### Create Utilities for User Authentication Status
 
-To retrieve the authentication status of the session, you would need to obtain the user information associated with the request. Create a file `user.ts` with the following code:
+To retrieve the authentication status of the session, you will need to obtain the user information associated with the request. Create a file `user.ts` with the following code:
 
 ```tsx
 // File: src/lucia/user.ts
@@ -711,7 +711,7 @@ The code above does the following:
 
 - Imports the `lucia` instance and the `User` type by Lucia.
 - Exports a `getSessionID` function which uses Lucia's `readSessionCookie` utility to obtain the session ID.
-- Exports `getUser` function which uses the `getSessionID` function to obtain the session id. Then, it uses Lucia's `validateSession` utility to obtain the user data information with the session.
+- Exports a `getUser` function which uses the `getSessionID` function to obtain the session id. Then, it uses Lucia's `validateSession` utility to obtain the user data information with the session.
 
 Let's move on to creating simple user authentication forms and the API routes to handle the authentication logic.
 
@@ -748,7 +748,7 @@ export const prerender = true
 </html>
 ```
 
-The code above creates an sign up route in the Astro application containing a form that POSTs to `/api/sign/up` with user's email and password. Create a `src/pages/api/sign/up.ts` file with the following code to handle the form submission:
+The code above creates a sign up route in the Astro application containing a form that POSTs to `/api/sign/up` with the user's email and password. Create a `src/pages/api/sign/up.ts` file with the following code to handle the form submission:
 
 ```tsx
 // File: src/pages/api/sign/up.ts
@@ -782,7 +782,7 @@ export async function POST({ request, redirect, cookies }: APIContext): Promise<
 
 The code above does the following:
 
-- Imports an utility from Lucia SDK to create random ID(s), the `getXataClient` utility to obtain the in-memory Xata instance, Argon2id class by `oslo` to hash given password(s).
+- Imports a utility from the Lucia SDK to create random ID(s), the `getXataClient` utility to obtain the in-memory Xata instance, Argon2id class by `oslo` to hash given password(s).
 - Exports a POST HTTP handler to only respond to incoming POST request(s).
 - Obtains the email and password from the request's form data.
 - Hashes the password using Argon2id's `hash` method.
@@ -821,7 +821,7 @@ export const prerender = true
 </html>
 ```
 
-The code above creates an sign in route in the Astro application containing a form that POSTs to `/api/sign/in` with user's email and password. Create a `src/pages/api/sign/in.ts` file with the following code to handle the form submission:
+The code above creates a sign in route in the Astro application containing a form that POSTs to `/api/sign/in` with the user's email and password. Create a `src/pages/api/sign/in.ts` file with the following code to handle the form submission:
 
 ```tsx
 // File: src/pages/api/sign/in.ts
@@ -913,10 +913,10 @@ if (!user || user.paid !== true) return new Response(null, { status: 403 })
 </html>
 ```
 
-The code above creates an `/protected_and_paid` route in the Astro application that does the following:
+The code above creates a `/protected_and_paid` route in the Astro application that does the following:
 
 - Checks if there's a user associated with the session and if they have paid.
-- If the above is not true, it returns a 403 Unauthorized response. Otherwise, it returns a HTML page containing the paid and protected information.
+- If the above is not true, it returns a 403 Unauthorized response. Otherwise, it returns an HTML page containing the paid and protected information.
 
 To restrict access to a page for only authenticated users, you will obtain the user information using the utilities created earlier. Create a file `src/pages/protected.astro` with the following code:
 
@@ -940,10 +940,10 @@ if (!user) return new Response(null, { status: 403 })
 </html>
 ```
 
-The code above creates an `/protected` route in the Astro application that does the following:
+The code above creates a `/protected` route in the Astro application that does the following:
 
 - Checks if there's a user associated with the session.
-- If the above is not true, it returns a 403 Unauthorized response. Otherwise, it returns a HTML page containing the protected information.
+- If the above is not true, it returns a 403 Unauthorized response. Otherwise, it returns an HTML page containing the protected information.
 
 ## Deploy to Vercel
 
@@ -951,7 +951,7 @@ The repository, is now ready to deploy to Vercel. Use the following steps to dep
 
 - Start by creating a GitHub repository containing your app's code.
 - Then, navigate to the Vercel Dashboard and create a **New Project**.
-- Link the new project to the GitHub repository you just created.
+- Link the new project to the GitHub repository you've just created.
 - In **Settings**, update the **Environment Variables** to match those in your local `.env` file.
 - Deploy! 🚀
 
