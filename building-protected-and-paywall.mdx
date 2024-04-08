@@ -174,7 +174,7 @@ A Stripe checkout session, in this case, would refer to a payment link hosted by
 
 Let's use the index route to display a buy button that would take users to the Stripe hosted checkout. Create an index route (`src/pages/index.astro`) with the following code:
 
-```html
+ ```astro
 ---
 
 // File: src/pages/index.astro
@@ -722,7 +722,7 @@ In this section, you will learn how to create simple forms in Astro, and use the
 
 To serve responses to a `/signup` route in Astro, create a `src/pages/signup.astro` file with the following code:
 
-```html
+```astro
 ---
 // File: src/pages/signup.astro
 
@@ -730,20 +730,20 @@ export const prerender = true
 ---
 
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-  </head>
-  <body class="font-display overflow-x-hidden">
-    <h1>Sign Up</h1>
-    <form method="post" action="/api/sign/up">
-      <label for="email">Email</label>
-      <input id="email" name="email" />
-      <label for="password">Password</label>
-      <input id="password" name="password" />
-      <button>Continue</button>
-    </form>
-  </body>
+ <head>
+   <meta charset="utf-8" />
+   <meta name="viewport" content="width=device-width" />
+ </head>
+ <body class="font-display overflow-x-hidden">
+   <h1>Sign Up</h1>
+   <form method="post" action="/api/sign/up">
+     <label for="email">Email</label>
+     <input id="email" name="email" />
+     <label for="password">Password</label>
+     <input id="password" name="password" />
+     <button>Continue</button>
+   </form>
+ </body>
 </html>
 ```
 
@@ -795,7 +795,7 @@ The code above does the following:
 
 To serve responses to a `/signin` route in Astro, create a `src/pages/signin.astro` file with the following code:
 
-```html
+```astro
 ---
 // File: src/pages/signin.astro
 
@@ -803,20 +803,20 @@ export const prerender = true
 ---
 
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-  </head>
-  <body class="font-display overflow-x-hidden">
-    <h1>Sign In</h1>
-    <form method="post" action="/api/sign/in">
-      <label for="email">Email</label>
-      <input id="email" name="email" />
-      <label for="password">Password</label>
-      <input id="password" name="password" />
-      <button>Continue</button>
-    </form>
-  </body>
+ <head>
+   <meta charset="utf-8" />
+   <meta name="viewport" content="width=device-width" />
+ </head>
+ <body class="font-display overflow-x-hidden">
+   <h1>Sign In</h1>
+   <form method="post" action="/api/sign/in">
+     <label for="email">Email</label>
+     <input id="email" name="email" />
+     <label for="password">Password</label>
+     <input id="password" name="password" />
+     <button>Continue</button>
+   </form>
+ </body>
 </html>
 ```
 
@@ -890,7 +890,7 @@ The code above does the following:
 
 To restrict access to a page for only paid and authenticated users, you will obtain the user information using the utilities created earlier. Create a file `src/pages/protected_and_paid.astro` with the following code:
 
-```html
+```astro
 ---
 // File: src/pages/protected_and_paid.astro
 
@@ -902,13 +902,13 @@ if (!user || user.paid !== true) return new Response(null, { status: 403 })
 ---
 
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-  </head>
-  <body class="font-display overflow-x-hidden">
-    <span> Protected and Paid Content </span>
-  </body>
+ <head>
+   <meta charset="utf-8" />
+   <meta name="viewport" content="width=device-width" />
+ </head>
+ <body class="font-display overflow-x-hidden">
+   <span> Protected and Paid Content </span>
+ </body>
 </html>
 ```
 
@@ -919,7 +919,7 @@ The code above creates a `/protected_and_paid` route in the Astro application th
 
 To restrict access to a page for only authenticated users, you will obtain the user information using the utilities created earlier. Create a file `src/pages/protected.astro` with the following code:
 
-```html
+```astro
 ---
 import { getUser } from '@/lucia/user'
 
@@ -929,13 +929,13 @@ if (!user) return new Response(null, { status: 403 })
 ---
 
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-  </head>
-  <body class="font-display overflow-x-hidden">
-    <span> Protected Content </span>
-  </body>
+ <head>
+   <meta charset="utf-8" />
+   <meta name="viewport" content="width=device-width" />
+ </head>
+ <body class="font-display overflow-x-hidden">
+   <span> Protected Content </span>
+ </body>
 </html>
 ```
 
