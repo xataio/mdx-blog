@@ -1,0 +1,65 @@
+---
+title: 'Simplifying license management and reducing costs with AWS and Xata'
+description: 'Putting the spotlight on Ilia Gandelman, who significantly improved a cumbersome software license management system for smart rehabilitation therapy devices using Xata and AWS.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/club-xata-evora.jpg
+  alt: Community Spotlight
+author: Cezzaine Zaher
+date: 09-05-2024
+tags: ['community']
+published: false
+slug: community-spotlight-simplifying-license-management
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/club-xata-evora.jpg
+---
+
+[Ilia Gandelman](https://www.linkedin.com/in/ilia-gandelman-64663563/), a forward-thinking developer from Israel, has significantly improved a cumbersome software license management system using Xata’s serverless database. 
+
+He started his career in the gaming industry, developing mobile games that required overcoming significant performance and complexity challenges. Over time, he transitioned to freelance work, aiming to broaden his expertise and tackle a variety of technological challenges. 
+
+Let's dive into how Ilia is using Xata for one of his recent freelance projects.
+
+## Overhauling license management for smart rehabilitation therapy
+
+[PLAYWORK](https://www.playwork.me/), one of Ilia's clients, specializes in interactive rehabilitation through a product called the Smart PLAYBALL. This device is a therapy ball equipped with sensors that enable patients to engage in interactive games while performing rehabilitative exercises. It is designed to make physical therapy more enjoyable and effective by incorporating fun, game-based elements. This technology not only engages patients with interactive exercises but also monitors their progress and generates data-driven care plans.
+
+![PLAYWORK Smart PLAYBALL technology](/images/spotlight-playwork.png)
+  
+PLAYWORK faced significant operational inefficiencies with their software license management system which was both slow and costly. The legacy system was initially a completely manual process for recording product details and encrypting licenses into the application when a Smart PLAYBALL was purchased. Ilia first addressed this with a semi-automatic process which used java code connected with a Google Sheets API but this quickly created further scalability and reliability issues. Ilia needed to find a solution that could handle complex data validation while maintaining an Excel-like interface for ease of use.
+
+## Implementing Xata for an automated, scalable solution
+His journey to find a suitable platform led him to discover Xata through a Fireship tutorial video. Xata offered an intuitive user interface that resembled the familiar spreadsheet environment, making it easy for his non-technical client to use, but with much more powerful data management capabilities.
+
+Ilia implemented Xata to replace the old Java code, which allowed for real-time data validation and management through a user-friendly interface. This shift significantly improved the system's efficiency by automating the entire process of license distribution. Xata's ability to handle multiple client queries simultaneously and its scripting capabilities within the playground feature of the application, allowed for scenarios where hundreds of licenses could be activated in a single click, providing a scaled solution. This helped reduce the amount of overhead required, which instantly improved efficiency for PLAYWORK.
+
+> Xata really helped me provide a secure and reliable solution for one of my clients. I just want to say thank you for a great product which really saved me alot of time and helped me scale my client's business quickly.\
+> _Ilia Gandelman - Senior Software Developer, Israel_
+
+## A look at the architecture
+
+The project architecture included the integration of physical sensors, each with unique MAC IDs, which were connected to mobile devices, each with unique device IDs. Every sensor was coupled directly to the device that activated it in order to obtain a specific license. This ensured that each component was traceable and secure. Whenever there was a change or issue, the system required verification of the device ID against the registered data, with customer support stepping in only when mismatches occurred. This additional layer of security ensured efficiency while improving robustness against potential misuse.
+
+However, Ilia did run into a challenge during his initial integration due to the limitation of only having a JavaScript SDK. To address this, he developed a microservice to connect the new Xata-based system with the old Java server, which was somewhat bulky. Recognizing the need for a more streamlined approach, he was pleased about Xata’s release of the Python SDK. Fluent in Python and familiar with AWS, Ilia has now begun rewriting the server to utilize AWS services to simplify the architecture by potentially moving to a single server or Lambda function. This rewrite will deprecate the previous two-step request process, making the system even more efficient.
+
+![New architecture framework](/images/xxxx)
+
+## Feedback and feature requests
+
+We asked Ilia which Xata features he finds most useful:
+
+* **Simple UI:** Resembles familiar tools like Excel, which makes it easy for users to adapt and manage data effectively.
+* **Branching:** It provides flexibility by allowing both clients and developers to experiment and make changes without affecting the live environment. 
+* **Scripting capabilities:** The Playground feature enables custom script writing for automation and handling complex scenarios, which allowed him to to solve the challenge of activating multiple licenses simultaneously.
+* **Schema view:** The dynamic filtering and data management features helped Ilia and PLAYWORK to efficiently manage and track registrations and product activations with ease. They also found the metadata particularly useful because it quickly showed new or modified entries straight in the schema view of the UI.
+* **Python SDK:** It offers better integration with modern technology stacks, particularly Python, which has enhanced his overall development experience and system performance.
+
+> The whole branching system and the schema editor is pretty much brilliant.\
+> _Ilia Gandelman - Senior Software Developer, Israel_
+
+He also added that a couple of additional Xata features he thinks would be helpful include: 
+
+* **Mocking mode for data entry:** Ilia expressed a desire for a feature that allows entering mock data into fields for testing purposes. This would help in validating data handling and system responses without needing real inputs.
+* **Granular access controls:** Having more detailed control over what users can see and do within the Xata UI. This would help simplify roles for non-technical users and ensure system administrators can better manage access permissions.
+* **Enhanced data importing capabilities:** He mentioned the need for improvements in the data importing process, particularly in preserving data types when importing from files like CSVs, which would streamline data migration and integration tasks.
+
+## Share your Xata story
+Do you have a similar story or community contribution you’d like to share? [Send us an email](mailto:communityspotlight@xata.io) or ping us on [Discord](https://xata.io/discord) if you’d like to be featured in our community spotlight. Until then, happy building 🦋         
