@@ -159,7 +159,7 @@ While for simplicity we have used a separate controller node, you can also creat
 
 While the FDW + partitioning trick (for lack of a better word) provides a global view that you can query and write to, it does have some important limitations at the moment. Note that these limitations apply only when you are accessing or writing via the global view. That's why we're saying that this pattern works best, for now, when you rarely need to use the global view.
 
-**Performance impact: it's complicated**. Accessing a remote table is a lot slower than accessing a local table, especially when the table is half-way across the globe. Also, transferring a lot of data over the Internet is slow and expensive, so that becomes another optimization metric. In order to create the optimal plans, the Postgres planner needs to be aware of these things and take it into account. As of today (Postgres 16) however, this unfortunately only partially the case.
+**Performance impact: it's complicated**. Accessing a remote table is a lot slower than accessing a local table, especially when the table is half-way across the globe. Also, transferring a lot of data over the Internet is slow and expensive, so that becomes another optimization metric. In order to create the optimal plans, the Postgres planner needs to be aware of these things and take it into account. As of today (Postgres 16) however, this is unfortunately only partially the case.
 
 **Write transactions across regions are not ACID**. As we've mentioned earlier, inserting data via the global tables works well. However, transactions that span multiple remote tables are not true ACID. This is because the current Postgres FDW does not support two-phase commit (2PC) or other mechanisms to ensure that the transaction is atomic across all nodes.
 
@@ -173,6 +173,6 @@ Over the longer term, as the Postgres FDW, partitioning, and planner improve, we
 
 As part of our own "distributed Postgres" project, which we have already teased in the [pgzx release blog post](https://xata.io/blog/introducing-pgzx), we have been thinking on how to pull this future forward. We're excited to share more about this in the coming months. If you want to be in the loop, we have a [newsletter](https://mailchi.mp/xata/2zoy27tx2e) dedicated to our open source projects, where we share our progress.
 
-If are looking to distribute your Postgres database, either geographically or horizontally in the same region, we'd love to chat with you! Please say hi on our [discord](https://xata.io/discord) or over [email](mailto:info@xata.io).
+If you're looking to distribute your Postgres database, either geographically or horizontally in the same region, we'd love to chat with you! Please say hi on our [discord](https://xata.io/discord) or over [email](mailto:info@xata.io).
 
 Until next time 👋
