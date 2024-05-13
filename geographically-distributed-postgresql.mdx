@@ -97,7 +97,7 @@ Let's say we use another Postgres instance as our "controller node". In this Pos
 
 ![Global view using FDW and partitioning](images/geo-postgres/global-view-fdw-partitioning.png)
 
-In the above, the tables are presented with their schema name. In the data nodes, we assume the schema name is `puplic`. When mounting the tables to the controller node, we use a schema name that matches the region name, or the node name. This is a convenient way to keep track of where each table is coming from.
+In the above, the tables are presented with their schema name. In the data nodes, we assume the schema name is `public`. When mounting the tables to the controller node, we use a schema name that matches the region name, or the node name. This is a convenient way to keep track of where each table is coming from.
 
 For example, here are the commands to mount the `pages` table from the `us_east1` node to the controller node:
 
