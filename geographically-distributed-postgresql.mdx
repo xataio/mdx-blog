@@ -68,7 +68,7 @@ Alternatively, the application stack can run on an edge platform (e.g. CloudFlar
 
 ## Distributing the per tenant data
 
-In our Notion clone example, let's look at how we'd distribute the `pages` table. We're assuming simplified schema for this table, with a page id column, title and URL columns, and the workspace id foreign key. We're also going to add a region column, which will be used to partition the data. This last one is not strictly required, but it will help with partitioning (see below).
+In our Notion clone example, let's look at how we'd distribute the `pages` table. We're assuming a simplified schema for this table, with a page id column, title and URL columns, and the workspace id foreign key. We're also going to add a region column, which will be used to partition the data. This last one is not strictly required, but it will help with partitioning (see below).
 
 ![Pages table, grouped by tenant and region](images/geo-postgres/pages-table.png)
 
