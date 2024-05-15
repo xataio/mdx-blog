@@ -1,18 +1,18 @@
 ---
 title: 'Modernizing the conference management backend of the World Affairs Conference'
-description: 'Putting the spotlight on Samuel Martineau, a software engineer based out of Ontario, Canada replacing the backend of a conference management system with Xata.'
+description: 'Putting the spotlight on Samuel Martineau, a software developer apprentice based out of Ontario, Canada replacing the backend of a conference management system with Xata.'
 image:
-  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/cs-wac-cover.jpg
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/community-spotlight-world-affairs-conference.jpg
   alt: Community Spotlight
 author: Alex Francoeur
 date: 05-08-2024
 tags: ['community']
 published: true
 slug: community-spotlight-conference-backend-world-affairs-conference
-ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/cs-wac-cover.jpg
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/community-spotlight-world-affairs-conference.jpg
 ---
 
-[Samuel Martineau](https://github.com/Samuel-Martineau) has not even graduated high school yet and is already racking up an impressive list of professional accomplishments. From being on national TV for his [wall climbing robot](https://github.com/Samuel-Martineau/memomath), to leading the team and architectural design for the new management system of the worlds oldest student run conference, the [World Affairs Conference](https://worldaffairscon.org/). The conference brings in over 4,000 of the worlds brightest minds from 25 countries in 65 schools internationally. As Samuel gets ready to graduate from the [Upper Canada College](https://en.wikipedia.org/wiki/Upper_Canada_College), he looks to take his talents to the world of mechatronics, pursuing a degree in mechanical engineering at a Canadian university.
+[Samuel Martineau](https://github.com/Samuel-Martineau) has not even graduated high school yet and is already racking up an impressive list of professional accomplishments. From being on national TV for his [wall climbing robot](https://www.tv5unis.ca/videos/les-inventifs/saisons/2/episodes/5.), to leading the team and architectural design for the new management system of the worlds oldest student run conference, the [World Affairs Conference](https://worldaffairscon.org/). The in-person conference brings in over 1,000 of the worlds brightest minds from 25 countries in 65 schools internationally. As Samuel gets ready to graduate from the [Upper Canada College](https://www.ucc.on.ca/), he looks to take his talents to the world of mechatronics, pursuing a degree in mechanical engineering at a Canadian university.
 
 ## Modernizing a dated tech stack
 
@@ -29,10 +29,10 @@ For the backend, there were a few very specific requirements for different parts
 
 Xata checked all of the boxes and more for their next generation tech stack.
 
-> I think we used pretty much every feature Xata offers. Our user profile and speaker images are stored in Xata, we used the summarize API for sign up and registration time series charts, preview databases with Netlify, full text search for our application and more. Having one service to provide all of this functionality made it a pretty easy decision to choose Xata.\
-> _Samuel Martineau - Title_
+> I think we used pretty much every feature Xata offers. Our user profile and speaker images are stored in Xata, we used the summarize API for sign up and registration time series charts, preview databases with Netlify and more. Having one service to provide all of this functionality made it a pretty easy decision to choose Xata.\
+> _Samuel Martineau - Developer Apprentice_
 
-On the frontend, [Sveltekit](https://kit.svelte.dev/), [three.js](https://threejs.org/) and [AG Grid](https://ag-grid.com/) were used to build the website, registration application and internal administrative dashboards. All of this was deployed on [Netlify](https://www.netlify.com/), where the [Xata - Netlify](https://xata.io/docs/integrations/netlify) integration was used to provide preview deployments in their CI/CD pipeline. The pull request generated previews were critical to the development process for the team, making it easy to test changes before deploying to production.
+On the frontend, [SvelteKit](https://kit.svelte.dev/), [three.js](https://threejs.org/) and [AG Grid](https://ag-grid.com/) were used to build the website, registration application and internal administrative dashboards. All of this was deployed on [Netlify](https://www.netlify.com/), where the [Xata - Netlify](https://xata.io/docs/integrations/netlify) integration was used to provide preview deployments in their CI/CD pipeline. The pull request generated previews were critical to the development process for the team, making it easy to test changes before deploying to production.
 
 ## A registration flow with optimized session assignment
 
@@ -42,7 +42,7 @@ As registration flows should be, this one was pretty simple overall and leverage
 
 In most cases, this would be the end of the registration flow. Because this is a conference with some pretty popular and well known speakers, Samuel needed to come up with a way to provide the most optimal schedule to attendees. How can they provide personalized conference tracks that are optimized to make the most people happy?
 
-It turns out that the problem of attendee assignment to plenaries is very similar to the problem faced when assigning medical residents to hospitals for their medication. The WAC team ended up using the same algorithm to solve this problem, the [Gale-Shapely algorithm](https://en.wikipedia.org/wiki/Gale%E2%80%93Shapley_algorithm). They created a weighted graph between every single attendee and every single plenary. The weight of the edges are stored in Xata and Samuel and his team created an algorithm to provide an optimal assignment of sessions for every single attendee.
+It turns out that the problem of attendee assignment to plenaries is very similar to the problem faced when assigning medical residents to hospitals. The WAC team ended up using the same algorithm to solve this problem, the [Gale-Shapely algorithm](https://en.wikipedia.org/wiki/Gale%E2%80%93Shapley_algorithm). They created a weighted graph between every single attendee and every single plenary. The weight of the edges are stored in Xata and Samuel and his team created an algorithm to provide an optimal assignment of sessions for every single attendee.
 
 ## Customized, performant and scalable administrative dashboard
 
@@ -52,7 +52,7 @@ The other users they had to build for were the administrators of the conference.
 - Trends and analytics on sign ups over time, schools that registered and more
 - A content management system for the website and registration application
 
-In order to quickly find attendees to see if their registrations are complete, they ended up embedding [AG Grid](https://ag-grid.com/) into the admin app. Sveltekit wasn’t supported natively, so Samuel and his team had to create their own integration in order for the two to work well together. What you saw in this view and others depended entirely on the roles and permissions you had as an admin. Having this granular role based access control on the system was important as the number of users grew.
+In order to quickly find attendees to see if their registrations are complete, they ended up embedding [AG Grid](https://ag-grid.com/) into the admin app. SvelteKit wasn’t supported natively, so Samuel and his team had to create their own integration in order for the two to work well together. What you saw in this view and others depended entirely on the roles and permissions you had as an admin. Having this granular role based access control on the system was important as the number of users grew.
 
 ![Attendee administrative table](/images/cs-wac-admin-table.png)
 
