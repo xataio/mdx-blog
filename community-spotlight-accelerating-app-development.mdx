@@ -1,0 +1,73 @@
+---
+title: 'Accelerating app development with Xata as the data layer'
+description: 'Putting the spotlight on Mathias Eriksson (aka Matzie), founder of Matzielab, a company that has nearly perfected the app development process.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/community-spotlight-accelerating-app-development.jpg
+  alt: Community Spotlight
+author: Alex Francoeur
+date: 05-29-2024
+tags: ['community']
+published: true
+slug: community-spotlight-accelerating-app-development
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/community-spotlight-accelerating-app-development.jpg
+---
+
+These days, everyone seems to have a side hustle. Work dynamics have shifted in the post-COVID era and the job market has made it more difficult to switch companies frequently. In the startup world, contractors have become pretty common where a full role is not needed. [Mathias Eriksson](https://www.linkedin.com/in/mathias-eriksson-b4a890152/) (aka Matzie), a React Native developer out of Stockholm, Sweden, had been taking on one-off projects and contract work in addition to his daily job for many years now. About two years ago he took the leap and created his own company, [Matzielab](https://matzielab.com/), and he’s built some pretty amazing experiences since.
+
+## Building a portfolio
+
+Matzie has been working at a number of companies local to Stockholm — building applications whose use cases range from food retail, networking and delivery services. As a result, he was able to gain experience with a number of different tech stacks. From the classic [LAMP](<https://en.wikipedia.org/wiki/LAMP_(software_bundle)>), to getting his hands dirty with Python, Laravel, Java and lots of MySQL. Over time, he drifted towards React Native on the frontend as his favorite framework to work with.
+
+As any founder would know, you’re as much of a sales person as a CEO in the early days. Selling your new company brand and proving that you can be trusted to produce good product is half the battle. For a company like Matzielab, having a strong portfolio is important. Nearly all of the application portfolio you can view Matzielab’s [website](https://matzielab.com/) uses Xata as the database, but here are a few recent releases worth highlighting.
+
+**Watzie**
+
+[Watzie](https://watzie.com/) makes it super simple to understand your health data. You can ask it questions about your progress and what you need to improve. With a large portion of the app local to your phone, it stays up to date with your Apple HealthKit data without sacrificing your privacy for convenience.
+
+![Watzie website](/images/cs-app-dev-01.png)
+
+**Matziepay**
+
+Matziepay is a financial platform that allows you to send a [Swish](<https://en.wikipedia.org/wiki/Swish_(payment)>) payment with any credit card, which makes it really easy to send money with your friends, colleagues and family.
+
+![Matziepay website](/images/cs-app-dev-02.png)
+
+**Middlebop**
+
+[Middlebop](https://middlebop.com/) is an AI platform that acts a semantic layer for any model of your choice. Vendor-agnostic, you can use a single API key for the LLM of your choice without ever needing to change the code in your application.
+
+![Middlebop website](/images/cs-app-dev-03.png)
+
+## Speed && templating == scale
+
+These are some of the many examples of applications built for Matzielab clients, and he’s able to build them so quickly because of his approach to development. In order to product such high quality apps this fast, Matzie has leaned into some specific technologies.
+
+- [Expo](https://expo.dev/) enables Matzie to create universal mobile apps that are React Native and work with Android, iOS and the web out of the box.
+- [Bun](https://bun.sh/) is an all-in-one JavaScript runtime that was built for speed, resulting in pretty snappy user experiences in his apps.
+- [ElysiaJS](https://elysiajs.com/) is like Express, but for Bun. Providing end-to-end type safety and extensive list of plugins.
+- Being heavily typed, [Xata](https://xata.io/) pairs well with this stack and fit his needs perfectly for the backend
+- [DigitalOcean droplets](https://www.digitalocean.com/products/droplets) pull the GitHub repository that combines these technologies and serves them up through [NGINX](https://www.nginx.com/) is used to serve up the apps today, with plans to build a nice CI/CD pipeline with GitHub actions
+
+This generic, templated stack allows Matzie to move fast, build and iterate on applications quickly for his customer base. With just a sketch of a screen from his client, he can usually put an MVP together pretty quickly.
+
+> Xata makes my development quicker. The Xata app allows me to quickly explore, modify or debug my data. And then once deployed into production, I can branch the database to keep tweaking.\
+> _Mathias Eriksson (aka Matzie) - CEO and Founder of Matzielabs_
+
+Before finding Xata, he had been using [Firebase](https://firebase.google.com/) a lot. At the time it lacked typing and a relational database — leading to a slower and less predictable development experience. Xata was able to remove any developer friction at the database level completely, and branching workflows helped speed up the evolution of his applications.
+
+## Feedback and feature requests
+
+We asked Matzie which Xata features he finds most useful, he landed on these:
+
+- **TypeScript SDK.** Given his experience, technology preferences and workflow the TypeScript SDK and automatic codegen from the CLI really simplified his experience with a database.
+- **Dynamic fields.** The automatically generated `xata.createdAt` and `xata.updatedAt` were a really nice surprise and found he was able to replace with custom fields he typically added
+- **Full-text search.** Having full-text search just work out of the box is really nice to have. While he’s planning to use in his next set of apps, he always finds defining that replication himself to be extremely cumbersome and never works as expected.
+
+We also asked what areas we could improve.
+
+- **Migration from Firebase**. While the experience was pretty seamless overall, he did want to migrate his custom `createdAt` and `updatedAt` fields to the `xata` fields. Being able to map the fields on import would allow him to bring over historic values during the migration.
+- **VSCode extension.** The experience with the Xata VSCode extension is nice, but as someone who prefers to never leave VSCode, would prefer to have a little more functionality in it.
+
+## Share your Xata story
+
+Do you have a similar story or community contribution you’d like to share? [Send us an email](mailto:communityspotlight@xata.io) or ping us on [Discord](https://xata.io/discord) if you’d like to be featured in our community spotlight. Until then, happy building 🦋
