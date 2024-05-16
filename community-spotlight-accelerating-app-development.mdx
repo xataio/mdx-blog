@@ -34,7 +34,7 @@ Matziepay is a financial platform that allows you to send a [Swish](<https://en.
 
 **Middlebop**
 
-[Middlebop](https://middlebop.com/) is an AI platform that acts a semantic layer for any model of your choice. Vendor-agnostic, you can use a single API key for the LLM of your choice without ever needing to change the code in your application.
+[Middlebop](https://middlebop.com/) is an AI platform that acts as a semantic layer for any model of your choice. Vendor-agnostic, you can use a single API key for the LLM of your choice without ever needing to change the code in your application.
 
 ![Middlebop website](/images/cs-app-dev-03.png)
 
@@ -45,8 +45,8 @@ These are some of the many examples of applications built for Matzielab clients,
 - [Expo](https://expo.dev/) enables Matzie to create universal mobile apps that are React Native and work with Android, iOS and the web out of the box.
 - [Bun](https://bun.sh/) is an all-in-one JavaScript runtime that was built for speed, resulting in pretty snappy user experiences in his apps.
 - [ElysiaJS](https://elysiajs.com/) is like Express, but for Bun. Providing end-to-end type safety and extensive list of plugins.
-- Being heavily typed, [Xata](https://xata.io/) pairs well with this stack and fit his needs perfectly for the backend
-- [DigitalOcean droplets](https://www.digitalocean.com/products/droplets) pull the GitHub repository that combines these technologies and serves them up through [NGINX](https://www.nginx.com/) is used to serve up the apps today, with plans to build a nice CI/CD pipeline with GitHub actions
+- Being heavily typed, [Xata](https://xata.io/) pairs well with this stack and fit his needs perfectly for the backend.
+- [DigitalOcean droplets](https://www.digitalocean.com/products/droplets) pull the GitHub repository that combines these technologies and serves them up through [NGINX](https://www.nginx.com/) (which is used to serve up the apps today), with plans to build a nice CI/CD pipeline with GitHub actions.
 
 This generic, templated stack allows Matzie to move fast, build and iterate on applications quickly for his customer base. With just a sketch of a screen from his client, he can usually put an MVP together pretty quickly.
 
@@ -60,13 +60,13 @@ Before finding Xata, he had been using [Firebase](https://firebase.google.com/) 
 We asked Matzie which Xata features he finds most useful, he landed on these:
 
 - **TypeScript SDK.** Given his experience, technology preferences and workflow the TypeScript SDK and automatic codegen from the CLI really simplified his experience with a database.
-- **Dynamic fields.** The automatically generated `xata.createdAt` and `xata.updatedAt` were a really nice surprise and found he was able to replace with custom fields he typically added
+- **Dynamic fields.** The automatically generated `xata.createdAt` and `xata.updatedAt` were a really nice surprise and found he was able to replace with custom fields he typically added.
 - **Full-text search.** Having full-text search just work out of the box is really nice to have. While he’s planning to use in his next set of apps, he always finds defining that replication himself to be extremely cumbersome and never works as expected.
 
 We also asked what areas we could improve.
 
 - **Migration from Firebase**. While the experience was pretty seamless overall, he did want to migrate his custom `createdAt` and `updatedAt` fields to the `xata` fields. Being able to map the fields on import would allow him to bring over historic values during the migration.
-- **VSCode extension.** The experience with the Xata VSCode extension is nice, but as someone who prefers to never leave VSCode, would prefer to have a little more functionality in it.
+- **VSCode extension.** The experience with the Xata VSCode extension is nice, but as someone who prefers to never leave VSCode, he would prefer to have a little more functionality in it.
 
 ## Share your Xata story
 
