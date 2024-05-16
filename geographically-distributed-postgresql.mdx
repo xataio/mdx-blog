@@ -27,7 +27,7 @@ First, many applications happily live in a single region and there's no reason t
 
 - **Lower latencies**. A round-trip-time from Sydney to `us-east-1` is about 200 milliseconds, and that becomes quickly noticeable if you need multiple round-trips. If you know that a particular customer lives in Australia, it makes sense to store their data there.
 - **Data residency laws**. Regulation ([with greetings from the EU](https://commission.europa.eu/law/law-topic/data-protection/reform/rules-business-and-organisations/obligations/what-rules-apply-if-my-organisation-transfers-data-outside-eu_en)) might require you to ensure that any private data of a customer is only ever stored in a particular geographical region.
-- **Edge serverless tech**. If you'd like to use something like CloudFlare workers but also want to use Postgres, you'd better have some distributed data strategy, or you'll end up paying a lot of latency costs, especially if your app needs multiple round trips to the database.
+- **Apps running on the Edge**. If you'd like to use something like Cloudflare workers but also want to use Postgres, you'd better have some distributed data strategy, or you'll end up paying a lot of latency costs, especially if your app needs multiple round trips to the database.
 - **Multi-region and/or multi-cloud**. This can be a goal in itself, if you don't like putting all your eggs in one basket. Every once in a while, the AWS us-east-1 region goes down for a few hours and takes with it 70%ish of the internet. With a multi-region setup, you can reduce the blast radius of events like this.
 
 ![Five round-trip times to the database add up to >1s wait time for the user](images/geo-postgres/round-trip-times-from-sydney.png)
