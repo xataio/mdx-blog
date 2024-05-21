@@ -1,0 +1,59 @@
+---
+title: 'Developing a personalized mood enhancement service'
+description: 'Putting the spotlight on Dr. Ndubuisi Ekwueme (aka Dr. Dubz), who recently launched Moodly, a service that aims to brighten its users moods.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/community-spotlight-personalization-service.jpg
+  alt: Community Spotlight
+author: Alex Francoeur
+date: 05-21-2024
+tags: ['community']
+published: true
+slug: community-spotlight-personalization-service
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/community-spotlight-personalization-service.jpg
+---
+
+As humans, most of us do our best to have a positive impact on the world. Whether the impact is at a global scale or specific to an individual, every bit helps — improving another’s quality of life. In today’s community spotlight, we cover [Moodly](http://moodlyai.com), a company on a mission to use AI to improve peoples moods through personalized digital experiences.
+
+![moodlyai.com](/images/cs-moodly.png)
+
+## The story behind Moodly
+
+The idea for Moodly was born from a harrowing experience witnessed by Dr. Ekwueme in Nigeria - a moment so impactful that it set him on a path to explore how images can affect our emotional states. He witnessed an accident involving a child that to this day, is ingrained in his memory. While this is a memory and image that has had a negative impact on him, it sparked an idea. What if you could use images to evoke positive emotional responses instead?
+
+This led to the creation of [Moodly](http://moodlyai.com/), a service that generates personalized wallpapers for phones, tablets, and computers based on the user's current mood and the mood they aspire to achieve.
+
+## Moods as a Service
+
+Dr. Ekwueme, also known as Dr. Dubz, will tell you that he is not the most technical person. In order to start building this service, he paired up with his close friend [Chidi John](https://github.com/cjbyte) (CJ), to put his idea in motion. Their initial POC was with Airtable, which was chosen as an easy way to collaborate on the data. It didn’t take long for them to hit some technical limitations. Here’s the stack they landed on:
+
+- The frontend is all [Next.js](https://nextjs.org/) and hosted on [Vercel](https://vercel.com/)
+- The data pipelines are built with [Inngest](https://www.inngest.com/)
+- [GPT4](https://openai.com/index/gpt-4/) and [Stable Diffusion](https://stability.ai/) are used to generate images based on users prompts
+- The images, JSON, scoring and additional metadata are stored in Xata
+
+On the tech side, it was important to have a service that could allow them to consolidate the services used and simplify the architecture. This was why Xata was chosen for their data layer, it checked all the boxes for relational data, search and file storage.
+
+![Mood check user flow](/images/cs-mood-check.png)
+
+The user experience in the platform is pretty simple. Moodly will ask you 3-4 questions once a month and will generate new images for your devices that take the answers of those questions, and output images meant to improve your mood. Users get a number of credits each month to user for image generation. Dr. Dubz and CJ are just getting started, but the traction they’ve seen so far amongst their community seems promising.
+
+> From a developer perspective, I really love Xata. I’m used to PostgreSQL and felt at home with that setup, but Xata makes Postgres easy. The Airtable-like interface gave us speed, making it easy to interface with the data as a team.\
+> Chidi John - Moodly developer
+
+## Feedback and feature requests
+
+As the conversation steered towards what’s next, we asked the Moodly team what’s missing from Xata or what else they’d like to see out of the platform. Here are some of their favorite parts:
+
+- **Speed of development.** The combination of PostgreSQL, Xata TypeScript SDK and consolidation of services made for quick, iterative development.
+- **Branching.** CJ ended up creating many environments during the initial development of Moodly and post-production.
+- **Collaboration.** Being able to collaborate on data entry, manipulation and management in the spreadsheet-like table made it really easy to move fast.
+
+After asing what they’d like to see from Xata, we talked a bit about roadmap. Here’s what Dr. Dubz and CJ shared.
+
+- **Chat with your data.** As your dataset grows, it gets a bit more complicated to interact with it and get meaningful answers. Being able to chat with your database to explore further was a feature they’d like to see in Xata.
+- **AI pipeline columns.** Today, Moodly uses two separate services to generate images. They’d love for this to be baked into Xata so they can remove complexity from their architecture. Being able to define a column with a model and prompts to have it produce output for a record would fit their use case well.
+- **Protected branches.** There were a few occasions where CJ wished he had a Dr. Dubz-proof production branch. Being able to mark a branch as protected so that the production application is not impacted would have helped in these scenarios.
+
+## Share your Xata story
+
+Do you have a similar story or community contribution you’d like to share? [Send us an email](mailto:communityspotlight@xata.io) or ping us on [Discord](https://xata.io/discord) if you’d like to be featured in our community spotlight. Until then, happy building 🦋
