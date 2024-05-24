@@ -16,15 +16,16 @@ We're putting our spotlight on [Daniel Reale](https://www.linkedin.com/in/danrea
 ![Heart Transplant Tracker at a glance](/images/tracker-at-a-glance.png)
 
 ## The backstory
+
 Daniel's son, who recently turned five, is currently a patient at the Children's Hospital of Philadelphia, awaiting a heart transplant. Every day, Daniel and his wife anxiously monitor their son's position on the transplant list to stay informed and to communicate effectively with their transplant coordinator.
 
 As a seasoned QA engineer, Daniel found the process of retrieving this information cumbersome and time-consuming. Determined to make this process easier for his family, he decided to build an application to quickly and efficiently access the information they needed.
 
-
 ## Finding a solution
+
 The heart transplant list is dynamic, constantly changing based on various criteria such as blood type, patient status, and waiting time. This complexity makes it challenging for Daniel and his wife to stay updated on their son's position using the government website. The site's interface is not user-friendly, requiring manual input of filters and providing static data that does not show historical trends or changes over time. This lack of clarity can hinder critical conversations with their transplant coordinator, where understanding daily shifts in the list is essential for assessing potential opportunities or addressing concerns.
 
-Determined to simplify this process, Daniel decided to build an application to automate and streamline data retrieval. His goal was to create a tool that could scrape the necessary data from the government website, process it to highlight relevant changes, and present it in a clear and accessible format. 
+Determined to simplify this process, Daniel decided to build an application to automate and streamline data retrieval. His goal was to create a tool that could scrape the necessary data from the government website, process it to highlight relevant changes, and present it in a clear and accessible format.
 
 Inspired by a recommendation from [James Quick on YouTube](https://www.youtube.com/@JamesQQuick/videos), Daniel explored Xata as a solution for managing and querying the scraped data. The flexibility and user-friendly nature of Xata made it an ideal choice for this project.
 
@@ -32,15 +33,15 @@ Inspired by a recommendation from [James Quick on YouTube](https://www.youtube.c
 > _Daniel Reale - QA Engineer_
 
 ## Technology Stack
+
 To build his application, Daniel utilized a robust technology stack:
 
- - **[Remix](https://remix.run/):** He used Remix to build the front-end of the application.
- - **[Xata](https://xata.io/):** Xata was chosen to store and manage the scraped data.
- - **[Playwright](https://playwright.dev/):** Playwright was used to automate the data scraping process. This tool enabled Daniel to navigate the government website, input the required filters, and extract the relevant data automatically.
- - **[Netlify](https://www.netlify.com/):** Netlify was selected to host the application, ensuring it was accessible to Daniel and his wife from any device, at any time.
+- **[Remix](https://remix.run/):** He used Remix to build the front-end of the application.
+- **[Xata](https://xata.io/):** Xata was chosen to store and manage the scraped data.
+- **[Playwright](https://playwright.dev/):** Playwright was used to automate the data scraping process. This tool enabled Daniel to navigate the government website, input the required filters, and extract the relevant data automatically.
+- **[Netlify](https://www.netlify.com/):** Netlify was selected to host the application, ensuring it was accessible to Daniel and his wife from any device, at any time.
 
-
-Using Playwright, Daniel automated the entire data extraction and transformation process. He configured Playwright to download the report from the government site, extract the necessary data points, and transform them into a JSON format. 
+Using Playwright, Daniel automated the entire data extraction and transformation process. He configured Playwright to download the report from the government site, extract the necessary data points, and transform them into a JSON format.
 
 ![Automating the scraping process - code view 1](/images/scraping-view1.png)
 
@@ -52,37 +53,33 @@ Daniel's application provides clear insights into his son's position on the tran
 
 The application features several key components:
 
- - **Daily updates:** Each morning, Daniel and his wife can check the app to see the latest data on the transplant list. The app highlights any changes from the previous day, providing immediate insight into whether their son's position has improved or worsened.
+- **Daily updates:** Each morning, Daniel and his wife can check the app to see the latest data on the transplant list. The app highlights any changes from the previous day, providing immediate insight into whether their son's position has improved or worsened.
 
- - **Historical data:** The app stores historical data, allowing Daniel and his wife to track trends over time. This historical perspective helps them understand how the list evolves and to anticipate future changes.
+- **Historical data:** The app stores historical data, allowing Daniel and his wife to track trends over time. This historical perspective helps them understand how the list evolves and to anticipate future changes.
 
 ![Historical data easily accessible at a glance](/images/historical-data.png)
 
- - **Visual graphs:** Visual graphs and charts have helped to make the complex data more digestible so that Daniel can quickly grasp the current state of the list and identify any notable patterns or anomalies.
+- **Visual graphs:** Visual graphs and charts have helped to make the complex data more digestible so that Daniel can quickly grasp the current state of the list and identify any notable patterns or anomalies.
 
 ![Visual graphs showing the data](/images/visual-graphs.png)
 
-Daniel hopes that by sharing his story, it may help others going through similar experiences. 
+Daniel hopes that by sharing his story, it may help others going through similar experiences.
 For more details on Daniel's project, you can visit the [Heart Transplant List Tracker](https://heart-transplant.netlify.app/) and if you'd like to get in touch with Daniel, you can reach him on [LinkedIn](https://www.linkedin.com/in/danreale/).
-
 
 ## Feedback and feature requests
 
 We asked Daniel what Xata features he found most useful and what he feels may be missing today. Here's what he shared:
 
- - **Intuitive user interface:** the simplicity and visual ease that Xata provides because he prefers GUI-based interactions over scripting, and it's helped reduce the complexity around database management.
- - **Flexible language queries:** the ability to use both Xata's domain-specific language and SQL for building queries has been very useful.
-
+- **Intuitive user interface:** the simplicity and visual ease that Xata provides because he prefers GUI-based interactions over scripting, and it's helped reduce the complexity around database management.
+- **Flexible language queries:** the ability to use both Xata's domain-specific language and SQL for building queries has been very useful.
 
 > I would definitely recommend Xata to other developers. It's been a fantastic tool for my side projects and has made a big difference in how I manage data.\
 > _Daniel Reale - QA Engineer_
 
-
 Areas for improvement include:
 
- - **Enhanced domain language features:** Daniel noted the need for more advanced functionalities for handling distinct records and limiting functions to avoid having to use standard SQL for certain tasks.
- - **Usability issues:** He experienced flashing issues with the table view after prolonged use, likely due to potential session handling or memory management problems, but we have not yet been able to replicate the issue.
-
+- **Enhanced domain language features:** Daniel noted the need for more advanced functionalities for handling distinct records and limiting functions to avoid having to use standard SQL for certain tasks.
+- **Usability issues:** He experienced flashing issues with the table view after prolonged use, likely due to potential session handling or memory management problems, but we have not yet been able to replicate the issue.
 
 ## Share your Xata story
 
