@@ -1,6 +1,6 @@
 ---
 title: 'Simplifying critical heart transplant waitlist data with Xata'
-description: 'A community spotlight featuring Daniel Reale a QA engineer who used Xata to create an application for personally tracking his son's position on the Philadelphia heart transplant waitlist.'
+description: "A community spotlight featuring Daniel Reale a QA engineer who used Xata to create an application for personally tracking his son's position on the Philadelphia heart transplant waitlist."
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/community-spotlight-educating-frontend-developers.jpg
   alt: Community Spotlight
@@ -9,7 +9,6 @@ date: 06-13-2024
 tags: ['community']
 published: true
 slug: community-spotlight-heart-transplant-tracker
-ogImage:
 ---
 
 We're putting our spotlight on [Daniel Reale](https://www.linkedin.com/in/danreale/), a QA engineer by day at a leading data and advertising company, and a web application developer by night. His technical skills and personal dedication have driven him to create a vital application with a deeply personal mission - [a heart transport waitlist tracker](https://heart-transplant.netlify.app/).
