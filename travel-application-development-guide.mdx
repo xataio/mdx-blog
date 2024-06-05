@@ -9,7 +9,7 @@ date: 06-06-2024
 tags: ['tutorial']
 published: true
 slug: travel-application-development-guide
-ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main//images/building-protected-and-paywall/authenticated-paywall-stripe-xata.png
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main//images/building-protected-and-paywall/authenticated-paywall-stripe-xata
 ---
 
 In this step-by-step guide, you’ll create a full-stack application using the CRUD technique and a Xata database to display a landing page detailing travel data, including destination details and trip notes. You’ll learn how to:
@@ -1559,7 +1559,7 @@ For this code block, import the Xata client and the component handling, deleting
 
 In addition, we filter the records of the notes column from the database using only the ID with the `.filter()` method, `const notes = await xata.db.notes.filter("trip.id", data?.id).getMany()`. Loop through the notes with the `.map()` method and access the columns of each Note record using their properties attached to the Link component to open the note on a different route.
 
-![Trip and note detail](/images/travel-app-guide/trip-note-detail.png)
+![Trip and note detail](/images/travel-app-guide/trip-note-detail.jpeg)
 
 Create these files `components/BtnDelTrip.js` and `utils/delete-trip.js`. Copy-paste the file content with the code in the [BtnDelTrip](https://github.com/Terieyenike/track-trip-dashboard-with-xata-next/blob/main/components/BtnDelTrip.js) and [delete-trip](https://github.com/Terieyenike/track-trip-dashboard-with-xata-next/blob/main/utils/delete-trip.js) files, respectively.
 
