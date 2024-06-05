@@ -2,14 +2,14 @@
 title: 'Guide to developing a travel application: Xata, Next.js, Tailwind CSS, & Vercel'
 description: 'Learn how to create a travel dashboard application using Xata, Next.js, Tailwind CSS, and Vercel to help you track your adventures and organize your travel experiences.'
 image:
-  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/building-protected-and-paywall/authenticated-paywall-stripe-xata.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main//images/building-protected-and-paywall/authenticated-paywall-stripe-xata.png
   alt: 'Guide to developing a travel application: Xata, Next.js, Tailwind CSS, & Vercel'
 author: Teri Eyenike
-date: 06-05-2024
+date: 06-06-2024
 tags: ['tutorial']
 published: true
 slug: travel-application-development-guide
-ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/building-protected-and-paywall/authenticated-paywall-stripe-xata.png
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main//images/building-protected-and-paywall/authenticated-paywall-stripe-xata.png
 ---
 
 In this step-by-step guide, you’ll create a full-stack application using the CRUD technique and a Xata database to display a landing page detailing travel data, including destination details and trip notes. You’ll learn how to:
@@ -20,7 +20,7 @@ In this step-by-step guide, you’ll create a full-stack application using the C
 - Handle client-side image uploads
 - Create dynamic routes with Next.js
 
-![Travel application landing page](images/travel-app-guide/landing-page.png)
+![Travel application landing page](/images/travel-app-guide/landing-page.png)
 
 ## Before you begin
 
@@ -47,15 +47,15 @@ The following technologies are used in this guide:
 
 For setup and configuration, create a new database by clicking on **+ Add database**.
 
-![Adding a database](images/travel-app-guide/adding-db.jpeg)
+![Adding a database](/images/travel-app-guide/adding-db.jpeg)
 
 After creating the database, a **table** is designed to store the content of the trips and destinations.
 
-![Creating a table](images/travel-app-guide/creating-table.jpeg)
+![Creating a table](/images/travel-app-guide/creating-table.jpeg)
 
 On the left sidebar, click **Schema** to add another table called notes that links as many notes (one-to-many relationship) as possible to a trip. This table will allow users to upload photos of their trips and add text. The schema will look like this:
 
-![Schema view for adding additional tables](images/travel-app-guide/schema-view-tables.jpeg)
+![Schema view for adding additional tables](/images/travel-app-guide/schema-view-tables.jpeg)
 
 ## Creating the schema
 
@@ -63,23 +63,23 @@ Let's begin with the trips table to add columns to the table.
 
 Below the schema of each table, click on **+ Add a column** that opens a dialog box for the option field type. Select the appropriate field type and set city, country, start, and end columns to the trips table with the String type.
 
-![Adding column types](images/travel-app-guide/adding-column-types.jpeg)
+![Adding column types](/images/travel-app-guide/adding-column-types.jpeg)
 
 Then, head over to the second table notes and do something similar. Create and set the columns name, and type to the String type while the description stores long-form text and characters as Text type.
 
 For the rating column name, set it to the Integer type.
 
-![Adding a rating column](images/travel-app-guide/adding-rating-column.jpeg)
+![Adding a rating column](/images/travel-app-guide/adding-rating-column.jpeg)
 
 Proceed to create a column img, which accepts the File type and allow users see the displayed image when the Make files public by default option is checked.
 
-![Adding an img column](images/travel-app-guide/adding-img-column.jpeg)
+![Adding an img column](/images/travel-app-guide/adding-img-column.jpeg)
 
 The last step is linking to the trips table, forming the relationship between the tables. Create a column as trip, and select the Link to table option type. Also, check the Unique attribute to prevent duplicate entries in the table.
 
 The final schema view should look like this below:
 
-![Final schema view](images/travel-app-guide/final-schema-view.jpeg)
+![Final schema view](/images/travel-app-guide/final-schema-view.jpeg)
 
 ## Setting up your project
 
@@ -110,7 +110,7 @@ If this is your first time integrating or using Xata, you can authorize or authe
 xata auth login
 ```
 
-![Authorizing the Xata CLI](images/travel-app-guide/authorizing-cli.jpeg)
+![Authorizing the Xata CLI](/images/travel-app-guide/authorizing-cli.jpeg)
 
 Now, initialize and connect your database locally with the Xata CLI command:
 
@@ -122,7 +122,7 @@ This command configures a new project, creating a new database.
 
 A prompt shows some CLI questions about integrating the instance with Next.js, which creates extra files within the project folder.
 
-![Xata CLI integration with Next.js](images/travel-app-guide/xata-next-integration.jpeg)
+![Xata CLI integration with Next.js](/images/travel-app-guide/xata-next-integration.jpeg)
 
 ## Creating the landing page
 
@@ -288,7 +288,7 @@ export default function Home() {
 }
 ```
 
-![Preview of the Track Trips application UI](images/travel-app-guide/app-preview.jpeg)
+![Preview of the Track Trips application UI](/images/travel-app-guide/app-preview.jpeg)
 
 ## Handling form submissions with Next.js
 
@@ -355,7 +355,7 @@ export default function Sidebar() {
 
 When clicking on each navigation link, it opens a different page route.
 
-![Navigation menu](images/travel-app-guide/nav-menu.jpeg)
+![Navigation menu](/images/travel-app-guide/nav-menu.jpeg)
 
 To integrate Xata in Next.js, the Xata client will help create a connection to insert a record and send the form data to the serverless database. Create a new folder, `utils` in the root directory, and add the `api.js` file with this code snippet:
 
@@ -544,7 +544,7 @@ Notifications throughout the page give the user an error or success message with
 
 In addition, there is a validation check for the start and end date to ensure both fields are selected. Add a `<form>` to the page to insert all the records to the trips table in the database when submitted.
 
-![Adding a form](images/travel-app-guide/add-form.jpeg)
+![Adding a form](/images/travel-app-guide/add-form.jpeg)
 
 ## Display the trips
 
@@ -694,7 +694,7 @@ The Link component references the individual trip record, which will be used lat
 
 Your dashboard page should look like the following:
 
-![Dashboard view](images/travel-app-guide/dashboard-view.jpeg)
+![Dashboard view](/images/travel-app-guide/dashboard-view.jpeg)
 
 ## Query and show a single trip
 
@@ -794,7 +794,7 @@ The rest of the page with the content under the Notes section will be static. Wh
 
 If you refresh the page, and it shows this error message, kindly [configure the next.config.mjs](https://nextjs.org/docs/app/api-reference/next-config-js) file in the root of your project directory.
 
-![Possible error message](images/travel-app-guide/error-message.jpeg)
+![Possible error message](/images/travel-app-guide/error-message.jpeg)
 
 ```
 next.config.mjs;
@@ -821,7 +821,7 @@ export default nextConfig;
 
 Your trip detail view page should now look like this:
 
-![Single trip detail view](images/travel-app-guide/single-trip-view.jpeg)
+![Single trip detail view](/images/travel-app-guide/single-trip-view.jpeg)
 
 ## Updating a single trip
 
@@ -1268,7 +1268,7 @@ Let’s break down the code above:
 - The submit function handles the form submission in an asynchronous manner where the `notesData` is called by the client and it retrieves the `uploadUrl` from it and does a fetch to upload the file using the PUT request.
 - To display the image file's output in the browser, we use `URL.createObjectURL(img)` to generate a temporary URL.
 
-![Adding a form](images/travel-app-guide/adding-a-form.jpeg)
+![Adding a form](/images/travel-app-guide/adding-a-form.jpeg)
 
 ## Query and display notes
 
@@ -1367,7 +1367,7 @@ export default function Note() {
 
 In the code snippets above, the same principles apply to how the [Display the trips](#display-the-trips) is carried out.
 
-![Notes view](images/travel-app-guide/notes-view.jpeg)
+![Notes view](/images/travel-app-guide/notes-view.jpeg)
 
 ## Query and show a single note
 
@@ -1450,7 +1450,7 @@ export default async function NoteDetail({ params }) {
 
 Import the `filter()` function and set it to the record object, `const { record } = await filter(params)` which will read the value for each dynamic note route.
 
-![Note detail page](images/travel-app-guide/note-detail.jpeg)
+![Note detail page](/images/travel-app-guide/note-detail.jpeg)
 
 For the BtnDel component, the id properties identify each unique note record. Create this file in the components directory and include the code:
 
@@ -1486,7 +1486,7 @@ The code above shows a confirmation dialog that displays a message to the user i
 
 Create these files `components/ConfirmationDialog.js` and `utils/delete.js`. Copy-paste the [confirmation dialog](https://github.com/Terieyenike/track-trip-dashboard-with-xata-next/blob/main/components/ConfirmationDialog.js) and [deleteNote](https://github.com/Terieyenike/track-trip-dashboard-with-xata-next/blob/main/utils/delete.js) code in their respective files.
 
-![Delete note view](images/travel-app-guide/delete-note-view.jpeg)
+![Delete note view](/images/travel-app-guide/delete-note-view.jpeg)
 
 ## Deleting a single trip
 
@@ -1559,11 +1559,11 @@ For this code block, import the Xata client and the component handling, deleting
 
 In addition, we filter the records of the notes column from the database using only the ID with the `.filter()` method, `const notes = await xata.db.notes.filter("trip.id", data?.id).getMany()`. Loop through the notes with the `.map()` method and access the columns of each Note record using their properties attached to the Link component to open the note on a different route.
 
-![Trip and note detail](images/travel-app-guide/trip-note-detail.png)
+![Trip and note detail](/images/travel-app-guide/trip-note-detail.png)
 
 Create these files `components/BtnDelTrip.js` and `utils/delete-trip.js`. Copy-paste the file content with the code in the [BtnDelTrip](https://github.com/Terieyenike/track-trip-dashboard-with-xata-next/blob/main/components/BtnDelTrip.js) and [delete-trip](https://github.com/Terieyenike/track-trip-dashboard-with-xata-next/blob/main/utils/delete-trip.js) files, respectively.
 
-![Delete trip detail](images/travel-app-guide/delete-trip-detail.jpeg)
+![Delete trip detail](/images/travel-app-guide/delete-trip-detail.jpeg)
 
 ## Deploy to Vercel
 
