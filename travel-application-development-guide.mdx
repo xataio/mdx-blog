@@ -2,14 +2,14 @@
 title: 'Guide to developing a travel application: Xata, Next.js, Tailwind CSS, & Vercel'
 description: 'Learn how to create a travel dashboard application using Xata, Next.js, Tailwind CSS, and Vercel to help you track your adventures and organize your travel experiences.'
 image:
-  src: https://raw.githubusercontent.com/xataio/mdx-blog/main//images/building-protected-and-paywall/authenticated-paywall-stripe-xata.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/travel-app-guide/travel-app.png
   alt: 'Guide to developing a travel application: Xata, Next.js, Tailwind CSS, & Vercel'
 author: Teri Eyenike
 date: 06-06-2024
 tags: ['tutorial']
 published: true
 slug: travel-application-development-guide
-ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main//images/building-protected-and-paywall/authenticated-paywall-stripe-xata
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/travel-app-guide/travel-app.png
 ---
 
 In this step-by-step guide, you’ll create a full-stack application using the CRUD technique and a Xata database to display a landing page detailing travel data, including destination details and trip notes. You’ll learn how to:
@@ -130,8 +130,8 @@ Next.js is an excellent tool for creating UIs, and this application’s home pag
 
 In the app directory, create a route group in parenthesis (main) for personalized layouts. Within the folder, add the layout.js and page.js files.
 
-```
-app / main / layout.js;
+```js
+// app/main/layout.js;
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Inter } from 'next/font/google';
@@ -158,8 +158,8 @@ Ensure the `{children}` are rendered between the two components, `<Navbar />` an
 
 The Navbar (the menu navigation) and Footer components do not exist in the code block yet. Outside the app directory, create the components folder with the files `Navbar.js` and `Footer.js`.
 
-```
-components / Navbar.js;
+```js
+// components/Navbar.js;
 import Link from 'next/link';
 
 export default function Navbar() {
@@ -182,8 +182,8 @@ export default function Navbar() {
 
 The code snippets above import the Link components, which help with client-side navigation between routes. Next, we need to create the footer information.
 
-```
-components / Footer.js;
+```js
+// components/Footer.js;
 export default function Footer() {
   return (
     <footer className="bg-gray-800 py-8">
@@ -204,8 +204,8 @@ export default function Footer() {
 
 This code block uses the Link and Image component, which creates the rest of the landing page's details with an image and text. With the click of a button, it links to another route.
 
-```
-app / main / page.js;
+```js
+// app/main/page.js;
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -296,8 +296,8 @@ Using the same process as creating a route group for the (main) folder, create a
 
 Before submitting data to the database, let’s update the page to display the sidebar navigation menu for each page in the `layout.js` file.
 
-```
-app / custom / layout.js;
+```js
+// app/custom/layout.js;
 import Sidebar from '@/components/Sidebar';
 import { Inter } from 'next/font/google';
 import '../globals.css';
@@ -320,8 +320,8 @@ export default function DashboardLayout({ children }) {
 
 In the components folder, create the `Sidebar.js` component with this:
 
-```
-components / Sidebar.js;
+```js
+// components/Sidebar.js;
 import Link from 'next/link';
 
 export default function Sidebar() {
@@ -359,8 +359,8 @@ When clicking on each navigation link, it opens a different page route.
 
 To integrate Xata in Next.js, the Xata client will help create a connection to insert a record and send the form data to the serverless database. Create a new folder, `utils` in the root directory, and add the `api.js` file with this code snippet:
 
-```
-utils / api.js;
+```js
+// utils/api.js;
 ('use server');
 
 import { getXataClient } from '@/src/xata';
@@ -379,8 +379,8 @@ export async function submitTripData(city, country, start, end) {
 
 Each page route has a reusable header component across the entire project. Add this to the Heading component file:
 
-```
-components / Heading.js;
+```js
+// components/Heading.js;
 export default function Header({ name }) {
   return <h1 className="text-4xl mb-8 underline underline-offset-8">{name}</h1>;
 }
@@ -388,8 +388,8 @@ export default function Header({ name }) {
 
 Next, import the s`ubmitTripData` function into the `app/(custom)/dashboard/trip/create/page.js` into this file:
 
-```
-app / custom / dashboard / trip / create / page.js;
+```js
+// app/custom/dashboard/trip/create/page.js;
 ('use client');
 
 import Header from '@/components/Heading';
@@ -550,8 +550,8 @@ In addition, there is a validation check for the start and end date to ensure bo
 
 To query and list all the trips, start by creating a file within the folder utils called `get-trips.js` that retrieves all the stored trip data from Xata with the following content:
 
-```
-utils / get - trips.js;
+```js
+// utils/get-trips.js;
 ('use server');
 
 import { getXataClient } from '@/src/xata';
@@ -599,8 +599,8 @@ export function formatDate(dateString) {
 
 The sole responsibility of the code above is to format the date for the stored start and end date field, which displays the month and day with a suffix attached to it.
 
-```
-utils / capitalizeWords.js;
+```js
+// utils/capitalizeWords.js;
 export function capitalizeWords(str) {
   if (!str) return '';
 
@@ -618,8 +618,8 @@ The function `capitalizeWord` accepts a parameter to capitalize the first letter
 
 Now, let’s create an `app/(custom)/dashboard/page.js` file to load the data and render the list of trips.
 
-```
-app / custom / dashboard / page.js;
+```js
+// app/custom/dashboard/page.js;
 ('use client');
 
 import Link from 'next/link';
@@ -700,8 +700,8 @@ Your dashboard page should look like the following:
 
 To get a record by its ID from the database, let’s begin with creating this file, `filterTrip.js`, within the `utils` folder:
 
-```
-utils / filterTrip.js;
+```js
+// utils/filterTrip.js;
 ('use server');
 
 import { getXataClient } from '@/src/xata';
@@ -719,8 +719,8 @@ The params object within the function `filterTrip` is used in dynamic routes to 
 
 Next, create a page to retrieve the trip data and render the contents of the single trip to the UI.
 
-```
-app / custom / dashboard / trip / [id] / page.js;
+```js
+// app/custom/dashboard/trip/[id]/page.js;
 import Header from '@/components/Heading';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -796,7 +796,7 @@ If you refresh the page, and it shows this error message, kindly [configure the 
 
 ![Possible error message](/images/travel-app-guide/error-message.jpeg)
 
-```
+```js
 next.config.mjs;
 /** @type {import('next').NextConfig} */
 
@@ -829,8 +829,8 @@ Updating the single trip data is similar to how the `dashboard/trip/create` page
 
 Before creating the file for updating the UI record for a trip data, let’s create a file in the utils folder called `edit.js` that will do a partial update using the update method on the object of the trip:
 
-```
-utils / edit.js;
+```js
+// utils/edit.js;
 ('use server');
 
 import { getXataClient } from '@/src/xata';
@@ -849,8 +849,8 @@ export async function Edit(id, city, start, end, country) {
 
 Next, create a new file, `update/page.js` under the `trip/[id]` directory:
 
-```
-app / custom / dashboard / trip / [id] / update / page.js;
+```js
+// app/custom/dashboard/trip/[id]/update/page.js;
 ('use client');
 
 import Header from '@/components/Heading';
@@ -1010,8 +1010,8 @@ Let’s begin by creating the connection to [insert the record](https://xata.io/
 
 Create the `notes-data.js` file in the `utils` directory:
 
-```
-utils / notes - data.js;
+```js
+// utils/notes-data.js;
 ('use server');
 
 import { getXataClient } from '@/src/xata';
@@ -1038,8 +1038,8 @@ Using [Xata file attachments](https://xata.io/docs/sdk/file-attachments#upload-f
 
 With the Xata client connection in place, create a new file `app/(custom)/dashboard/note/create/page.js` that will collect all the user input and send its data from the client-side to Xata serverless database.
 
-```
-app / custom / dashboard / note / create / page.js;
+```js
+// app/custom/dashboard/note/create/page.js;
 ('use client');
 
 import { useState, useEffect } from 'react';
@@ -1274,8 +1274,8 @@ Let’s break down the code above:
 
 Create a file to get all the data from the notes table, including selecting the fields in the link to the table trip via a new file, `utils/api-note-detail.js`:
 
-```
-utils / api - note - detail.js;
+```js
+// utils/api-note-detail.js;
 ('use server');
 
 import { getXataClient } from '@/src/xata';
@@ -1291,8 +1291,8 @@ export async function apiNoteDetail() {
 The `.select()` method uses the Query API for column selection. The asterisk `(\*)` symbol in the square bracket `[]` represents all the columns from the notes table. In addition, the trip column is expanded to retrieve more information from the linked trip record.
 Next, integrate the `apiNoteDetail()` function to the dashboard note to display all the notes from the database in this new file, `app/(custom)/dashboard/note/page.js`:
 
-```
-app / custom / dashboard / note / page.js;
+```js
+// app/custom/dashboard/note/page.js;
 ('use client');
 
 import { apiNoteDetail } from '@/utils/api-note-detail';
@@ -1373,8 +1373,8 @@ In the code snippets above, the same principles apply to how the [Display the tr
 
 The display of a single note is possible by using the ID of each record information in the notes table. Create a new file called `filter.js` in the utils directory:
 
-```
-utils / filter.js;
+```js
+// utils/filter.js;
 ('use server');
 
 import { getXataClient } from '@/src/xata';
@@ -1392,8 +1392,8 @@ In the code above, the `.read()` method is used to query and destructure the id 
 
 Next, create a page display and render the UI content for a single note record in `app/(custom)/dashbooard/note/[id]/page.js`:
 
-```
-app / custom / dashbooard / note / [id] / page.js;
+```js
+// app/custom/dashbooard/note/[id] / page.js;
 import Header from '@/components/Heading';
 import Image from 'next/image';
 import { capitalizeWords } from '@/utils/capitalizeWords';
@@ -1454,8 +1454,8 @@ Import the `filter()` function and set it to the record object, `const { record 
 
 For the BtnDel component, the id properties identify each unique note record. Create this file in the components directory and include the code:
 
-```
-components / BtnDel.js;
+```js
+// components/BtnDel.js;
 ('use client');
 
 import { deleteNote } from '@/utils/delete';
@@ -1492,9 +1492,9 @@ Create these files `components/ConfirmationDialog.js` and `utils/delete.js`. Cop
 
 Let’s return to the query and show a single trip code. Update the code so that we get the result of each note based on the trip detail and delete the trip when the delete button is clicked.
 
-```
-app/(custom)/dashboard/trip/[id]/page.js
-…
+```js
+// app/(custom)/dashboard/trip/[id]/page.js
+
 import BtnDelTrip from "@/components/BtnDelTrip";
 import { getXataClient } from "@/src/xata";
 
