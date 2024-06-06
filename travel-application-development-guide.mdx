@@ -1,12 +1,12 @@
 ---
-title: "Guide to developing a travel application: Xata, Next.js, Tailwind CSS, & Vercel"
-description: "Learn how to create a travel dashboard application using Xata, Next.js, Tailwind CSS, and Vercel to help you track your adventures and organize your travel experiences."
+title: 'Guide to developing a travel application: Xata, Next.js, Tailwind CSS, & Vercel'
+description: 'Learn how to create a travel dashboard application using Xata, Next.js, Tailwind CSS, and Vercel to help you track your adventures and organize your travel experiences.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/travel-app-guide/travel-app.png
-  alt: "Guide to developing a travel application: Xata, Next.js, Tailwind CSS, & Vercel"
+  alt: 'Guide to developing a travel application: Xata, Next.js, Tailwind CSS, & Vercel'
 author: Teri Eyenike
 date: 06-06-2024
-tags: ["tutorial"]
+tags: ['tutorial']
 published: true
 slug: travel-application-development-guide
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/travel-app-guide/travel-app.png
@@ -132,10 +132,10 @@ In the app directory, create a route group in parenthesis (main) for personalize
 
 ```js
 // app/(main)/layout.js
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { Inter } from "next/font/google";
-import "../globals.css";
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import { Inter } from 'next/font/google';
+import '../globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -160,7 +160,7 @@ The Navbar (the menu navigation) and Footer components do not exist in the code 
 
 ```js
 // components/Navbar.js
-import Link from "next/link";
+import Link from 'next/link';
 
 export default function Navbar() {
   return (
@@ -206,8 +206,8 @@ This code block uses the Link and Image component, which creates the rest of the
 
 ```js
 // app/(main)/page.js
-import Link from "next/link";
-import Image from "next/image";
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Home() {
   return (
@@ -298,9 +298,9 @@ Before submitting data to the database, let’s update the page to display the s
 
 ```js
 //app/(custom)/layout.js
-import Sidebar from "@/components/Sidebar";
-import { Inter } from "next/font/google";
-import "../globals.css";
+import Sidebar from '@/components/Sidebar';
+import { Inter } from 'next/font/google';
+import '../globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -322,7 +322,7 @@ In the components folder, create the `Sidebar.js` component with this:
 
 ```js
 // components/Sidebar.js
-import Link from "next/link";
+import Link from 'next/link';
 
 export default function Sidebar() {
   return (
@@ -361,7 +361,7 @@ To integrate Xata in Next.js, the Xata client will help create a connection to i
 
 ```js
 // utils/api.js
-"use server";
+'use server';
 
 import { getXataClient } from '@/src/xata';
 
@@ -390,7 +390,7 @@ Next, import the `submitTripData` function into the `app/(custom)/dashboard/trip
 
 ```js
 // app/(custom)/dashboard/trip/create/page.js
-"use client";
+'use client';
 
 import Header from '@/components/Heading';
 import { submitTripData } from '@/utils/api';
@@ -552,7 +552,7 @@ To query and list all the trips, start by creating a file within the folder util
 
 ```js
 // utils/get-trips.js
-"use server";
+'use server';
 
 import { getXataClient } from '@/src/xata';
 
@@ -620,7 +620,7 @@ Now, let’s create an `app/(custom)/dashboard/page.js` file to load the data an
 
 ```js
 // app/(custom)/dashboard/page.js
-"use client";
+'use client';
 
 import Link from 'next/link';
 import Header from '@/components/Heading';
@@ -702,7 +702,7 @@ To get a record by its ID from the database, let’s begin with creating this fi
 
 ```js
 // utils/filterTrip.js
-"use server";
+'use server';
 
 import { getXataClient } from '@/src/xata';
 
@@ -721,11 +721,11 @@ Next, create a page to retrieve the trip data and render the contents of the sin
 
 ```js
 // app/(custom)/dashboard/trip/[id]/page.js
-import Header from "@/components/Heading";
-import Link from "next/link";
-import Image from "next/image";
-import { capitalizeWords } from "@/utils/capitalizeWords";
-import { filterTrip } from "@/utils/filterTrip";
+import Header from '@/components/Heading';
+import Link from 'next/link';
+import Image from 'next/image';
+import { capitalizeWords } from '@/utils/capitalizeWords';
+import { filterTrip } from '@/utils/filterTrip';
 
 export default async function Trip({ params }) {
   const { data } = await filterTrip(params);
@@ -797,7 +797,7 @@ If you refresh the page, and it shows this error message, kindly [configure the 
 ![Possible error message](/images/travel-app-guide/error-message.jpeg)
 
 ```js
-next.config.mjs
+next.config.mjs;
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
@@ -831,7 +831,7 @@ Before creating the file for updating the UI record for a trip data, let’s cre
 
 ```js
 // utils/edit.js
-"use server";
+'use server';
 
 import { getXataClient } from '@/src/xata';
 
@@ -851,7 +851,7 @@ Next, create a new file, `update/page.js` under the `trip/[id]` directory:
 
 ```js
 // app/(custom)/dashboard/trip/[id]/update/page.js
-"use client";
+'use client';
 
 import Header from '@/components/Heading';
 import { Edit } from '@/utils/edit';
@@ -1012,7 +1012,7 @@ Create the `notes-data.js` file in the `utils` directory:
 
 ```js
 // utils/notes-data.js
-"use server";
+'use server';
 
 import { getXataClient } from '@/src/xata';
 
@@ -1040,7 +1040,7 @@ With the Xata client connection in place, create a new file `app/(custom)/dashbo
 
 ```js
 // app/(custom)/dashboard/note/create/page.js
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import Header from '@/components/Heading';
@@ -1276,7 +1276,7 @@ Create a file to get all the data from the notes table, including selecting the 
 
 ```js
 // utils/api-note-detail.js
-"use server";
+'use server';
 
 import { getXataClient } from '@/src/xata';
 
@@ -1287,12 +1287,13 @@ export async function apiNoteDetail() {
   return serializedNotes;
 }
 ```
+
 The `.select()` method uses the Query API for column selection. The asterisk `(\*)` symbol in the square bracket `[]` represents all the columns from the notes table. In addition, the trip column is expanded to retrieve more information from the linked trip record.
 Next, integrate the `apiNoteDetail()` function to the dashboard note to display all the notes from the database in this new file, `app/(custom)/dashboard/note/page.js`:
 
 ```js
 // app/(custom)/dashboard/note/page.js
-"use client";
+'use client';
 
 import { apiNoteDetail } from '@/utils/api-note-detail';
 import Link from 'next/link';
@@ -1374,7 +1375,7 @@ The display of a single note is possible by using the ID of each record informat
 
 ```js
 // utils/filter.js
-"use server";
+'use server';
 
 import { getXataClient } from '@/src/xata';
 
@@ -1393,11 +1394,11 @@ Next, create a page display and render the UI content for a single note record i
 
 ```js
 // app/(custom)/dashbooard/note/[id]/page.js
-import Header from "@/components/Heading";
-import Image from "next/image";
-import { capitalizeWords } from "@/utils/capitalizeWords";
-import { filter } from "@/utils/filter";
-import BtnDel from "@/components/BtnDel";
+import Header from '@/components/Heading';
+import Image from 'next/image';
+import { capitalizeWords } from '@/utils/capitalizeWords';
+import { filter } from '@/utils/filter';
+import BtnDel from '@/components/BtnDel';
 
 export default async function NoteDetail({ params }) {
   const { record } = await filter(params);
@@ -1455,7 +1456,7 @@ For the BtnDel component, the id properties identify each unique note record. Cr
 
 ```js
 // components/BtnDel.js
-"use client";
+'use client';
 
 import { deleteNote } from '@/utils/delete';
 import { useRouter } from 'next/navigation';
@@ -1494,53 +1495,50 @@ Let’s return to the query and show a single trip code. Update the code so that
 ```js
 // app/(custom)/dashboard/trip/[id]/page.js
 
-import BtnDelTrip from "@/components/BtnDelTrip";
-import { getXataClient } from "@/src/xata";
+import BtnDelTrip from '@/components/BtnDelTrip';
+import { getXataClient } from '@/src/xata';
 
 export default async function Trip({ params }) {
   const { data } = await filterTrip(params);
 
   const xata = getXataClient();
 
-  const notes = await xata.db.notes.filter("trip.id", data?.id).getMany();
+  const notes = await xata.db.notes.filter('trip.id', data?.id).getMany();
 
   return (
     <>
-      <Header name={"Trip Details"} />
-      <div className='bg-gray-50 p-8 rounded shadow my-4'>
+      <Header name={'Trip Details'} />
+      <div className="bg-gray-50 p-8 rounded shadow my-4">
         …
-        <div className='my-10'>
+        <div className="my-10">
           <Link
             href={`/dashboard/trip/${data.id}/update`}
-            className='px-7 py-2 bg-gray-300 rounded mr-4 hover:bg-gray-200'>
+            className="px-7 py-2 bg-gray-300 rounded mr-4 hover:bg-gray-200"
+          >
             Edit
           </Link>
           <BtnDelTrip id={data.id} note={notes[0]?.id} />
         </div>
-        <h3 className='text-xl pb-4'>Notes:</h3>
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
+        <h3 className="text-xl pb-4">Notes:</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {notes.map((note) => (
             <Link href={`/dashboard/note/${note.id}`} key={note.id}>
-              <div className='w-full'>
-                <div className='border-2 rounded-lg pb-4 hover:shadow cursor-pointer'>
+              <div className="w-full">
+                <div className="border-2 rounded-lg pb-4 hover:shadow cursor-pointer">
                   <Image
                     src={note.img.url}
                     alt={note.name}
                     width={300}
                     height={300}
                     priority={true}
-                    className='w-full rounded-t-md overflow-hidden h-32'
+                    className="w-full rounded-t-md overflow-hidden h-32"
                     style={{
-                      objectFit: "cover",
+                      objectFit: 'cover'
                     }}
                   />
-                  <div className='flex-grow px-4 py-2'>
-                    <p className='text-center mt-4 text-lg truncate'>
-                      {capitalizeWords(note.name)}
-                    </p>
-                    <p className='text-center mt-2 text-gray-600'>
-                      Rating: {note.rating}/5
-                    </p>
+                  <div className="flex-grow px-4 py-2">
+                    <p className="text-center mt-4 text-lg truncate">{capitalizeWords(note.name)}</p>
+                    <p className="text-center mt-2 text-gray-600">Rating: {note.rating}/5</p>
                   </div>
                 </div>
               </div>
