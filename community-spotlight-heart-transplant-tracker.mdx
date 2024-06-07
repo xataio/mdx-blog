@@ -19,6 +19,8 @@ We're putting our spotlight on [Daniel Reale](https://www.linkedin.com/in/danrea
 
 Daniel's son, who recently turned five, is currently a patient at the Children's Hospital of Philadelphia, awaiting a heart transplant. Every day, Daniel and his wife anxiously monitor their son's position on the transplant list to stay informed and to communicate effectively with their transplant coordinator.
 
+![Dan and his son](/images/heart-transplant-tracker/dan-son-800px.png)
+
 As a seasoned QA engineer, Daniel found the process of retrieving this information cumbersome and time-consuming. Determined to make this process easier for his family, he decided to build an application to quickly and efficiently access the information they needed.
 
 ## Finding a solution
@@ -43,9 +45,9 @@ To build his application, Daniel utilized a robust technology stack:
 
 Using Playwright, Daniel automated the entire data extraction and transformation process. He configured Playwright to download the report from the government site, extract the necessary data points, and transform them into a JSON format.
 
-![Automating the scraping process - code view 1](/images/heart-transplant-tracker/scraping-view1.png)
+![Automating the scraping process - code view 1](/images/heart-transplant-tracker/etl.png)
 
-![Automating the scraping process - code view 2](/images/heart-transplant-tracker/scraping-view2.png)
+![Automating the scraping process - code view 2](/images/heart-transplant-tracker/playwrighttest.png)
 
 This data was then loaded into a Xata database, where it could be queried and displayed in the Remix application. Hosting the application on Netlify ensured that Daniel and his wife could easily access the latest data and historical trends from their phones or computers, providing them with a convenient and reliable tool for tracking their son's transplant status.
 
@@ -64,7 +66,7 @@ The application features several key components:
 ![Visual graphs showing the data](/images/heart-transplant-tracker/visual-graphs.png)
 
 Daniel hopes that by sharing his story, it may help others going through similar experiences.
-For more details on Daniel's project, you can visit the [Heart Transplant List Tracker](https://heart-transplant.netlify.app/) and if you'd like to get in touch with Daniel, you can reach him on [LinkedIn](https://www.linkedin.com/in/danreale/).
+For more details on Daniel's project, you can visit the [Heart Transplant List Tracker app](https://heart-transplant.netlify.app/) and his Github repo at https://github.com/danreale/transplant. If you'd like to get in touch with Daniel, you can reach him on [LinkedIn](https://www.linkedin.com/in/danreale/).
 
 ## Feedback and feature requests
 
