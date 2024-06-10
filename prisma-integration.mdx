@@ -65,9 +65,9 @@ If you choose to use the drivers adapter you will also need to run:
 
 ## Generating the database schema
 
-Prisma `db push` and `db pull` should work with Xata out of the box.
+Prisma `db push`, `db pull` and migrations should work with Xata out of the box.
 
-Note: At the time of publishing this blog post, ORM native migrations are not yet fully supported. Commands such as `prisma migrate dev` cannot be used with Xata Shared Clusters while `prisma migrate deploy` is subject to encountering errors depending on migration specifics. We recommend managing migrations natively using the Xata UI or CLI and use prisma db pull/push as shown here.
+Note: Migrations with Prisma require a [shadow database](https://www.prisma.io/docs/orm/prisma-migrate/understanding-prisma-migrate/shadow-database). For this purpose, create an additional database in Xata and configure its Postgres endpoint as `shadowDatabaseUrl` in the datasource, as suggested by the relevant [Prisma documentation](https://www.prisma.io/docs/orm/prisma-migrate/understanding-prisma-migrate/shadow-database#cloud-hosted-shadow-databases-must-be-created-manually).
 
 After setting your connection string, run `prisma db pull`. This will run introspect on your remote Xata database and write your Prisma Schema file. You will be able to use this file to subsequently manage migrations.
 
