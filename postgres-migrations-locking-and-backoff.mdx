@@ -7,7 +7,7 @@ image:
 author: Andrew Farries
 authorEmail: andrew@xata.io
 date: 06-18-2024
-tags: ['open-source', 'postgres', 'schema', 'fpPgroll', 'fpPgzx', 'oss', 'lock', 'migrations']
+tags: ['open-source', 'postgres', 'schema', 'fpPgroll', 'fpSchemaMigrations', 'oss', 'lock', 'migrations']
 published: true
 slug: migrations-and-exclusive-locks
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-migration-locks.png
@@ -17,8 +17,8 @@ Schema changes are hard. They're hard because there are multiple different failu
 
 Broadly speaking, there are two classes of breakage that can occur when applying database migrations:
 
-1. Migrations that make incompatible changes to the schema, breaking client applications.
-2. Migrations that lock a database object for an unacceptable amount of time, causing the application to become unavailable as reads and writes start to fail.
+1.  Migrations that make incompatible changes to the schema, breaking client applications.
+2.  Migrations that lock a database object for an unacceptable amount of time, causing the application to become unavailable as reads and writes start to fail.
 
 The first kind of breakage is perhaps more widely understood and discussed, but the second kind is just as important to consider when running migrations against production systems.
 
@@ -149,8 +149,8 @@ With `lock_timeout` set appropriately like this, it's possible to ensure that DD
 
 With [pgroll](https://github.com/xataio/pgroll), our migration tool for Postgres, such lock acquisition failures are automatically retried with an exponential backoff strategy. This means that:
 
-1. The risk of DDL statements blocking reads and writes is reduced, due to the use of `lock_timeout`.
-2. If lock acquisition fails, the DDL is automatically retried and should eventually succeed.
+1.  The risk of DDL statements blocking reads and writes is reduced, due to the use of `lock_timeout`.
+2.  If lock acquisition fails, the DDL is automatically retried and should eventually succeed.
 
 However you make schema changes to your Postgres database, it's important to consider how long running queries together with DDL statements can block reads and writes to a table. Setting `lock_timeout` on DDL statements is a good first step, but it's also important to consider how to handle lock acquisition failures.
 
@@ -158,8 +158,8 @@ However you make schema changes to your Postgres database, it's important to con
 
 At the top of the post, we identified two common failure modes for database migrations:
 
-1. Schema changes breaking client applications.
-2. Unintended downtime due to DDL-induced table locks.
+1.  Schema changes breaking client applications.
+2.  Unintended downtime due to DDL-induced table locks.
 
 [pgroll](https://github.com/xataio/pgroll) is a migration tool for Postgres that attempts to address both of these failure modes. Its 'headline feature' is its ability to make two versions, old and new, of a database schema available to client applications. This mitigates the risk of schema changes breaking applications. We've previously blogged about this [here](https://xata.io/blog/pgroll-internals), and the topic is well-covered in the official `pgroll` [docs](https://github.com/xataio/pgroll/tree/main/docs).
 
