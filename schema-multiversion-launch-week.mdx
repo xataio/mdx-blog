@@ -1,0 +1,30 @@
+---
+title: TBD Title
+description: 'tbd'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-internal.jpeg
+  alt: pgroll
+author: Andrew Farries
+authorEmail: andrew@xata.io
+date: 07-12-2024
+tags: ['open-source', 'postgres', 'schema', 'migrations', 'pgroll', 'fpSchemaMigrations']
+published: true
+slug: schema-multi-version-launch-week
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-internal.jpeg
+---
+
+Today we are excited to announce an early access preview of schema multi-version in Xata.
+
+Schema multi-version tackles one of the most painful aspects of application deployment: keeping your application code and database schema in sync.
+
+Schema multi-version means that both the old and new versions of your database schema are live and accessible during a schema migration. This greatly simplifies deployment of your applications as both the currently deployed and the new version of your application see the version of the database schema that they expect. And because both versions of the database schema are live at the same time, rollbacks become trivial.
+
+Behind the scenes, Xata does the heavy-lifting to make this work by presenting different versioned views of your application schema to each version of your application and transparently migrating data between the old and new versions of your database schema as data is written to each version.
+
+# First section
+
+something
+
+# Conclusion
+
+conclusion
