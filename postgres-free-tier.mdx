@@ -1,0 +1,81 @@
+---
+title: 'The economics of a Postgres free tier'
+description: "Let's look at the numbers behind our free tier. How much does a database costs us and why are we giving them for free."
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-direct-access.jpg
+  alt: Postgres Platform Free Tier
+author: Tudor Golubenco
+date: 07-11-2024
+tags: ['engineering']
+published: true
+slug: postgres-free-tier
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-direct-access.jpg
+---
+
+Our free tier doesn't pause databases after a few days, nor does it have cold starts. A database that you might have started two years ago and never touched since will still be there, upgraded to the latest version, instantly serving your queries.
+
+With high-availability included and fully managed and monitored by us, you can count on it just like you count on an online Google spreadsheet or any other SaaS product. But it is a powerful Postgres database, and comes with 15 GB of storage for free.
+
+When we tell people about this, we're often met with disbelief, quite understandably. So let's see how we do it and if it's going to bankrupt us.
+
+## Why even have a free tier?
+
+To state the obvious, the goal of a free tier is to ultimately generate paying customers. The cost of the free tier is mostly justifiable as part of the cost of finding new customers, similar to e.g. marketing expenses.
+
+A typical funnel looks something like this:
+
+![Free tier funnel](images/freetier-funnel.png)
+
+At the high level, from the new users that enter the funnel, some become inactive soon after. That can be because the product didn't meet their needs or that they were simply looking around without an actual project to work on. In order for a free tier to be financially reasonable, given enough databases, it's essential that the cost per "inactive database" is minimal.
+
+Other group of users are developing their application or project. If that application reaches production, it's likely that they will stay on the platform for a long time.
+
+From those, a part of them will convert to paying customers. We generally find that teams (even small non-profits) that go into production want to switch to a paid plan, where they can get dedicated resources and the best support. But there is also a category of individual developers that want a free and reliable database service for their personal side projects. While these individual builders don't always convert to paying users, they do often help by by recommending us at work, by spreading the news, or simply by giving us feedback.
+
+## How we do it?
+
+We use shared clusters.
+
+This means that we put many (we'll see below how many) free databases on a relatively powerful single Postgres cluster. I say cluster because it's a 3 nodes HA setup with one writer instance and 2 read replicas. That is why HA comes included in the free tier with Xata.
+
+In addition, we pair this Postgres clusters with an OpenSearch clusters to which we automatically replicate the data. This is because we want our free tier to demonstrate not only our Postgres service, but also "database platform" additions, and painful replication to a search/aggregations engine is one of them.
+
+![Postgres + OpenSearch cluster](images/freetier-cell.png)
+
+That's right, the free plan includes not only a Postgres free tier, but also a search engine free tier based on OpenSearch.
+
+The main issue with using shared clusters is the "noisy neighbor" issue. This happens when a free users generates enough load to negatively affect the other users in the same clusters.
+
+We mitigate this by a combination of rate and concurrency limits, vertically scaling up when needed, and moving databases across clusters.
+
+This last one, moving databases between clusters, is particularly important, because it allows us to isolate noisy databases. It also allows us to increase or decrease the "density" of clusters in order to balance the risk of noisy neighbors with the cost. We'll talk more about how we do this in a technical blog post next week, as we'll be releasing a public facing feature that relies directly on it. For now, let's just say that we have the capability to "move" databases from one cluster to another without the connection string having to change and without noticeable downtime.
+
+## The math
+
+Our default Postgres cluster uses `db.t4g.medium` instances, which cost us around $70 per month at on-demand pricing (ignoring reserved instances for now for simplicity). Since we run 3 instances, the cost per month is $210 for the Postgres part. For OpenSearch, we use `r6gd.large.search` instance types, which cost about $140 per month. Again we have 3 nodes, so the cost for the OpenSearch part is $420/month. This means the "BoM" cost for one Postgres+OpenSearch cluster is around $630/month.
+
+At our default "density", which is appropriate for lightly used databases, we put a maximum of 2000 databases on one such cluster. This means that the cost per free database comes down to $630 / 2000 = $0.315 per month. However, the clusters are not necessarily filled uniformly, and we also have other costs: our own processes in front of the database, the replication, monitoring, and so on. Adding it all up, the cost for an "active but lightly used database" is somewhere between $1 and $2.5 per month.
+
+For inactive databases (in our definition, a DB is inactive if it wasn't accessed at all for 30 days), we have a special cluster type with search disabled and using auto-scaling Postgres instances. The base cost of such a cluster is around $180 per month, and it can host up to 20,000 inactive databases. This means that our price inactive database is tiny, measured in cents. Because the cost is so small, we can leave databases on this instance type practically forever, so we don't need to "archive" them.
+
+If one of these inactive databases suddenly becomes active, the instance scales up automatically to handle the load. Then, we'll automatically schedule a task to move the database to an active cluster with lower density.
+
+If you're used cloud DBaaS pricing, you might have noticed that I omitted something: the above only talks about compute cost, not the storage cost. Storage costs us $0.10 / GB-month, and we offer 15 GB in the free tier, so that can cost us up to $1.5, even for inactive DBs. However, in practice, free inactive databases typically don't load that much data and, in average, the storage cost is much smaller than that.
+
+## Not only for the free tier
+
+Beyond the free tier, we found that being able to run "many small scale" databases is also valuable for larger-scale use cases like:
+
+- **Database per customer**. You might do this to have a stronger separation between tenants, or because you need different schemas, or because you want to geographically distribute them.
+- **Microservices**. Each microservice gets its own database with its own schema to manage. Since moving databases is easy, you can have small DBs on shared clusters, and then "graduate" them to dedicated clusters when needed.
+- **Dev branches and preview deployments**. Creating database branches is quick and lightweight, so you can create one for each PR and use it in a preview deployment.
+
+In all of these cases, creating databases (or branches) instantly via a simple API call and have them cost next to nothing at small scale comes in really handy. The ability to move them from one cluster to another, without downtime, makes it easier to optimize your underlying instances.
+
+## Conclusion
+
+We went through the unit economics for our free tier. The shared clusters approach, combined with the ability to move logical databases between physical clusters, gives us the flexibility to group databases based on their activity level, mitigating the noisy neighbor problem. While this tech helps us offer a sustainable free tier, it is also a fit for larger use cases.
+
+Want to check it out and increase our bill? Simply [sign up](https://app.xata.io/), it's on us 😅
+
+Psst: Next week is our "Elephant on the move" launch week. Some more cool stuff is coming, so make sure to [stay in the loop](https://x.com/xata)!
