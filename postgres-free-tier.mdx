@@ -44,7 +44,7 @@ In addition, we pair this Postgres clusters with an OpenSearch clusters to which
 
 That's right, the free plan includes not only a Postgres free tier, but also a search engine free tier based on OpenSearch.
 
-The main issue with using shared clusters is the "noisy neighbor" issue. This happens when a free users generates enough load to negatively affect the other users in the same clusters.
+The main issue with using shared clusters is the "noisy neighbor" issue. This happens when a free user generates enough load to negatively affect the other users in the same clusters.
 
 We mitigate this by a combination of rate and concurrency limits, vertically scaling up when needed, and moving databases across clusters.
 
