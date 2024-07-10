@@ -60,7 +60,7 @@ For inactive databases (in our definition, a DB is inactive if it wasn't accesse
 
 If one of these inactive databases suddenly becomes active, the instance scales up automatically to handle the load. Then, we'll automatically schedule a task to move the database to an active cluster with lower density.
 
-If you're used cloud DBaaS pricing, you might have noticed that I omitted something: the above only talks about compute cost, not the storage cost. Storage costs us $0.10 / GB-month, and we offer 15 GB in the free tier, so that can cost us up to $1.5, even for inactive DBs. However, in practice, free inactive databases typically don't load that much data and, in average, the storage cost is much smaller than that.
+If you're used to cloud DBaaS pricing, you might have noticed that I omitted something: the above only talks about compute cost, not the storage cost. Storage costs us $0.10 / GB-month, and we offer 15 GB in the free tier, so that can cost us up to $1.5, even for inactive DBs. However, in practice, free inactive databases typically don't load that much data and, on average, the storage cost is much smaller than that.
 
 ## Not only for the free tier
 
