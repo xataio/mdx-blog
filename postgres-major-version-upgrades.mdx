@@ -20,8 +20,8 @@ and time-consuming. Common issues with major Postgres upgrades are:
 - **Complex orchestration**: Orchestrating a migration is a multi-step process that requires careful planning, with little room
   for errors.
 - **Downtime**: Planned (and unplanned) downtime is not uncommon when a major version upgrade happens, impacting users and business.
-- **Clients config requirements**: Not only the database, in many cases also client apps also need to be aware of the migration and
-  reconfigure their database connection details to point to a new host once a migration is done.
+- **Clients config changes**: Not only the infra part, in many cases also client apps also need to be aware of the migration and
+  update their database connection details to point to a new host once a migration is done.
 
 For all these reasons, major version upgrades are often postponed and become a major event across multiple engineering teams.
 
@@ -33,7 +33,7 @@ performance & isolation.
 
 <ArticleVideo
   platform="html"
-  src="https://github.com/xataio/mdx-blog/raw/branch-moving/videos/branches-move.webm"
+  src="https://github.com/xataio/mdx-blog/raw/branch-moving/videos/branches-move.mp4"
   autoplay
   loop
 />
