@@ -1,0 +1,51 @@
+---
+title: 'Introducing branch moving: Postgres major version upgrades with minimal downtime'
+description: 'With the release of branch moving, Xata users can now perform postgres major version upgrades with minimal downtime. This article explains how the feature was implemented'
+image:
+  src: --TODO
+  alt: Xata branch moving
+author: Carlos Pérez-Aradros Herce
+authorEmail: carlos@xata.io
+date: 10-3-2023
+tags: ['postgres']
+published: true
+slug: postgres-major-version-upgrades
+ogImage: --TODO
+---
+
+## Near zero-downtime major Postgres version upgrades
+
+One of the challenges of running a Postgres database is upgrading to a new major version. Major version
+upgrades can introduce new features, performance improvements, and bug fixes, but they can also be complex
+and time-consuming. Common issues with major Postgres upgrades are:
+
+- **Complex orchestration**: Orchestrating a migration is a multi-step process that requires careful planning, with little room
+for errors.
+- **Downtime**: Planned (and unplanned) downtime is not uncommon when a major version upgrade happens, impacting users and business.
+- **Clients config requirements**: Not only the database, in many cases also client apps also need to be aware of the migration and
+reconfigure their database connection details to point to a new host once a migration is done.
+
+For all these reasons, major version upgrades are often postponed and become a major event across multiple engineering teams.
+
+### Branch moving in Xata
+
+Today, we are launching branch moving, which allows Xata users to move a branch between two Postgres clusters while it's being
+accessed. You can use this as a way to move a branch from a shared cluster in our free tier to your own dedicated cluster, for better
+performance & isolation.
+
+<ArticleVideo
+  platform="html"
+  src="https://github.com/xataio/mdx-blog/raw/main/videos/branches-move.webm"
+  autoplay
+  loop
+/>
+
+This feature also allows to perform near zero-downtime major Postgres version upgrades by moving a branch between two clusters running
+on different versions.
+
+### How branch moving works
+
+
+
+### Future work
+
