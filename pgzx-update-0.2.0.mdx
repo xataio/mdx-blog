@@ -26,7 +26,7 @@ blog post.
 # Highlights
 
 We have adde quite a number of improvements and fixes since the first update.
-Unfortunately this includes some breaking changes. Let's go through a number of 
+Unfortunately this includes some breaking changes. Let's go through a number of
 
 ## Zig update
 
@@ -56,16 +56,16 @@ inside the containers development shell you can use `./ci/setup.sh` and
 ## Function Manager
 
 The Function Manager interface allows you to register functions with the
-PostgreSQL so you can call them from SQL. 
+PostgreSQL so you can call them from SQL.
 
 In this iteration we've added support for optional Zig error returns to `PG_FUNCTION_V1`.
 With this improvement you can now return an error from your function like so:
 
-```
+```zig
 comptime {
     pgzx.PG_FUNCTION_V1("hello_world", hello_world);
 }
- 
+
 pub fn hello_world(name: ?[:0]const u8) ![:0]const u8 {
     return if (name) |n|
         try std.fmt.allocPrintZ(pgzx.mem.PGCurrentContextAllocator, "Hello, {s}!", .{n})
@@ -84,7 +84,7 @@ Exporting a number of functions can become a bit tedious when you want to
 export multiple functions. In that case you might want to use `PG_EXPORT`.
 `PG_EXPORT` will export all public functions from the struct given:
 
-```
+```zig
 comptime {
     pgzx.PG_EXPORT(sqlfns);
 }
@@ -105,13 +105,12 @@ demonstrates multiple ways on how you can write a SQL function in Zig. The
 sample extension documents different ways on how to export a function, accept
 arguments and return values.
 
-
 ## Error logging API overhaul (`pgzx.elog`)
 
 We still support the helper functions `elog.Error`, `elog.Warning`,
 `elog.Notice` and friends. We also introduced `WithCause` variants like:
 
-```
+```zig
 pub fn WarningWithCause(src: SourceLocation, cause: anyerror, comptime fmt: []const u8, args: anytype) void;
 ```
 
@@ -123,7 +122,7 @@ purposes.
 
 The underlying error reporting API has been rewritten to follow the C API more closely. For example:
 
-```
+```zig
     elog.ereport(@src(), .Error, .{
         elog.errcode(pg.ERRCODE_UNDEFINED_OBJECT),
         elog.errmsg("Foreign schema \"{s}\" does not exist", .{foreign_schema_name}),
@@ -156,7 +155,7 @@ but it is up to `ereport` to actually call `errmsg`, which will finally use
 
 The `FmtMessage(C-function, format, args)` function is a generic function that implements the functional options interface:
 
-```
+```zig
     fn FmtMessage(comptime msgtype: anytype, comptime fmt: []const u8, comptime Args: type) type {
         return struct {
             args: Args,
@@ -176,7 +175,7 @@ arguments at runtime.
 
 Now we can implement `errmsg` and others like so:
 
-```
+```zig
 pub inline fn errmsg(comptime fmt: []const u8, args: anytype) FmtMessage(pg.errmsg, fmt, @TypeOf(args)) {
     return .{ .args = args };
 }
@@ -196,7 +195,7 @@ pub inline fn errhint(comptime fmt: []const u8, args: anytype) FmtMessage(pg.err
 
 And `ereport` decides if and when to format the string:
 
-```
+```zig
 pub inline fn ereport(src: SourceLocation, level: Level, opts: anytype) void {
     ereportDomain(src, level, null, opts);
 }
@@ -209,10 +208,12 @@ pub inline fn ereportDomain(src: SourceLocation, level: Level, domain: ?[:0]cons
 }
 ```
 
-Once our `ereport`  is compiled it behaves exactly like the C macros (minus us using the zig string formatting functionality).
+Once our `ereport` is compiled it behaves exactly like the C macros (minus us using the zig string formatting functionality).
 
-Zig structs are awesome in so many ways. One rarely needs builders, let alone the functional options pattern. Yet it seems it is a viable pattern for logging and tracing  APIs that are supposed to have low overhead when logging is disabled.
-
+Zig structs are awesome in so many ways. One rarely needs builders, let alone
+the functional options pattern. Yet it seems it is a viable pattern for logging
+and tracing APIs that are supposed to have low overhead when logging is
+disabled.
 
 ## Server Programming Interface (SPI) support
 
@@ -238,7 +239,7 @@ the given type.
 
 This query returns a single integer or an error if the `cname` field is unknown:
 
-```
+```zig
     const QUERY = "SELECT id FROM catalog.cluster_nodes WHERE cname = $1";
     var rows = try pgzx.spi.queryTyped(i32, QUERY, .{
         .limit = 1,
@@ -264,7 +265,7 @@ This query returns a single integer or an error if the `cname` field is unknown:
 
 You can also use `queryTyped` with a struct:
 
-```
+```zig
     const NodeInfo = struct {
         server: pg.Oid,
         foreign_schema: [:0]const u8,
@@ -284,10 +285,11 @@ You can also use `queryTyped` with a struct:
     const random_node = try rows.next();
 ```
 
+The SPI interface requires you to connect and finish to the SPI subsystem.
+Internally SPI will maintain a stack of "SPI frames". Often times you will find
+yourself writing:
 
-The SPI interface requires you to connect and finish to the SPI subsystem. Internally SPI will maintain a stack of "SPI frames". Often times you will find yourself writing:
-
-```
+```zig
     pgzx.spi.connect();
     defer pgzx.spi.finish();
 ```
@@ -298,7 +300,7 @@ or you have to transfer ownership of the stack frame (meaning someone must call 
 
 Alternatively you can use the `pgzx.spi.OwnedSPIFrameRows` type like so:
 
-```
+```zig
     pgzx.spi.connect();
     errdefer pgzx.spi.finish();
 
@@ -307,7 +309,6 @@ Alternatively you can use the `pgzx.spi.OwnedSPIFrameRows` type like so:
 ```
 
 When the caller uses `rows.deinit()` we will automatically call `pgzx.spi.finish()` for you.
-
 
 ## Foreign Data Wrapper
 
@@ -328,7 +329,7 @@ implementation.
 
 This example uses reads the available options from libpq into a global table:
 
-```
+```zig
 
 const pgzx = @import("pgzx");
 const fdw = pgzx.fdw;
@@ -361,7 +362,7 @@ fn pgdc_fdw_validator(list_datum: pg.Datum, catalog: pg.Oid) void {
         xact_conn_options,
         fdw.OptionList.init(extension_libpq_options.?),
     });
-    
+
     const options = pg.untransformRelOptions(list_datum);
     fdw.validateOptions(extension_options, options, catalog);
 }
@@ -369,7 +370,7 @@ fn pgdc_fdw_validator(list_datum: pg.Datum, catalog: pg.Oid) void {
 
 The handler function can be implemented as follows:
 
-```
+```zig
 fn pgdc_fdw_handler() pg.Datum {
     return pg.PointerGetDatum(pgzx.node.create(pg.FdwRoutines{
           .BeginForeignScan = ...,
