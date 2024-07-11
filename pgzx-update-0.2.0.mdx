@@ -1,14 +1,14 @@
 ---
 title: 'pgzx: Version 0.2.0 update'
-description: 'We are excited to introduce pgzx, a framework for creating Postgres extensions using the Zig programming language.'
+description: 'Learn about the latest changes in pgzx'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgzx-banner.png
   alt: pgzx
 author: Steffen Siering
 authorEmail: steffen@xata.io
-date: 19-12-2024
+date: 07-19-2024
 tags: ['open-source', 'postgres', 'fpPgzx', 'oss']
-published: false
+ublished: false
 slug: pgzx-update-0.2.0
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgzx-banner.png
 ---
@@ -23,17 +23,16 @@ In case it is the first time you hear of pgzx and are intrigued, you can find mo
 details in our "[Introducing pgzx](https://xata.io/blog/introducing-pgzx/)"
 blog post.
 
-# Highlights
+We made quite a number of improvements since the first update.
+Unfortunately this also includes some breaking changes. Lets have a look at
+this releases highlights:
 
-We have adde quite a number of improvements and fixes since the first update.
-Unfortunately this includes some breaking changes. Let's go through a number of
-
-## Zig update
+# Zig update
 
 Zig 0.13 is the latest stable release, but the Zig toolchain, including the
 compiler, build system, and standard library, is still in development and
 breaking changes do happen every now and then. For this reason we currently do
-not focus on a specific release version, but try to follow the latest Zig
+not focus on a specific Zig version, but try to follow the latest Zig
 changes in the master branch.
 
 The Nix based development shell uses
@@ -53,7 +52,7 @@ container. Use `./dev/docker/build.sh` to build the container and
 inside the containers development shell you can use `./ci/setup.sh` and
 `./ci/run.sh` to build and run the projects tests.
 
-## Function Manager
+# Function Manager
 
 The Function Manager interface allows you to register functions with the
 PostgreSQL so you can call them from SQL.
@@ -153,7 +152,8 @@ options. The `errmsg` type will capture the format string and the arguments,
 but it is up to `ereport` to actually call `errmsg`, which will finally use
 `std.fmt` to format the message and pass it to the C-API.
 
-The `FmtMessage(C-function, format, args)` function is a generic function that implements the functional options interface:
+The `FmtMessage(C-function, format, args)` function is a generic function that
+implements the functional options interface:
 
 ```zig
     fn FmtMessage(comptime msgtype: anytype, comptime fmt: []const u8, comptime Args: type) type {
@@ -215,7 +215,7 @@ the functional options pattern. Yet it seems it is a viable pattern for logging
 and tracing APIs that are supposed to have low overhead when logging is
 disabled.
 
-## Server Programming Interface (SPI) support
+# Server Programming Interface (SPI) support
 
 The PostgreSQL Server Programming Interface
 ([SPI](https://www.postgresql.org/docs/current/spi.html)) is a C API for
@@ -310,7 +310,7 @@ Alternatively you can use the `pgzx.spi.OwnedSPIFrameRows` type like so:
 
 When the caller uses `rows.deinit()` we will automatically call `pgzx.spi.finish()` for you.
 
-## Foreign Data Wrapper
+# Foreign Data Wrapper
 
 We initiated support for writing Foreign Data Wrappers
 ([FDW](https://www.postgresql.org/docs/current/fdwhandler.html)) in Zig. The
@@ -381,14 +381,6 @@ fn pgdc_fdw_handler() pg.Datum {
 }
 ```
 
-## More Headers
-
-We currently do not include all headers available, but rather selectively add new headers when needed.
-If you are missing a header, please open a PR or an issue on the [pgzx Github
-repository](https://github.com/xataio/pgzx).
-
-The full set of headers from the `foreign`, `nodes`, `optimizer`, and `catalog` folder have been added.
-
 # Other changes
 
 - Add some more utilities to pgzx.meta module.
@@ -407,3 +399,8 @@ The full set of headers from the `foreign`, `nodes`, `optimizer`, and `catalog` 
   `PG_HOME` to locate the local PostgresSQL installation folder in the
   development shell.
 - `pgzx.shmem`: Add `registerHooks` and `registerSharedState` convenience functions.
+- We currently do not include all headers available, but rather selectively add
+  new headers when needed. If you are missing a header, please open a PR or an
+  issue on the [pgzx Github repository](https://github.com/xataio/pgzx). The
+  full set of headers from the `foreign`, `nodes`, `optimizer`, and `catalog`
+  folder have been added.
