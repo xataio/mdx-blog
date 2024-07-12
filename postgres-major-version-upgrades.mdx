@@ -7,7 +7,7 @@ image:
 author: Carlos Pérez-Aradros Herce
 authorEmail: carlos@xata.io
 date: 07-18-2024
-tags: ['launch-week', 'postgres', 'elephant-on-the-move']
+tags: ['launch-week', 'postgres', 'engineering', 'elephant-on-the-move']
 published: true
 slug: postgres-major-version-upgrades
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/images/postgresql-dedicated-clusters-beta/dedicated-clusters.jpg
@@ -58,11 +58,57 @@ cluster hosting the target database:
 ![xata clusters and proxy](/images/branch-moving-arch.png)
 
 This allows us to have fine grained control over connections, ensure security and many features to come. In the case of moving databases,
-it guarantees that we are able to redirect traffic to the correct cluster as needed. This is how we leverage it here:
+it guarantees that we are able to redirect traffic to the correct cluster as needed.
+
+This is the process to move a database branch when requested:
 
 ![moving a database branch](/images/branch-moving-process.png)
 
+We can divide it in four main steps:
+
+### The setup
+
+In this process we recreate the database in the target cluster and configure replication to start syncing it.
+
+- Block schema changes in the source cluster. This allows us to replicate the database consistently, without missing any change.
+- Replicate the database schema in the target cluster.
+- Create a [publication](https://www.postgresql.org/docs/current/logical-replication-publication.html) in the source cluster.
+- Subscribe to it in the target.
+
+### The wait for sync
+
+With the databases now replicating, we need to wait for the sync process to be up to date, so the replica is following close enough to
+the primary.
+
+- Check the replication slots created by the subscription, wait for their [LSN](https://www.postgresql.org/docs/current/datatype-pg-lsn.html)
+  distance to be low enough.
+
+### The switch
+
+Target cluster (replica) is close enough to be promoted as the new primary. We start the switch process. It's critical that this step
+is performed as quickly as possible, as we want to keep downtime to a minimum:
+
+- Block writes to the source cell. We do this by revoking write permissions from the accessing roles.
+- Wait for the replication slot. With writes stopped, we need to ensure that all the ones that went through make it to the target cluster.
+- Switch traffic to the target cluster (new primary). All new connections will go to it.
+- Kill previously existing connections to the source cluster, ensuring they reconnect to the new one.
+
+### Cleanup
+
+Cleanup all created slots + garbage in the source cell.
+
+With these steps the process is done, the database is now accessible in the newer version. It's important to note that this process offers
+reasonable guarantees: reads work during the whole process, and writes are only blocked for a brief period of time (normally under 100ms).
+
 ### Future work
 
-- Fine grained control over switch?
-- Actual Zero downtime from the proxy by holding writes and switching them
+We are excited about this new feature, and we have many ideas about how we could evolve it in the future, for example:
+
+- Providing more detailed information about the move progress.
+- Potentially achieve real zero-downtime by holding, then redirecting writes in the proxy, effectively avoiding killing any connection.
+- Allow for schema changes while move happens?
+- Provide more fine grained control over the process, for instance, allowing users to decide when to switch, and allow to send traffic to the target
+  cell before the switch, for instance to perform custom tests.
+
+Of course, we would love hear your feedback and ideas! If you are interested, please reach out to us on [Discord](https://xata.io/discord) or
+follow us on [X / Twitter](https://twitter.com/xata).
