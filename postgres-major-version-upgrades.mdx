@@ -37,7 +37,7 @@ Common issues with major Postgres upgrades are:
 
 For all these reasons, major version upgrades are often postponed and become a major event across multiple engineering teams.
 
-### Branch moving in Xata
+### Database branch moving in Xata
 
 Today, we are launching branch moving, which allows Xata users to move a database between two Postgres clusters while it's still being
 accessed. You can use this as a way to move a database from a shared cluster in our free tier to your own dedicated cluster, for better
@@ -46,7 +46,7 @@ performance & isolation.
 This feature also allows to perform near zero-downtime major Postgres version upgrades by moving a database between two clusters running
 on different versions.
 
-### How database branch moving works
+### How it works
 
 We implemented a blue-green approach in order to offer the ability to move databases. Trying to hide all the complexity behind a simple
 user experience.
