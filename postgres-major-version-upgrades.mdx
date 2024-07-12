@@ -19,13 +19,13 @@ and time-consuming.
 
 The most accepted methods for upgrading Postgres to a new major are:
 
-- (pg_upgrade)[https://www.postgresql.org/docs/current/pgupgrade.html] for **in-place upgrade**, which involves stopping the server while
+- [pg_upgrade](https://www.postgresql.org/docs/current/pgupgrade.html) for **in-place upgrade**, which involves stopping the server while
   the upgrade is being performed. Even if this usually happens very fast, it means taking the service down for a few minutes, plus leading
   with issues in the process during that downtime.
 
-- blue-green deployments, which leverages (logical replication)[https://www.postgresql.org/docs/current/logical-replication.html] to create
+- blue-green deployments, which leverages [logical replication](https://www.postgresql.org/docs/current/logical-replication.html) to create
   a standby replica (running a newer version) of the primary server. Once replication is done, a switch over is performed, involving
-  cutting writes to the primary, and switching traffic to the replica. More details on this approach later.
+  cutting writes to the primary, and switching traffic to the replica. Details on this approach later.
 
 Common issues with major Postgres upgrades are:
 
@@ -39,17 +39,28 @@ For all these reasons, major version upgrades are often postponed and become a m
 
 ### Branch moving in Xata
 
-Today, we are launching branch moving, which allows Xata users to move a branch between two Postgres clusters while it's still being
-accessed. You can use this as a way to move a branch from a shared cluster in our free tier to your own dedicated cluster, for better
+Today, we are launching branch moving, which allows Xata users to move a database between two Postgres clusters while it's still being
+accessed. You can use this as a way to move a database from a shared cluster in our free tier to your own dedicated cluster, for better
 performance & isolation.
 
-This feature also allows to perform near zero-downtime major Postgres version upgrades by moving a branch between two clusters running
+This feature also allows to perform near zero-downtime major Postgres version upgrades by moving a database between two clusters running
 on different versions.
 
-### How branch moving works
+### How database branch moving works
+
+We implemented a blue-green approach in order to offer the ability to move databases. Trying to hide all the complexity behind a simple
+user experience.
+
+In order to understand the process of moving a database, it is useful to explain some key parts of our infrastructure that contribute
+to the process: All Xata databases can be accessed from the same proxy service, that handles authentication and routes traffic to the
+cluster hosting the target database:
 
 ![xata clusters and proxy](/images/branch-moving-arch.png)
-![moving a branch](/images/branch-moving-process.png)
+
+This allows us to have fine grained control over connections, ensure security and many features to come. In the case of moving databases,
+it guarantees that we are able to redirect traffic to the correct cluster as needed. This is how we leverage it here:
+
+![moving a database branch](/images/branch-moving-process.png)
 
 ### Future work
 
