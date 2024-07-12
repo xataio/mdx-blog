@@ -17,15 +17,15 @@ ogImage: /images/pgstream/introducing-pgstream@2x.jpg
 
 At Xata, Postgres takes centre stage. And while it is our main database, we also offer other features that require us to extend its reach while keeping the data in sync. A good example of this is our [full-text search](https://xata.io/full-text-search) feature, which enables the use of Elasticsearch on top of Postgres. To keep these two datastores in sync, we capture and identify data and schema changes in Postgres and push these modifications downstream to Elasticsearch with minimal latency. This is often referred to as CDC (Change Data Capture).
 
-So now you know our use case, but why did we build our own replication tool? There’s many established solutions out there, but we had very specific requirements, which included support for continuous tracking of schema changes (DDL). This was something that existing tooling didn’t support at the time. Database schemas have a tendency to change over time - if your CDC tool doesn’t support replicating them, you risk data loss and manual intervention to fix your pipeline. There had to be a better way!
+So now you know our use case, but why did we build our own replication tool? There's many established solutions out there, but we had very specific requirements, which included support for continuous tracking of schema changes (DDL). This was something that existing tooling didn't support at the time. Database schemas have a tendency to change over time - if your CDC tool doesn't support replicating them, you risk data loss and manual intervention to fix your pipeline. There had to be a better way!
 
-We also wanted a solution that was easy to deploy and operate for both big and small setups, which isn’t always the case for existing tooling.
+We also wanted a solution that was easy to deploy and operate for both big and small setups, which isn't always the case for existing tooling.
 
 ## Introducing pgstream
 
 And so [pgstream](https://github.com/xataio/pgstream) was born! Pgstream is an open source CDC command-line tool and library. Some of its key features include:
 
-- **Schema change tracking and replication of DDL changes:** it’s no surprise, since this was one of our biggest requirements, that it made it as an integral feature of pgstream. We will go into a bit more detail on how this is implemented below.
+- **Schema change tracking and replication of DDL changes:** it's no surprise, since this was one of our biggest requirements, that it made it as an integral feature of pgstream. We will go into a bit more detail on how this is implemented below.
 - **Modular deployment configuration:** pgstream modular implementation allows it to be configured for simple use cases, removing unnecessary complexity and deployment challenges - the only hard requirement for pgstream is a Postgres database! However, it can also easily integrate with Kafka for more complex usecases.
 - **Elasticsearch/OpenSearch replication support:** out of the box support for replicating Postgres data and schema changes to an Elasticsearch compatible store, with special handling of field IDs to minimise re-indexing caused by column renames.
 - **Webhook support:** out of the box support to invoke a webhook endpoint whenever your source data changes. Helpful for reacting to specific data changes seamlessly.
@@ -48,7 +48,7 @@ The schema and data changes are part of the same linear stream - the downstream 
 
 Disclaimer: There are a lot of references in this section to the [WAL](https://www.postgresql.org/docs/current/wal-intro.html) (Write Ahead Logging). It refers to a sequential record of all changes made to a database, and a key component to Postgres replication.
 
-Now, let’s dive a little deeper into the stream!
+Now, let's dive a little deeper into the stream!
 
 At a high level, the internal implementation is split into WAL listeners and WAL processors.
 
@@ -80,7 +80,7 @@ In addition to the implementations described above, there's an optional processo
 - Schema events:
   - Acknowledging the new incoming schema in the Postgres `pgstream.schema_log` table.
 
-## What’s next?
+## What's next?
 
 This is only the beginning! We plan to continue developing pgstream and exploring how it can make it easier to replicate data. We are looking forward to your feedback!
 
