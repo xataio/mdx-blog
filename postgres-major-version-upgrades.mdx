@@ -66,7 +66,7 @@ This is the process to move a database branch when requested:
 
 We can divide it in four main steps:
 
-### The setup
+### Setup
 
 In this process we recreate the database in the target cluster and configure replication to start syncing it.
 
@@ -75,7 +75,7 @@ In this process we recreate the database in the target cluster and configure rep
 - Create a [publication](https://www.postgresql.org/docs/current/logical-replication-publication.html) in the source cluster.
 - Subscribe to it in the target.
 
-### The wait for sync
+### Wait for initial sync
 
 With the databases now replicating, we need to wait for the sync process to be up to date, so the replica is following close enough to
 the primary.
@@ -83,7 +83,7 @@ the primary.
 - Check the replication slots created by the subscription, wait for their [LSN](https://www.postgresql.org/docs/current/datatype-pg-lsn.html)
   distance to be low enough.
 
-### The switch
+### Switch
 
 Target cluster (replica) is close enough to be promoted as the new primary. We start the switch process. It's critical that this step
 is performed as quickly as possible, as we want to keep downtime to a minimum:
