@@ -2,7 +2,7 @@
 title: 'Introducing pgstream: Postgres replication with DDL changes'
 description: 'Today we’re excited to expand our open source Postgres platform with pgstream, a CDC command line tool and library for PostgreSQL with replication support for DDL changes to any provided output.'
 image:
-  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgstream/pgstream-banner@2x.png
+  src: /images/pgstream/introducing-pgstream@2x.jpg
   alt: pgstream
 author: Esther Minano Sanz
 authorEmail: esther@xata.io
@@ -10,7 +10,7 @@ date: 07-17-2024
 tags: ['open-source', 'postgres', 'fpReplication', 'fpPgstream', 'fpPgroll', 'fpPgzx', 'oss']
 published: false
 slug: pgstream-postgres-replication-schema-changes
-ogImage: /images/pgstream/pgstream-banner@2x.png
+ogImage: /images/pgstream/introducing-pgstream@2x.jpg
 ---
 
 ## Why?
@@ -34,13 +34,13 @@ And so [pgstream](https://github.com/xataio/pgstream) was born! Pgstream is an o
 
 Internally, pgstream is constructed as a streaming pipeline, where data from one module streams into the next, eventually reaching the configured output plugins. Pgstream keeps track of schema changes and replicates them alongside the data changes to maintain a consistent view of the source data downstream. This modular approach makes adding and integrating output plugin implementations simple and painless.
 
-![pgstream Arch](/images/pgstream/pgstream_arch_v1.png)
+![pgstream architecture](/images/pgstream/pgstream_arch_v1@2x.png)
 
 ### Tracking schema changes
 
 One of the main differentiators of pgstream is the fact that it tracks and replicates schema changes automatically. How? It relies on SQL triggers that will populate a Postgres table (`pgstream.schema_log`) containing a history log of all DDL changes for a given schema. Whenever a schema change occurs, this trigger creates a new row in the schema log table with the schema encoded as a JSON value. This table tracks all the schema changes, forming a linearised change log that is then parsed and used within the pgstream pipeline to identify modifications and push the relevant changes downstream.
 
-![Tracking schema changes](/images/pgstream/schema_changes_ddl.png)
+![Tracking schema changes](/images/pgstream/tracking_schema_changes@2x.png)
 
 The schema and data changes are part of the same linear stream - the downstream consumers always observe the schema changes as soon as they happen, before any data arrives that relies on the new schema. This prevents data loss and manual intervention.
 
