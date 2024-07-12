@@ -13,7 +13,6 @@ slug: pgstream-postgres-replication-schema-changes
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgstream/pgstream-banner@2x.png
 ---
 
-
 ## Why?
 
 At Xata, Postgres takes centre stage. And while it is our main database, we also offer other features that require us to extend its reach while keeping the data in sync. A good example of this is our [full-text search](https://xata.io/full-text-search) feature, which enables the use of Elasticsearch on top of Postgres. To keep these two datastores in sync, we capture and identify data and schema changes in Postgres and push these modifications downstream to Elasticsearch with minimal latency. This is often referred to as CDC (Change Data Capture).
@@ -47,9 +46,9 @@ The schema and data changes are part of the same linear stream - the downstream 
 
 ### Architecture
 
-Disclaimer: There are a lot of references in this section to the [WAL](https://www.postgresql.org/docs/current/wal-intro.html) (Write Ahead Logging). It refers to a sequential record of all changes made to a database, and a key component to Postgres replication. 
+Disclaimer: There are a lot of references in this section to the [WAL](https://www.postgresql.org/docs/current/wal-intro.html) (Write Ahead Logging). It refers to a sequential record of all changes made to a database, and a key component to Postgres replication.
 
-Now, let’s dive a little deeper into the stream! 
+Now, let’s dive a little deeper into the stream!
 
 At a high level, the internal implementation is split into WAL listeners and WAL processors.
 
@@ -75,17 +74,17 @@ There are currently three implementations of the processor:
 In addition to the implementations described above, there's an optional processor decorator, the translator, that injects some of the pgstream logic into the WAL event. This includes:
 
 - Data events:
-    - Setting the WAL event identity. If provided, it will use the configured id finder (only available when used as a library), otherwise it will default to using the table primary key/unique not null column.
-    - Setting the WAL event version. If provided, it will use the configured version finder (only available when used as a library), otherwise it will default to using the event LSN.
-    - Adding pgstream IDs to all columns. This allows us to have a constant identifier for a column, so that if there are renames, the column id doesn't change. This is particularly helpful for the search store, where a rename would require a re-index, which can be costly depending on the data.
+  - Setting the WAL event identity. If provided, it will use the configured id finder (only available when used as a library), otherwise it will default to using the table primary key/unique not null column.
+  - Setting the WAL event version. If provided, it will use the configured version finder (only available when used as a library), otherwise it will default to using the event LSN.
+  - Adding pgstream IDs to all columns. This allows us to have a constant identifier for a column, so that if there are renames, the column id doesn't change. This is particularly helpful for the search store, where a rename would require a re-index, which can be costly depending on the data.
 - Schema events:
-    - Acknowledging the new incoming schema in the Postgres `pgstream.schema_log` table.
+  - Acknowledging the new incoming schema in the Postgres `pgstream.schema_log` table.
 
 ## What’s next?
 
-This is only the beginning! We plan to continue developing pgstream and exploring how it can make it easier to replicate data. We are looking forward to your feedback! 
+This is only the beginning! We plan to continue developing pgstream and exploring how it can make it easier to replicate data. We are looking forward to your feedback!
 
- Here are some of the items in our development pipeline:
+Here are some of the items in our development pipeline:
 
 - Support for multiple Kafka topics
 - Additional Postgres plugin support (`pgoutput`)
