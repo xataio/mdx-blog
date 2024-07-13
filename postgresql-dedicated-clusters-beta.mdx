@@ -29,7 +29,7 @@ Our dedicated clusters are essentially dedicated cells. So you have all the same
 
 I won't get into the weeds today, but if you're interested in learning more, [this blog](https://xata.io/blog/postgres-dedicated-clusters) and [our documentation](https://xata.io/docs/dedicated-cluster) are great resources.
 
-## Celebrating with a limited-time offer
+## Get started with $1,000 in credit
 
 To kick off this [launch week](https://xata.io/launch-week-elephant-on-the-move) right and celebrate our public beta release, we will be offering **$1,000 in credit** for customers that start using dedicated cluster between now and its general availability later this year. This credit will be valid through the end of 2025, but you will only have a few months to qualify. As a customer, you do not need to apply for the credit. Any usage from a dedicated cluster will automatically be deducted and you have full control over what the deployment looks like.
 
@@ -37,7 +37,7 @@ If you're already a happy Xata customer, you can easily move all of your databas
 
 ## What's new
 
-The team has been hard at work over the last few months building out features and functionality to provide the best experience to our beta customers. Starting today you can spin up dedicated Postgres cluster classes ranging in size from `db.t4g.medium` to `db.r6g.2xlarge` in both `us-east-1` and `eu-central-1`. We plan to introduce more classes, versions, regions and extensions in the coming months, so [please let us know](https://xata.io/discord) what you'd like to see.
+The team has been hard at work over the last few months building out features and functionality to provide the best experience to our beta customers. Starting today you can spin up dedicated Postgres cluster classes ranging in size from `db.t4g.medium` to `db.r6g.2xlarge` in both `us-east-1` and `eu-central-1`. We plan to introduce more classes, versions, regions and extensions in the coming months, so [please let us know](https://xata.io/contact) what you'd like to see.
 
 Here are just some of the many features and functionality available starting today.
 
@@ -57,16 +57,6 @@ Most of the configuration options we provide will impact the monthly cost, and t
 
 As we look ahead, we plan to provide templates that include infrastructure and configuration best practices for specific use cases.
 
-### Defining a default cluster
-
-After a dedicated cluster has been created, you can select it as the default option for a database on creation or through the database settings.
-
-![Defining a default cluster on creation](images/postgresql-dedicated-clusters-beta/create-default-cluster.png)
-
-![Editing to include a default cluster](images/postgresql-dedicated-clusters-beta/edit-default-cluster.png)
-
-When you choose a default cluster, any new branch within that database will automatically be created there. This is perfect for development workflows that use branching for staging environments or pull request based development. Your dedicated cluster could only be for your production database, while each branch created could be automatically created in a shared cluster or a dedicated development cluster.
-
 ### Visibility into usage of your cluster
 
 Every dedicated cluster has an overview page, where you can get a sense of what the usage of your infrastructure looks like and where the bottlenecks may be occurring. This view provides visibility into CPU utilization, database connections, freeable memory, storage, receive and transmit throughput and read/write IO.
@@ -77,37 +67,41 @@ These are not only useful for monitoring usage, but will give you a sense for wh
 
 ### Extensions now supported
 
-One of the drawbacks (and reasons for building dedicated clusters) is that shared clusters, while useful for most projects, have certain limitations because of the shared resources. There are simply more security precautions for every new supported piece of functionality we add. Naturally, we cannot provide the same [supported extensions](https://xata.io/docs/postgres#extensions) in shared clusters as we can in dedicated clusters.
+One of the drawbacks (and reasons for building dedicated clusters) is that shared clusters, while useful for most projects, have certain limitations because of the shared resources. There are simply more security precautions for every new supported piece of functionality we add. Naturally, we cannot provide the same [supported extensions](https://xata.io/docs/dedicated-cluster#extensions) in shared clusters as we can in dedicated clusters.
 
 ![Extensions available today](images/postgresql-dedicated-clusters-beta/extensions.png)
 
 We've started adding Postgres extensions based on popularity amongst our customer base, starting with `plpgsql`, `uuid-ossp`, `pgcrypto`, `vector`, `postgres_fdw`, `pg_walinspect` and `postgis`. We will continue to grow this library of extensions over time, but please let us know if there's one missing you'd like to see.
 
-### Move branches between clusters
+### Move your database and branches between clusters
 
-One of the most powerful features that come with this beta release, is the ability to move branches between clusters. You are able to take your main database or one of the branches and move it to another cluster in just a few clicks. We are using this internally to provide a forever-free tier, automatically moving inactive databases to a special cell meant for longer term storage and moving it back to an active cell if re-activated. Our CTO, [Tudor Golubenco](https://www.linkedin.com/in/tudorgolubenco/), dives into the economics of our free tier and the techncial details behind it in [this blog](https://xata.io/blog/postgres-free-tier).
+One of the most powerful features that come with this beta release, is the ability to move branches between clusters. You are able to take your main database or one of its branches and move it to another cluster in just a few clicks. We are using this internally to provide a forever-free tier, automatically moving inactive databases to a special cell meant for longer term storage and moving it back to an active cell if re-activated. Our CTO, [Tudor Golubenco](https://www.linkedin.com/in/tudorgolubenco/), dives into the economics of our free tier and the techncial details behind it in [this blog](https://xata.io/blog/postgres-free-tier).
 
 ![Move a branch between clusters](images/postgresql-dedicated-clusters-beta/move-branch.png)
 
-That is one internal use case for this functionality, but it opens up many possibilities for blue-green deployments, testing / developer environments and database management with zero downtime. [Stay tuned](https://x.com/xata), we'll dive into these use cases specifically later this week.
+That is one internal use case for this functionality, but it opens up many possibilities for blue-green deployments, testing / developer environments and database management with zero downtime.
 
-## Serverless Postgres, the SQL
+Complimenting the ability to move branches between clusters, you are now able to define a default cluster for your database.
 
-Get it? Sorry, we're big on dad(and mom)-jokes at Xata. It was just too easy. And yes, I know it's been done -- I simply couldn't help myself.
+![Update your default cluster](images/postgresql-dedicated-clusters-beta/edit-default-cluster.png)
+
+When you choose a default cluster, any new branch within that database will automatically be created there. This is perfect for development workflows that use branching for staging environments or pull request based development. Your dedicated cluster could only be for your production database, while each branch created could be automatically created in a shared cluster or a dedicated development cluster.
+
+[Stay tuned](https://x.com/xata), we'll dive into some use cases and workflows that are now possible with the movement of branches later this week.
+
+## SQL querying, unlocked
 
 As you'll soon seen, dedicated clusters has only been a portion of our focus since our [last launch week](https://xata.io/launch-week-unleash-the-elephant). We've also spent time improving our Postgres offering, the tooling around it and better supporting the use cases and workflows our customers have been asking for.
 
-Today we're not only announcing the public beta for dedicated clusters, but also opening up access to enable direct access to Postgres as part of our database creation workflow 🥳
-
-Over the last few months, the interest we've seen and the feedback we've received has been overwhelming. Again, we can't thank you enough to our early adopters 🦋
+Our SQL offering [is built on a proxy](https://xata.io/blog/sql-over-http). This approach allows us to provide the best and most secure serverless experience possible. Over the last few months, we've been heads down on making sure that our Postgres offering works with the ORMs and tooling you know and love.
 
 ### Even more compatible with your favorite clients and tooling
 
-The team has been hard at work making sure that our serverless Postgres offering works with the ORMs and tooling you know and love.
-
 We've put a special focus on making sure [Drizzle](https://orm.drizzle.team/), [Prisma](https://www.prisma.io/), [SQLAlchemy](https://www.sqlalchemy.org/) and [Django](https://www.djangoproject.com/) ORMs work well with our platform. Common administrative and data exploration tools like [DataGrip](https://www.jetbrains.com/datagrip/), [pgAdmin](https://www.pgadmin.org/) and [TablePlus](https://tableplus.com/) have been put through the wringer to resolve any compatability hiccups seen over the past few months.
 
-With recent support for multiple schemas and operations, and a configureable `search_path`, our offering is now much more compatible with a growing set of clients and tools. Our [list of supported statements](https://xata.io/docs/postgres#supported-statements) continues to expand, and we aim to maximize compatability in both shared and dedicated clusters in the coming months.
+With our recent support for multiple Postgres schemas, and a configureable `search_path`, our offering is now much more compatible with a growing set of clients and tools. Our [list of supported statements](https://xata.io/docs/postgres#supported-statements) continues to expand, and we aim to maximize compatability in both shared and dedicated clusters in the coming months.
+
+Thank you to all our early adopters for providing feedback early on, we couldn't have made this progress without you 🦋
 
 ### Playground has been upgraded to Queries
 
