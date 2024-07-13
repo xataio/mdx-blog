@@ -27,7 +27,7 @@ We made quite a number of improvements since the first update.
 Unfortunately this also includes some breaking changes. Lets have a look at
 this releases highlights:
 
-# Zig update
+## Zig update
 
 Zig 0.13 is the latest stable release, but the Zig toolchain, including the
 compiler, build system, and standard library, is still in development and
@@ -52,7 +52,7 @@ container. Use `./dev/docker/build.sh` to build the container and
 inside the containers development shell you can use `./ci/setup.sh` and
 `./ci/run.sh` to build and run the projects tests.
 
-# Function Manager
+## Function Manager
 
 The Function Manager interface allows you to register functions with the
 PostgreSQL so you can call them from SQL.
@@ -215,7 +215,7 @@ the functional options pattern. Yet it seems it is a viable pattern for logging
 and tracing APIs that are supposed to have low overhead when logging is
 disabled.
 
-# Server Programming Interface (SPI) support
+## Server Programming Interface (SPI) support
 
 The PostgreSQL Server Programming Interface
 ([SPI](https://www.postgresql.org/docs/current/spi.html)) is a C API for
@@ -310,7 +310,7 @@ Alternatively you can use the `pgzx.spi.OwnedSPIFrameRows` type like so:
 
 When the caller uses `rows.deinit()` we will automatically call `pgzx.spi.finish()` for you.
 
-# Foreign Data Wrapper
+## Foreign Data Wrapper
 
 We initiated support for writing Foreign Data Wrappers
 ([FDW](https://www.postgresql.org/docs/current/fdwhandler.html)) in Zig. The
@@ -381,7 +381,7 @@ fn pgdc_fdw_handler() pg.Datum {
 }
 ```
 
-# Other changes
+## Other changes
 
 - Add some more utilities to pgzx.meta module.
 - We updated the `pgzx.datum` module to also accept the type OID for a value as
