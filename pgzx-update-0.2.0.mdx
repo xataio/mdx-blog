@@ -27,31 +27,6 @@ We made quite a number of improvements since the first update.
 Unfortunately this also includes some breaking changes. Lets have a look at
 this releases highlights:
 
-## Zig update
-
-Zig 0.13 is the latest stable release, but the Zig toolchain, including the
-compiler, build system, and standard library, is still in development and
-breaking changes do happen every now and then. For this reason we currently do
-not focus on a specific Zig version, but try to follow the latest Zig
-changes in the master branch.
-
-The Nix based development shell uses
-[zig-overlay](https://github.com/mitchellh/zig-overlay) in conjunction with the
-`flake.lock` file to pin the zig toolchain version to a recent commit ID.
-
-The dependency is updated by us every so often and we try to test and fix
-breaking changes when updating the toolchain version. We highly recommend to
-use the projects development shell when testing the example extensions provided,
-otherwise you might have problems compiling the extensions if you use an older
-or newer Zig toolchain.
-
-We understand not everyone is keen to install Nix locally. For getting to know
-the environment you can build and run a development shell in a local docker
-container. Use `./dev/docker/build.sh` to build the container and
-`./dev/docker/run.sh` to start the dockerized development shell. Once you are
-inside the containers development shell you can use `./ci/setup.sh` and
-`./ci/run.sh` to build and run the projects tests.
-
 ## Function Manager
 
 The Function Manager interface allows you to register functions with the
@@ -103,117 +78,6 @@ We have added a sample extension called
 demonstrates multiple ways on how you can write a SQL function in Zig. The
 sample extension documents different ways on how to export a function, accept
 arguments and return values.
-
-## Error logging API overhaul (`pgzx.elog`)
-
-We still support the helper functions `elog.Error`, `elog.Warning`,
-`elog.Notice` and friends. We also introduced `WithCause` variants like:
-
-```zig
-pub fn WarningWithCause(src: SourceLocation, cause: anyerror, comptime fmt: []const u8, args: anytype) void;
-```
-
-The `WithCause` variants will check the `cause` argument. If the error code is
-`PGErrorStack` we emit the captured error report and emit the new report. If it
-is any other Zig error code we append it to the message. These utilities are
-mostly for convenience and nice to have when adding logs for debugging
-purposes.
-
-The underlying error reporting API has been rewritten to follow the C API more closely. For example:
-
-```zig
-    elog.ereport(@src(), .Error, .{
-        elog.errcode(pg.ERRCODE_UNDEFINED_OBJECT),
-        elog.errmsg("Foreign schema \"{s}\" does not exist", .{foreign_schema_name}),
-    });
-```
-
-Originally we've been considering to use the builder pattern for the elog API,
-but we found it a little inflexible when combinig the builder with the C-API.
-Plus we had been forced to allocate buffers for messages in advance, even if
-the PostgreSQL would have discarded the message.
-
-The new API works more similar to the C-API. In the example given `ereport`
-will check if the message will be emitted or discarded by calling `errstart`.
-The `errcode` and `errmsg` functions will only be executed if `errstart`
-returns true.
-
-How does this work? Well, we use a mix of comptime and a pattern known to the
-[Go](https://go.dev/) community as "Functional Options". In essence in the
-functional options pattern a function accepts a variable number of arguments
-where each argument implements a common interface. This can be a function or an
-actual Go interface. The receiver might establish an internal 'context' and
-calls each passed argument with the given context. Once all options have
-updated the 'context', it is used as configuration of the function body. The
-receiver may also choose if it even needs to evaluate the options passed.
-
-In the `elog` API the `errcode` and `errmsg` functions are the functional
-options. The `errmsg` type will capture the format string and the arguments,
-but it is up to `ereport` to actually call `errmsg`, which will finally use
-`std.fmt` to format the message and pass it to the C-API.
-
-The `FmtMessage(C-function, format, args)` function is a generic function that
-implements the functional options interface:
-
-```zig
-    fn FmtMessage(comptime msgtype: anytype, comptime fmt: []const u8, comptime Args: type) type {
-        return struct {
-            args: Args,
-
-            pub inline fn call(self: @This()) void {
-                var memctx = mem.getErrorContextThrowOOM();
-                const msg = std.fmt.allocPrintZ(memctx.allocator(), fmt, self.args) catch unreachable();
-                _ = msgtype(msg.ptr);
-            }
-        };
-    }
-```
-
-Like all formatting functions in Zig we capture the format string as a
-`comptime` argument and return a new Zig type. The type only captures the
-arguments at runtime.
-
-Now we can implement `errmsg` and others like so:
-
-```zig
-pub inline fn errmsg(comptime fmt: []const u8, args: anytype) FmtMessage(pg.errmsg, fmt, @TypeOf(args)) {
-    return .{ .args = args };
-}
-
-pub inline fn errdetail(comptime fmt: []const u8, args: anytype) FmtMessage(pg.errdetail, fmt, @TypeOf(args)) {
-    return .{ .args = args };
-}
-
-pub inline fn errdetail_log(comptime fmt: []const u8, args: anytype) FmtMessage(pg.errdetail_log, fmt, @TypeOf(args)) {
-    return .{ .args = args };
-}
-
-pub inline fn errhint(comptime fmt: []const u8, args: anytype) FmtMessage(pg.errhint, fmt, @TypeOf(args)) {
-    return .{ .args = args };
-}
-```
-
-And `ereport` decides if and when to format the string:
-
-```zig
-pub inline fn ereport(src: SourceLocation, level: Level, opts: anytype) void {
-    ereportDomain(src, level, null, opts);
-}
-
-pub inline fn ereportDomain(src: SourceLocation, level: Level, domain: ?[:0]const u8, opts: anytype) void {
-    if (errstart(level, domain)) {
-        inline for (opts) |opt| opt.call();
-        errfinish(src, .{ .allow_longjmp = true }) catch unreachable;
-    }
-}
-```
-
-Once our `ereport` is compiled it behaves exactly like the C macros (minus us using the zig string formatting functionality).
-
-Zig structs are awesome in so many ways. One rarely needs builders, let alone
-the functional options pattern. Yet it seems it is a viable pattern for logging
-and tracing APIs that are supposed to have low overhead when logging is
-disabled.
 
 ## Server Programming Interface (SPI) support
 
@@ -309,6 +173,147 @@ Alternatively you can use the `pgzx.spi.OwnedSPIFrameRows` type like so:
 ```
 
 When the caller uses `rows.deinit()` we will automatically call `pgzx.spi.finish()` for you.
+
+## Error logging API overhaul (`pgzx.elog`)
+
+We still support the helper functions `elog.Error`, `elog.Warning`,
+`elog.Notice` and friends. We also introduced `WithCause` variants like:
+
+```zig
+pub fn WarningWithCause(src: SourceLocation, cause: anyerror, comptime fmt: []const u8, args: anytype) void;
+```
+
+The `WithCause` variants will check the `cause` argument. If the error code is
+`PGErrorStack` we emit the captured error report and emit the new report. If it
+is any other Zig error code we append it to the message. These utilities are
+mostly for convenience and nice to have when adding logs for debugging
+purposes.
+
+The underlying error reporting API has been rewritten to follow the C API more closely. For example:
+
+```zig
+    elog.ereport(@src(), .Error, .{
+        elog.errcode(pg.ERRCODE_UNDEFINED_OBJECT),
+        elog.errmsg("Foreign schema \"{s}\" does not exist", .{foreign_schema_name}),
+    });
+```
+
+Originally we've been considering to use the builder pattern for the elog API,
+but we found it a little inflexible when combinig the builder with the C-API.
+Plus we had been forced to allocate buffers for messages in advance, even if
+the PostgreSQL would have discarded the message.
+
+The new API works more similar to the C-API. In the example given `ereport`
+will check if the message will be emitted or discarded by calling `errstart`.
+The `errcode` and `errmsg` functions will only be executed if `errstart`
+returns true.
+
+How does this work? Well, we use a mix of comptime and a pattern known to the
+[Go](https://go.dev/) community as ["Functional Options"](https://commandcenter.blogspot.com/2014/01/self-referential-functions-and-design.html). In essence in the
+functional options pattern a function accepts a variable number of arguments
+where each argument implements a common interface. The accepted argument type
+can be a function or an actual Go interface. The receiver might establish an
+internal 'context' and calls each passed argument with the given context. Once
+all options have updated the 'context', it is used as configuration of the
+function body.
+
+In the `elog` API the `errcode` and `errmsg` functions are the functional
+options. The `errmsg` type will capture the format string and the arguments,
+but it is up to `ereport` to actually call `errmsg`, which will finally use
+`std.fmt` to format the message and pass it to the C-API.
+
+The `FmtMessage(C-function, format, args)` function is a generic function that
+implements the functional options interface:
+
+```zig
+    fn FmtMessage(comptime msgtype: anytype, comptime fmt: []const u8, comptime Args: type) type {
+        return struct {
+            args: Args,
+
+            pub inline fn call(self: @This()) void {
+                var memctx = mem.getErrorContextThrowOOM();
+                const msg = std.fmt.allocPrintZ(memctx.allocator(), fmt, self.args) catch unreachable();
+                _ = msgtype(msg.ptr);
+            }
+        };
+    }
+```
+
+Like all formatting functions in Zig we capture the format string as a
+`comptime` argument and return a new Zig type. The type only captures the
+arguments at runtime.
+
+Now we can implement `errmsg` and others like so:
+
+```zig
+pub inline fn errmsg(comptime fmt: []const u8, args: anytype) FmtMessage(pg.errmsg, fmt, @TypeOf(args)) {
+    return .{ .args = args };
+}
+
+pub inline fn errdetail(comptime fmt: []const u8, args: anytype) FmtMessage(pg.errdetail, fmt, @TypeOf(args)) {
+    return .{ .args = args };
+}
+
+pub inline fn errdetail_log(comptime fmt: []const u8, args: anytype) FmtMessage(pg.errdetail_log, fmt, @TypeOf(args)) {
+    return .{ .args = args };
+}
+
+pub inline fn errhint(comptime fmt: []const u8, args: anytype) FmtMessage(pg.errhint, fmt, @TypeOf(args)) {
+    return .{ .args = args };
+}
+```
+
+And `ereport` decides if and when to format the string:
+
+```zig
+pub inline fn ereport(src: SourceLocation, level: Level, opts: anytype) void {
+    ereportDomain(src, level, null, opts);
+}
+
+pub inline fn ereportDomain(src: SourceLocation, level: Level, domain: ?[:0]const u8, opts: anytype) void {
+    if (errstart(level, domain)) {
+        inline for (opts) |opt| opt.call();
+        errfinish(src, .{ .allow_longjmp = true }) catch unreachable;
+    }
+}
+```
+
+Once our `ereport` is compiled it behaves exactly like the C macros (minus us
+using the zig string formatting functionality). The `errstart` function checks
+if the message will be emitted and sets up the context in the error stack. The
+given options update the active error context and `errfinish` finally emits the
+error message. Depending on the log level `errfinish` might also execute a
+longjump or eveen abort the current process.
+
+Zig structs are awesome in so many ways. One rarely needs builders, let alone
+the functional options pattern. Yet it seems it is a viable pattern for logging
+and tracing APIs that are supposed to have low overhead when logging is
+disabled.
+
+## Zig update
+
+Zig 0.13 is the latest stable release, but the Zig toolchain, including the
+compiler, build system, and standard library, is still in development and
+breaking changes do happen every now and then. For this reason we currently do
+not focus on a specific Zig version, but try to follow the latest Zig
+changes in the master branch.
+
+The Nix based development shell uses
+[zig-overlay](https://github.com/mitchellh/zig-overlay) in conjunction with the
+`flake.lock` file to pin the zig toolchain version to a recent commit ID.
+
+The dependency is updated by us every so often and we try to test and fix
+breaking changes when updating the toolchain version. We highly recommend to
+use the projects development shell when testing the example extensions provided,
+otherwise you might have problems compiling the extensions if you use an older
+or newer Zig toolchain.
+
+We understand not everyone is keen to install Nix locally. For getting to know
+the environment you can build and run a development shell in a local docker
+container. Use `./dev/docker/build.sh` to build the container and
+`./dev/docker/run.sh` to start the dockerized development shell. Once you are
+inside the containers development shell you can use `./ci/setup.sh` and
+`./ci/run.sh` to build and run the projects tests.
 
 ## Foreign Data Wrapper
 
