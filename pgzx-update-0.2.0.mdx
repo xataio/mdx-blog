@@ -8,7 +8,7 @@ author: Steffen Siering
 authorEmail: steffen@xata.io
 date: 07-19-2024
 tags: ['open-source', 'postgres', 'fpPgzx', 'oss']
-ublished: false
+published: false
 slug: pgzx-update-0.2.0
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgzx-banner.png
 ---
@@ -18,7 +18,7 @@ week 4 months ago. As part of this summers' [Xata launch week]() we are bumping
 the version to 0.2.0. We are excited to share some details about the recent
 changes improvements.
 
-pgzx is our open-source framwork for developing PostgreSQL extensoins in Zig.
+pgzx is our open-source framework for developing PostgreSQL extensions in Zig.
 In case it is the first time you hear of pgzx and are intrigued, you can find more
 details in our "[Introducing pgzx](https://xata.io/blog/introducing-pgzx/)"
 blog post.
@@ -41,7 +41,7 @@ The Nix based development shell uses
 
 The dependency is updated by us every so often and we try to test and fix
 breaking changes when updating the toolchain version. We highly recommend to
-use the projects develoment shell when testing the example extensions provided,
+use the projects development shell when testing the example extensions provided,
 otherwise you might have problems compiling the extensions if you use an older
 or newer Zig toolchain.
 
@@ -142,7 +142,7 @@ How does this work? Well, we use a mix of comptime and a pattern known to the
 [Go](https://go.dev/) community as "Functional Options". In essence in the
 functional options pattern a function accepts a variable number of arguments
 where each argument implements a common interface. This can be a function or an
-actual Go interface. The receiver might establishe an internal 'context' and
+actual Go interface. The receiver might establish an internal 'context' and
 calls each passed argument with the given context. Once all options have
 updated the 'context', it is used as configuration of the function body. The
 receiver may also choose if it even needs to evaluate the options passed.
