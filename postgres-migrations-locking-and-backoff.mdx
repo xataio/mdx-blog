@@ -13,7 +13,7 @@ slug: migrations-and-exclusive-locks
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-migration-locks.png
 ---
 
-Schema changes are hard. They're hard because there are multiple different failure modes, some of which require knowledge of how the underlying RDMS system works, especially with regard to object locking.
+Schema changes are hard. They're hard because there are multiple different failure modes, some of which require knowledge of how the underlying RDBMS system works, especially with regard to object locking.
 
 Broadly speaking, there are two classes of breakage that can occur when applying database migrations:
 
@@ -145,7 +145,7 @@ Once the `ALTER TABLE` statement has failed, the `SELECT` statement from the thi
 
 ## Backoff and retry
 
-With `lock_timeout` set appropriately like this, it's possible to ensure that DDL statements like `ALTER TABLE` don't lock out reads and writes from the affected table. However, when a statement exceeds its `lock_timeout` the statement fails. Postgres does not provide any mechanism by which such statements can be automatically retried. Retrying lock acquisition becomes the responsiblity of the person or process running the DDL statement.
+With `lock_timeout` set appropriately like this, it's possible to ensure that DDL statements like `ALTER TABLE` don't lock out reads and writes from the affected table. However, when a statement exceeds its `lock_timeout` the statement fails. Postgres does not provide any mechanism by which such statements can be automatically retried. Retrying lock acquisition becomes the responsibility of the person or process running the DDL statement.
 
 With [pgroll](https://github.com/xataio/pgroll), our migration tool for Postgres, such lock acquisition failures are automatically retried with an exponential backoff strategy. This means that:
 

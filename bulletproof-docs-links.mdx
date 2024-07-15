@@ -333,7 +333,7 @@ Let’s analyze what this method is doing in plain English:
 
 - We’re taking a `path: string` as input
 - We’re reading the content of the file that has this `path`
-- We’re instatiating a `links` set, ready to be filled
+- We’re instantiating a `links` set, ready to be filled
 - We have our AST visitor that:
   - on each node that fulfills the condition `type === "link"`
   - if the url starts with `/` (so it’s an internal link), we add it to `links`

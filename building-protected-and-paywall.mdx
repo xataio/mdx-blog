@@ -406,7 +406,7 @@ interface SessionSchema extends RegisteredDatabaseSessionAttributes {
 
 The code above defines the following types:
 
-- `UserSchema`: A type created with `RegisteredDatabaseUserAttributes` type definition alongwith `id` attribute as a string.
+- `UserSchema`: A type created with `RegisteredDatabaseUserAttributes` type definition along with `id` attribute as a string.
 - `SessionSchema`: A type created with `RegisteredDatabaseSessionAttributes` type definition along with `id` attribute as a string, `user_id` attribute as a string and `expires_at` attribute as a Date.
 
 Append the following code to handle data transformations to Lucia's expected structure:
@@ -653,7 +653,7 @@ export const lucia = new Lucia(adapter, {
 The code above does the following:
 
 - Imports the Lucia and XataAdapter classes.
-- Creates a new instance of XataAdatper as `adapter`.
+- Creates a new instance of XataAdapter as `adapter`.
 - Uses the `adapter` to create a new Lucia instance wherein the session cookie is set to `Secure` if the application is running in the production environment.
 - The `lucia` instance defines the `getUserAttributes` function to only fetch `paid` and `email` attributes from the user record(s).
 

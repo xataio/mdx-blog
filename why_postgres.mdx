@@ -119,7 +119,7 @@ We think this tech will be useful for many Postgres applications, so we are plan
 
 Another key piece of the new Xata architecture is [pgroll](https://github.com/xataio/pgroll), our open-source project for zero-downtime, reversible, schema migrations.
 
-While `pgroll` is a CLI tool, in order to offer its benefits to all the Xata users, we have developed a server wrapper for it, which integrates with our control plane. This server offers an API for specific migrations as well as automatically intercepts DDLs executed over the wire protocol. This allows us to offer some of the benefits of pgroll nativly in the Xata platform, without you even having to know that you are using pgroll!
+While `pgroll` is a CLI tool, in order to offer its benefits to all the Xata users, we have developed a server wrapper for it, which integrates with our control plane. This server offers an API for specific migrations as well as automatically intercepts DDLs executed over the wire protocol. This allows us to offer some of the benefits of pgroll natively in the Xata platform, without you even having to know that you are using pgroll!
 
 While there is still work to do to fully integrate pgroll, you already get some important benefits: maintaining a history of the schema migrations, avoiding [locking issues](https://xata.io/blog/postgres-schema-changes-pita) automatically, and enabling more complex migrations that require data backfill. We don't yet expose multiple versions of the schema at the same time, but we are planning to do so in the future. This will be key to enabling a simple and safe workflow for schema migrations of all kinds, and we're excited for that future.
 

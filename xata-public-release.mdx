@@ -117,7 +117,7 @@ Because we have control over the data model and because Xata has native concepts
 
 As we have shown earlier, we store the data in PostgreSQL, but we also replicate it to Elasticsearch. This enables us to offer significantly more advanced free-text search compared to the free-text-search support from PostgreSQL. This includes:
 
-- [fuzinness control](https://xata.io/docs/sdk/search#fuzziness-and-typo-tolerance) so that you can have typo tolerance in your search.
+- [fuzziness control](https://xata.io/docs/sdk/search#fuzziness-and-typo-tolerance) so that you can have typo tolerance in your search.
 - [column weights](https://xata.io/docs/sdk/search#column-weights), so you can value matches in some columns more. For example, you can boost matches in the “title” column more than matches in the rest of the columns.
 - [numeric boosters](https://xata.io/docs/sdk/search#numeric-booster), so you can boost records by a numeric field, for example by “rating”.
 - [date boosters](https://xata.io/docs/sdk/search#date-booster), so you can boost records that are more recent in time.

@@ -257,7 +257,7 @@ export async function POST({ request }: APIContext) {
 
 ## Using Xata image transformations to create blurred images
 
-Once a user submits their profile on the `/profile/create` page, before creating a record in the `profiles` table, generate a Base64 buffer of their blurred images. To create blured images from the originals, use Xata image transformations. With Xata image transformations, you’re able to request an on-demand public URL which resizes the image to given height and width, and blur the image. In this particular example, you can resize the image to 100 x 100 dimensions and blur it up to 75% from the original.
+Once a user submits their profile on the `/profile/create` page, before creating a record in the `profiles` table, generate a Base64 buffer of their blurred images. To create blurred images from the originals, use Xata image transformations. With Xata image transformations, you’re able to request an on-demand public URL which resizes the image to given height and width, and blur the image. In this particular example, you can resize the image to 100 x 100 dimensions and blur it up to 75% from the original.
 
 ```astro
 ---
@@ -333,7 +333,7 @@ if (Astro.request.method === 'POST') {
   response.redirect = '/photograph/create'
 
   // Set the relevant message for the user
-  response.message = 'Published profile succesfully. Redirecting you to upload your first photograph...'
+  response.message = 'Published profile successfully. Redirecting you to upload your first photograph...'
 }
 ---
 
