@@ -1,23 +1,33 @@
 ---
-title: Schema multi-version early access preview goes live today
-description: Schema multi-version, released today, addresses one of the most common pain points of application deployment - keeping your application code and database schema in sync. Starting today, database migrations in Xata can present two versions of your schema, old and new, to client applications allowing users to roll out new versions of their production applications with confidence.
+title: Introducing multi-version schema migrations
+description: Today's release of multi-version schema migrations addresses one of the most common pain points of application deployment - keeping your application code and database schema in sync. You can now present two versions of your schema, both old and new, to client applications.
 image:
-  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-internal.jpeg
-  alt: pgroll
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/schema-multi-version@2x.jpg
+  alt: Multi-version schema migrations
 author: Andrew Farries
 authorEmail: andrew@xata.io
-date: 07-12-2024
-tags: ['open-source', 'postgres', 'schema', 'migrations', 'pgroll', 'fpSchemaMigrations']
+date: 07-16-2024
+tags:
+  [
+    'open-source',
+    'postgres',
+    'schema',
+    'migrations',
+    'pgroll',
+    'fpSchemaMigrations',
+    'launch-week',
+    'elephant-on-the-move'
+  ]
 published: true
-slug: schema-multi-version-launch-week
-ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-internal.jpeg
+slug: multi-version-schema-migrations
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/schema-multi-version@2x.jpg
 ---
 
-Today we are excited to announce an early access preview of schema multi-version in Xata.
+Today we are excited to announce multi-version schema migrations in Xata 🎉
 
-Schema multi-version tackles one of the most painful aspects of application deployment: keeping your application code and database schema in sync.
+Multi-version schema migrations tackle one of the most painful aspects of application deployment: keeping your application code and database schema in sync.
 
-Schema multi-version means that both the old and new versions of your database schema are live and accessible during a schema migration. This greatly simplifies deployment of your applications as both the currently deployed and the new version of your application see the version of the database schema that they expect. And because both versions of the database schema are live at the same time, rollbacks become trivial.
+Multi-version schema migrations allow both the old and new versions of your database schema to be live and accessible during a schema migration. This greatly simplifies deployment of your applications as both the currently deployed and the new version of your application see the version of the database schema that they expect. And because both versions of the database schema are live at the same time, rollbacks become trivial.
 
 Behind the scenes, Xata does the heavy-lifting to make this work by presenting different versioned views of your application schema to each version of your application and transparently migrating data between the old and new versions of your database schema as data is written to each version.
 
@@ -31,24 +41,24 @@ Developers have to carefully consider how the two application versions will be a
 
 Wouldn't it be easier if you could keep both the old and new versions of your database schema live at the same time during a schema migration and have applications connect to the right version?
 
-# Schema multi-version in Xata
+# Multi-version schema migrations in Xata
 
-The early access preview of schema multi-version in Xata allows you to start a migration from the Xata UI and have both versions of your database schema available to applications for the duration of the migration. When your application rollout is complete, the migration can be completed leaving you with just the final version of your database schema.
+Multi-version schema migrations in Xata allow you to start a migration from Xata and have both versions of your database schema available to applications for the duration of the migration. When your application rollout is complete, the migration can be completed leaving you with just the final version of your database schema.
 
 Let's take a look at how this works in practice.
 
-First, we'll create a table in a fresh database, populate it with some data and then create a migration to add a `NOT NULL` constraint to a column in the table. We'll see how schema multi-version allows two versions of the database schema, one with the constraint and one without, to be made available to applications.
+First, we'll create a table in a fresh database, populate it with some data and then create a migration to add a `NOT NULL` constraint to a column in the table. We'll see how multi-version schema migrations allow two versions of the database schema, one with the constraint and one without, to be made available to applications.
 
 ## Creating the schema
 
-We'll use the Xata UI to:
+We'll use Xata to:
 
 - Create a simple `users` table with a `name` column
 - Populate the table with some random data
 
-In a new Xata database (with Postgres access enabled), we can create a new table in the Xata UI and populate it with some random data:
+In a new Xata database (with Postgres access enabled), we can create a new table in the app and populate it with some random data:
 
-![Create a new `users` table in the Xata UI and add a `name` column](images/schema-multiversion-launch-week/new-table.png)
+![Create a new `users` table in Xata and add a `name` column](images/schema-multiversion-launch-week/new-table.png)
 
 ![Generate some random data to fill the table](images/schema-multiversion-launch-week/random-data.png)
 
@@ -80,7 +90,7 @@ The `down` SQL expression does the opposite; it describes how values written to 
 
 Arbitrary transformations can be applied to the data during the migration, allowing for complex data migrations to be performed as part of the schema migration.
 
-We can take this migration and run it via the Migration Editor in the Xata UI:
+We can take this migration and run it via the Migration Editor:
 
 ![Start a migration to add a `NOT NULL` constraint to the `users` table](images/schema-multiversion-launch-week/start-migration.png)
 
@@ -94,7 +104,7 @@ The migration is now in progress and the two versions of the database schema are
 
 ## Connecting to each schema version
 
-In order to be able to take advantage of schema multi-version, applications need to be able to connect to the correct version of the database schema. This is done using the Postgres [search_path setting](https://www.postgresql.org/docs/current/ddl-schemas.html#DDL-SCHEMAS-PATH). The `search_path` setting determines which schema will be searched for non-schema-qualified table accesses. By setting the `search_path` appropriately, client applications can access the version of the database schema that is compatible with the deployed application code.
+In order to be able to take advantage of multi-version schema migrations, applications need to be able to connect to the correct version of the database schema. This is done using the Postgres [search_path](https://www.postgresql.org/docs/current/ddl-schemas.html#DDL-SCHEMAS-PATH) setting. The `search_path` setting determines which schema will be searched for non-schema-qualified table accesses. By setting the `search_path` appropriately, client applications can access the version of the database schema that is compatible with the deployed application code.
 
 Applications connect to a Xata database using a connection string:
 
@@ -208,21 +218,21 @@ Once the application rollout is complete and all applications have been updated 
 
 > Once a migration is completed, it cannot be rolled back. Before completing a migration, make sure that all applications that depend on the old version of the schema have been updated to the new version so that the old version of the database schema is no longer required.
 
-Completing an in-progress migration can be done from various places in the Xata UI, including the migrations widget on the dashboard:
+Completing an in-progress migration can be done from various places in Xata, including the migrations widget on the dashboard:
 
-![The migration can be completed from the Xata UI](images/schema-multiversion-launch-week/complete.png)
+![The migration can be completed from Xata](images/schema-multiversion-launch-week/complete.png)
 
-Once completed, the table UI once again shows just one version of the `name` column in the `users` table:
+Once completed, the table shows just one version of the `name` column in the `users` table again:
 
 ![After migration completion only the final version of the `name` column remains on the table](images/schema-multiversion-launch-week/table-editor-2.png)
 
 ## Rolling back a migration
 
-Because schema multi-version uses the expand/contract pattern to apply schema changes, rollbacks become much easier. The old version of the database schema was never removed so a rollback means simply removing the expanded parts of the database schema (the new version of the `users.name` column in our example).
+Because multi-version schema migrations use the expand/contract pattern to apply schema changes, rollbacks become much easier. The old version of the database schema was never removed so a rollback means simply removing the expanded parts of the database schema (the new version of the `users.name` column in our example).
 
 Like completing a migration, a migration can be rolled back from the migrations widget on the dashboard:
 
-![The migration can be rolled back from the Xata UI](images/schema-multiversion-launch-week/rollback.png)
+![The migration can be easily rolled back](images/schema-multiversion-launch-week/rollback.png)
 
 Once the migration is rolled back, the new version of the `name` column is removed from the `users` table and the database schema and data is in the same state as it was before the migration started.
 
@@ -230,8 +240,12 @@ Once the migration is rolled back, the new version of the `name` column is remov
 
 # Conclusion
 
-Schema multi-version simplifies one of the most common pain points when deploying applications: keeping the deployed versions of your applications and the database schema in sync.
+Multi-version schema migrations simplify one of the most common pain points when deploying applications: keeping the deployed versions of your applications and the database schema in sync.
 
-Xata's new schema multi-version feature allows you to deploy your applications and make database schema changes independently and with confidence.
+This new feature allows you to deploy your applications and make database schema changes independently and with confidence.
 
-We are excited to share this early access preview with you and look forward to your feedback.
+We are excited to share this with you and look forward to your feedback! Want to see multi-version schema migrations in action? Check out this quick demo video.
+
+<ArticleVideo platform="youtube" src="https://www.youtube.com/embed/TwK6-jWVkq4?si=JDAQh_pKWC-yUzYc" />
+
+[Sign up for free today](https://xata.io/start-free). You can follow along this week with a new announcement every day on our [launch week page](https://xata.io/launch-week-elephant-on-the-move), join in on our [summer hackathon](https://xata.io/blog/summer-launch-pxci-hackathon) or just [pop into Discord](https://xata.io/discord) and say hi 👋
