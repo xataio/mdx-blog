@@ -180,7 +180,7 @@ export async function POST({ request }: RequestEvent) {
   // Set of messages to create vector embeddings on
   const { messages = [] } = await request.json();
 
-  // Call the OpenAI API to get emebeddings on the messages
+  // Call the OpenAI API to get embeddings on the messages
   const generatedEmbeddings = await Promise.all(
     messages.map((input: string) => embedding({ input, model: 'text-embedding-3-small' }))
   );
@@ -286,7 +286,7 @@ const response = await replicate.predictions.create({
         // create a system instruction
         // make sure to wrap code blocks with ``` so that the svelte markdown picks it up correctly
         role: 'assistant',
-        content: `When creating repsonses sure to wrap any code blocks that you output as code blocks and not text so that they can be rendered beautifully.`
+        content: `When creating responses sure to wrap any code blocks that you output as code blocks and not text so that they can be rendered beautifully.`
       },
       // also, pass the whole conversation!
       ...messages
@@ -389,7 +389,7 @@ To make sure the specific HTML classes have their respective CSS styles present,
 <slot />
 ```
 
-Here's a preview of what we've succesfully created with SvelteKit and Xata 👇🏻
+Here's a preview of what we've successfully created with SvelteKit and Xata 👇🏻
 
 ![Conversational UI with Xata](/images/rag-sveltekit-xata/rag-sveltekit-xata-10.png)
 

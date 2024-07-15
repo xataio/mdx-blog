@@ -30,7 +30,7 @@ This pattern comes from fear of breaking the application, which is fair. Though 
 
 If you aren’t familiar with Postgres, locking is a way to control concurrent access to data in tables. Locks are used pretty heavily when modifying your schema and [there are many types of different locks](https://www.postgresql.org/docs/current/explicit-locking.html) available in Postgres.
 
-As an example, any ALTER TABLE statements will require the ACCESS EXCLUSIVE lock which conflicts with all other lock types. Meaning, most changes to your table essentially make it inaccessible for writes. When talking abour production applications, the general goal is to reduce the time during which Postgres tables are locked as much as possible. Unless you have the same exact data in your staging or preview environments as you do production, realistic locking scenarios can be relatively hard to test for.
+As an example, any ALTER TABLE statements will require the ACCESS EXCLUSIVE lock which conflicts with all other lock types. Meaning, most changes to your table essentially make it inaccessible for writes. When talking about production applications, the general goal is to reduce the time during which Postgres tables are locked as much as possible. Unless you have the same exact data in your staging or preview environments as you do production, realistic locking scenarios can be relatively hard to test for.
 
 **Deploying application changes**
 
@@ -86,7 +86,7 @@ There’s always the possibility that downtime is acceptable for your applicatio
 
 ## Tools available for schema migrations
 
-When you start seriously considering more destructive changes to your schema, thrid party tooling becomes more of a necessity to keep track of the changes, version them and perform the migrations. Since this problem has been around for a while, there are a variety of tools. We won't go into details for each one, but some solutions have been around for nearly two decades and others have popped up in the last few years.
+When you start seriously considering more destructive changes to your schema, third party tooling becomes more of a necessity to keep track of the changes, version them and perform the migrations. Since this problem has been around for a while, there are a variety of tools. We won't go into details for each one, but some solutions have been around for nearly two decades and others have popped up in the last few years.
 
 ![Tools for schema migrations](/images/zdt-schema-tools.png)
 
