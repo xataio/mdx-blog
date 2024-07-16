@@ -23,7 +23,7 @@ slug: multi-version-schema-migrations
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/schema-multi-version@2x.jpg
 ---
 
-Today we are excited to announce multi-version schema migrations in Xata 🎉
+Today we are excited to announce multi-version schema migrations in Xata, which utilizes our open-source library [pgroll](https://github.com/xataio/pgroll) under the hood. 🎉
 
 Multi-version schema migrations tackle one of the most painful aspects of application deployment: keeping your application code and database schema in sync.
 
@@ -58,7 +58,7 @@ We'll use Xata to:
 
 In a new Xata database (with Postgres access enabled), we can create a new table in the application and populate it with some random data:
 
-![Create a new `users` table in Xata and add a `name` column](images/schema-multiversion-launch-week/new-table.png)
+![Create a new users table in Xata and add a name column](images/schema-multiversion-launch-week/new-table.png)
 
 ![Generate some random data to fill the table](images/schema-multiversion-launch-week/random-data.png)
 
@@ -92,11 +92,11 @@ Arbitrary transformations can be applied to the data during the migration, allow
 
 We can take this migration and run it via the Migration Editor:
 
-![Start a migration to add a `NOT NULL` constraint to the `users` table](images/schema-multiversion-launch-week/start-migration.png)
+![Start a migration to add a NOT NULL constraint to the users table](images/schema-multiversion-launch-week/start-migration.png)
 
 Once the migration is started, the table UI shows that we have two versions of the `name` column in the `users` table, one with the `NOT NULL` constraint and one without (this is the [expand/contract pattern](https://blog.thepete.net/blog/2023/12/05/expand/contract-making-a-breaking-change-without-a-big-bang/) in practice):
 
-![The table editor shows the two versions of the `name` field, one with the `NOT NULL` constraint and one without](images/schema-multiversion-launch-week/table-editor.png)
+![The table editor shows the two versions of the name field, one with the NOT NULL constraint and one without](images/schema-multiversion-launch-week/table-editor.png)
 
 The new version of the `name` column has been filled with the data from the old version of the column. Had there been any `NULL` values in the column, these would have been rewritten by the `up` data migration we specified in the migration file. The two versions of the `name` column are always kept in sync for the duration of the migration; as data is written into either one, it is migrated to the other using the `up` and `down` SQL expressions from the migration file.
 
@@ -224,7 +224,7 @@ Completing an in-progress migration can be done from various places in Xata, inc
 
 Once completed, the table shows just one version of the `name` column in the `users` table again:
 
-![After migration completion only the final version of the `name` column remains on the table](images/schema-multiversion-launch-week/table-editor-2.png)
+![After migration completion only the final version of the name column remains on the table](images/schema-multiversion-launch-week/table-editor-2.png)
 
 ## Rolling back a migration
 
