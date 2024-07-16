@@ -29,7 +29,7 @@ Multi-version schema migrations tackle one of the most painful aspects of applic
 
 Multi-version schema migrations allow both the old and new versions of your database schema to be live and accessible during a schema migration. This greatly simplifies deployment of your applications as both the currently deployed and the new version of your application see the version of the database schema that they expect. And because both versions of the database schema are live at the same time, rollbacks become trivial.
 
-Behind the scenes, Xata does the heavy-lifting to make this work by presenting different versioned views of your application schema to each version of your application and transparently migrating data between the old and new versions of your database schema as data is written to each version.
+Behind the scenes, Xata does the heavy-lifting to make this work by presenting different versioned views of your application schema to each version of your application. It then transparently migrates data between the old and new versions of your database schema as data is written to each version.
 
 # Application rollouts and database schema changes
 
@@ -56,7 +56,7 @@ We'll use Xata to:
 - Create a simple `users` table with a `name` column
 - Populate the table with some random data
 
-In a new Xata database (with Postgres access enabled), we can create a new table in the app and populate it with some random data:
+In a new Xata database (with Postgres access enabled), we can create a new table in the application and populate it with some random data:
 
 ![Create a new `users` table in Xata and add a `name` column](images/schema-multiversion-launch-week/new-table.png)
 
@@ -84,7 +84,7 @@ We'll create a migration to add a `NOT NULL` constraint to the `name` column in 
 ]
 ```
 
-The SQL expression in the `up` field is used to migrate data from the old version of the `name` column that did not have the `NOT NULL` constraint to the new version of the column that does. This means the SQL expression needs to describe what to do with any `NULL` values that may already exist in the `name` field; here we are going to rewrite any `NULL`s to a placeholder value of `(unknown)`. Any non-`NULL` vales are copied over to the new version of the `name` column without modification.
+The SQL expression in the `up` field is used to migrate data from the old version of the `name` column that did not have the `NOT NULL` constraint to the new version of the column that does. This means the SQL expression needs to describe what to do with any `NULL` values that may already exist in the `name` field; here we are going to rewrite any `NULL`s to a placeholder value of `(unknown)`. Any non-`NULL` values are copied over to the new version of the `name` column without modification.
 
 The `down` SQL expression does the opposite; it describes how values written to the new version of the `name` column will be migrated back to the old version of the column. Here we simply copy the value without modification.
 
@@ -98,13 +98,13 @@ Once the migration is started, the table UI shows that we have two versions of t
 
 ![The table editor shows the two versions of the `name` field, one with the `NOT NULL` constraint and one without](images/schema-multiversion-launch-week/table-editor.png)
 
-The new version of the `name` column has been filled with the data from the old version of the column. Had there been any `NULL` values in the column, these would have been rewritten by the `up` data migration we specified in the migration file. The two versions of the `name` column are always kept in sync for the duration of the migration; as data is written into either one it is migrated to the other using the `up` and `down` SQL expressions from the migration file.
+The new version of the `name` column has been filled with the data from the old version of the column. Had there been any `NULL` values in the column, these would have been rewritten by the `up` data migration we specified in the migration file. The two versions of the `name` column are always kept in sync for the duration of the migration; as data is written into either one, it is migrated to the other using the `up` and `down` SQL expressions from the migration file.
 
 The migration is now in progress and the two versions of the database schema are live and available to applications.
 
 ## Connecting to each schema version
 
-In order to be able to take advantage of multi-version schema migrations, applications need to be able to connect to the correct version of the database schema. This is done using the Postgres [search_path](https://www.postgresql.org/docs/current/ddl-schemas.html#DDL-SCHEMAS-PATH) setting. The `search_path` setting determines which schema will be searched for non-schema-qualified table accesses. By setting the `search_path` appropriately, client applications can access the version of the database schema that is compatible with the deployed application code.
+In order to be able to take advantage of multi-version schema migrations, applications need to be able to connect to the correct version of the database schema. This is done using the Postgres [search_path](https://www.postgresql.org/docs/current/ddl-schemas.html#DDL-SCHEMAS-PATH) setting. The `search_path` setting determines which schema will be searched for non-schema-qualified table access. By setting the `search_path` appropriately, client applications can access the version of the database schema that is compatible with the deployed application code.
 
 Applications connect to a Xata database using a connection string:
 
@@ -208,7 +208,7 @@ SELECT * FROM users ORDER BY name DESC;
 -- ...
 ```
 
-In the old version of the schema the `name` field allows `NULL` values, so the `INSERT` statement succeeeds and reads from the table show the new row with a `NULL` value in the `name` field. When the same data is read in the new version of the schema the same row has the placeholder value of `(unknown)` that was defined in the migration.
+In the old version of the schema, the `name` field allows `NULL` values, so the `INSERT` statement succeeds and reads from the table show the new row with a `NULL` value in the `name` field. When the same data is read in the new version of the schema, the same row has the placeholder value of `(unknown)` that was defined in the migration.
 
 This example session shows that two applications, connected to the same database but with their `search_path` set to different versions, are subject to different constraints and can have different views of the same data.
 
