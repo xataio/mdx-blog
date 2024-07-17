@@ -7,7 +7,7 @@ image:
 author: Esther Minano Sanz
 authorEmail: esther@xata.io
 date: 07-17-2024
-tags: ['open-source', 'postgres', 'fpReplication', 'fpPgstream', 'fpPgroll', 'fpPgzx', 'oss']
+tags: ['open-source', 'postgres', 'fpReplication', 'fpPgstream', 'fpPgroll', 'fpPgzx', 'oss', 'launch-week', 'elephant-on-the-move']
 published: false
 slug: pgstream-postgres-replication-schema-changes
 ogImage: /images/pgstream/introducing-pgstream@2x.jpg
@@ -23,22 +23,22 @@ We also wanted a solution that was easy to deploy and operate for both big and s
 
 ## Introducing pgstream
 
-And so [pgstream](https://github.com/xataio/pgstream) was born! Pgstream is an open source CDC command-line tool and library. Some of its key features include:
+And so [pgstream](https://github.com/xataio/pgstream) was born! pgstream is an open source CDC command-line tool and library. Some of its key features include:
 
-- **Schema change tracking and replication of DDL changes:** it's no surprise, since this was one of our biggest requirements, that it made it as an integral feature of pgstream. We will go into a bit more detail on how this is implemented below.
-- **Modular deployment configuration:** pgstream modular implementation allows it to be configured for simple use cases, removing unnecessary complexity and deployment challenges - the only hard requirement for pgstream is a Postgres database! However, it can also easily integrate with Kafka for more complex usecases.
+- **Schema change tracking and replication of DDL changes:** it's no surprise that this became an integral feature of pgstream, since it was one of the biggest requirements. We will go into a bit more detail on how this is implemented below.
+- **Modular deployment configuration:** pgstream modular implementation allows it to be configured for simple use cases, removing unnecessary complexity and deployment challenges - the only requirement for pgstream is a Postgres database! However, it can also easily integrate with Kafka for more complex use cases.
 - **Elasticsearch/OpenSearch replication support:** out of the box support for replicating Postgres data and schema changes to an Elasticsearch compatible store, with special handling of field IDs to minimise re-indexing caused by column renames.
 - **Webhook support:** out of the box support to invoke a webhook endpoint whenever your source data changes. Helpful for reacting to specific data changes seamlessly.
 
 ## How does pgstream work?
 
-Internally, pgstream is constructed as a streaming pipeline, where data from one module streams into the next, eventually reaching the configured output plugins. Pgstream keeps track of schema changes and replicates them alongside the data changes to maintain a consistent view of the source data downstream. This modular approach makes adding and integrating output plugin implementations simple and painless.
+Internally, pgstream is constructed as a streaming pipeline, where data from one module streams into the next, eventually reaching the configured output plugins. pgstream keeps track of schema changes and replicates them alongside the data changes to maintain a consistent view of the source data downstream. This modular approach makes adding and integrating output plugin implementations simple and painless.
 
 ![pgstream architecture](/images/pgstream/pgstream_arch_v1@2x.png)
 
 ### Tracking schema changes
 
-One of the main differentiators of pgstream is the fact that it tracks and replicates schema changes automatically. How? It relies on SQL triggers that will populate a Postgres table (`pgstream.schema_log`) containing a history log of all DDL changes for a given schema. Whenever a schema change occurs, this trigger creates a new row in the schema log table with the schema encoded as a JSON value. This table tracks all the schema changes, forming a linearised change log that is then parsed and used within the pgstream pipeline to identify modifications and push the relevant changes downstream.
+One of the main differentiators of pgstream is that it tracks and replicates schema changes automatically. How? It relies on SQL triggers that will populate a Postgres table (`pgstream.schema_log`) containing a history log of all DDL changes for a given schema. Whenever a schema change occurs, this trigger creates a new row in the schema log table with the schema encoded as a JSON value. This table tracks all the schema changes, forming a linearised change log that is then parsed and used within the pgstream pipeline to identify modifications and push the relevant changes downstream.
 
 ![Tracking schema changes](/images/pgstream/tracking_schema_changes@2x.png)
 
@@ -67,9 +67,9 @@ A processor processes a WAL event. Depending on the implementation it might also
 
 There are currently three implementations of the processor:
 
-- **Kafka batch writer:** it writes the WAL events into a Kafka topic, using the event schema as the Kafka key for partitioning. This implementation allows to fan-out the sequential WAL events, while acting as an intermediate buffer to avoid the replication slot to grow when there are slow consumers. It has a memory guarded buffering system internally to limit the memory usage of the buffer. The buffer is sent to Kafka based on the configured linger time and maximum size. It treats both data and schema events equally, since it doesn't care about the content.
-- **Search batch indexer:** it indexes the WAL events into an OpenSearch/Elasticsearch compatible search store. It implements the same kind of mechanism than the Kafka batch writer to ensure continuous processing from the listener, and it also uses a batching mechanism to minimise search store calls. The search mapping logic is configurable when used as a library. The WAL event identity is used as the search store document id, and if no other version is provided, the LSN is used as the document version. Events that do not have an identity are not indexed. Schema events are stored in a separate search store index (`pgstream`), where the schema log history is kept for use within the search store (i.e, read queries).
-- **Webhook notifier:** it sends a notification to any webhooks that have subscribed to the relevant WAL event. It relies on a subscription HTTP server receiving the subscription requests and storing them in the shared subscription store which is accessed whenever a WAL event is processed. It sends the notifications to the different subscribed webhooks in parallel based on a configurable number of workers (client timeouts apply). Similar to the two previous processor implementations, it uses a memory guarded buffering system internally, which allows to separate the WAL event processing from the webhook sending, optimising the processor latency.
+- **Kafka batch writer:** it writes the WAL events into a Kafka topic, using the event schema as the Kafka key for partitioning. This implementation allows the sequential WAL events to fan-out, while acting as an intermediate buffer to avoid the replication slot to grow when there are slow consumers. It has an internal memory-guarded buffering system to limit the memory usage of the buffer. The buffer is sent to Kafka based on the configured linger time and maximum size. It treats both data and schema events equally, since it disregards the content.
+- **Search batch indexer:** it indexes the WAL events into an OpenSearch/Elasticsearch compatible search store. It implements the same kind of mechanism as the Kafka batch writer to ensure continuous processing from the listener, and it also uses a batching mechanism to minimise search store calls. The search mapping logic is configurable when used as a library. The WAL event identity is used as the search store document id, and if no other version is provided, the LSN is used as the document version. Events that do not have an identity are not indexed. Schema events are stored in a separate search store index (`pgstream`), where the schema log history is kept for use within the search store (i.e. read queries).
+- **Webhook notifier:** it sends a notification to any webhooks that have subscribed to the relevant WAL event. It relies on a subscription HTTP server receiving the subscription requests and storing them in the shared subscription store which is accessed whenever a WAL event is processed. It sends the notifications to the different subscribed webhooks in parallel based on a configurable number of workers (client timeouts apply). Similar to the two previous processor implementations, it uses an internal memory-guarded buffering system which separates the WAL event processing from the webhook sending, optimising the processor latency.
 
 In addition to the implementations described above, there's an optional processor decorator, the translator, that injects some of the pgstream logic into the WAL event. This includes:
 
@@ -82,7 +82,7 @@ In addition to the implementations described above, there's an optional processo
 
 ## What's next?
 
-This is only the beginning! We plan to continue developing pgstream and exploring how it can make it easier to replicate data. We are looking forward to your feedback!
+This is only the beginning! We plan to continue developing pgstream and exploring how it can make it easier to replicate data. 
 
 Here are some of the items in our development pipeline:
 
@@ -92,5 +92,9 @@ Here are some of the items in our development pipeline:
 - Automatic backfill of existing data
 - Additional Kafka serialisation formats (`avro`)
 - Additional output plugin support (`postgres`,`clickhouse`, `snowflake`)
+We are excited to share this with you and look forward to your feedback! Want to see pgstream in action? Check out this quick demo video.
 
+<ArticleVideo platform="youtube" src="https://www.youtube.com/embed/0EvSE7z6p_g?si=4rBeyjJtoCGTJ4VG" />
 If you have any suggestions or questions, please open an issue in our [GitHub repo](https://github.com/xataio/pgstream), reach out to us on [Discord](https://xata.io/discord) or follow us on [X / Twitter](https://twitter.com/xata). We'd love to hear from you and keep you up to date with the latest progress on `pgstream`.
+
+You can follow along this week with a new announcement every day on our [launch week page](https://xata.io/launch-week-elephant-on-the-move), join in on our [summer hackathon](https://xata.io/blog/summer-launch-pxci-hackathon) or just [pop into Discord](https://xata.io/discord) and say hi 👋
