@@ -1,19 +1,19 @@
 ---
 title: pgroll 0.6.0 update
-description: Learn about the latest changes in pgroll
+description: Learn about the latest changes in pgroll in the 0.6.0 release as we continue to build and turn it into a first-class open-source schema migration tool for Postgres.
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/introducing-pgroll.jpg
   alt: pgroll
 author: Andrew Farries
 authorEmail: andrew@xata.io
-date: 07-18-2024
-tags: ['open-source', 'postgres', 'schema', 'migrations', 'pgroll', 'fpSchemaMigrations']
+date: 07-19-2024
+tags: ['open-source', 'postgres', 'schema', 'migrations', 'pgroll', 'fpSchemaMigrations', 'oss']
 published: true
 slug: pgroll-0-6-0-update
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/introducing-pgroll.jpg
 ---
 
-[pgroll](https://github.com/xataio/pgroll) is Xata's open-source schema migration tool for Postgres. The feature that sets it apart from other migration tools is it's ability to perform multi-version schema migrations using the expand/contract pattern: while a migration is in progress, `pgroll` is able to present two versions of your database schema to client applications - the old version and the new. This means that client applications that depend on the old version of the database schema continue to function while the migration is in progress, making application deployments much simpler. Gone are the days of having to perform [complicated multi-step workflows](https://planetscale.com/docs/learn/handling-table-and-column-renames#how-to-rename-a-column-on-planetscale) to do simple schema changes without breaking clients.
+[pgroll](https://xata.io/pgroll) is Xata's open-source schema migration tool for Postgres. The feature that sets it apart from other migration tools is its ability to perform multi-version schema migrations using the expand/contract pattern: while a migration is in progress, `pgroll` is able to present two versions of your database schema to client applications - the old version and the new. This means that client applications that depend on the old version of the database schema continue to function while the migration is in progress, making application deployments much simpler. Gone are the days of having to perform [complicated multi-step workflows](https://planetscale.com/docs/learn/handling-table-and-column-renames#how-to-rename-a-column-on-planetscale) to do simple schema changes without breaking clients.
 
 `pgroll` is open-source under the Apache-2.0 license and developed in the open on [GitHub](https://github.com/xataio/pgroll).
 
@@ -164,7 +164,7 @@ import (
 - `up` and `down` SQL for raw SQL migrations
 - column `DEFAULT` values
 
-In most scenarios the fact that this is untrusted user input is not a problem; the typical use case for a migration tool like `pgroll` is for running migrations authored by the same set of users as own the database to which the migrations are applied. However in a multi-tenant environment, migration authors aren't the owners of the database instance where the migrations are run. In such a scenario, it may be desirable to restrict the range of allowable SQL expressions usable within `pgroll` migrations.
+In most scenarios the fact that this is untrusted user input is not a problem; the typical use case for a migration tool like `pgroll` is for running migrations authored by the same set of users that own the database to which the migrations are applied. However in a multi-tenant environment, migration authors aren't the owners of the database instance where the migrations are run. In such a scenario, it may be desirable to restrict the range of allowable SQL expressions usable within `pgroll` migrations.
 
 As of `v0.6.0`, `pgroll` allows rewriting and rejecting user input SQL expressions using the `SQLTransformer` interface and the `roll.WithSQLTransformer` option.
 
@@ -247,3 +247,5 @@ Using hooks allows for custom logic to be run at various points during the migra
 `pgroll` `v0.6.0` is a significant release that adds a number of new features and improvements to the tool. But of course, we're not done yet - work on the next version continues apace, as we work towards a [v1.0.0](https://github.com/xataio/pgroll/milestones) release of `pgroll`.
 
 We'd love to hear from you if you're using `pgroll` in your projects. We welcome external contributions to `pgroll`, either in the form of issues on the [issue tracker](https://github.com/xataio/pgroll/issues) or by getting involved with development directly by opening [pull requests](https://github.com/xataio/pgroll/pulls).
+
+You can follow along this week with a new announcement every day on our [launch week page](https://xata.io/launch-week-elephant-on-the-move), or just [pop into Discord](https://xata.io/discord) and say hi 👋
