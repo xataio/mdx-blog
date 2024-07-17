@@ -1,6 +1,6 @@
 ---
 title: 'Announcing the public beta for dedicated clusters'
-description: "Today we're excited to open up dedicated clusters to all our customers and some amazin new additions to our serverless Postgres platform."
+description: "Today we're excited to open up dedicated clusters to all our customers and some amazing new additions to our serverless Postgres platform."
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgresql-dedicated-clusters-beta/dedicated-clusters.jpg
   alt: Announcing the public beta for dedicated clusters
@@ -47,7 +47,7 @@ Whether you're provisioning a new cluster or editing the one you already have, t
 
 ![Provision a new cluster](images/postgresql-dedicated-clusters-beta/provision-new-cluster.png)
 
-Today, our Postgres databases are [Amazon Aurora instances](https://aws.amazon.com/rds/aurora/). You can trust that your database will have the scalability, reliability and security that AWS is known for. With dedicated clusters you can configure both the Postgres engine version, cluster class and number of replicas for faiover and query distribution.
+Today, our Postgres databases are [Amazon Aurora instances](https://aws.amazon.com/rds/aurora/). You can trust that your database will have the scalability, reliability and security that AWS is known for. With dedicated clusters you can configure both the Postgres engine version, cluster class and number of replicas for failover and query distribution.
 
 Autoscaling is a great option to consider if you expect variable usage of your application and database. This will scale up or down as needed, with a simple capacity range you can define so you do not incur any unexpected costs.
 
@@ -75,7 +75,7 @@ We've started adding Postgres extensions based on popularity amongst our custome
 
 ### Move your database and branches between clusters
 
-One of the most powerful features that come with this beta release, is the ability to move branches between clusters. You are able to take your main database or one of its branches and move it to another cluster in just a few clicks. We are using this internally to provide a forever-free tier, automatically moving inactive databases to a special cell meant for longer term storage and moving it back to an active cell if re-activated. Our CTO, [Tudor Golubenco](https://www.linkedin.com/in/tudorgolubenco/), dives into the economics of our free tier and the techncial details behind it in [this blog](https://xata.io/blog/postgres-free-tier).
+One of the most powerful features that come with this beta release, is the ability to move branches between clusters. You are able to take your main database or one of its branches and move it to another cluster in just a few clicks. We are using this internally to provide a forever-free tier, automatically moving inactive databases to a special cell meant for longer term storage and moving it back to an active cell if re-activated. Our CTO, [Tudor Golubenco](https://www.linkedin.com/in/tudorgolubenco/), dives into the economics of our free tier and the technical details behind it in [this blog](https://xata.io/blog/postgres-free-tier).
 
 ![Move a branch between clusters](images/postgresql-dedicated-clusters-beta/move-branch.png)
 
@@ -97,9 +97,9 @@ Our SQL offering [is built on a proxy](https://xata.io/blog/sql-over-http). This
 
 ### Even more compatible with your favorite clients and tooling
 
-We've put a special focus on making sure [Drizzle](https://orm.drizzle.team/), [Prisma](https://www.prisma.io/), [SQLAlchemy](https://www.sqlalchemy.org/) and [Django](https://www.djangoproject.com/) ORMs work well with our platform. Common administrative and data exploration tools like [DataGrip](https://www.jetbrains.com/datagrip/), [pgAdmin](https://www.pgadmin.org/) and [TablePlus](https://tableplus.com/) have been put through the wringer to resolve any compatability hiccups seen over the past few months.
+We've put a special focus on making sure [Drizzle](https://orm.drizzle.team/), [Prisma](https://www.prisma.io/), [SQLAlchemy](https://www.sqlalchemy.org/) and [Django](https://www.djangoproject.com/) ORMs work well with our platform. Common administrative and data exploration tools like [DataGrip](https://www.jetbrains.com/datagrip/), [pgAdmin](https://www.pgadmin.org/) and [TablePlus](https://tableplus.com/) have been put through the wringer to resolve any compatibility hiccups seen over the past few months.
 
-With our recent support for multiple Postgres schemas, and a configureable `search_path`, our offering is now much more compatible with a growing set of clients and tools. Our [list of supported statements](https://xata.io/docs/postgres#supported-statements) continues to expand, and we aim to maximize compatability in both shared and dedicated clusters in the coming months.
+With our recent support for multiple Postgres schemas, and a configurable `search_path`, our offering is now much more compatible with a growing set of clients and tools. Our [list of supported statements](https://xata.io/docs/postgres#supported-statements) continues to expand, and we aim to maximize compatibility in both shared and dedicated clusters in the coming months.
 
 Thank you to all our early adopters for providing feedback early on, we couldn't have made this progress without you 🦋
 
