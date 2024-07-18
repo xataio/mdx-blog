@@ -278,7 +278,7 @@ pub inline fn ereportDomain(src: SourceLocation, level: Level, domain: ?[:0]cons
 }
 ```
 
-Once our `ereport` is compiled, it behaves exactly like the C macros (minus 
+Once our `ereport` is compiled, it behaves exactly like the C macros (minus
 using the zig string formatting functionality). The `errstart` function checks
 if the message will be emitted and sets up the context in the error stack. The
 given options update the active error context and `errfinish` finally emits the
@@ -303,7 +303,7 @@ The Nix based development shell uses
 `flake.lock` file to pin the zig toolchain version to a recent commit ID.
 
 We update the dependency every so often and we try to test and fix
-breaking changes when updating the toolchain version. We highly recommend 
+breaking changes when updating the toolchain version. We highly recommend
 using the projects development shell when testing the example extensions provided,
 otherwise you might have problems compiling the extensions if you use an older
 or newer Zig toolchain.
@@ -409,7 +409,7 @@ fn pgdc_fdw_handler() pg.Datum {
   issue on the [pgzx Github repository](https://github.com/xataio/pgzx). The
   full set of headers from the `foreign`, `nodes`, `optimizer`, and `catalog`
   folder have been added.
-  
+
 We'd love to hear from you. If you have any feedback, suggestions or questions, please open an issue in our [GitHub repo](https://github.com/xataio/pgzx),
 reach out to us on [Discord](https://xata.io/discord) or follow us on [X / Twitter](https://twitter.com/xata).
 
