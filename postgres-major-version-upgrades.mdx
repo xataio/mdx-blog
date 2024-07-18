@@ -55,7 +55,7 @@ In order to understand the process of moving a database, it is useful to explain
 to the process: All Xata databases can be accessed from the same proxy service, that handles authentication and routes traffic to the
 cluster hosting the target database:
 
-![xata clusters and proxy](/images/branch-moving-arch.png)
+![Xata clusters and proxy](/images/branch-moving-arch.png)
 
 This allows us to have fine grained control over connections, ensure security and many features to come. In the case of moving databases,
 it guarantees that we are able to redirect traffic to the correct cluster as needed.
