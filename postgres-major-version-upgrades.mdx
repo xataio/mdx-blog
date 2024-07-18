@@ -105,7 +105,7 @@ reasonable guarantees: reads work during the whole process, and writes are only 
 We are excited about this new feature, and we have many ideas about how we could evolve it in the future, for example:
 
 - Providing more detailed information about the move progress.
-- Potentially achieve real zero-downtime by holding, then redirecting writes in the proxy, effectively avoiding killing any connection.
+- Achieve real zero-downtime by holding, then redirecting writes in the proxy, effectively avoiding killing any connection.
 - Allow for schema changes while move happens?
 - Provide more fine grained control over the process, for instance, allowing users to decide when to switch, and allow to send traffic to the target
   cell before the switch, for instance to perform custom tests.
