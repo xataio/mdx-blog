@@ -1,0 +1,121 @@
+---
+title: 'Postgres major version upgrades with minimal downtime'
+description: "With the beta release of dedicated clusters, we've added the ability to move branches between clusters. Xata customers can now perform Postgres major version upgrades with minimal downtime."
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/branch-moving-cover.jpg
+  alt: Postgres major version upgrades with minimal downtime
+author: Carlos Pérez-Aradros Herce
+authorEmail: carlos@xata.io
+date: 07-18-2024
+tags: ['launch-week', 'postgres', 'engineering', 'elephant-on-the-move']
+published: true
+slug: postgres-major-version-upgrades
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/branch-moving-cover.jpg
+---
+
+One of the challenges of running a Postgres database is upgrading to a new major version. Major version
+upgrades can introduce new features, performance improvements, and bug fixes, but they can also be complex
+and time-consuming.
+
+The most accepted methods for upgrading Postgres to a new major are:
+
+- [pg_upgrade](https://www.postgresql.org/docs/current/pgupgrade.html) for **in-place upgrade**, which involves stopping the server while
+  the upgrade is being performed. Even if this usually happens very fast, it means taking the service down for a few minutes, plus leading
+  with issues in the process during that downtime.
+
+- blue-green deployments, which leverages [logical replication](https://www.postgresql.org/docs/current/logical-replication.html) to create
+  a standby replica (running a newer version) of the primary server. Once replication is done, a switch over is performed, involving
+  cutting writes to the primary, and switching traffic to the replica. Details on this approach later.
+
+Common issues with major Postgres upgrades are:
+
+- **Downtime**: Planned (and unplanned) downtime is not uncommon when a major version upgrade happens, impacting users and business.
+- **Complex orchestration**: Orchestrating a migration is a multi-step process that requires careful planning, with little room
+  for errors.
+- **Adapting clients**: Not only the infra part, in many cases also client apps also need to be aware of the migration and update their
+  database connection details to point to a new host once a migration is done (DNS or Proxies can help here).
+
+For all these reasons, major version upgrades are often postponed and become a major event across multiple engineering teams.
+
+### Moving Database Branches in Xata
+
+The most interesting feature from our [dedicated clusters public beta announcement](https://xata.io/blog/postgresql-dedicated-clusters-beta) this week is the ability to move databases and branches between clusters. This allows Xata customers to move a database between two Postgres clusters while it's still being
+accessed. You can use this as a way to move a database from a shared cluster in our free tier to your own dedicated cluster, for better
+performance & isolation.
+
+This feature also allows to perform near zero-downtime major Postgres version upgrades by moving a database between two clusters running
+on different versions.
+
+### How it works
+
+We implemented a blue-green approach in order to offer the ability to move databases, hiding all the complexity behind a simple
+user experience.
+
+In order to understand the process of moving a database, it is useful to explain some key parts of our infrastructure that contribute
+to the process: All Xata databases can be accessed from the same proxy service, that handles authentication and routes traffic to the
+cluster hosting the target database:
+
+![Xata clusters and proxy](/images/branch-moving-arch.png)
+
+This allows us to have fine grained control over connections, ensure security and many features to come. In the case of moving databases,
+it guarantees that we are able to redirect traffic to the correct cluster as needed.
+
+This is the process to move a database branch when requested:
+
+![Moving a database branch between clusters](/images/branch-moving-process.png)
+
+We can divide it in four main steps:
+
+### Setup
+
+In this process we recreate the database in the target cluster and configure replication to start syncing it.
+
+- Block schema changes in the source cluster. This allows us to replicate the database consistently, without missing any change.
+- Replicate the database schema in the target cluster.
+- Create a [publication](https://www.postgresql.org/docs/current/logical-replication-publication.html) in the source cluster.
+- Subscribe to it in the target.
+
+### Wait for initial sync
+
+With the databases now replicating, we need to wait for the sync process to be up to date, so the replica is following close enough to
+the primary.
+
+- Check the replication slots created by the subscription, wait for their [LSN](https://www.postgresql.org/docs/current/datatype-pg-lsn.html)
+  distance to be low enough.
+
+### Switch
+
+Target cluster (replica) is close enough to be promoted as the new primary. We start the switch process. It's critical that this step
+is performed as quickly as possible, as we want to keep downtime to a minimum:
+
+- Block writes to the source cell. We do this by revoking write permissions from the accessing roles.
+- Wait for the replication slot. With writes stopped, we need to ensure that all the ones that went through make it to the target cluster.
+- Switch traffic to the target cluster (new primary). All new connections will go to it.
+- Kill previously existing connections to the source cluster, ensuring they reconnect to the new one.
+
+### Cleanup
+
+Cleanup all created slots + garbage in the source cell.
+
+With these steps the process is done, the database is now accessible in the newer version. It's important to note that this process offers
+reasonable guarantees: reads work during the whole process, and writes are only blocked for a brief period of time (normally under 100ms).
+
+## Future work
+
+We are excited about this new feature, and we have many ideas about how we could evolve it in the future, for example:
+
+- Providing more detailed information about the move progress.
+- Achieve real zero-downtime by holding, then redirecting writes in the proxy, effectively avoiding killing any connection.
+- Allow for schema changes while move happens
+- Provide more fine grained control over the process. For instance, allowing users to decide when to switch, and allow to send traffic to the target
+  cell before the switch, for instance to perform custom tests.
+
+## Let us know what you think
+
+We are excited to share this with you and look forward to hearing your feedback! Want to see major version upgrades in action? Check out this quick demo video.
+
+<ArticleVideo platform="youtube" src="https://www.youtube.com/embed/5N2mX06MXII?si=j9t_h-t8UJdpXdFV" />
+
+If you have any suggestions or questions, please open an feature request in [Canny](https://xata.canny.io/feature-requests), reach out to us on [Discord](https://xata.io/discord) or follow us on [X / Twitter](https://twitter.com/xata).
+
+You can follow along this week with a new announcement every day on our [launch week page](https://xata.io/launch-week-elephant-on-the-move) 🦋
