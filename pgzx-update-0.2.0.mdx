@@ -332,7 +332,8 @@ The options API also allows you to combine multiple configurations in case you
 read a list of supported options from a library that you use for your
 implementation.
 
-This example uses reads the available options from libpq into a global table:
+In this example we combine a static set of options with options that we read
+from libpq the first time the validator is called:
 
 ```zig
 
@@ -371,6 +372,15 @@ fn pgdc_fdw_validator(list_datum: pg.Datum, catalog: pg.Oid) void {
     const options = pg.untransformRelOptions(list_datum);
     fdw.validateOptions(extension_options, options, catalog);
 }
+
+fn initPqOptions() void {
+    if (extension_libpq_options != null)
+        return;
+
+    extension_libpq_options = ...;
+}
+
+
 ```
 
 The handler function can be implemented as follows:
