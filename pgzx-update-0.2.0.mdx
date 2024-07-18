@@ -406,8 +406,7 @@ fn pgdc_fdw_handler() pg.Datum {
   strings in case the derived converter does not work well for you.
 - Collections: Added `at` to `List` and `valuesIterator` to `HTab`.
 - add `pgzx.node` module for working with the PostgreSQL `Node` type.
-- Build: we split the C header includes into a separate module named `pgsys`.
-  This also allows us to introduce modules using code generation in the future.
+- Build: We moved the C header includes into its own Zig module pgsys'.
 - Do not use `PG_HOME` environment variable in Zig build utilities. Instead the
   build utilities derive the PostgreSQL installation folder by looking up the
   parent folder of `pg_config --bindir`. The projects shell scripts still use
