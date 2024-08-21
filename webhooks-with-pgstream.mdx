@@ -13,9 +13,9 @@ slug: postgres-webhooks-with-pgstream
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgstream/introducing-pgstream@2x.jpg
 ---
 
-[pgstream](https://github.com/xataio/pgstream) is a CDC (Change-Data-Capture) tool focused on PostgreSQL. Among other [things](https://github.com/xataio/pgstream?tab=readme-ov-file#features), it can be used to call webhooks whenever there is a data (or schema) change in a Postgres database. This means that whenever there is an insert or update, a webhook is called for any new or updated row.
+[pgstream](https://github.com/xataio/pgstream) is a CDC (Change-Data-Capture) tool focused on PostgreSQL. Among other [things](https://github.com/xataio/pgstream?tab=readme-ov-file#features), it can be used to call webhooks whenever there is a data (or schema) change in a Postgres database. This means that whenever a row is inserted, updated, or deleted, a webhook is called with the data from the row.
 
-In this article we're going to dive in the pgstream webhooks functionality, including more advanced topics, like sending old and new values, TOAST support, and schema changes support.
+In this article we're going to dive in the pgstream webhooks functionality, including more advanced topics, like sending the old and new values, TOAST support, and schema changes support.
 
 ## Preparation
 
@@ -63,6 +63,8 @@ Next step is to initialize `pgstream`, like this:
 ```sh
 pgstream init --pgurl "postgres://postgres:postgres@localhost/postgres?sslmode=disable"
 ```
+
+This creates several tables managed by pgstream, which are grouped in a schema called `pgstream`.
 
 ## Configuration
 
@@ -144,10 +146,10 @@ Now we have to create a subscription so that `pgstream` knows to send the webhoo
 curl localhost:9900/webhooks/subscribe -H "content-type: application/json" -d '{"url":"http://localhost:9910", "schema": "public", "table": "users"}'
 ```
 
-The above adds a line in the `webhook_subscriptions` table, which is maintained by `pgstream`. You can verify by running via `psql`:
+The above adds a line in the `pgstream.webhook_subscriptions` table, which is maintained by `pgstream`. You can verify by running via `psql`:
 
 ```sql
-postgres=# select * from webhook_subscriptions;
+postgres=# select * from pgstream.webhook_subscriptions;
           url          | schema_name | table_name | event_types
 -----------------------+-------------+------------+-------------
  http://localhost:9910 | public      | users      |
