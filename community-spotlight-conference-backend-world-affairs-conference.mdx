@@ -64,7 +64,7 @@ Both the conference and administrative dashboard can be found in their [open sou
 
 # Lucia + Xata
 
-One of the more critical aspects of the application was authentication. The original auth solution chosen for by the modernization team for the main website was Next Auth, but there were a number of issues with it. At first, a magic link was used for registration but because some schools have very strict email filters, they had to switch to an auth based login.
+One of the more critical aspects of the application was authentication. The original auth solution chosen for by the modernization team for the main website was Next Auth, but there were a number of issues with it. At first, a magic link was used for registration, but, because some schools have very strict email filters, they had to switch to an auth based login.
 
 Eventually, [Lucia Auth](https://lucia-auth.com/) was chosen as the solution. The pairing of Xata and Lucia ended up being a perfect fit. In just 100 lines of code, Samuel and the team had auth working with full type safety for passing metadata back to Xata. It was really important that they were able to add custom metadata to records. Lucia gives you all the core parts of an auth system, but it’s really up to you on how you integrate it and it worked really well with Xata and the rest of the tech stack.
 
@@ -81,7 +81,7 @@ When asked what else he’d like to see from Xata, here’s what Samuel shared:
 
 - **Additional criteria for transactions.** When writing queries for transactions, he’d like to select by criteria other than ID and add more filtering capabilities. This would have simplified some code.
 - **Column based permissions**. For the administrative dashboard, more granular roles would have been useful for deciding what users can access.
-- **Column editing.** During the data modeling phase, he would have liked to have a more forgiving experience for editing and evolving the schema for his data model. Samuel was excited to hear this was coming soon 😎.
+- **Column editing.** During the data modeling phase, he would have liked to have a more forgiving experience for editing and evolving the schema for his data model. Samuel was excited to hear this was coming soo&nnbsp;😎.
 
 ## Share your Xata story
 
