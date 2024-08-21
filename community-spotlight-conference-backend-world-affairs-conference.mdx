@@ -1,0 +1,88 @@
+---
+title: 'Modernizing the conference management backend of the World Affairs Conference'
+description: 'Putting the spotlight on Samuel Martineau, a software developer apprentice based out of Québec, Canada replacing the backend of a conference management system with Xata.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/community-spotlight-world-affairs-conference.jpg
+  alt: Community Spotlight
+author: Alex Francoeur
+date: 05-08-2024
+tags: ['community']
+published: true
+slug: community-spotlight-conference-backend-world-affairs-conference
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/community-spotlight-world-affairs-conference.jpg
+---
+
+[Samuel Martineau](https://github.com/Samuel-Martineau) has not even graduated high school yet and is already racking up an impressive list of professional accomplishments. From being on national TV for his [wall climbing robot](https://www.tv5unis.ca/videos/les-inventifs/saisons/2/episodes/5.), to leading the team and architectural design for the new management system of the worlds oldest student run conference, the [World Affairs Conference](https://worldaffairscon.org/). The in-person conference brings in over 1,000 of the worlds brightest minds from 25 countries in 65 schools internationally. As Samuel gets ready to graduate from the [Upper Canada College](https://www.ucc.on.ca/), he looks to take his talents to the world of mechatronics, pursuing a degree in Mathematical physics at the University of Waterloo.
+
+## Modernizing a dated tech stack
+
+Samuel was tasked with choosing a tech stack for the World Affairs Conference that was meant to last the next decade. While there’s been some changes to the tech stack since the inception of the conference in the 80’s, they were overdue for an upgrade.
+
+![World Affairs Conference landing page](/images/cs-wac-website.png)
+
+For the backend, there were a few very specific requirements for different parts of the registration flows, administrative dashboards and general budget. The backend needed to:
+
+- Be able to host images
+- Speak SQL and support relational data models
+- Be a fully managed and hosted solution
+- Be cost effective and fall within the constraints of the conference budget
+
+Xata checked all of the boxes and more for their next generation tech stack.
+
+> I think we used pretty much every feature Xata offers. Our user profile and speaker images are stored in Xata, we used the summarize API for sign up and registration time series charts, preview databases with Netlify and more. Having one service to provide all of this functionality made it a pretty easy decision to choose Xata.\
+> _Samuel Martineau - Developer Apprentice_
+
+On the frontend, [SvelteKit](https://kit.svelte.dev/), [three.js](https://threejs.org/) and [AG Grid](https://ag-grid.com/) were used to build the website, registration application and internal administrative dashboards. All of this was deployed on [Netlify](https://www.netlify.com/), where the [Xata - Netlify](https://xata.io/docs/integrations/netlify) integration was used to provide preview deployments in their CI/CD pipeline. The pull request generated previews were critical to the development process for the team, making it easy to test changes before deploying to production.
+
+## A registration flow with optimized session assignment
+
+As registration flows should be, this one was pretty simple overall and leveraged [Lucia Auth](https://lucia-auth.com/) to provide a secure onboarding experience. The form intakes your personal details, as well as lunch preferences and plenary sessions you’re most interested in attending. On submit, the data is then posted to the Xata database and the user is prompted with a security code to confirm their email and identity.
+
+![Input form for conference registration](/images/cs-wac-registration-form.png)
+
+In most cases, this would be the end of the registration flow. Because this is a conference with some pretty popular and well known speakers, Samuel needed to come up with a way to provide the most optimal schedule to attendees. How can they provide personalized conference tracks that are optimized to make the most people happy?
+
+It turns out that the problem of attendee assignment to plenaries is very similar to the problem faced when assigning medical residents to hospitals. The WAC team ended up using the same algorithm to solve this problem, the [Gale-Shapely algorithm](https://en.wikipedia.org/wiki/Gale%E2%80%93Shapley_algorithm). They created a weighted graph between every single attendee and every single plenary. The weight of the edges are stored in Xata and Samuel and his team created an algorithm to provide an optimal assignment of sessions for every single attendee.
+
+## Customized, performant and scalable administrative dashboard
+
+The other users they had to build for were the administrators of the conference. The WAC administrators had a few very specific requirements.
+
+- An extremely fast table to search, review and edit attendees information and status
+- Trends and analytics on sign ups over time, schools that registered and more
+- A content management system for the website and registration application
+
+In order to quickly find attendees to see if their registrations are complete, they ended up embedding [AG Grid](https://ag-grid.com/) into the admin app. SvelteKit wasn’t supported natively, so Samuel and his team had to create their own integration in order for the two to work well together. What you saw in this view and others depended entirely on the roles and permissions you had as an admin. Having this granular role based access control on the system was important as the number of users grew.
+
+![Attendee administrative table](/images/cs-wac-admin-table.png)
+
+Inline editing for the website was a really important feature in order to support real time modifications without providing full access to the frontend or administrative dashboard. Content administrators were able to make changes through this admin view, save and then automatically publish to the website. This was all handled through [Xata transactions](https://xata.io/docs/sdk/transaction). This CMS style editing was also used for user and speaker profiles, storing images with [file attachments](https://xata.io/docs/sdk/file-attachments). Having a single database that supported text, relationships and images was a really important part of the decision process when defining this tech stack to support multiple use cases.
+
+![Administrative CMS for website team](/images/cs-wac-admin-cms.png)
+
+Both the conference and administrative dashboard can be found in their [open source GitHub repository](https://github.com/worldaffairsconference/worldaffairscon.org/tree/wac2024).
+
+# Lucia + Xata
+
+One of the more critical aspects of the application was authentication. The original auth solution chosen for by the modernization team for the main website was Next Auth, but there were a number of issues with it. At first, a magic link was used for registration, but, because some schools have very strict email filters, they had to switch to an auth based login.
+
+Eventually, [Lucia Auth](https://lucia-auth.com/) was chosen as the solution. The pairing of Xata and Lucia ended up being a perfect fit. In just 100 lines of code, Samuel and the team had auth working with full type safety for passing metadata back to Xata. It was really important that they were able to add custom metadata to records. Lucia gives you all the core parts of an auth system, but it’s really up to you on how you integrate it and it worked really well with Xata and the rest of the tech stack.
+
+![Tenant table for Lucia Auth](/images/cs-wac-xata-lucia.png)
+
+## Feedback and feature requests
+
+As the conversation steered towards what’s next, we asked Samuel what’s missing from Xata or what else he’d like to see out the platform. Here are some of his favorite parts of the platform.
+
+- **TypeScript SDK.** Samuel is a “big fan of doing weird stuff with TypeScript” and felt that Xata did a great job bridging the gaps between database types and application runtime. This was one of the key decision factors for choosing Xata.
+- **Tool consolidation**. Having a single data platform that was able to handle text, relationships and files really simplified the backend architecture and was much more cost effective for their use case.
+
+When asked what else he’d like to see from Xata, here’s what Samuel shared:
+
+- **Additional criteria for transactions.** When writing queries for transactions, he’d like to select by criteria other than ID and add more filtering capabilities. This would have simplified some code.
+- **Column based permissions**. For the administrative dashboard, more granular roles would have been useful for deciding what users can access.
+- **Column editing.** During the data modeling phase, he would have liked to have a more forgiving experience for editing and evolving the schema for his data model. Samuel was excited to hear this was coming soo&nnbsp;😎.
+
+## Share your Xata story
+
+Do you have a similar story or community contribution you’d like to share? [Send us an email](mailto:communityspotlight@xata.io) or ping us on [Discord](https://xata.io/discord) if you’d like to be featured in our community spotlight. Until then, happy building 🦋
