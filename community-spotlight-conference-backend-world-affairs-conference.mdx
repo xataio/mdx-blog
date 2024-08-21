@@ -70,7 +70,7 @@ Both the conference and administrative dashboard can be found in their [open sou
 
 One of the more critical aspects of the application was authentication. The original auth solution chosen for by the modernization team for the main website was Next Auth, but there were a number of issues with it. At first, a magic link was used for registration but because some schools have very strict email filters, they had to switch to an auth based login.
 
-Eventually, [Lucia Auth](https://lucia-auth.com/) was chosen as the solution. The pairing of Xata and Lucia ended up being a perfect fit. In just 100 lines of code, Samuel and the team had auth working with full type safety for passing metadata back to Xata. It was really important that they were able to add custom metadata to records. Lucia gives you all the core parts of an auth system, but it’s really up to you on how you integrate it and it worked really well with Xata and the rest of the tech stack. Samuel plans to eventually split out the Xata-Lucia integration into it’s own open source tool.
+Eventually, [Lucia Auth](https://lucia-auth.com/) was chosen as the solution. The pairing of Xata and Lucia ended up being a perfect fit. In just 100 lines of code, Samuel and the team had auth working with full type safety for passing metadata back to Xata. It was really important that they were able to add custom metadata to records. Lucia gives you all the core parts of an auth system, but it’s really up to you on how you integrate it and it worked really well with Xata and the rest of the tech stack. 
 
 ![Tenant table for Lucia Auth](/images/cs-wac-xata-lucia.png)
 
