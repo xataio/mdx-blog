@@ -58,8 +58,6 @@ In order to quickly find attendees to see if their registrations are complete, t
 
 In order to perform interactive analytics on the data itself, the team relied on [Xata aggregations](https://xata.io/docs/sdk/aggregate). This allowed them to chart the number of sign ups over time and segment based on schools and other profile attributes. The view of the data will help future conference administrators with outreach, promotion and further optimization.
 
-![Dashboard for attendee and speaker analytics](/images/cs-wac-admin-dashboard.png)
-
 Inline editing for the website was a really important feature in order to support real time modifications without providing full access to the frontend or administrative dashboard. Content administrators were able to make changes through this admin view, save and then automatically publish to the website. This was all handled through [Xata transactions](https://xata.io/docs/sdk/transaction). This CMS style editing was also used for user and speaker profiles, storing images with [file attachments](https://xata.io/docs/sdk/file-attachments). Having a single database that supported text, relationships and images was a really important part of the decision process when defining this tech stack to support multiple use cases.
 
 ![Administrative CMS for website team](/images/cs-wac-admin-cms.png)
