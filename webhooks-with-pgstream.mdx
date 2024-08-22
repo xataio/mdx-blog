@@ -416,7 +416,7 @@ To note:
 
 Setting the replica identity to full accomplishes one more thing: it includes the large values in the webhook events.
 
-Postgres values over the page size (commonly 8k, after compression) are stored separately from the main table data in [TOAST storage](https://www.postgresql.org/docs/current/storage-toast.html). This means they also not included in the logical replication events by default, unless they are changed by the current UPDATE statement. This is a gotcha: you are expecting all columns to always be present, but once they reach a certain size they will be missing.
+Postgres values over the page size (commonly 8k, after compression) are stored separately from the main table data in [TOAST storage](https://www.postgresql.org/docs/current/storage-toast.html). This means they are also not included in the logical replication events by default, unless they are changed by the current UPDATE statement. This is a gotcha: you are expecting all columns to always be present, but once they reach a certain size they will be missing.
 
 However, setting the replica identity to `full` solves this. To test this, try the following:
 
