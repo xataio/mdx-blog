@@ -83,7 +83,7 @@ PGSTREAM_WEBHOOK_SUBSCRIPTION_STORE_CACHE_ENABLED=false
 PGSTREAM_WEBHOOK_SUBSCRIPTION_STORE_CACHE_REFRESH_INTERVAL="60s"
 ```
 
-In this file, there are two Postgres connection strings defined. The first one is for the listener, to which database should pgstream connect and listen for changes. The second one is used as a metadata db to store the registered subscriptions and their configuration. In this example, they are both set to the same database, but you can use different databases or instances if you prefer.
+`PGSTREAM_POSTGRES_LISTENER_URL` indicates which database the pgstream listener should connect to. `PGSTREAM_WEBHOOK_SUBSCRIPTION_STORE_URL` is used as a metadata db to store the registered subscriptions and their configuration. In this example, they are both set to the same database, but you can use different databases or instances if you prefer. More details can be found in the [readme configuration section]( https://github.com/xataio/pgstream/tree/main?tab=readme-ov-file#configuration).
 
 You are now ready to start `pgstream` like this:
 
