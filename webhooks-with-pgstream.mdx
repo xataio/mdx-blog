@@ -17,6 +17,8 @@ ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgstream/
 
 In this article we're going to dive in the pgstream webhooks functionality, including more advanced topics, like sending the old and new values, TOAST support, and schema changes support.
 
+![Postgres webhooks with pgstream](/images/pgstream-webhooks.png)
+
 ## Preparation
 
 For this tutorial we need a Postgres instance that has logical replication enabled and the [wal2json](https://github.com/eulerto/wal2json) output plugin loaded. There are a number of ways to do this, but we're going to use the [docker-compose file](https://github.com/xataio/pgstream/blob/main/build/docker/docker-compose.yml) from the pgstream repo:
