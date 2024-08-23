@@ -29,19 +29,19 @@ But there is an upcoming change in its future, starting from Postgres 18, thanks
 
 **Commit:** [`4f29394ea941f688fd4faf7260d2c198931ca797`](https://gitlab.com/postgres/postgres/-/commit/4f29394ea941f688fd4faf7260d2c198931ca797)
 
-> `doc: Avoid too prominent use of "backup" on pg_dump man page`
->
-> Some users inadvertently rely on `pg_dump` as their primary backup tool,
-> when better solutions exist. The `pg_dump` man page is arguably
-> misleading in that it starts with:
->
-> > "pg_dump is a utility for backing up a PostgreSQL database."
->
-> This tones this down a little bit, by replacing most uses of "backup"
-> with "export" and adding a short note that `pg_dump` is not a
-> general-purpose backup tool.
->
-> **Discussion:** [https://www.postgresql.org/message-id/flat/70b48475-7706-4268-990d-fd522b038d96%40eisentraut.org](https://www.postgresql.org/message-id/flat/70b48475-7706-4268-990d-fd522b038d96%40eisentraut.org)
+`doc: Avoid too prominent use of "backup" on pg_dump man page`
+
+Some users inadvertently rely on `pg_dump` as their primary backup tool,
+when better solutions exist. The `pg_dump` man page is arguably
+misleading in that it starts with:
+
+> "pg_dump is a utility for backing up a PostgreSQL database."
+
+This tones this down a little bit, by replacing most uses of "backup"
+with "export" and adding a short note that `pg_dump` is not a
+general-purpose backup tool.
+
+**Discussion:** [https://www.postgresql.org/message-id/flat/70b48475-7706-4268-990d-fd522b038d96%40eisentraut.org](https://www.postgresql.org/message-id/flat/70b48475-7706-4268-990d-fd522b038d96%40eisentraut.org)
 
 I am pleased that we are using better wording to explain the scope of `pg_dump` in the Postgres documentation.
 
