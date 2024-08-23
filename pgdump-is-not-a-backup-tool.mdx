@@ -1,9 +1,9 @@
 ---
 title: 'If pg_dump is not a backup tool, what is?'
-description: 'pg_dump is a utility for backing up a PostgreSQL database, not anymore'
+description: 'pg_dump was a utility for backing up a PostgreSQL database, not anymore'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgdump-is-not-a-backup-tool@2x.jpg
-  alt: pg_dump is a utility for backing up a PostgreSQL database, not anymore
+  alt: pg_dump was a utility for backing up a PostgreSQL database, not anymore
 author: Gulcin Yildirim Jelinek
 authorEmail: gulcin@xata.io
 date: 08-23-2024
@@ -57,13 +57,13 @@ To recap, let’s discuss a few shortcomings of `pg_dump` and clarify why a **du
 
 `pg_dump` creates a snapshot of the database at a specific point in time. This means it captures the state of the database up to that moment but does not account for any changes made afterward. The standard `pg_dump` output is a plain-text file containing SQL statements to recreate the database schema and its contents. While it can be in various formats, SQL is the most common. This output is what we refer to as a **dump**.
 
-However, this dump file does not include Write-Ahead Logs (WAL), which are essential for point-in-time recovery and replication. Additionally, global objects such as roles and tablespaces are excluded from the dump, which can lead to inconsistencies during restoration, especially in multi-database setups.
+However, this dump file does not include WAL, which are essential for point-in-time recovery and replication. Additionally, global objects such as roles and tablespaces are excluded from the dump, which can lead to inconsistencies during restoration, especially in multi-database setups.
 
 In contrast, a **backup** is a broader concept that involves creating copies of both data and metadata to ensure that a database can be restored in case of failure, corruption, or data loss. Backups can be:
 
-- **Full Backup**: A complete copy of the entire database, including all data and metadata.
-- **Incremental Backup**: Captures only the changes made since the last backup.
-- **Continuous Backup**: Continuously captures changes, providing ongoing protection.
+- **Full backup**: A complete copy of the entire database, including all data and metadata.
+- **Incremental backup**: Captures only the changes made since the last backup.
+- **Continuous backup**: Continuously captures changes, providing ongoing protection.
 
 Backups generally include WAL files, allowing for point-in-time recovery. They should be performed regularly, monitored for health, and restored periodically to ensure their integrity.
 
