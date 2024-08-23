@@ -2,7 +2,7 @@
 title: 'If pg_dump is not a backup tool, what is?'
 description: 'pg_dump is a utility for backing up a PostgreSQL database, not anymore'
 image:
-  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/insert-image-here.jpg
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgdump-is-not-a-backup-tool@2x.jpg
   alt: pg_dump is a utility for backing up a PostgreSQL database, not anymore
 author: Gulcin Yildirim Jelinek
 authorEmail: gulcin@xata.io
@@ -10,7 +10,7 @@ date: 08-23-2024
 tags: ['postgres', 'pg_dump', 'backup', 'pgdump']
 published: true
 slug: pgdump-is-not-a-backup-tool
-ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/insert-image-here.jpg
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgdump-is-not-a-backup-tool@2x.jpg
 ---
 
 ### If pg_dump is not a backup tool, what is? 🦉
@@ -19,9 +19,9 @@ We all remember the sad day when Pluto was decommissioned as a planet. I’ve al
 
 Recently, while [writing about the vulnerability affecting `pg_dump`](https://xata.io/blog/cve-2024-7348-postgres-upgrade), the topic of decommissioning `pg_dump` came up on Twitter. Unlike the nostalgic feelings many had for Pluto, there was less reluctance to see `pg_dump` reclassified. In fact, some people were eager to retire it as a backup utility, and I even got a bit of pushback for still referring to `pg_dump` as one 🙂
 
-<!-- insert twitter screenshots here --> 
+<!-- insert twitter screenshots here -->
 
-I was talking to my colleague Simona the other day, and she mentioned that everybody in Postgres circles says, “pg_dump is not a backup tool,” but perhaps it’s not always explained well *why* it is not.
+I was talking to my colleague Simona the other day, and she mentioned that everybody in Postgres circles says, “pg_dump is not a backup tool,” but perhaps it’s not always explained well _why_ it is not.
 
 If you visit the `pg_dump` documentation page, it literally says this:
 
@@ -31,7 +31,7 @@ But there is an upcoming change in its future, starting from Postgres 18, thanks
 
 **Commit:** `4f29394ea941f688fd4faf7260d2c198931ca797`
 
-**Description:** *doc: Avoid too prominent use of "backup" on `pg_dump` man page*
+**Description:** _doc: Avoid too prominent use of "backup" on `pg_dump` man page_
 
 Some users inadvertently rely on `pg_dump` as their primary backup tool, when better solutions exist. The `pg_dump` man page is arguably misleading in that it starts with:
 
@@ -52,4 +52,3 @@ In a moment of database disruption, you will need to restore your backups. And i
 Backups ideally should be continuous. You shouldn’t have to worry about managing WALs and other objects back and forth between servers. You should have regular backups, continuously adding to them, and ideally restore them regularly to ensure everything is going well. It’s also important to monitor their health.
 
 I won’t go into details about different backup tools here, but suffice it to say, `pg_dump` is not sufficient alone as a backup mechanism. It is a useful utility and helps a lot, but it’s not something you should consider a complete solution for backing up your Postgres clusters.
-
