@@ -19,8 +19,6 @@ We all remember the sad day when Pluto was decommissioned as a planet. I’ve al
 
 Recently, while [writing about the vulnerability affecting `pg_dump`](https://xata.io/blog/cve-2024-7348-postgres-upgrade), the topic of decommissioning `pg_dump` came up on Twitter. Unlike the nostalgic feelings many had for Pluto, there was less reluctance to see `pg_dump` reclassified. In fact, some people were eager to retire it as a backup utility, and I even got a bit of pushback for still referring to `pg_dump` as one 🙂
 
-<!-- insert twitter screenshots here -->
-
 I was talking to my colleague Simona the other day, and she mentioned that everybody in Postgres circles says, “pg_dump is not a backup tool,” but perhaps it’s not always explained well _why_ it is not.
 
 If you visit the `pg_dump` documentation page, it literally says this:
@@ -52,3 +50,21 @@ In a moment of database disruption, you will need to restore your backups. And i
 Backups ideally should be continuous. You shouldn’t have to worry about managing WALs and other objects back and forth between servers. You should have regular backups, continuously adding to them, and ideally restore them regularly to ensure everything is going well. It’s also important to monitor their health.
 
 I won’t go into details about different backup tools here, but suffice it to say, `pg_dump` is not sufficient alone as a backup mechanism. It is a useful utility and helps a lot, but it’s not something you should consider a complete solution for backing up your Postgres clusters.
+
+### Conclusion
+
+To recap, let’s discuss a few shortcomings of `pg_dump` and clarify why a **dump** and a **backup** are different things.
+
+`pg_dump` creates a snapshot of the database at a specific point in time. This means it captures the state of the database up to that moment but does not account for any changes made afterward. The standard `pg_dump` output is a plain-text file containing SQL statements to recreate the database schema and its contents. While it can be in various formats, SQL is the most common. This output is what we refer to as a **dump**.
+
+However, this dump file does not include Write-Ahead Logs (WAL), which are essential for point-in-time recovery and replication. Additionally, global objects such as roles and tablespaces are excluded from the dump, which can lead to inconsistencies during restoration, especially in multi-database setups.
+
+In contrast, a **backup** is a broader concept that involves creating copies of both data and metadata to ensure that a database can be restored in case of failure, corruption, or data loss. Backups can be:
+
+- **Full Backup**: A complete copy of the entire database, including all data and metadata.
+- **Incremental Backup**: Captures only the changes made since the last backup.
+- **Continuous Backup**: Continuously captures changes, providing ongoing protection.
+
+Backups generally include WAL files, allowing for point-in-time recovery. They should be performed regularly, monitored for health, and restored periodically to ensure their integrity.
+
+While `pg_dump` serves well for exporting data for migrations or versioning, it is not designed to handle full disaster recovery scenarios. For a robust and reliable backup strategy, tools like Barman, WAL-G, and pgBackRest are better suited to ensure data safety and quick recovery.
