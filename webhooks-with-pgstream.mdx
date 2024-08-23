@@ -93,61 +93,20 @@ pgstream run -c pg2webhook.env
 
 ## The webhooks listener
 
-We now have pgstream ready to go, but we need something to receive the webhooks. Let's use this simple python program (courtesy of ChatGPT) to start a webserver that logs all the requests it receives:
-
-```python
-import http.server
-import json
-from urllib.parse import urlparse, parse_qs
-
-class WebhookHandler(http.server.BaseHTTPRequestHandler):
-    def do_POST(self):
-        # Parse the length of the data
-        content_length = int(self.headers['Content-Length'])
-
-        # Read the data from the request
-        post_data = self.rfile.read(content_length)
-
-        # Try to parse the data as JSON
-        try:
-            json_data = json.loads(post_data)
-            pretty_json = json.dumps(json_data, indent=4)
-            print("Received Webhook:")
-            print(pretty_json)
-        except json.JSONDecodeError:
-            print("Received non-JSON data:")
-            print(post_data.decode('utf-8'))
-
-        # Send a response back to the webhook sender
-        self.send_response(200)
-        self.send_header('Content-Type', 'text/plain')
-        self.end_headers()
-        self.wfile.write(b'Webhook received')
-
-def run(server_class=http.server.HTTPServer, handler_class=WebhookHandler, port=9910):
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    print(f'Starting server on port {port}...')
-    httpd.serve_forever()
-
-if __name__ == '__main__':
-    run()
-```
-
-You can start it like this:
+We now have pgstream ready to go, but we need something to receive the webhooks. This is normally your application, or a lambda function, or similar. pgstream comes with a sample webhooks listener written in Go. You can start it like this:
 
 ```sh
-python3 webhooks_server.py
-
-Starting server on port 9910...
+go run tools/webhook/webhook_server.go
 ```
 
-Now we have to create a subscription so that `pgstream` knows to send the webhook to `localhost:9910` where the `webhook_server.go` program is waiting. We do this by calling an API which the webhook module from `pgstream` serves:
+This starts a server on port 9910 that simply logs any JSON payload that is received under the `/webhook` path.
+
+Now we have to create a subscription so that `pgstream` knows to send the webhook to `localhost:9910/webhook` where the `webhook_server.go` program is waiting. We do this by calling an API which the webhook module from `pgstream` serves:
 
 ```sh
 curl localhost:9900/webhooks/subscribe \
     -H "content-type: application/json" \
-    -d '{"url":"http://localhost:9910", "schema": "public", "table": "users"}'
+    -d '{"url":"http://localhost:9910/webhook", "schema": "public", "table": "users"}'
 ```
 
 The above adds a line in the `pgstream.webhook_subscriptions` table, which is maintained by `pgstream`. You can verify by running via `psql`:
@@ -458,7 +417,7 @@ To get schema events, we create another subscription pointing to the same webhoo
 ```sh
 curl localhost:9900/webhooks/subscribe \
   -H "content-type: application/json" \
-  -d '{"url":"http://localhost:9910", "schema": "pgstream", "table": "schema_log"}'
+  -d '{"url":"http://localhost:9910/webhook", "schema": "pgstream", "table": "schema_log"}'
 ```
 
 Now if we do a schema change:
