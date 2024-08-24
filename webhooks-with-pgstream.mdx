@@ -42,7 +42,7 @@ psql "postgres://postgres:postgres@localhost:5432/postgres"
 At the psql prompt:
 
 ```sql
-CREATE TABLE users(id SERIAL PRIMARY KEY, name TEXT, role TEXT);
+CREATE TABLE employees(id SERIAL PRIMARY KEY, name TEXT, role TEXT);
 ```
 
 Let's now install `pgstream`. One option is to build it from source, since we already have the repo cloned:
@@ -99,7 +99,7 @@ Now we have to create a subscription so that `pgstream` knows to send the webhoo
 ```sh
 curl localhost:9900/webhooks/subscribe \
     -H "content-type: application/json" \
-    -d '{"url":"http://localhost:9910/webhook", "schema": "public", "table": "users"}'
+    -d '{"url":"http://localhost:9910/webhook", "schema": "public", "table": "employees"}'
 ```
 
 The above adds a line in the `pgstream.webhook_subscriptions` table, which is maintained by `pgstream`. You can verify by running via `psql`:
@@ -108,7 +108,7 @@ The above adds a line in the `pgstream.webhook_subscriptions` table, which is ma
 postgres=# select * from pgstream.webhook_subscriptions;
           url          | schema_name | table_name | event_types
 -----------------------+-------------+------------+-------------
- http://localhost:9910 | public      | users      |
+ http://localhost:9910 | public      | employees      |
 (1 row)
 ```
 
@@ -122,7 +122,7 @@ Notes:
 With `pgstream` and the `webhooks_server.py` started in different consoles, let's run the following SQL via `psql`:
 
 ```sql
-INSERT INTO users(name,role) VALUES('Dwight Schrute', 'Assistant Regional Manager');
+INSERT INTO employees(name,role) VALUES('Dwight Schrute', 'Assistant Regional Manager');
 ```
 
 You should see the following printed by the python program:
@@ -134,7 +134,7 @@ You should see the following printed by the python program:
     "timestamp": "2024-08-20 13:57:16.806107+00",
     "lsn": "0/15F1D60",
     "schema": "public",
-    "table": "users",
+    "table": "employees",
     "columns": [
       {
         "id": "cr2a0enjc0j00h93rdj0-1",
@@ -177,7 +177,7 @@ Things to note in the above:
 Now let's run an update statement:
 
 ```sql
-UPDATE users SET role='Assistant to the Regional Manager' WHERE name='Dwight Schrute';
+UPDATE employees SET role='Assistant to the Regional Manager' WHERE name='Dwight Schrute';
 ```
 
 The following webhook event is received:
@@ -189,7 +189,7 @@ The following webhook event is received:
     "timestamp": "2024-08-20 14:01:28.86832+00",
     "lsn": "0/15F1FB8",
     "schema": "public",
-    "table": "users",
+    "table": "employees",
     "columns": [
       {
         "id": "cr2a0enjc0j00h93rdj0-1",
@@ -240,13 +240,13 @@ How about including the old values in addition to the new values for UPDATEs? Ye
 See how in the above UPDATE event, the "identity" contains the PK value, and we noted that this is the PK value **before the update**? That is because the "replica identity" for the table is set to "primary key", which is the default. However, the replica identity can be set to any unique group of columns, or to "all columns" by setting it to FULL:
 
 ```sql
-ALTER TABLE users REPLICA IDENTITY FULL;
+ALTER TABLE employees REPLICA IDENTITY FULL;
 ```
 
 If we run the update again:
 
 ```sql
-UPDATE users SET role='Assistant Regional Manager' WHERE name='Dwight Schrute';
+UPDATE employees SET role='Assistant Regional Manager' WHERE name='Dwight Schrute';
 ```
 
 We now get all values after the update, but also before the update, under the `identity` field:
@@ -258,7 +258,7 @@ We now get all values after the update, but also before the update, under the `i
     "timestamp": "2024-08-20 17:50:50.503662+00",
     "lsn": "0/15F65F0",
     "schema": "public",
-    "table": "users",
+    "table": "employees",
     "columns": [
       {
         "id": "cr2a0enjc0j00h93rdj0-1",
@@ -314,7 +314,7 @@ We now get all values after the update, but also before the update, under the `i
 Let's try a simple delete as well:
 
 ```sql
-DELETE FROM users WHERE name='Dwight Schrute';
+DELETE FROM employees WHERE name='Dwight Schrute';
 ```
 
 The generated event:
@@ -326,7 +326,7 @@ The generated event:
     "timestamp": "2024-08-21 15:31:55.992618+00",
     "lsn": "0/163CEC8",
     "schema": "public",
-    "table": "users",
+    "table": "employees",
     "columns": null,
     "identity": [
       {
@@ -379,23 +379,23 @@ However, setting the replica identity to `full` solves this. To test this, try t
 
 ```sql
 -- set the identity back to be just PK
-ALTER TABLE users REPLICA IDENTITY DEFAULT;
+ALTER TABLE employees REPLICA IDENTITY DEFAULT;
 
 -- set the role column to a large value.
 -- This will be in the event because the role column is modified
-UPDATE users SET role=(
+UPDATE employees SET role=(
     SELECT string_agg(generate_series::text, ' ') FROM generate_series(0, 8000)
     ) WHERE name='Dwight Schrute';
 
 -- change another column.
 -- This time the role column is not present because it's TOASTed
-UPDATE users SET name='Jim Halpert' WHERE name='Dwight Schrute';
+UPDATE employees SET name='Jim Halpert' WHERE name='Dwight Schrute';
 
 -- set the identity to FULL
-ALTER TABLE users REPLICA IDENTITY FULL;
+ALTER TABLE employees REPLICA IDENTITY FULL;
 
 -- try the update again, this time the value is included in the event.
-UPDATE users SET name='Dwight Schrute' WHERE name='Jim Halpert';
+UPDATE employees SET name='Dwight Schrute' WHERE name='Jim Halpert';
 ```
 
 Note, however, that the TOASTed value is included only in the `identity` part of the event, so your application needs to pick it up from there.
@@ -421,7 +421,7 @@ curl localhost:9900/webhooks/subscribe \
 Now if we do a schema change:
 
 ```sql
-ALTER TABLE users ADD COLUMN first_name TEXT;
+ALTER TABLE employees ADD COLUMN first_name TEXT;
 ```
 
 We get an event like this:
@@ -457,7 +457,7 @@ We get an event like this:
         "id": "",
         "name": "schema",
         "type": "jsonb",
-        "value": "{\"tables\": [{\"oid\": \"16480\", \"name\": \"users\", \"columns\": [{\"name\": \"first_name\", \"type\": \"text\", \"unique\": false, \"default\": null, \"metadata\": null, \"nullable\": true, \"pgstream_id\": \"cr2a0enjc0j00h93rdj0-4\"}, {\"name\": \"name\", \"type\": \"text\", \"unique\": false, \"default\": null, \"metadata\": null, \"nullable\": true, \"pgstream_id\": \"cr2a0enjc0j00h93rdj0-2\"}, {\"name\": \"role\", \"type\": \"text\", \"unique\": false, \"default\": null, \"metadata\": null, \"nullable\": true, \"pgstream_id\": \"cr2a0enjc0j00h93rdj0-3\"}, {\"name\": \"id\", \"type\": \"integer\", \"unique\": true, \"default\": \"nextval('public.users_id_seq'::regclass)\", \"metadata\": null, \"nullable\": false, \"pgstream_id\": \"cr2a0enjc0j00h93rdj0-1\"}], \"pgstream_id\": \"cr2a0enjc0j00h93rdj0\", \"primary_key_columns\": [\"id\"]}, {\"oid\": \"16472\", \"name\": \"webhook_subscriptions\", \"columns\": [{\"name\": \"url\", \"type\": \"text\", \"unique\": false, \"default\": null, \"metadata\": null, \"nullable\": false, \"pgstream_id\": \"cr29p2vjc0j00i13rdhg-1\"}, {\"name\": \"schema_name\", \"type\": \"text\", \"unique\": false, \"default\": null, \"metadata\": null, \"nullable\": false, \"pgstream_id\": \"cr29p2vjc0j00i13rdhg-2\"}, {\"name\": \"table_name\", \"type\": \"text\", \"unique\": false, \"default\": null, \"metadata\": null, \"nullable\": false, \"pgstream_id\": \"cr29p2vjc0j00i13rdhg-3\"}, {\"name\": \"event_types\", \"type\": \"text[]\", \"unique\": false, \"default\": null, \"metadata\": null, \"nullable\": true, \"pgstream_id\": \"cr29p2vjc0j00i13rdhg-4\"}], \"pgstream_id\": \"cr29p2vjc0j00i13rdhg\", \"primary_key_columns\": [\"url\", \"schema_name\", \"table_name\"]}]}"
+        "value": "{\"tables\": [{\"oid\": \"16480\", \"name\": \"employees\", \"columns\": [{\"name\": \"first_name\", \"type\": \"text\", \"unique\": false, \"default\": null, \"metadata\": null, \"nullable\": true, \"pgstream_id\": \"cr2a0enjc0j00h93rdj0-4\"}, {\"name\": \"name\", \"type\": \"text\", \"unique\": false, \"default\": null, \"metadata\": null, \"nullable\": true, \"pgstream_id\": \"cr2a0enjc0j00h93rdj0-2\"}, {\"name\": \"role\", \"type\": \"text\", \"unique\": false, \"default\": null, \"metadata\": null, \"nullable\": true, \"pgstream_id\": \"cr2a0enjc0j00h93rdj0-3\"}, {\"name\": \"id\", \"type\": \"integer\", \"unique\": true, \"default\": \"nextval('public.employees_id_seq'::regclass)\", \"metadata\": null, \"nullable\": false, \"pgstream_id\": \"cr2a0enjc0j00h93rdj0-1\"}], \"pgstream_id\": \"cr2a0enjc0j00h93rdj0\", \"primary_key_columns\": [\"id\"]}, {\"oid\": \"16472\", \"name\": \"webhook_subscriptions\", \"columns\": [{\"name\": \"url\", \"type\": \"text\", \"unique\": false, \"default\": null, \"metadata\": null, \"nullable\": false, \"pgstream_id\": \"cr29p2vjc0j00i13rdhg-1\"}, {\"name\": \"schema_name\", \"type\": \"text\", \"unique\": false, \"default\": null, \"metadata\": null, \"nullable\": false, \"pgstream_id\": \"cr29p2vjc0j00i13rdhg-2\"}, {\"name\": \"table_name\", \"type\": \"text\", \"unique\": false, \"default\": null, \"metadata\": null, \"nullable\": false, \"pgstream_id\": \"cr29p2vjc0j00i13rdhg-3\"}, {\"name\": \"event_types\", \"type\": \"text[]\", \"unique\": false, \"default\": null, \"metadata\": null, \"nullable\": true, \"pgstream_id\": \"cr29p2vjc0j00i13rdhg-4\"}], \"pgstream_id\": \"cr29p2vjc0j00i13rdhg\", \"primary_key_columns\": [\"url\", \"schema_name\", \"table_name\"]}]}"
       },
       {
         "id": "",
@@ -502,7 +502,7 @@ Note how you get not only the name and the type of the column, but also metadata
 Also, the `pgstream_id` value is unique and fixed for this column, regardless of the name. You can verify this by performing a rename:
 
 ```sql
-ALTER TABLE users RENAME COLUMN first_name TO last_name;
+ALTER TABLE employees RENAME COLUMN first_name TO last_name;
 ```
 
 ## Conclusion
