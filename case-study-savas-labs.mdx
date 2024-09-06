@@ -1,0 +1,99 @@
+---
+title: "Savas Labs saves 60+ hours in development time with Xata's Serverless Postgres"
+description: 'See how Savas Labs saved 60+ hours in development time with Xata’s serverless Postgres solution, improving database management and accelerating digital projects for clients like the Environmental Integrity Project.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/sava-labs-case-study-og@2x.png
+  alt: Case Study
+author: Cezzaine Zaher
+date: 09-05-2024
+tags: ['case-study', 'community']
+published: true
+slug: case-study-savas-labs
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/sava-labs-case-study-og@2x.png
+---
+
+<ArticleImage
+  src="https://us-east-1.storage.xata.sh/uq2d573lf36fvlvl6td0s0i4spj3kohc"
+  width="800"
+  height="405"
+  alt="Savas labs hero image"
+  position="center"
+/>
+
+- **Company:** Savas Labs
+- **Industry:** Digital Agency
+- **Location:** Remote, HQ in Raleigh NC
+- **Size:** 30-35 employees
+
+[Savas Labs](https://savaslabs.com/), a full-service digital agency headquartered in North Carolina, is dedicated to delivering impactful and purpose-driven digital solutions. With a team of 30-35 professionals, including designers, developers, and project managers, Savas Labs has built a reputation for its focus on philanthropic work, particularly within academia and non-profit sectors. The agency has partnered with esteemed institutions like Duke University and Charlotte University. Their commitment to thorough discovery processes and meaningful client collaboration sets them apart from traditional agencies that often take a more generic approach to digital projects.
+
+## The task ahead
+
+Savas Labs was approached by the [Environmental Integrity Project](https://environmentalintegrity.org/) (EIP) to do a complete teardown and replacement of an existing Angular 1.0 application backed by a Postgres database. The purpose of the site is to show complicated environmental data (CO2e, economic effects, cancer risk, projected deaths, water crossings) of hundreds of facilities and pipelines throughout the United States, and display those in a way that is digestible to the user; be they an environmental scientist, legal professional, or curious citizen.
+
+## Challenges
+
+The existing [Oil & Gas Watch project](https://oilandgaswatch.org/) platform presented several challenges:
+
+- **Avoiding database management:** The Savas Labs team wanted to avoid the complexities of managing a database infrastructure themselves.
+- **API accessibility:** They needed a solution that could easily provide an API layer over the existing Postgres database without the need for extensive backend development.
+- **Data migration:** Importing an existing Postgres database into a new system was a critical requirement.
+- **Geospatial data management:** Savas Labs needed a solution to efficiently handle geospatial data with robust querying capabilities and integration with mapping tools.
+- **Collaborative visibility:** The team required a platform that enabled visibility into data for better collaboration and project management.
+
+## Solution
+
+After evaluating several Database-as-a-Service (DBaaS) solutions, Savas Labs chose Xata for its simplicity and effectiveness in meeting their specific needs.
+
+<ArticleImage
+  src="https://us-east-1.storage.xata.sh/uq2d57snjs5mnc550otfgtcdm03bv9ns"
+  width="800"
+  height="450"
+  alt="Building with Xata"
+  caption="Building with Xata"
+  position="center"
+/>
+
+**Key factors for choosing Xata:**
+
+- **Simplicity and speed:** Xata's ability to load data quickly and provide an immediate API endpoint was a significant advantage. The team could focus on data presentation rather than management, effectively handling tasks such as [Postgres schema migrations](https://xata.io/schema-migrations) without extensive manual intervention.
+- **Personal touch:** Xata's proactive support in importing an existing Postgres database, and their involvement in the onboarding process, stood out as major differentiators.
+- **UI experience:** The user-friendly interface and collaborative features of Xata's tables facilitated smooth teamwork, making it easy for project managers to monitor progress without constantly pinging developers.
+- **Engender Client Control:** The EIP are experts in environmental data, and Savas wanted them to do what they do best. By allowing EIP full control over all their location records, they could focus on getting the data right, and Savas could focus on how it would display.
+
+> By eliminating over 60 hours of backend development time, Xata allowed us to concentrate on innovative solutions rather than database management, making a significant impact on our team's productivity.\
+> _Lemon, Front End Development Director at Savas Labs_
+
+## Implementation
+
+Xata seamlessly integrated with Savas Labs' technology stack (Vite and Vue), allowing them to focus on building and delivering a high-quality frontend experience for EIP. The Vue.js frontend queries Xata's API to display data on various pages, ranging from summary collections to detailed item views. Additionally, Savas Labs utilized Xata for light CMS functionality, managing glossaries and Q\&A sections directly within the database rather than hardcoding them. This meant the EIP team could edit their glossaries and Q\&A any time they like.
+
+**Key use cases:**
+
+- **Querying data for dynamic pages:** The application dynamically generates content based on page IDs and query parameters, displaying collections or specific data items, such as pollution-centric facilities or pipelines.
+- **Collaboration across teams:** Xata's visibility features allowed the project manager to track data status independently, ensuring smooth project timelines.
+
+![Oil & Gas Watch Project](/images/oil-and-gas-watch.png)
+
+## Results and impact
+
+By implementing Xata as their database platform solution, Savas Labs achieved several significant outcomes:
+
+**Time and resource savings:** By leveraging Xata, Savas Labs avoided the need for extensive backend development. They estimated a saving of 60-70 developer hours, which would have otherwise been spent managing database infrastructure, a number they would have had to maintain into the future as well.
+
+**Enhanced collaboration and visibility:** Xata’s user interface and table experience provided project managers with clear visibility into the data. This eliminated bottlenecks, as team members could easily verify the presence of necessary data without constantly consulting developers.
+
+**Simplified data management:** The ability to offload data management to Xata meant that Savas Labs could focus on the presentation layer, knowing that the underlying data was accessible, secure, and well-organized.
+
+**Scalability and flexibility:** While the EIP project was a niche application with a specific audience, Xata’s architecture allowed Savas Labs to scale and adapt the solution as needed.
+
+**Simplicity and support:** The ease of use, combined with the support and responsiveness from the Xata team, resulted in a successful project outcome, with Savas Labs planning to use Xata for future projects, including one focused on carbon emissions.
+
+> Xata helped us cut down our development time and streamlined our workflow, enhancing team collaboration and keeping us on track to meet critical project deadlines.\
+> _Andrew Charney, Senior Project Manager at Savas Labs_
+
+## Conclusion
+
+Xata has become more than just a database tool for Savas Labs—it’s an essential solution that enables the delivery of high-quality digital experiences, free from the usual database management hassles. By opting for Xata, Savas Labs was able to save valuable time, improve team collaboration, and concentrate on their core mission: designing impactful, user-driven digital solutions for their clients. Savas Labs will continue to use Xata and are already underway on their next project, [Ash Tracker](https://ashtracker.org/).
+
+To learn more about Savas Labs, visit [savaslabs.com](http://savaslabs.com). If you’re interested in a [serverless PostgreSQL](https://xata.io/serverless-postgres) solution that can help streamline your own projects, you can [try Xata for free today](https://app.xata.io/signin?mode=signup).
