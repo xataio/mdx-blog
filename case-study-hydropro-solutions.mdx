@@ -1,0 +1,74 @@
+---
+title: 'HydroPro Solutions achieves a 60% reduction in search time using the Xata Postgres-powered platform'
+description: 'Discover how HydroPro Solutions reduced search time by 60% and transformed their operations with the powerful Postgres-based serverless database solution from Xata, streamlining water meter installations and improving overall efficiency.'
+image:
+  src: https://us-east-1.storage.xata.sh/uq2d57ppt77acjdd5ptct28claqh8c1g
+  alt: Case Study
+author: Cezzaine Zaher
+date: 09-19-2024
+tags: ['case-study', 'community']
+published: true
+slug: case-study-hydropro-solutions
+ogImage: https://us-east-1.storage.xata.sh/uq2d57qfhg4d1ill2ahaevavdrfnd9cs
+---
+
+<ArticleImage
+  src="https://us-east-1.storage.xata.sh/uq2d570nl53n5ssl5pv7p6140l9b6j9k"
+  width="800"
+  height="405"
+  alt="Savas labs hero image"
+  position="center"
+/>
+
+- **Company:** HydroPro Solutions
+- **Industry:** Water utilities
+- **Location:** Texas & California
+- **Size:** 30 employees
+
+[HydroPro Solutions](https://hydroprosolutions.com/) is a leading sales and distribution company providing smart water meters and sewage monitoring systems to small and medium-sized water utilities across Texas and California. With a team of 30 employees, they specialize in advanced water infrastructure services, including pipeline pressure monitoring and cyber threat detection, ensuring municipalities can manage their water resources effectively and securely.
+
+## Challenges and the task ahead
+
+As the sole platform engineer at HydroPro Solutions, Chris Hiester faced a significant challenge: building an entire software platform to manage large-scale water meter replacement projects. These projects involved managing data for up to 20,000 water meters in a single city, including customer information, meter readings, work orders, and high-resolution images of the installations.
+
+Chris needed a database solution that could handle vast amounts of relational data while being easy to manage as a single developer. The system also needed to support search capabilities for quickly locating customer records and photos, avoiding costly billing disputes. Additionally, HydroPro needed the platform to integrate smoothly into their existing tech stack, which included Next.js, Vercel, and Google Cloud Vision.
+
+> We needed a PostgreSQL system that would just work and perform well without the hassle of dealing with core database infrastructure. As a single engineer, I didn’t want to spend time managing configurations—Xata’s APIs and search capabilities made it a perfect fit.\
+> _Chris Hiester, Lead Application Engineer at HydroPro Solutions_
+
+## Solution
+
+After evaluating several database solutions, Chris chose Xata for its powerful Postgres-based relational database features and ease of use. Xata provided a developer-friendly Postgres platform with robust search functionality and the ability to manage large datasets efficiently.
+
+With Xata, HydroPro was able to:
+
+- **Store and manage vast amounts of relational data:** Including customer records, water meter data, and work orders.
+- **Use advanced search capabilities:** Enabling quick and accurate data retrieval for customer service, ensuring no billing errors or discrepancies during meter installations.
+- **Manage file attachments:** Storing photos taken during meter installations and using Google Cloud Vision to read meter serial numbers, which are automatically linked to customer records. Xata's image transformation capabilities create smaller thumbnails of the images, allowing field teams using mobile devices to quickly view and manage high-resolution photos in real-time, improving on-site efficiency.
+
+## Implementation
+
+The integration of Xata into HydroPro Solutions' tech stack was seamless. With Next.js as the front-end framework, Vercel handling deployments, and Google Cloud Vision managing image recognition, Xata served as the core Postgres relational database, tying everything together.
+
+One of the most critical features for HydroPro was Xata's ability to handle bulk data uploads, such as CSV files with thousands of addresses and meter readings. Xata automatically processed the data, converted it into JSON, and mapped it into the serverless PostgreSQL database. This automation dramatically improved efficiency, especially during larger water meter installation projects.
+
+![HydroPro Solutions Dashboard](/images/case-study-hydropro/hydropro-dashboard.png)
+
+## Results and impact
+
+Since implementing Xata, HydroPro Solutions has seen significant improvements in their operations, particularly in terms of speed and accuracy. The biggest transformation has been in search functionality, which allows internal teams to quickly locate specific addresses and records across thousands of data points.
+
+**Key benefits include:**
+
+- **60% reduction in search time:** Enabling HydroPro’s teams to resolve customer queries faster and ensure accurate data retrieval.
+- **Efficient project management:** Field teams can track project progress in real-time, correlating installation speeds with environmental factors like temperature and rainfall, which impact productivity.
+- **Improved file handling:** With Xata, HydroPro now stores and manages thousands of photos, making it easy to resolve any customer disputes about water meter readings by referencing high-resolution images.
+
+> With Xata, we’ve achieved a 60% reduction in search time. Previously, searching for an address would lead to long load times, sometimes with the system freezing up. Now, it’s lightning-fast—start typing an address, and results filter instantly. It has truly been a game changer.\
+> _Chris Hiester, Lead Application Engineer at HydroPro Solutions_
+
+## Conclusion
+
+Xata has proven to be the ideal solution for HydroPro Solutions, enabling them to manage their growing database needs with ease and efficiency. The platform’s search capabilities, Postgres relational database management, and seamless integration with HydroPro’s existing tech stack have allowed the company to streamline their operations and deliver superior service to their clients. Chris is excited to see how Xata evolves further in future and looks forward to deepening their Xata integration.
+
+To learn more about HydroPro Solutions, visit [hydroprosolutions.com](http://hydroprosolutions.com). If you’re interested in a [serverless PostgreSQL](https://xata.io/serverless-postgres) solution that can help streamline your own projects, you can [try Xata for free today](https://app.xata.io/signin?mode=signup).
