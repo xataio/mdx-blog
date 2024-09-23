@@ -35,5 +35,10 @@
     "*.{css,json,md,yml,yaml,mdx,md}": [
       "prettier --write"
     ]
+  },
+  "pnpm": {
+    "overrides": {
+      "micromatch@<4.0.8": ">=4.0.8"
+    }
   }
 }
