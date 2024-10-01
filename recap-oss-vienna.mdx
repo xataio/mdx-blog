@@ -1,12 +1,12 @@
 ---
-title: 'Recap of OSS Vienna: What's Happening in the Open Source World'
+title: 'Recap of OSS Vienna: What is Happening in the Open Source World'
 description: 'My notes from the Open Source Summit Europe in Vienna, featuring fresh updates from open source communities, insights from the Xata booth, and highlights from our Postgres Happy Hour'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/update-here.png
   alt: Recap of OSS Vienna: What's Happening in the Open Source World
 author: Gulcin Yildirim Jelinek
 authorEmail: gulcin@xata.io
-date: 10-01-2024
+date: 10-03-2024
 tags: ['postgres', 'oss', 'vienna', 'happy-hour', 'xata', 'postgresql', 'postgres-happy-hour', 'ossummit', 'booth', 'linuxfoundation', 'europe', 'extensions']
 published: true
 slug: oss-vienna-recap
@@ -27,43 +27,71 @@ I must say the weather in Prague (my departure city), especially in the south of
 Travelling to Vienna (my destination) was not fun, to say the least. I was fortunate that my flight was not canceled and I managed to arrive on the same day as planned, unlike many others who had planned to use trains and could not even make it to their own talks.
 
 I intended to get my badge and set up our booth on Sunday but trip to Vienna was enough as it was, so we will jump directly to Day 1 😊
-However, I met my colleague Simona for the first time, and we had dinner together with her my friend Yasar.
+However, I met my colleague Simona for the first time, and we managed to have dinner together with her my friend Yasar.
 
 ![Yasar, Simona and me after our dinner](/images/recap-oss-vienna/yasar-simona-gulcin.png)
 
 ## Day 1
 
-I arrived to the venue very early, after struggling with my umbrella I borrowed from the hotel, carrying a luggage full of swag and a box with helium tank in it 😅 
-Luckily I met the kindest two people at the hotel breakfast and they helped me to carry everything. Thanks Susan Remmert and X, you made it so much easier for me to settle into the conference!
+I arrived at the venue very early, struggling with my umbrella I borrowed from the hotel while carrying a luggage full of swag and a box with helium tank inside 😅
+Luckily, I met two of the kindest people at the hotel breakfast and they helped me carry everything. Big thanks to Susan Remmert (from The Linux Foundation) and Jonas Remmert (from Phytec) for making it so much easier to settle into the conference!
 
 ### The Zephyr Project
 
-If you are interested in [The Zephyr Project](https://zephyrproject.org/), go follow Susan! She was hosting a workshop at the summit.
+If you are interested in [The Zephyr Project](https://zephyrproject.org/), go follow Susan! She hosted a workshop at the summit.
 
 Quoting from the #ZephyrRTOS [Github page](https://github.com/zephyrproject-rtos/zephyr/tree/main):
 
-> The Zephyr Project is a scalable real-time operating system (RTOS) supporting multiple hardware architectures, optimized for resource constrained devices, and built with security in mind.</p>
-> The Zephyr OS is based on a small-footprint kernel designed for use on resource-constrained systems: from simple embedded environmental sensors and LED wearables to sophisticated smart watches and IoT wireless gateways.</p>
-> The Zephyr kernel supports multiple architectures, including ARM (Cortex-A, Cortex-R, Cortex-M), Intel x86, ARC, Nios II, Tensilica Xtensa, and RISC-V, SPARC, MIPS, and a large number of supported boards.</p>
+> The Zephyr Project is a scalable real-time operating system (RTOS) supporting multiple hardware architectures, optimized for resource constrained devices, and built with security in mind.
+> The Zephyr OS is based on a small-footprint kernel designed for use on resource-constrained systems: from simple embedded environmental sensors and LED wearables to sophisticated smart watches and IoT wireless gateways.
+> The Zephyr kernel supports multiple architectures, including ARM (Cortex-A, Cortex-R, Cortex-M), Intel x86, ARC, Nios II, Tensilica Xtensa, and RISC-V, SPARC, MIPS, and a large number of supported boards.
 
 You can join community [Discord](https://discord.com/invite/Ck7jw53nU2) if you are interested.
 
 ### Xata Booth
 
-Then, Noémi and Simona arrived. We got our badges and moved to the sponsor area to set up our booth.
-I also met Noémi for the first time, but we three really got along and our booth was probably the happiest booth with the sit-com level background laughter for the next 3 days 😂
+Then, Noémi and Simona arrived. After getting our badges, we headed to the sponsor area to set up our booth.
+I also met Noémi for the first time, but the three of us hit it off immediately! Our booth quickly became the happiest one, with the sit-com level background laughter for the next three days 😂
 
 ![Booth photo: Noémi, Gulcin and Simona, happily smiling](/images/recap-oss-vienna/booth-noemi-gulcin-simona.png)
 
-### Linus Torval's Keynote
+### Linus Torvalds' Keynote
 
-The highlight of the first day was the opening keynote where [Linus Torvals and Dirk Hohndel had a discussion](https://www.youtube.com/watch?v=OM_8UOPFpqE&list=PLbzoR-pLrL6pwSxJqsghZ1XVNb7pngzJv&index=18).
+The highlight of the first day was the opening keynote where [Linus Torvalds and Dirk Hohndel had a discussion](https://www.youtube.com/watch?v=OM_8UOPFpqE&list=PLbzoR-pLrL6pwSxJqsghZ1XVNb7pngzJv&index=18).
 
-Quotes from Linux Torvals / aging community, sustainability, not exciting release but stable. 
+The discussion began by marking 33 years of Linux — what an achievement! The Linux kernel 6.11 had just been released on September 15, the day before this keynote. Dirk asked, "What's interesting, what should people know about this release?" Linus replied that for the past 15 years, they've had a regular cadence of releases, roughly every 9 weeks.
+He added, "Releases are not exciting, they are not supposed to be. They are timely and hopefully very reliable, but exciting is not the goal."
+He explained that for him, the excitement comes after a release, as they start working on new code for the next version. That's what he considers fun.
 
-https://x.com/arungupta/status/1835597474280411167?s=46&t=oLSbUb4p0O_6BtJKfhCVCg
+I think this insight applies to the PostgreSQL project as well. PostgreSQL releases, like Linux, are not meant to be exciting — though they are to me! — but they need to be consistent and reliable.
+PostgreSQL 17 was released on September 26, and Laurenz Albe touches on this "shiny vs. stable releases" dilemma in his recent [blog post](https://www.cybertec-postgresql.com/en/whats-so-great-about-postgresql-v17/).
+He asks, "Why are there no spectacular new features in PostgreSQL v17?" Considering that [Laurenz](https://postgresql.life/post/laurenz_albe/) is a major contributor and has been involved in the project for a long time, I found his perspective also quite valuable.
 
-https://x.com/linuxfoundation/status/1835599725191438529?s=46&t=oLSbUb4p0O_6BtJKfhCVCg
+Dirk mentioned, overall, looking at the trends over years, Linux kernel releases are mostly about drivers, file systems, some hardware support and asked where the most of code comes from these days.
+To that, Linus replied it's always been mostly drivers, and probably more than half of the kernel code is driver support and that's literally the point of a kernel, and that most people should not care unless they are kernel developers.
+He gave an example stating there are like 12 CPU architectures but thousands of drivers, so every new release, the bulk of the changes are just new hardware support for drivers and fixes for old hardware support for drivers.
+Linus also mentioned that he checks the statistics of the changes after every release and finds it surprising - despite working on Linux for a third of a century - that core kernel development is still largely about fairly low-level virtual file system code and a lot of the ongoing discussions are still about memory management and things that have been around forever.
+
+The conversation eventually turned to the Real-Time Linux project, which has finally been officially integrated into the kernel after - a very brief - 20 years of development!
+Linus commented, "People think kernel development is fast because there are releases every three months, with 10,000 to 15,000 commits per release. But a lot of it has been for the stuff that is ready, it may have been developed over months, years or in some cases even decades."
+He explained that Real-Time Linux took so long because the real-time patches touched every area of the kernel, requiring consensus from all developers and significant updates to drivers and a lot more work in general.
+
+When the topic of the Rust vs. C debate came up, along with the fact that some maintainers had left because of it, and the discussions had become almost religious, Linus shared his perspective.
+He said that C is easy, Rust is not, and it’s natural for people who have developed in C for decades to resist something new.
+
+Regarding the fierce arguments, he added:
+
+> ["I enjoy arguments. One of the nice parts of Rust that it has liven up discussions in kernel. C is very simple and Rust is not."](https://x.com/arungupta/status/1835598926050730269)
+
+Other insightful quotes from the discussion were captured by Arun Gupta in a great thread:
+
+> ["Absolutely no one understands everything in the kernel. I don't. People specialize in different areas - and I think that is one of our strengths."](https://x.com/linuxfoundation/status/1835599725191438529?s=46&t=oLSbUb4p0O_6BtJKfhCVCg)
+
+> ["Kernel maintainers are aging, been there for over three decades, it’s a good sign, is also tough for new developers to see yourself as part of that group"](https://x.com/arungupta/status/1835601594278195531)
+
+> [“You need people in the community that have been around for a while, not necessarily 3 decades, it’s about having that trust”](https://x.com/arungupta/status/1835602726257938740)
+
+> [“Do what you love, if what you love is not meaningful to others, then it will not create the impact”](https://x.com/arungupta/status/1835603893763375165)
 
 ### Developer Relations Foundation
 
