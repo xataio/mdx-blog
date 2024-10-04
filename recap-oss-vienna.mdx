@@ -1,0 +1,329 @@
+---
+title: 'Recap of OSS Vienna: What is Happening in the Open Source World'
+description: 'My notes from the Open Source Summit Europe in Vienna, featuring fresh updates from open source communities, insights from the Xata booth, and highlights from our Postgres Happy Hour'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/oss-vienna/oss-vienna-recap@2x.png
+  alt: "Recap of OSS Vienna: What's Happening in the Open Source World"
+author: Gulcin Yildirim Jelinek
+authorEmail: gulcin@xata.io
+date: 10-04-2024
+tags:
+  [
+    'postgres',
+    'oss',
+    'vienna',
+    'happy-hour',
+    'xata',
+    'postgresql',
+    'postgres-happy-hour',
+    'ossummit',
+    'booth',
+    'linuxfoundation',
+    'europe',
+    'extensions'
+  ]
+published: true
+slug: oss-vienna-recap
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/oss-vienna/oss-vienna-recap-og@2x.png
+---
+
+## Recap of OSS Vienna: What's Happening in the Open Source World 📝
+
+We were at the Open Source Summit Europe in Vienna from September 16-18.
+We had our booth, spoke with hundreds of people and received really positive feedback on our open-source tools.
+We also hosted a [Postgres Happy Hour](https://xata.io/blog/oss-vienna-happy-hour) and the discussions were so enjoyable thay we even ended up having dinner with some attendees who stayed until the end of our two-hour event!
+
+This was my first time at Open Source Summit and I am already looking forward to the [next one](https://events.linuxfoundation.org/open-source-summit-europe/) taking place in Amsterdam, Netherlands from August 25-27, 2025.
+
+## Day 0
+
+I must say the weather in Prague (my departure city), especially in the south of the Czech Republic, resembled what I imagine biblical floods would look like.
+Travelling to Vienna (my destination) was not fun, to say the least. I was fortunate that my flight was not canceled and I managed to arrive on the same day as planned, unlike many others who had planned to use trains and could not even make it to their own talks.
+
+I intended to get my badge and set up our booth on Sunday but my trip to Vienna was enough as it was, so we will jump directly to Day 1 😊
+However, I met my colleague Simona for the first time, and we managed to have dinner together with my friend Yasar.
+
+![Yasar, Simona and me after our dinner](/images/recap-oss-vienna/yasar-simona-gulcin.png)
+
+## Day 1
+
+I arrived at the venue very early, struggling with my umbrella I borrowed from the hotel while carrying a luggage full of swag and a box with a helium tank inside 😅
+Luckily, I met two of the kindest people at the hotel breakfast and they helped me carry everything. Big thanks to Susan Remmert (from The Linux Foundation) and Jonas Remmert (from Phytec) for making it so much easier to settle into the conference!
+
+### The Zephyr Project
+
+If you are interested in [The Zephyr Project](https://zephyrproject.org/), go follow Susan!
+
+Quoting from the #ZephyrRTOS [Github page](https://github.com/zephyrproject-rtos/zephyr/tree/main):
+
+> The Zephyr Project is a scalable real-time operating system (RTOS) supporting multiple hardware architectures, optimized for resource constrained devices, and built with security in mind.
+> The Zephyr OS is based on a small-footprint kernel designed for use on resource-constrained systems: from simple embedded environmental sensors and LED wearables to sophisticated smart watches and IoT wireless gateways.
+> The Zephyr kernel supports multiple architectures, including ARM (Cortex-A, Cortex-R, Cortex-M), Intel x86, ARC, Nios II, Tensilica Xtensa, and RISC-V, SPARC, MIPS, and a large number of supported boards.
+
+You can join their community [Discord](https://discord.com/invite/Ck7jw53nU2) if you are interested.
+
+### Xata Booth
+
+Then, Noémi and Simona arrived. After getting our badges, we headed to the sponsor area to set up our booth.
+I also met Noémi for the first time, and the three of us hit it off immediately! Our booth quickly became the happiest one, with the sitcom level background laughter for the next three days 😂
+
+![Booth photo: Noémi, Gulcin and Simona, happily smiling](/images/recap-oss-vienna/booth-noemi-gulcin-simona.png)
+
+### Linus Torvalds' Keynote
+
+The highlight of the first day was the opening keynote where [Linus Torvalds and Dirk Hohndel had a discussion](https://www.youtube.com/watch?v=OM_8UOPFpqE&list=PLbzoR-pLrL6pwSxJqsghZ1XVNb7pngzJv&index=18).
+
+The discussion began by marking 33 years of Linux — what an achievement! The Linux kernel 6.11 had just been released on September 15, the day before this keynote. Dirk asked, "What's interesting, what should people know about this release?" Linus replied that for the past 15 years, they've had a regular cadence of releases, roughly every 9 weeks.
+He added, "Releases are not exciting, they are not supposed to be. They are timely and hopefully very reliable, but exciting is not the goal."
+He explained that for him, the excitement comes after a release, as they start working on new code for the next version. That's what he considers fun.
+
+I think this insight applies to the PostgreSQL project as well. PostgreSQL releases, like Linux, are not meant to be exciting — though they are to me! — but they need to be consistent and reliable.
+PostgreSQL 17 was released on September 26, and Laurenz Albe touches on this "shiny vs. stable releases" dilemma in his recent [blog post](https://www.cybertec-postgresql.com/en/whats-so-great-about-postgresql-v17/).
+He asks, "Why are there no spectacular new features in PostgreSQL v17?" Considering that [Laurenz](https://postgresql.life/post/laurenz_albe/) is a major contributor and has been involved in the project for a long time, I found his perspective also quite valuable.
+
+Dirk mentioned, overall, looking at the trends over years, Linux kernel releases are mostly about drivers, file systems, some hardware support and asked where the most of code comes from these days.
+To that, Linus replied it's always been mostly drivers, and probably more than half of the kernel code is driver support and that's literally the point of a kernel, and that most people should not care unless they are kernel developers.
+He gave an example stating there are like 12 CPU architectures but thousands of drivers, so every new release, the bulk of the changes are just new hardware support for drivers and fixes for old hardware support for drivers.
+Linus also mentioned that he checks the statistics of the changes after every release and finds it surprising - despite working on Linux for a third of a century - that core kernel development is still largely about fairly low-level virtual file system code and a lot of the ongoing discussions are still about memory management and things that have been around forever.
+
+The conversation eventually turned to the Real-Time Linux project, which has finally been officially integrated into the kernel after - a very brief - 20 years of development!
+Linus commented, "People think kernel development is fast because there are releases every three months, with 10,000 to 15,000 commits per release. But a lot of it has been for the stuff that is ready, it may have been developed over months, years or in some cases even decades."
+He explained that Real-Time Linux took so long because the real-time patches touched every area of the kernel, requiring consensus from all developers and significant updates to drivers and a lot more work in general.
+
+When the topic of the Rust vs. C debate came up, along with the fact that some maintainers had left because of it, and the discussions had become almost religious, Linus shared his perspective.
+He said that C is easy, Rust is not, and it’s natural for people who have developed in C for decades to resist something new.
+
+Regarding the fierce arguments, he added:
+
+> ["I enjoy arguments. One of the nice parts of Rust that it has liven up discussions in kernel. C is very simple and Rust is not."](https://x.com/arungupta/status/1835598926050730269)
+
+Other insightful quotes from the discussion were captured by Arun Gupta in a great thread:
+
+> ["Absolutely no one understands everything in the kernel. I don't. People specialize in different areas - and I think that is one of our strengths."](https://x.com/linuxfoundation/status/1835599725191438529?s=46&t=oLSbUb4p0O_6BtJKfhCVCg)
+
+> ["Kernel maintainers are aging, been there for over three decades, it’s a good sign, is also tough for new developers to see yourself as part of that group"](https://x.com/arungupta/status/1835601594278195531)
+
+> [“You need people in the community that have been around for a while, not necessarily 3 decades, it’s about having that trust”](https://x.com/arungupta/status/1835602726257938740)
+
+> [“Do what you love, if what you love is not meaningful to others, then it will not create the impact”](https://x.com/arungupta/status/1835603893763375165)
+
+### Developer Relations Foundation
+
+📣 [The Linux Foundation made an exciting announcement about forming the Developer Relations Foundation.](https://www.linuxfoundation.org/press/linux-foundation-announces-intent-to-form-developer-relations-foundation)
+
+> VIENNA – September 16, 2024 – The Linux Foundation, the nonprofit organization enabling mass innovation through open source, today announced its intent to form the Developer Relations Foundation (DRF).
+> The DRF is a new community-driven project under the Linux Foundation, with the mission to elevate the professional practice of developer relations (DevRel) and increase awareness of its role as a crucial driver of developer success, technology adoption, and business value.
+>
+> Understanding the need for a unified foundation, the formation of the DRF stems from a shared passion for DevRel and the recognition that the profession faces persistent challenges, such as a lack of role clarity and difficulty in measuring impact.
+> Despite significant growth in resources and organizations addressing these issues, efforts and resources are fragmented. As a project under the Linux Foundation, the DRF will work with industry leaders to address these challenges and drive real and measurable impact.
+
+If this interests you, be sure to visit [DRF website](https://lists.dev-rel.org/g/community/wiki) and take [the survey](https://docs.google.com/forms/d/e/1FAIpQLSd1_z1JP7VTOAt6FQBcG7iwHSXFX6JbgRnVtk7WuVBBAMXHmg/viewform).
+Also, check out [DevRel Foundation Github page](https://github.com/DevRel-Foundation).
+
+### OpenSearch Joins The Linux Foundation
+
+📣 [The Linux Foundation announced the launch of the OpenSearch Software Foundation](https://www.linuxfoundation.org/press/linux-foundation-announces-opensearch-software-foundation-to-foster-open-collaboration-in-search-and-analytics).
+
+> AWS transfers OpenSearch to the Linux Foundation to support a vendor-neutral community for search, analytics, observability, and vector database software.
+>
+> VIENNA – September 16, 2024 – Today, the Linux Foundation, the nonprofit organization enabling mass innovation through open source, announced the launch of the OpenSearch Software Foundation, a community-driven initiative that will support OpenSearch and its search software, which is used by developers around the world to build search, analytics, observability, and vector database applications.
+> Hosted by the Linux Foundation, the OpenSearch Software Foundation will work with community maintainers and developers, as well as founding member organizations, to support the continued growth of OpenSearch.
+>
+> Established in 2021 and previously hosted by Amazon Web Services (AWS), OpenSearch has recorded more than 700 million software downloads and participation from thousands of contributors and more than 200 project maintainers.
+> With the launch of the OpenSearch Software Foundation, AWS has transitioned OpenSearch under the Linux Foundation.
+> The OpenSearch Software Foundation will focus on supporting OpenSearch as it continues to be adopted by organizations around the world to power business-critical workloads.
+> As a part of the Linux Foundation family of open source projects, OpenSearch and its community will benefit from deep resources for programming and infrastructure, such as training and professional certification initiatives, product documentation, developer collaboration and release support, and local and global events programs.
+
+AWS transferring OpenSearch to the Linux Foundation is huge, and I am all for it! Open Source Summit made me really optimistic about the state of open source, even amid the ongoing license wars.
+
+We are big fans of OpenSearch here at Xata, and our CTO, [Tudor Golubenco](https://www.linkedin.com/in/tudorgolubenco/), participated in the OpenSearch Community Meeting on September 3rd.
+He gave a talk explaining replication from PostgreSQL to OpenSearch using [pgstream](https://xata.io/pgstream), our open source change data capture tool.
+
+If you're interested, you can watch the meetup recording on OpenSearch's YouTube channel [here](https://www.youtube.com/watch?v=MVOFChxTpRc).
+
+### Postgres at Microsoft Presentation at Microsoft Booth
+
+My friend [Binnur Görer](https://www.linkedin.com/in/binnur-gorer/), who holds a PhD in Computer Science and works as a Senior SWE at Microsoft, was also in Vienna for the Open Source Summit.
+I met Binnur for the first time this year in July in Istanbul during the [Diva: Dive into AI](https://2024.divaconf.com/) conference, where I am one of the [organizers](https://2024.divaconf.com/organizasyon-ekibi).
+She was one of the [speakers](https://2024.divaconf.com/speaker/binnur-gorer) and gave a [talk](https://2024.divaconf.com/event/genai-uygulamalarinda-vektor-veri-tabanlari) about vector databases in GenAI applications.
+
+![Binnur giving her talk](/images/recap-oss-vienna/binnur-microsoft.png)
+
+Binnur gave a short talk about Microsoft's contributions to PostgreSQL, I managed to make some time to visit her in the booth and listen to her talk.
+If you are interested, you can check out her slides [here](https://1drv.ms/p/s!AvXiUlK14Fluhz3lnyQX6RUIjFk5).
+
+### Open Source Pledge by Sentry
+
+During our booth duty, we had a visit from [Chad Whitacre](https://www.linkedin.com/in/chadwhitacre/), the Head of Open Source at Sentry.
+He shared insights about the Open Source Pledge and their mission to support open source developers.
+
+Quoting from their [website](https://opensourcepledge.com/):
+
+> Pay your share
+> Whether you're a CEO, CFO, CTO, or just a dev, your company surely depends on Open Source software. It's time to pay the maintainers.
+>
+> Join the Pledge
+> Our companies feast at the Open Source table year after year. Through the Open Source Pledge, we pay the maintainers of the software we consume.
+> This prevents the maintainer burnout that flares up in high-profile security incidents such as XZ, Log4j, and Heartbleed.
+
+Take a look if you think this is a project you could contribute to or if you're a maintainer who might be eligible for compensation.
+
+### Postgres Happy Hour Poster
+
+Our booth was pretty busy with discussions mainly centered around our open source tools, [pgroll](https://github.com/xataio/pgroll), [pgstream](https://github.com/xataio/pgstream) and [pgzx](https://github.com/xataio/pgzx).
+After each discussion, before people left the booth, we made sure to invite them to our Postgres Happy Hour planned for the end of Day 3.
+
+We quickly noticed inviting people would be much easier if we had a poster. So, our lovely designer Elizabet quickly made one and we printed it out.
+
+![Postgres Happy Hour poster with our cute mascot Xumbo having a beer](/images/recap-oss-vienna/happy-hour-poster.png)
+
+Probably, this is why we actually managed to get more people that we expected at our happy hour. Keep reading for photos from the happy hour! 🍺
+
+### Open Source Maturity Report in Europe
+
+As part of Gabriele Columbro's [keynote](https://x.com/arungupta/status/1835579703677108397) he mentioned the [Open Source Maturity Report in Europe](https://www.linuxfoundation.org/research/world-of-open-source-eu-2024) prepared by The Linux Foundation.
+
+Directly quoting from the report:
+
+> For the past three years, LF Research has conducted a study on the adoption, opportunities, and perceptions of open source across Europe.
+> The trend is clear in 2024: the perceived value of open source continues to increase in the region, and stakeholders across sectors and industries can see the importance of investing in it.
+> This year's report identifies key sectors to channel this investment, the opportunity for the public sector to embrace open source for digital public goods, and how regulations are interacting with and responding to more widespread open source adoption and knowledge.
+> With insights taken from the 2024 World of Open Source survey and augmented by interviews with over a dozen experts working in open source, this report unpacks the current state of open source in Europe and highlights next steps to improve adoption, understanding, and regulation for open source as this technological space continues to mature.
+> Read the report for the full investigation into why open source has hit a watershed moment in Europe
+
+I would like to thank the authors for putting together such a comprehensive report:
+
+> Dr Mirko Boehm, Linux Foundation Europe
+> Cailean Osborne, Linux Foundation Europe
+> Adrienn Lawson, Linux Foundation Research
+> Foreword by Dr Wolfgang Gehring, Mercedes-Benz Tech Innovation GmbH
+
+The report is great and probably deserves its own blog post, but I will share the summary of the results.
+
+![Open Source Maturity Report in Europe](/images/recap-oss-vienna//open-source-maturity-first.png)
+
+- The understanding of digital sovereignty is evolving in Europe, with a higher emphasis on global collaboration to solve technological and organisational challenges.
+- Confidence in the security of OSS is high, with 73% in 2023 and 76% in 2024 believing OSS to be more secure than closed software.
+- 74% of individual respondents cite learning and personal development as key motivators for contributing to open source.
+- Mentorship programs are fundamental in bridging the gap for underrepresented groups, creating a more inclusive and diverse open source ecosystem.
+- The top three sectors that would benefit most from open source are IT (37%), government (36%), and higher education (30%).
+- Only 30% and 17% of organisations in the public and education sectors report having an open source strategy.
+- OSPOs are a key mechanism for fostering inter-organisational open source collaboration in the public sector.
+- 82% of respondents agree that software developed with public funds should be open source, as per the 'public money, public code' principle.
+- Open source is increasingly seen as critical digital infrastructure, with experts calling for long-term investments in people and ecosystems.
+- 43% of survey respondents believe AI / ML would benefit most from being open source, highlighting the growing importance of open and transparent Al development in Europe.
+- The EU AI Act's open source exception presents an opportunity for enhancing open collaboration on Al models, safety, & open data access.
+- The success of European startups is giving visibility to European talent and potential in open source Al innovation.
+
+It is great to see that people and organizations are trusting open source more and more, confidence in security of open source rising from 73% to 76% this year.
+The importance of mentorship programs is acknowledged and as a person who runs a group for [women in tech](https://x.com/kadinyazilimci), I couldn't agree more.
+One item I am adamant about is 'public money, public code' principle. I am happy to see that 82% of respondents agree with this. Public funds should be used for public goods and we must be able to access them.
+
+There is one clear message in the report that I think is important to mention: the need for openness for AI/ML is recognized.
+There were quite good discussions around this topic in the Open Source Summit, you can watch the recordings on [Youtube](https://www.youtube.com/watch?v=vsyhUd0RdS8&list=PLbzoR-pLrL6rC7SpO7MJCZm22Qp5ns3p-&pp=iAQB).
+
+![Open Source Maturity Report in Europe](/images/recap-oss-vienna//open-source-maturity-report.png)
+
+Quoting from the report:
+
+> This high ranking of AI / ML reflects the current spotlight on these technologies and presents an opportunity to explore the European emphasis on open source AI.
+> Several interviewees highlighted that open sourcing AI presents a path to prevent power concentration, build trust in AI development, and democratise the governance of this increasingly impactful technology.
+> Stefano Maffuli from the OSI argues that given its impact on everyday life ‘AI needs to be open’, and users and anyone affected by AI systems should have some control and agency over the technology.
+> If we fail to open source AI, ‘we risk concentrating powers in the hands of a few because of how the whole stack is unevenly distributed’, he explained.
+> However, currently, corporate secrecy shrouds impactful AI systems, undermining trust in responsible design, development, and governance.
+> The risk-based approach applied by the EU AI Act attempts to mitigate this issue.
+
+### Hiring board
+
+At some point, while walking around the booth area, I noticed a hiring board.
+At first, I used one of the sticky notes from the table to write my contact information as we are always looking for new talents to join our team.
+
+Then I realized, we need to up our game and make our hiring board more visible. Knowing, we have Elizabet is like a superpower, she delivered a cute poster for us (again 😊).
+
+![We are hiring!](/images/recap-oss-vienna/we-are-hiring.png)
+
+If you are looking for a job and think you would be a good fit for Xata, [apply here](https://xata.io/careers).
+
+## Day 2
+
+### Extension Ecosystem Summit & Xata Postgres Dinner
+
+On the second day my friend [Alastair Turner](https://www.linkedin.com/in/decodableminion/) visited me at the Xata booth.
+
+![Alastair and I at the booth](/images/recap-oss-vienna/alastair-gulcin.png)
+
+While I was showcasing our open source projects via the cutest stickers of each of them he noticed [pgzx](https://github.com/xataio/pgzx) which is our open source framework for creating Postgres extensions in Zig language.
+
+![Cute pgzx sticker](/images/recap-oss-vienna/pgzx-sticker.png)
+
+He mentioned that our common friend [Floor Drees](https://www.linkedin.com/in/floordrees/) is organizing an event on the Day 0 of [PGConf.EU](https://2024.pgconf.eu/) dedicated for Postgres extensions and he will be giving a talk about [pg_tde](https://github.com/Percona-Lab/pg_tde) there.
+And he suggested pgzx would fit perfectly for the extensions discussion as it allows developers to build Postgres extensions. I took his advice and contacted Floor, and soon after I was scheduled for giving a talk about pgzx at the [Extensions Ecosystem Summit](https://www.eventbrite.com/e/extension-ecosystem-summit-tickets-1022518730047).
+
+If you are heading Athens for PGConf.EU this year, join us at Extensions Ecosystem Summit sponsored by Tembo, Percona, Xata and Timescale.
+
+![Extensions Ecosystem Summit](/images/recap-oss-vienna/extensions-summit.png)
+
+And right after the summit, we are hosting our Xata Postgres Dinner, join us via registering [this form](https://5i8caik7lja.typeform.com/).
+
+![Join us for a Postgres Dinner in Athens](/images/recap-oss-vienna/athens-dinner.png)
+
+## Day 3
+
+On the day three, our Founder & CEO [Monica Sarbu](https://www.linkedin.com/in/monicasarbu) joined as at the booth.
+
+![Monica at the booth](/images/recap-oss-vienna/monica.jpg)
+
+By this time, I felt like we were known by everyone at the conference, some visited us multiple times, and brought their friends.
+Some said our booth is the cutest one at the conference. We even gave out some of our balloons 🎈
+
+![A new Xata fan with a Xumbo balloon](/images/recap-oss-vienna/girl-with-balloon.png)
+
+We were so excited for our happy hour and could not wait for evening to come!
+
+### The Cloud Native Computing Foundation
+
+We had a chance to chat with [Jake Pineda](https://www.linkedin.com/in/jake-p-8348127b/) from [The Cloud Native Computing Foundation (CNCF)](https://www.cncf.io/about/who-we-are/).
+
+Directly quoting from CNCF Charter:
+
+> The Foundation’s mission is to make cloud native computing ubiquitous. The CNCF Cloud Native Definition v1.0 says:
+> Cloud native technologies empower organizations to build and run scalable applications in modern, dynamic environments such as public, private, and hybrid clouds. Containers, service meshes, microservices, immutable infrastructure, and declarative APIs exemplify this approach.
+> These techniques enable loosely coupled systems that are resilient, manageable, and observable. Combined with robust automation, they allow engineers to make high-impact changes frequently and predictably with minimal toil.
+> The Cloud Native Computing Foundation seeks to drive adoption of this paradigm by fostering and sustaining an ecosystem of open source, vendor-neutral projects. We democratize state-of-the-art patterns to make these innovations accessible for everyone.
+
+So please visit their [website](https://www.cncf.io/) and explore the projects that interest you.
+
+I hope to visit KubeCon in 2025, happening on 1-4 April in London, UK. [Call for papers](https://events.linuxfoundation.org/kubecon-cloudnativecon-europe/program/cfp/) is open until 24 November.
+
+### Women and Non-Binary Lunch
+
+I mentioned my friend Binnur from Microsoft earlier, she came to our booth to took me to the Women and Non-Binary Lunch.
+Which was a great opportunity to meet like-minded people and talk about our experiences in tech and the challenges we face.
+
+I sincerely appreciate the diversity efforts and creating safe spaces for underrepresented groups in tech.
+Plus it had the best food in the whole conference, so it was at least a double win! 🍽️
+
+### Postgres Happy Hour
+
+🥁🥁🥁 Finally, the moment we were waiting for, the Postgres Happy Hour!
+
+Once the talks ended, we quickly packed up the booth and headed to the reception.
+
+![Party moments](/images/recap-oss-vienna/party-1.png)
+
+It was a great opportunity to relax and talk with people we met during the week.
+We got some of our customers joining us and got such a good feedback on our platform, and how they utilize Xata to build their products.
+
+![Some more party moments](/images/recap-oss-vienna/party-2.png)
+
+We talked about the future of Postgres and what new features are going to be released in the upcoming versions.
+Invited people to our Postgres Dinner in Athens. Overall, it was a great way to end the conference!
+
+## Conclusion
+
+If you kept reading until the end, I want to thank you! I tend to keep event posts longer than I should, but I hope you liked it.
+
+You can watch all the recordings on the [Linux Foundation's Youtube channel](https://www.youtube.com/@LinuxfoundationOrg), there is a playlist named [OSS EU 2024](https://www.youtube.com/watch?v=tIinl7r-FJI&list=PLbzoR-pLrL6rC7SpO7MJCZm22Qp5ns3p-&pp=iAQB) set for this event.
+Keynotes are listed as part of a dedicated playlist named [Keynotes @ OSS EU 2024](https://www.youtube.com/watch?v=xdFMKMcESLI&list=PLbzoR-pLrL6pwSxJqsghZ1XVNb7pngzJv&pp=iAQB).
+
+I truly enjoyed being part of OSS Europe and looking forward to attending the next one. If you're also planning to attend [next year's](https://events.linuxfoundation.org/open-source-summit-europe/) #OSSummit let me know!
