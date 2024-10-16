@@ -1,0 +1,82 @@
+---
+title: 'Trackstack improves query performance by 67% with Xata'
+description: 'Discover how Trackstack improved PostgreSQL query performance by 67 percent, saving 32 hours of developer time per month, after migrating from PlanetScale to Xata, a fully managed and serverless database solution.'
+image:
+  src: https://us-east-1.storage.xata.sh/uq2d57ppt77acjdd5ptct28claqh8c1g
+  alt: Case Study
+author: Cezzaine Zaher
+date: 10-16-2024
+tags: ['case-study', 'community']
+published: true
+slug: case-study-trackstack
+ogImage: https://us-east-1.storage.xata.sh/uq2d57qfhg4d1ill2ahaevavdrfnd9cs
+---
+
+<ArticleImage
+  src="https://us-east-1.storage.xata.sh/uq2d570nl53n5ssl5pv7p6140l9b6j9k"
+  width="800"
+  height="405"
+  alt="Savas labs hero image"
+  position="center"
+/>
+
+- **Company:** Trackstack
+- **Industry:** Music Management
+- **Location:** Global
+- **Size:** 5-10 employees
+
+[Trackstack](https://www.trackstack.app/) is a music management platform that began by streamlining the process of receiving, organizing, and managing music tracks for DJs, producers, and record labels. Initially centered around  a unified inbox for handling demos, promos, and track submissions, the platform quickly gained traction by helping professionals in the music industry improve workflow efficiency and build stronger relationships with artists. 
+
+Recognizing the evolving needs of its users, Trackstack has since broadened its mission beyond track management. Now positioned as an electronic music platform for career growth, Trackstack provides tools that empower users to enhance their careers and increase profitability. Inspired by successful community-building platforms like Circle and Orbit, Trackstack has integrated features focused on collaboration, community creation, and monetization. Users can now sell sample packs, organize their own communities, and leverage data-driven insights for career development.
+
+Trackstack has evolved from a specialized solution into a comprehensive platform that caters to the broader ambitions of music professionals. The platform’s advanced search and data management capabilities help users grow and that their needs for efficient track handling and data analysis are easily met.
+
+Trackstack’s expanding user base, which includes prominent figures like Jamie Jones and Bob Sinclair, underscores its rapid growth and adoption within the electronic music industry. As the platform continues to scale, it remains a key player in helping music professionals manage their careers while providing innovative tools that simplify and enhance music management and distribution.
+
+## Challenges and the task ahead
+
+As Trackstack’s user base grew to over 60,000 music professionals, the team began facing significant challenges with their existing database infrastructure. PlanetScale, their initial choice for managing large data volumes, could no longer keep up with Trackstack's rapid growth. Queries on large datasets took up to 6 seconds to load, causing significant delays for users who needed fast access to music libraries. This affected the responsiveness of Trackstack’s platform, leading to frustrations among DJs, producers, and label managers who rely on swift workflows.
+
+Additionally, managing the database infrastructure became an increasingly complex task for Trackstack’s small development team of three. With PlanetScale’s billing tied to metrics like rows read, branches created, and total storage volume, the team found it difficult to predict their database costs as they scaled.
+
+To continue growing while improving performance and managing costs, Trackstack needed a solution that could enhance query performance, simplify infrastructure management, provide predictable and scalable pricing, and free up developer time to focus on innovation and new feature development. Xata was also well-aligned with Trackstack’s future roadmap, offering advanced features like built-in search and aggregation APIs, which would enable Trackstack to develop new capabilities as their platform evolved.
+
+## Solution
+
+To overcome the performance and scalability challenges, Trackstack transitioned from PlanetScale to Xata, a fully managed, [serverless PostgreSQL database solution](https://xata.io/serverless-postgres). The migration provided Trackstack with significant improvements in speed, developer efficiency, and cost management.
+
+Xata’s serverless architecture eliminated the need for Trackstack’s developers to manage and adjust database resources manually to handle high-volume workloads. Previously, they faced issues like connection limits and performance degradation as the platform grew, forcing them to manually adjust configurations to optimize query execution times. By migrating to Xata, Trackstack no longer needed to worry about provisioning resources or tuning database settings to keep up with increasing demand. This shift allowed the team to focus on innovation and feature development, confident that Xata could efficiently scale with their growing data volumes without the need for constant monitoring and manual intervention. 
+
+Xata’s support for PostgreSQL also made the transition smoother by allowing Trackstack to retain their existing data structures. Additionally, Xata's simplified billing model—based on database cluster size rather than metrics like rows read or storage volume—made it easier for Trackstack to predict and control costs as their platform grew.
+
+> After moving to Xata, our largest query times dropped from 6 seconds to 2 seconds, which makes a huge difference to our users. Plus, the predictable pricing model has given us clarity and control over our database costs as we scale.
+> _Cameron Jenkinson, Co-Founder at Trackstack_
+
+## Implementation and architecture
+
+Migrating from PlanetScale to Xata required a carefully planned approach to avoid disruption, especially given the volume of data Trackstack manages. Xata’s  compatibility with PostgreSQL, allowed Trackstack to migrate without needing significant backend rewrites, making the transition simpler and faster.
+
+Xata’s serverless architecture was a natural fit with Trackstack’s AWS-based infrastructure, which relies heavily on Lambda functions. A major reason Trackstack chose Xata over other PostgreSQL competitors was its foundation on AWS Aurora, a proven, battle-tested solution for production workloads. As an experienced engineering team, Trackstack valued the reliability and scalability that Aurora provides, making it the clear choice over other 'instant DB' solutions that couldn’t offer the same level of robustness for serious production applications. 
+
+By selecting Xata, built on top of this industry-standard infrastructure, Trackstack felt assured that their database could handle increasing data volumes and complex queries without compromising on performance. The transition was smooth, and they were able to integrate Xata into their existing stack with minimal adjustments to their backend, allowing them to quickly move forward with feature development while maintaining confidence in the stability of their database.
+
+*How Xata fits into their existing tech stack*
+- **AWS-based architecture:** Trackstack’s backend runs on AWS, utilizing over 600 Lambda functions to manage workflows and music submissions. Xata’s serverless design fits naturally into this architecture, handling all database operations without the need for manual scaling.
+- **Search and aggregation APIs:** Xata’s built-in search and aggregation APIs powered advanced search functionality on Trackstack’s platform, significantly improving the efficiency of track searches and metadata analysis for DJs and producers. Trackstack’s dev team avoided the complexity and overhead of provisioning and maintaining Elasticsearch in-house. As co-founder Cameron Jenkinson notes, configuring and managing Elasticsearch could easily “eat up an entire Monday every week.”
+- **Dedicated cluster:** As Trackstack’s user base expanded, they moved to a Xata dedicated cluster, which eliminated the concurrency issues and performance bottlenecks they faced on PlanetScale.
+
+## Results and impact
+
+Since migrating to Xata, Trackstack has experienced significant improvements in both platform performance and operational efficiency:
+- **67% faster query speeds:** Trackstack reduced the average query time for their largest queries from 6 seconds to 2 seconds, greatly improving the user experience.
+- **32 hours saved per month:** Xata’s fully managed infrastructure freed up 8 hours of developer time each week, allowing the team to focus on building new features rather than maintaining the database.
+- **Simplified and predictable billing:** Xata’s cluster-based billing structure provided Trackstack with clear, predictable costs, making it easier to plan for growth without worrying about unpredictable charges for database metrics.
+
+> Xata not only improved our query performance by 67%, but also saved us significant developer time each week, allowing us to focus on feature development. The simplified billing structure has made it easier to manage costs as we grow.
+> _Cameron Jenkinson, Co-Founder at Trackstack_
+
+## Conclusion
+
+By switching to Xata, Trackstack was able to significantly improve their platform’s performance, reducing query times by 67% and freeing up over 30 hours of developer time each month. The predictable billing model also allowed them to scale without worrying about hidden costs or performance degradation. Xata’s seamless integration into Trackstack’s AWS-based architecture has empowered the team to focus on delivering new features, ensuring that their platform continues to meet the needs of music professionals worldwide.
+
+To learn more about Trackstack, visit [trackstack.app](https://www.trackstack.app/). If you’re interested in a [serverless PostgreSQL](https://xata.io/serverless-postgres) solution that can help streamline your own projects, you can [try Xata for free today](https://app.xata.io/signin?mode=signup).
