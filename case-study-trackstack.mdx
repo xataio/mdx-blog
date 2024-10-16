@@ -50,7 +50,7 @@ Xata’s serverless architecture eliminated the need for Trackstack’s develope
 Xata’s support for PostgreSQL also made the transition smoother by allowing Trackstack to retain their existing data structures. Additionally, Xata's simplified billing model—based on database cluster size rather than metrics like rows read or storage volume—made it easier for Trackstack to predict and control costs as their platform grew.
 
 > After moving to Xata, our largest query times dropped from 6 seconds to 2 seconds, which makes a huge difference to our users. Plus, the predictable pricing model has given us clarity and control over our database costs as we scale.
-> _Cameron Jenkinson, Co-Founder at Trackstack_
+> ––_Cameron Jenkinson, Co-Founder at Trackstack_
 
 ## Implementation and architecture
 
@@ -62,7 +62,7 @@ By selecting Xata, built on top of this industry-standard infrastructure, Tracks
 
 *How Xata fits into their existing tech stack*
 - **AWS-based architecture:** Trackstack’s backend runs on AWS, utilizing over 600 Lambda functions to manage workflows and music submissions. Xata’s serverless design fits naturally into this architecture, handling all database operations without the need for manual scaling.
-- **Search and aggregation APIs:** Xata’s built-in search and aggregation APIs powered advanced search functionality on Trackstack’s platform, significantly improving the efficiency of track searches and metadata analysis for DJs and producers. Trackstack’s dev team avoided the complexity and overhead of provisioning and maintaining Elasticsearch in-house. As co-founder Cameron Jenkinson notes, configuring and managing Elasticsearch could easily “eat up an entire Monday every week.”
+- **Search and aggregation APIs:** Xata’s built-in search and aggregation APIs powered advanced search functionality on Trackstack’s platform, significantly improving the efficiency of track searches and metadata analysis for DJs and producers. Trackstack’s dev team avoided the complexity and overhead of provisioning and maintaining Elasticsearch in-house. As co-founder Cameron Jenkinson notes, configuring and managing Elasticsearch could easily _“eat up an entire Monday every week.”_
 - **Dedicated cluster:** As Trackstack’s user base expanded, they moved to a Xata dedicated cluster, which eliminated the concurrency issues and performance bottlenecks they faced on PlanetScale.
 
 ## Results and impact
@@ -73,7 +73,7 @@ Since migrating to Xata, Trackstack has experienced significant improvements in 
 - **Simplified and predictable billing:** Xata’s cluster-based billing structure provided Trackstack with clear, predictable costs, making it easier to plan for growth without worrying about unpredictable charges for database metrics.
 
 > Xata not only improved our query performance by 67%, but also saved us significant developer time each week, allowing us to focus on feature development. The simplified billing structure has made it easier to manage costs as we grow.
-> _Cameron Jenkinson, Co-Founder at Trackstack_
+> ––_Cameron Jenkinson, Co-Founder at Trackstack_
 
 ## Conclusion
 
