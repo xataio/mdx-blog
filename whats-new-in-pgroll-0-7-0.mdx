@@ -13,9 +13,7 @@ slug: pgroll-0-7-0-update
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-update-0-6-0@2x.jpg
 ---
 
-[pgroll](https://xata.io/pgroll) is Xata's open-source schema migration tool for Postgres. The feature that sets it apart from other migration tools is its ability to perform multi-version schema migrations using the expand/contract pattern: while a migration is in progress, `pgroll` is able to present two versions of your database schema to client applications - the old version and the new. This means that client applications that depend on the old version of the database schema continue to function while the migration is in progress, making application deployments much simpler. Gone are the days of having to perform [complicated multi-step workflows](https://planetscale.com/docs/learn/handling-table-and-column-renames#how-to-rename-a-column-on-planetscale) to do simple schema changes without breaking clients.
-
-`pgroll` is open-source under the Apache-2.0 license and developed in the open on [GitHub](https://github.com/xataio/pgroll).
+[pgroll](https://xata.io/pgroll) is Xata's open-source schema migration tool for Postgres, built to enable zero downtime, reversible schema migrations using the expand/contract pattern. `pgroll` is open-source under the Apache-2.0 license and developed in the open on [GitHub](https://github.com/xataio/pgroll).
 
 Since the last pgroll [0.6.0 release](https://xata.io/blog/pgroll-0-6-0-update) in July 2024, we've introduced key updates aimed at solving common database migration challenges. Support for Postgres 17 ensures compatibility with the latest version, while improvements to backfill performance—now up to 80% faster—means less time waiting for migrations to start. Configurable batch sizes and delays offer developers more control over the migration process, optimizing performance and minimizing impact on their Postgres clusters. These enhancements make migrations faster, safer, and more efficient, especially for complex or large datasets.
 
