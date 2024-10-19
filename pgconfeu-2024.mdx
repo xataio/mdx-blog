@@ -80,9 +80,8 @@ A big thank you to all the booth staff as well! She visited every booth and coll
 
 ![She is telling her new rubber duck to stay still on her new wooden boat. Thanks for the gifts Álvaro!](/images/pgconfeu-2024/aida-duck-boat.jpg)
 
-Fun fact: We found out I was pregnant with her at PGConf.EU 2018 in Lisbon, so technically, she was there with us, just not born yet! But we won’t count that as her first PGConf 😄.
-
-I’m incredibly grateful to the organizers for providing daycare at the venue last year. It was a game-changer, allowing me to bring her along. It's a fantastic step towards making the Postgres community more inclusive for parents. However, due to low demand, there won’t be daycare at the venue this year. But I’m proud of the community for striving toward better standards of inclusivity, and I hope this option returns in the future.
+I’m incredibly grateful to the organizers for providing daycare at the venue last year. It was a game-changer, allowing me to bring her along. It's a fantastic step towards making the Postgres community more inclusive for parents.
+However, due to low demand, there won’t be daycare at the venue this year. But I’m proud of the community for striving toward better standards of inclusivity, and I hope this option returns in the future.
 
 ### Barbie talk
 
@@ -206,10 +205,46 @@ Her [keynote](https://www.postgresql.eu/events/pgconfeu2024/schedule/session/586
 
 I am looking forward to her talk and I am sure it will be a great start to the conference!
 
-### Postgres schema migrations using the expand/contract pattern
+### Talk: Postgres schema migrations using the expand/contract pattern
+
+On Thursday, October 24 at 10:30 - 11:20 my colleague [Andrew Farries](https://www.postgresql.eu/events/pgconfeu2024/schedule/speaker/1034-andrew-farries/) will be giving a [talk](https://www.postgresql.eu/events/pgconfeu2024/schedule/session/5871-postgres-schema-migrations-using-the-expandcontract-pattern/) about how to do Postgres schema migrations without breaking dependent applications by leveraging the expand/contract pattern.
+See the abstract below:
+
+> pgroll is a new open-source migration tool for Postgres that keeps multiple versions of a schema live during a migration, helping you roll out database schema changes without downtime.
+> Database schema migrations often pose significant challenges to developers, particularly when striving for zero downtime migrations.
+> There are many things that can go wrong:
+>
+> - Schema changes breaking client applications
+> - Unexpected table locking causing downtime
+> - Human mistakes causing data loss
+>
+> This talk presents a new approach to schema migrations using an 'expand/contract' pattern where multiple versions of a database schema are maintained during the migration, allowing old and new versions of client applications to run side-by-side during an application rollout.
+> Each version of the application sees the version of the database schema with which it is designed to work.
+>
+> The talks covers the ideas behind this approach, and the challenges to be overcome such as:
+>
+> - Limitations of existing tools and techniques for Postgres schema migrations.
+> - The use of Postgres views to present multiple versions of an underlying table.
+> - Backfilling data between old and new schema versions.
+> - Techniques to avoid unexpected table locking during migrations.
+>
+> Finally we introduce [pgroll](https://github.com/xataio/pgroll), an open-source tool that puts these ideas into practice and we show how it can be used to facilitate safe application rollouts across database schema changes.
+
+Schema migrations can be tricky. When done manually, it requires serious planning, managing locks, and having a rollback plan in case something goes wrong.
+[pgroll](https://github.com/xataio/pgroll) is the tool designed exactly for easing the pain of schema migrations and Andrew is leading the development of this tool at Xata.
+
+If you attend the talk, please let us know what you think about pgroll after the talk!
 
 ### Swiss Networking Dinner
 
+This year, in June, I had the pleasure of visiting beautiful Rapperswil to give a talk at [Swiss PGDay](https://www.pgday.ch/2024/).
+It was a great event and probably one of the best venues to give a talk at. Hope to make it to next year's event as well!
+
+And thanks to probably being a part of the conference, I got an invite to the Swiss Networking Dinner on Thursday evening.
+Thanks Tobias for the invite and [dbi services](https://www.dbi-services.com/) for sponsoring the dinner! I am looking forward to it!
+
 ### Simon
+
+
 
 ## Conclusion
