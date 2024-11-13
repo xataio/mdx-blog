@@ -37,7 +37,7 @@ What does that mean in practice? Painful patterns like:
 
 The expand-contract pattern tackles these challenges by splitting schema changes into two phases:
 
-1. Expand: Add new schema elements alongside the existing ones.
+1. **Expand:** Add new schema elements alongside the existing ones.
 2. **Contract:** Once all dependencies are updated, remove the old elements.
 
 This approach avoids downtime and allows old and new versions of your application to coexist while the migration is underway.
