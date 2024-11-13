@@ -1,0 +1,102 @@
+---
+title: Schema changes and the power of expand-contract with pgroll
+description: A pgconf EU talk recap covering how the expand-contract pattern and pgroll enable zero-downtime schema changes and rollbacks.
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-update-0-6-0@2x.jpg
+  alt: pgroll
+author: Cezzaine Zaher
+authorEmail: cezzaine@xata.io
+date: 11-13-2024
+tags: ['open-source', 'postgres', 'schema', 'migrations', 'pgroll', 'fpSchemaMigrations', 'oss']
+published: true
+slug: pgroll-expand-contract
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-update-0-6-0@2x.jpg
+---
+
+Schema changes have a reputation. They’re the kind of task that strikes fear into even the most seasoned developers. Downtime, breaking changes, and complex rollbacks can turn an otherwise smooth deployment into a high-stakes game of database roulette.
+But Xata Staff Software Engineer, Andrew Farries, has a better way. In his recent talk at PostgreSQL Conference Europe, he dives into PostgreSQL schema migrations using the expand-contract pattern, a strategy designed for zero-downtime, reversible schema changes. Xata built [pgroll](https://github.com/xataio/pgroll), a tool that automates this process while taking care of the tricky parts—like data backfills and versioned schemas.
+
+This blog recaps the highlights of Andrew’s talk which is [now available to watch](https://youtu.be/Wbg2HoYjLHU?si=j27BPwS4LWzxTQIA). 
+
+## Why are schema changes so hard?
+
+It boils down to three big challenges:
+
+- *Schema volatility:* Your schema evolves constantly as your application changes. It’s never “done.”
+- *Direct dependencies:* Most applications talk directly to the schema, leaving no room for abstraction.
+- *Risk:* Databases are at the core of your stack, making any changes potentially catastrophic.
+
+What does that mean in practice? Painful patterns like:
+
+- *Additive-only changes:* Adding fields to avoid breaking anything, but never cleaning up, leading to bloated, messy schemas.
+- *Locking nightmares:* Schema changes can block reads and writes, causing unexpected downtime.
+- *Environment mismatches:* Migrations that work fine in dev/staging but crash in prod.
+- *Rollback woes:* Some changes are hard to undo, making forward-only fixes the default (and dangerous) approach.
+
+## Enter expand-contract: The pattern that changes everything
+
+The expand-contract pattern tackles these challenges by splitting schema changes into two phases:
+
+1. Expand: Add new schema elements alongside the existing ones.
+2. Contract: Once all dependencies are updated, remove the old elements.
+
+This approach avoids downtime and allows old and new versions of your application to coexist while the migration is underway.
+
+### An example: upgrading an orders table
+
+Imagine a table with a simple `shipped` boolean column. Now you want a more flexible `status` enum to track states like `pending`, `shipped`, and `delivered`.
+
+A naive approach would involve a big bang migration:
+1. Stop the app.
+2. Add the new column.
+3. Backfill data.
+4. Deploy the updated app.
+
+This works but means downtime—and we all know how users love downtime, not to mention how costly this can be to your business.
+
+With expand-contract:
+
+1. Expand: Add the `status` column and dual-write to both `shipped` and `status`.
+2. Backfill: Migrate data from `shipped` to `status`.
+3. Contract: Update the app to use `status` exclusively, then drop `shipped`.
+
+The result? Zero downtime, no user disruptions, and a cleaner database.
+
+## pgroll: expand-contract built in
+
+Xata took this concept and turned it into a tool: [pgroll](https://github.com/xataio/pgroll), an open-source PostgreSQL schema changes tool designed for zero-downtime migrations.
+
+### Key features of pgroll
+
+1. **Expand-contract by default:** Every migration follows the expand-contract pattern, automating the process and eliminating manual complexity.
+2. **Versioned schemas:** Applications connect to “views” of the schema tailored to their version, so old and new versions can coexist seamlessly.
+3. **Database-level dual writes:** Triggers handle writing to both old and new fields, keeping this logic out of your application code.
+4. **Lock-safe migrations:** pgroll minimizes lock times by breaking changes into safe, incremental steps.
+5. **JSON-powered changes:** Define your schema changes declaratively, and let pgroll handle the details.
+
+### How it works
+A pgroll migration starts with an `expand` phase, where the new schema elements are introduced. Triggers ensure dual writes, and versioned views give each application a consistent schema. Once everything is updated, the `contract` phase removes old schema elements, leaving your database clean and ready.
+
+### Lessons learned
+
+From building pgroll, Xata discovered some key insights about modern schema migrations:
+1. **Expand-contract is powerful but tricky:** Tools like pgroll make it practical for teams of all sizes.
+2. **High-level abstractions matter:** Migration tools should operate above raw SQL, enabling finer control over lock durations and sequencing.
+3. **Data migrations should live in the database layer:** Keeping dual writes out of application code makes migrations safer and more maintainable.
+
+### The future of pgroll
+
+Currently at [version 0.7.0](https://xata.io/blog/pgroll-0-7-0-update), pgroll is already in production use at Xata, but the team is focused on scaling it further. Plans for version 1.0 include:
+
+- Better performance benchmarks for large datasets.
+- Improved support for multi-terabyte databases.
+- More tools for testing migrations safely in staging environments.
+
+
+## Ready to learn more?
+
+Watch the full video of Andrew’s talk to see pgroll in action
+
+<ArticleVideo platform="youtube" src="https://www.youtube.com/embed/Wbg2HoYjLHU?si=j27BPwS4LWzxTQIA" />
+
+Check out [pgroll on GitHub](https://github.com/xataio/pgroll) and give it a try. Whether you’re wrangling a messy legacy schema or preparing for your next big feature, pgroll lets you migrate your schema changes with confidence—and without downtime.
