@@ -31,7 +31,7 @@ What does that mean in practice? Painful patterns like:
 - **Additive-only changes:** Adding fields to avoid breaking anything, but never cleaning up, leading to bloated, messy schemas.
 - **Locking nightmares:** Schema changes can block reads and writes, causing unexpected downtime.
 - **Environment mismatches:** Migrations that work fine in dev/staging but crash in prod.
-- _Rollback woes:_ Some changes are hard to undo, making forward-only fixes the default (and dangerous) approach.
+- **Rollback woes:** Some changes are hard to undo, making forward-only fixes the default (and dangerous) approach.
 
 ## Enter expand-contract: The pattern that changes everything
 
