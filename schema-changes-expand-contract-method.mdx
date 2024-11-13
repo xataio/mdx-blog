@@ -22,7 +22,7 @@ This blog recaps the highlights of Andrew’s talk which is [now available to wa
 
 It boils down to three big challenges:
 
-- _Schema volatility:_ Your schema evolves constantly as your application changes. It’s never “done.”
+- _Schema volatility:_ Your schema evolves constantly as your application changes. It’s never "done."
 - _Direct dependencies:_ Most applications talk directly to the schema, leaving no room for abstraction.
 - _Risk:_ Databases are at the core of your stack, making any changes potentially catastrophic.
 
@@ -70,7 +70,7 @@ Xata took this concept and turned it into a tool: [pgroll](https://github.com/xa
 ### Key features of pgroll
 
 1. **Expand-contract by default:** Every migration follows the expand-contract pattern, automating the process and eliminating manual complexity.
-2. **Versioned schemas:** Applications connect to “views” of the schema tailored to their version, so old and new versions can coexist seamlessly.
+2. **Versioned schemas:** Applications connect to "views" of the schema tailored to their version, so old and new versions can coexist seamlessly.
 3. **Database-level dual writes:** Triggers handle writing to both old and new fields, keeping this logic out of your application code.
 4. **Lock-safe migrations:** pgroll minimizes lock times by breaking changes into safe, incremental steps.
 5. **JSON-powered changes:** Define your schema changes declaratively, and let pgroll handle the details.
