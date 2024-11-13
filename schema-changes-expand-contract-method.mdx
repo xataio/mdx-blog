@@ -58,7 +58,7 @@ This works but means downtime—and we all know how users love downtime, not to 
 With expand-contract:
 
 1. **Expand:** Add the `status` column and dual-write to both `shipped` and `status`.
-2. Backfill: Migrate data from `shipped` to `status`.
+2. **Backfill:** Migrate data from `shipped` to `status`.
 3. Contract: Update the app to use `status` exclusively, then drop `shipped`.
 
 The result? Zero downtime, no user disruptions, and a cleaner database.
