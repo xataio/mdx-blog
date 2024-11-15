@@ -1,0 +1,188 @@
+---
+title: 'Recap of PGConf.EU 2024 in Athens'
+description: 'My notes from PGConf.EU 2024 in Athens, Greece. Talks, extension summit, diversity committee meeting, Xata Postgres dinner, and more!'
+image:
+  src: https://us-east-1.storage.xata.sh/uq2d57g5hsgdo2ih1nnau2kdbpi6l05c
+  alt: 'PGConfEU 2024 in Athens'
+author: Gulcin Yildirim Jelinek
+authorEmail: gulcin@xata.io
+date: 11-15-2024
+tags:
+  [
+    'postgres',
+    'pgconfeu',
+    'pgeu',
+    'athens',
+    'xata',
+    'postgresql',
+    'postgres-dinner',
+    'postgres-europe',
+    'europe',
+    'extensions',
+    'extension-development',
+    'extension-summit',
+    'diversity-task-force',
+    'diversity-committee',
+    'pgroll',
+    'pgzx',
+    'zig',
+    'schema-migration',
+    'zero-downtime',
+    'zero-downtime-deployment',
+    'zero-downtime-schema-changes',
+    'zero-downtime-migrations',
+    'instant-rollback',
+    'rollback',
+    'uptime',
+    'pgconf',
+    'pgconf-eu',
+    'pgconf-europe',
+    'pgconf-2024',
+    'pgconf-2024-athens',
+    'cloudnativepg',
+    'kubernetes',
+    'p2d2',
+    'prague',
+    'fosdem'
+  ]
+published: true
+slug: pgconfeu-2024
+ogImage: https://us-east-1.storage.xata.sh/uq2d575fqbbtbk8h135drrsm2u27lu88
+---
+
+## PGConf.EU 2024 Recap
+
+We finished yet another PGConf.EU in Athens, Greece at the end of October.
+PGConf.EU is a very special conference for me, and I've written a blog post about it previously [here](https://xata.io/blog/pgconfeu-2024).
+
+Now that the conference is over, I'd like to share some more details about the conference, my experiences, and the talks I attended.
+
+## CloudNativePG Training
+
+Day O of PGConf.EU is when we do training sessions.
+My dear friends and former colleagues, Gabriele Bartolini and Leonardo Cecchi, held a [CloudNativePG training session](https://www.postgresql.eu/events/pgconfeu2024/schedule/session/5998-mastering-postgresql-in-kubernetes-with-cloudnativepg/).
+The training was about managing PostgreSQL databases within Kubernetes environments using the CloudNativePG operator.
+
+I've just stopped by to say hi to Gabriele and Leonardo and took a few photos and my colleague Andrew attended the training.
+We like CloudNativePG a lot at Xata, and if you are interested in learning more about it, I recommend checking out Gabriele's [blogs](https://www.gabrielebartolini.it/articles/) about it.
+And if you are using CloudNativePG, do not forget to give a star to the [CloudNativePG GitHub repository](https://github.com/cloudnative-pg/cloudnative-pg)!
+
+## PostgreSQL Europe Diversity Committee Meeting
+
+We had the first meeting of the PostgreSQL Europe Diversity Committee. Members of the committee (in alphabetical order) are:
+
+- Flavio Henrique Araque Gurgel
+- Floor Drees
+- Gülçin Yıldırım Jelínek
+- Jimmy Angelakos
+- Karen Jex
+- Stacey Haysler
+- Stefanie Janine Stölting
+- Valeria Kaplan
+
+We had a great time discussing the goals and plans for the Diversity Committee.
+
+The goals of the Diversity Committee are:
+
+- Broaden the diversity within the “active core” of the PostgreSQL community.
+- Enhance the visibility of underrepresented groups within the PostgreSQL community.
+- Raise awareness about the challenges faced by underrepresented groups within the community and highlight the value that diversity brings to it.
+- Address the “leaky pipeline” issue by lowering the entry barrier, improving the retention of newcomers, and increasing the engagement of the underrepresented individuals who are already part of the community.
+
+If you are interested in joining the Diversity Task Force, send us an email at diversity@postgresql.eu.
+
+## PostgreSQL Extension Ecosystem Summit & pgzx Talk
+
+After the PostgreSQL Europe Diversity Committee meeting, I've attended PostgreSQL Extension Ecosystem Summit, and gave talk about [pgzx](https://github.com/xataio/pgzx).
+
+Zig is a small and simple language that aims to be a "modern C" and make system-level code bases easier to maintain. It provides safe memory management, compilation time code execution (comptime), and a rich standard library.
+Zig can interact with C code quite naturally: it supports the C ABI, can work with C pointers and types directly, it can import header files and even translate C code to Zig code. Thanks to this interoperability, a Postgres extension written in Zig can, theoretically, accomplish anything that a C extension can.
+This means you get full power and a modern language and standard library to write your extension.
+
+While in theory you can write any extension in Zig that you could in C, in practice you will need to make sense of a lot of Postgres internals in order to know how to correctly use them from Zig.
+Also, Postgres makes extensive use of macros, and not all of them can be translated automatically.
+
+This is where pgzx comes in. pgzx is an open-source project that provides a framework for creating PostgreSQL extensions using the Zig programming language.
+The goal of pgzx is to simplify the process of writing PostgreSQL extensions by leveraging the simplicity and performance benefits of Zig.
+
+What pain points does pgzx address beyond simply enabling Zig development?
+- Easy Integration with Existing C Code: pgzx allows developers to work seamlessly with existing C code without imposing too many abstractions.
+- Handling Postgres C Macros: Postgres code relies heavily on C macros, which do not always compile in Zig. Rather than trying to create an abstraction layer over Postgres, the aim is to use the C Postgres API as much as possible. If limitations arise—such as macros not compiling or issues with type checking—we provide solutions through pgzx.
+- Collaborative Approach: pgzx fosters a collaborative integration with Postgres, working alongside it rather than imposing layers on top or acting against it.
+- A New Way to Build Postgres Extensions
+
+If you are interested in learning more, you can visit the [pgzx GitHub repository](https://github.com/xataio/pgzx) and take a look at the sample [extensions](https://github.com/xataio/pgzx/tree/main/examples) we've built with it.
+
+You can find my slides [here](https://github.com/tembo-io/tembo-labs/blob/main/extensions-ecosystem-summit/pgzx_gulcin.pdf) and all other talks from the summit [here](https://github.com/tembo-io/tembo-labs/tree/main/extensions-ecosystem-summit).
+
+## Xata Postgres Dinner
+
+After the Extension Ecosystem Summit, I rushed to the restaurant where we hosted the Xata Postgres Dinner.
+I even had a bit of time to decorate, thanks to the help of friends who arrived early!
+
+We booked the entire floor for 70 people, and everyone showed up!
+I want to extend a personal thank-you to each attendee. Sharing a nice meal and a few drinks is, in my opinion, the best way to kick off a conference.
+
+Special thanks as well to the amazing staff at Oroscopo Restaurant for their kindness and excellent service in hosting us.
+
+## Andrew's Talk: Postgres Schema Migrations using the Expand/Contract Pattern
+
+My colleague Andrew presented his talk about doing Postgres schema changes without downtime using the expand/contract pattern.
+Our open source tool [pgroll](https://github.com/xataio/pgroll) implements the expand/contract pattern and offers safe and reversible schema changes for PostgreSQL by serving multiple schema versions simultaneously.
+It takes care of the complex migration operations to ensure that client applications continue working while the database schema is being updated.
+pgroll ensures that changes are applied without locking the database, and that both old and new schema versions work at the same time (even when breaking changes are being made!).
+This removes risks related to schema changes, and greatly simplifies client application rollout, also allowing for instant rollbacks.
+
+If you are interested in learning more, check out our blog post about the talk [here](https://xata.io/blog/pgroll-expand-contract).
+The video of the talk is also available [here](https://www.youtube.com/watch?v=Wbg2HoYjLHU).
+
+Already using pgroll? Do not forget to give a star to the [pgroll GitHub repository](https://github.com/xataio/pgroll).
+
+## Favorite Talks
+
+I attended a few talks and some I watched later on. Here are my top 10 talks, ordered by speaker's names.
+
+- Andres Freund - [NUMA vs PostgreSQL](https://www.youtube.com/watch?v=V75KpACdl6E)
+- Bilge Ince - [Integrating AI with Postgres: Opportunities, Challenges, and Future Possibilities](https://www.youtube.com/watch?v=jBR0VVnu3cc)
+- Euler Taveira - [Speeding up logical replication setup](https://www.youtube.com/watch?v=LPtmM2Dkdvg)
+- Jonathan S. Katz - [Dissimilarity search; implementing in-memory vector search algorithms to PostgreSQL](https://www.youtube.com/watch?v=XeJIo8Mo66g)
+- Louise Grandjonc - [A Deep Dive into Postgres Statistics](https://www.youtube.com/watch?v=ApAClPFJ_rU)
+- Rafia Sabih - [PostgreSQL Executor: Executing your execution plan](https://www.youtube.com/watch?v=jFlVjmlicy4)
+- Robert Haas - [Incremental Backup](https://www.youtube.com/watch?v=F_uqARRaqNw)
+- Sena Güngör Tavukçuoğlu - [Smooth Sailing; How We Tackled PostgreSQL Migration Challenges from CentOS to Ubuntu](https://www.youtube.com/watch?v=LFHI58JCm0Q)
+- Tomas Vondra - [Performance Archaeology](https://www.youtube.com/watch?v=3_CnBU7QC6g)
+- Valeria Kaplan - [connection_builder for PostgreSQL community](https://www.youtube.com/watch?v=SwjN9fhspTg)
+
+## Upcoming conferences and PostgreSQL Event Calendar
+
+We have 11 months until PGConf.EU 2025 but you don't have to wait that long to meet Postgres people!
+
+Here are some of the Postgres events I follow and plan to attend some of them:
+
+- [PGDay/MED 2024](https://2024.pgdaymed.org/) - Napoli, Italy - December 5, 2024 (CfP is closed but you can still sponsor)
+- [CERN PGDay 2025](https://indico.cern.ch/event/1471762/) - Geneva, Switzerland - January 17, 2025 (talk proposals until December 7, 2024)
+- [Prague PostgreSQL Developer Day 2025](https://p2d2.cz/) - Prague, Czech Republic - January 28-29, 2025 (talk and training proposals until November 23, 2024)
+- [FOSDEM PGDay 2025](https://2025.fosdempgday.org/) - Brussels, Belgium - January 31, 2025 (talk proposals until November 29, 2024)
+- [FOSDEM Postgres Devroom](https://fosdem.org/2025/) - Brussels, Belgium - February 1-2, 2025 (Postgres devroom will be half-day, 4 talks)
+- [PostgreSQL at SCaLE22x](https://www.postgresql.org/about/event/postgresqlscale22x-2517/) - Pasadena, California, USA - March 6-7, 2025 (CfP is closed but you can still sponsor)
+- [Nordic PGDay 2025](https://2025.nordicpgday.org/) - Copenhagen, Denmark - March 18, 2025 (talk proposals until December 31, 2024)
+- [pgDay Paris 2025](https://2025.pgday.paris/) - Paris, France - March 20, 2025 (talk proposals until December 31, 2024)
+- [PostgreSQL Development Conference 2025](https://2025.pgconf.dev/) - Montréal, Canada - May 13-16, 2025 (talk proposals until January 1, 2025)
+
+And if this list is not enough, you can always check the [PostgreSQL Event Calendar](https://ics.postgresql.life/) for more.
+
+## Summary
+
+PGConf.EU 2024 is over, and it was a blast! I heard it will be somewhere colder next year, and I'm already looking forward to it.
+
+Until then, we can watch all the sessions from PGConf.EU 2024 on [YouTube](https://youtube.com/playlist?list=PLF36ND7b_WU4QL6bA28NrzBOevqUYiPYq&si=-fNTJwrxW4o0jtw3).
+Happy watching!
+
+
+
+
+
+
+
+
+
