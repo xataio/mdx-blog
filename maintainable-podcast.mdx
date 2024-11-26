@@ -2,7 +2,7 @@
 title: 'Maintaining Postgres for Modern Workloads'
 description: 'I was invited to the Maintainable Podcast hosted by Robby Russell. We talked about what makes a software maintainable and naturally we also talked about Postgres.'
 image:
-  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/insert-image.png
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/maintainable-postgres-podcast@2x.png
   alt: Maintaining Postgres for Modern Workloads
 author: Gulcin Yildirim Jelinek
 authorEmail: gulcin@xata.io
@@ -29,7 +29,7 @@ tags:
   ]
 published: true
 slug: maintainable-postgres-podcast
-ogImage: https://us-east-1.storage.xata.sh/insert-image
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/maintainable-postgres-podcast@2x.png
 ---
 
 ## Podcast Appearance: Maintainable Podcast 🎙
@@ -135,7 +135,7 @@ CREATE TABLE employees (
     CONSTRAINT age_job_check CHECK (
         (job_title = 'Manager' AND age >= 30) OR
         (job_title = 'Intern' AND age <= 25)
-    )    
+    )
 );
 ```
 
@@ -149,6 +149,7 @@ CREATE TABLE products (
     name TEXT NOT NULL
 );
 ```
+
 **UNIQUE constraints**
 
 You can ensure columns can't contain duplicate values.
@@ -166,7 +167,7 @@ And keep using foreign keys (`REFERENCES`) to ensure referential integrity.
 
 ### Configuration tuning
 
-With PostgreSQL, configuration is key. 
+With PostgreSQL, configuration is key.
 
 A common practice is to evaluate the base configuration and tune it based on the system's specific workload.
 I think this is one of the first things any database consultant do. Considering there are over 350 settings, it can be overwhelming to know where to start.
@@ -188,8 +189,8 @@ For example, if you are using a timestamp column to order your data, you can sha
 ## Bringing vector workloads to Postgres
 
 During the conversation, Robby asked about my recent interests with Postgres and I mentioned [pgvector](https://github.com/pgvector/pgvector).
-Postgres itself does not have vector capabilities and the pgvector extension brought vector data types and new index types such as IVFFlat and HNSW. 
-This is interesting to me, as now we can consider Postgres with pgvector as a vector database. 
+Postgres itself does not have vector capabilities and the pgvector extension brought vector data types and new index types such as IVFFlat and HNSW.
+This is interesting to me, as now we can consider Postgres with pgvector as a vector database.
 
 I gave a few talks about pgvector and building RAG applications with Postgres and pgvector, and if you are interested in this topic, you can find the slides [here](https://slides.com/apatheticmagpie/pgvector-and-rag-applications) and [here](https://p2d2.cz/files/p2d2-vectors-gulcin.pdf).
 
@@ -199,12 +200,12 @@ With or without pgvector, I also think the extensibility aspect of Postgres is s
 
 We discussed how automation ties directly to software maintainability. I'm a strong advocate for automating any process that is repeatable.
 Back in the days before automation became the norm, I worked in database and sysadmin teams where most tasks relied on manually running scripts and cron jobs.
-Then tools like Ansible emerged, and I immediately embraced the shift.  
+Then tools like Ansible emerged, and I immediately embraced the shift.
 
 The concept of **Infrastructure as Code** resonated with me deeply.
-It allowed me to grow from a traditional DBA into a DBA equipped with a toolbelt for automating every database-related task—provisioning, deploying, tuning, scaling, setting up replication, upgrading, configuring backup policies, and monitoring.  
+It allowed me to grow from a traditional DBA into a DBA equipped with a toolbelt for automating every database-related task—provisioning, deploying, tuning, scaling, setting up replication, upgrading, configuring backup policies, and monitoring.
 
-This is where YAML became my favorite. Its role in modern DevOps practices is central, simplifying complex configurations and making automation approachable.  
+This is where YAML became my favorite. Its role in modern DevOps practices is central, simplifying complex configurations and making automation approachable.
 
 One of the projects I’m particularly proud of is [Trusted Postgres Architect (TPA)](https://github.com/EnterpriseDB/tpa), which I helped develop.
 Now open-sourced under a GPLv3 license, it taught me invaluable lessons about designing automation for repetitive tasks, understanding use cases, and creating solutions that streamline database operations.
@@ -215,19 +216,9 @@ At the end of the conversation, we talked about inclusivity in tech communities.
 I am involved in a few communities to promote diversity and inclusion in tech. One of them is [Kadin Yazilimci](https://x.com/kadinyazilimci), which is a community for women in tech in Turkey that I co-founded and actively involved in for the past 10 years.
 We organize an annual conference called [Diva: Dive into AI](https://divaconf.com), focused on developments in the field of AI.
 But our aim is creating a conference experience that pushes the boundaries of what a tech conference can be in terms of inclusivity, diversity, and accessibility.
-We are looking for sponsors to support us in making this happen. If you are interested in sponsoring the conference, please get in touch at diva@kadinyazilimci.com 
+We are looking for sponsors to support us in making this happen. If you are interested in sponsoring the conference, please get in touch at diva@kadinyazilimci.com
 
 ## Conclusion
 
 I think there is no end to maintainability, you can always keep improving the system! And I enjoyed our discussion with Robby on the Maintainable Podcast.
 If you are interested in listening to more episodes, you can find them [here](https://maintainable.fm/episodes).
-
-
-
-
-
-
-
-
-
-
