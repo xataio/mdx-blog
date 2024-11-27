@@ -1,6 +1,6 @@
 ---
 title: 'Maintaining Postgres for Modern Workloads'
-description: 'I was invited to the Maintainable Podcast hosted by Robby Russell. We talked about what makes a software maintainable and naturally we also talked about Postgres.'
+description: 'I was invited to the Maintainable Podcast hosted by Robby Russell. We talked about what makes software maintainable and naturally we also talked about Postgres.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/maintainable-postgres-podcast@2x.png
   alt: Maintaining Postgres for Modern Workloads
@@ -35,21 +35,27 @@ ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/maintaina
 ## Podcast Appearance: Maintainable Podcast 🎙
 
 I was invited to the [Maintainable Podcast](https://maintainable.fm) hosted by Robby Russell.
-We talked about what makes a software maintainable and naturally we also talked about Postgres.
+We talked about what makes software maintainable and naturally we also talked about Postgres.
 
 I will share some of the highlights of our conversation in this blog post.
-🎧 If you prefer listening, you can find the episode [here](https://maintainable.fm/episodes/gulcin-yildirim-jelinek-maintaining-postgres-for-modern-workloads).
+🎧 If you prefer listening, you can find the episode on [maintainable.fm](https://maintainable.fm/episodes/gulcin-yildirim-jelinek-maintaining-postgres-for-modern-workloads).
 
-## What makes a software maintainable?
+[![Maintaining Postgres for Modern Workloads](/images/maintainable-gulcin.jpeg)](https://maintainable.fm/episodes/gulcin-yildirim-jelinek-maintaining-postgres-for-modern-workloads)
 
-As the name of the podcast suggests, the focus is on what makes a software maintainable. There are many aspects to it, and we touched on a few of them.
+## What makes software maintainable?
+
+As the name of the podcast suggests, the focus is on what makes software maintainable. There are many aspects to it, and we touched on a few of them.
 
 Maintaining software isn’t just about keeping it running; it’s about making it easy to understand, modify, and extend so we can "repair" it when something goes wrong.
 And all this "repairing" should be done in a way that is sustainable in the long run.
 
+### Onboarding new contributors
+
 But first, we need to onboard people to the project. A well-maintained software should be easy to take ownership of and simple for newcomers to join.
 This includes good documentation. Code comments, API documentation, a developer/contributor guide, the README, and user documentation (e.g., how to create a record or generate a report).
 Also, details on API endpoints, parameters, responses, potential error codes, examples of API requests and responses and descriptions of edge cases etc.
+
+### Build and deployment process
 
 Another aspect is the build and deployment process (CI/CD, e.g., Github Actions).
 How long does it take to develop new features? Is it easy to add support for another platform or create integrations? And if the software has an API, how well-maintained is it?
@@ -57,11 +63,15 @@ How long does it take to develop new features? Is it easy to add support for ano
 Is it easy to install this software? Ideally, installation should be straightforward and not require a lot of manual steps. And all of this should be documented.
 If there are any dependencies, they should be easy to install and also documented.
 
+### Issue management and project sustainability
+
 The users should be able to easily raise issues and those issues should be triaged quickly.
 If you open a ticket and don’t receive feedback within a month or two, you’d likely assume the project isn’t being actively maintained.
 
 Another question every major project should ask is: What would happen if the lead developer left today?
 Would the project continue smoothly or everything would come to a halt?
+
+### Communication
 
 Another critical factor is how communication happens within the project, both internally and with users and external contributors.
 I think many open-source projects lose contributors due to how they manage human involvement and their reactions to contributors.
@@ -221,4 +231,4 @@ We are looking for sponsors to support us in making this happen. If you are inte
 ## Conclusion
 
 I think there is no end to maintainability, you can always keep improving the system! And I enjoyed our discussion with Robby on the Maintainable Podcast.
-If you are interested in listening to more episodes, you can find them [here](https://maintainable.fm/episodes).
+If you are interested in listening to more episodes, you can find them on [maintainable.fm](https://maintainable.fm/episodes).
