@@ -1,0 +1,234 @@
+---
+title: 'Maintaining Postgres for Modern Workloads'
+description: 'I was invited to the Maintainable Podcast hosted by Robby Russell. We talked about what makes software maintainable and naturally we also talked about Postgres.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/maintainable-postgres-podcast@2x.png
+  alt: Maintaining Postgres for Modern Workloads
+author: Gulcin Yildirim Jelinek
+authorEmail: gulcin@xata.io
+date: 11-27-2024
+tags:
+  [
+    'postgres',
+    'postgresql',
+    'podcast',
+    'legacy',
+    'database',
+    'database-maintenance',
+    'maintenance',
+    'maintainable',
+    'system-maintenance',
+    'system-design',
+    'dba',
+    'database-administrator',
+    'database-engineer',
+    'database-developer',
+    'pgvector',
+    'robby-russell',
+    'database-architect'
+  ]
+published: true
+slug: maintainable-postgres-podcast
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/maintainable-postgres-podcast@2x.png
+---
+
+## Podcast Appearance: Maintainable Podcast 🎙
+
+I was invited to the [Maintainable Podcast](https://maintainable.fm) hosted by Robby Russell.
+We talked about what makes software maintainable and naturally we also talked about Postgres.
+
+I will share some of the highlights of our conversation in this blog post.
+🎧 If you prefer listening, you can find the episode on [maintainable.fm](https://maintainable.fm/episodes/gulcin-yildirim-jelinek-maintaining-postgres-for-modern-workloads).
+
+[![Maintaining Postgres for Modern Workloads](/images/maintainable-gulcin.jpeg)](https://maintainable.fm/episodes/gulcin-yildirim-jelinek-maintaining-postgres-for-modern-workloads)
+
+## What makes software maintainable?
+
+As the name of the podcast suggests, the focus is on what makes software maintainable. There are many aspects to it, and we touched on a few of them.
+
+Maintaining software isn’t just about keeping it running; it’s about making it easy to understand, modify, and extend so we can "repair" it when something goes wrong.
+And all this "repairing" should be done in a way that is sustainable in the long run.
+
+### Onboarding new contributors
+
+But first, we need to onboard people to the project. A well-maintained software should be easy to take ownership of and simple for newcomers to join.
+This includes good documentation. Code comments, API documentation, a developer/contributor guide, the README, and user documentation (e.g., how to create a record or generate a report).
+Also, details on API endpoints, parameters, responses, potential error codes, examples of API requests and responses and descriptions of edge cases etc.
+
+### Build and deployment process
+
+Another aspect is the build and deployment process (CI/CD, e.g., Github Actions).
+How long does it take to develop new features? Is it easy to add support for another platform or create integrations? And if the software has an API, how well-maintained is it?
+
+Is it easy to install this software? Ideally, installation should be straightforward and not require a lot of manual steps. And all of this should be documented.
+If there are any dependencies, they should be easy to install and also documented.
+
+### Issue management and project sustainability
+
+The users should be able to easily raise issues and those issues should be triaged quickly.
+If you open a ticket and don’t receive feedback within a month or two, you’d likely assume the project isn’t being actively maintained.
+
+Another question every major project should ask is: What would happen if the lead developer left today?
+Would the project continue smoothly or everything would come to a halt?
+
+### Communication
+
+Another critical factor is how communication happens within the project, both internally and with users and external contributors.
+I think many open-source projects lose contributors due to how they manage human involvement and their reactions to contributors.
+
+## Working with legacy databases
+
+We talked about how I started working with databases and that took me to the topic of legacy databases.
+
+I started my career writing SQL scripts (SQL Developer), working at the largest private hospital in Turkey, and they were using Oracle.
+I remember the terror I felt looking at the stored procedures, some of which were pages long. Making changes without breaking anything was almost impossible.
+The names of tables and columns were unclear, and there was no consistent naming convention. Different departments had their own ways of using the database, and documentation was almost non-existent.
+While I don’t have much experience with legacy code per se, I certainly encountered legacy databases that hosted almost all of the business logic.
+Some queries, like those used for daily reporting, took forever to run, and people were rightfully terrified to make any changes.
+
+Later, I worked in banks, one of which was storing data in DB2. The privileges were extremely restrictive, and every action was logged for audit reasons.
+It was not uncommon to get a call from the security department for querying specific tables more than a few times a day 👮
+
+Up until I discovered Postgres, I thought databases were meant to be scary; nothing could be changed easily, and individuals had almost no control over it.
+Then I remember starting with Postgres, the first startup I worked for, back in 2012, and how easy and transparent everything felt after working with legacy databases.
+In my opinion, PostgreSQL has the best documentation available, and it’s my go-to resource whenever I need to learn anything related to Postgres to this day.
+It made everything so much easier.
+
+That said, working with older databases has its own expected challenges.
+If you are still using Postgres 11, you are missing out on important security patches and performance improvements, such as better statistics and improvements related to vacuum operations.
+Keeping your database up-to-date is essential, and the performance benefits alone make it worth the effort.
+
+## Improving database maintainability
+
+I think the blog would be missing out if I didn't mention a few methods commonly used to improve database maintainability.
+As a former DBA and Database Consultant, I have done these things many times.
+
+### Query optimization
+
+Monitoring and analyzing the most frequently running queries and the longest-running queries can give you an immediate focus on what needs attention.
+`EXPLAIN ANALYZE` command can help you identify inefficient query plans and then you can refactor queries.
+It could be as simple as replacing `SELECT *` with specific column selections and adding composite indexes for frequently used filters.
+Query tuning is also quite satisfying, as you can see the immediate impact of your changes, improving a query from 3000 ms to 30 ms is an amazing feeling!
+
+### Schema refactoring
+
+The legacy database schemas can be a tangled mess with excessive redundancy and unclear relationships between tables.
+It is possible to normalize the schema, break down large tables into more manageable, logically designed ones, and use foreign keys to enforce referential integrity.
+This not only improves data consistency but also simplifies future maintenance.
+
+### Data validation
+
+It is important to validate data in the database layer and not only in the application layer. Postgres has different ways to validate data.
+
+**CHECK constraints**
+
+You can enforce rules on the data at the column level (column constraints) or on the table level (table constraints, not tied to a particular column can be used to check multiple columns).
+
+Let's check if the age is greater than 18, and write it as a column constraint:
+
+```sql
+CREATE TABLE employees (
+    id integer PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY,
+    age integer CONSTRAINT age_check CHECK (age > 18)
+);
+```
+
+So, we have a age_check constraint to ensure employees are older than 18, that is a column constraint.
+And we can create a table level constraint (`age_job_check`) that uses age and job_title columns and ensures a Manager is at least 30 years old and an Intern is at most 25 years old.
+The `age_job_check` constraint is a table constraint as it is not tied to one particular column (not part of the column definition) and it checks multiple columns within the table.
+
+```sql
+CREATE TABLE employees (
+    id integer PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY,
+    age integer CONSTRAINT age_check CHECK (age > 18),
+    job_title TEXT NOT NULL,
+    CONSTRAINT age_job_check CHECK (
+        (job_title = 'Manager' AND age >= 30) OR
+        (job_title = 'Intern' AND age <= 25)
+    )
+);
+```
+
+**NOT NULL constraints**
+
+You can ensure columns can't contain NULL values.
+
+```sql
+CREATE TABLE products (
+    id integer PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY,
+    name TEXT NOT NULL
+);
+```
+
+**UNIQUE constraints**
+
+You can ensure columns can't contain duplicate values.
+
+```sql
+CREATE TABLE products (
+    id integer PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY,
+    name TEXT UNIQUE
+);
+```
+
+There are more constraints you can use and I should probably write another blog post talking about data validation in Postgres.
+And validation is not only about creating constraints, you can start with creating columns with the right data types and default values.
+And keep using foreign keys (`REFERENCES`) to ensure referential integrity.
+
+### Configuration tuning
+
+With PostgreSQL, configuration is key.
+
+A common practice is to evaluate the base configuration and tune it based on the system's specific workload.
+I think this is one of the first things any database consultant do. Considering there are over 350 settings, it can be overwhelming to know where to start.
+
+Postgres documentation is a great resource to learn the different settings and their impact.
+I recommend starting with the [Resource Consumption](https://www.postgresql.org/docs/current/runtime-config-resource.html) section of the [Server Configuration](https://www.postgresql.org/docs/current/runtime-config.html) section.
+
+### Scalability improvements
+
+I think it is always a good idea and probably the easiest is to distribute the reads.
+Make use of read-only replicas (streaming replication) to offload the read operations from the primary database.
+And also consider a connection pooler like PgBouncer to manage connections to the database.
+
+Distributing writes get a little more tricky, there are extensions like PGD, that is optimized for distributing writes with a multiple primary setup and a good conflict resolution strategy.
+
+Some people benefit from sharding the data and if you have a natural way to do so, it might be a good idea.
+For example, if you are using a timestamp column to order your data, you can shard the data based on the timestamp column.
+
+## Bringing vector workloads to Postgres
+
+During the conversation, Robby asked about my recent interests with Postgres and I mentioned [pgvector](https://github.com/pgvector/pgvector).
+Postgres itself does not have vector capabilities and the pgvector extension brought vector data types and new index types such as IVFFlat and HNSW.
+This is interesting to me, as now we can consider Postgres with pgvector as a vector database.
+
+I gave a few talks about pgvector and building RAG applications with Postgres and pgvector, and if you are interested in this topic, you can find the slides [here](https://slides.com/apatheticmagpie/pgvector-and-rag-applications) and [here](https://p2d2.cz/files/p2d2-vectors-gulcin.pdf).
+
+With or without pgvector, I also think the extensibility aspect of Postgres is something fascinating in general.
+
+## Automation
+
+We discussed how automation ties directly to software maintainability. I'm a strong advocate for automating any process that is repeatable.
+Back in the days before automation became the norm, I worked in database and sysadmin teams where most tasks relied on manually running scripts and cron jobs.
+Then tools like Ansible emerged, and I immediately embraced the shift.
+
+The concept of **Infrastructure as Code** resonated with me deeply.
+It allowed me to grow from a traditional DBA into a DBA equipped with a toolbelt for automating every database-related task—provisioning, deploying, tuning, scaling, setting up replication, upgrading, configuring backup policies, and monitoring.
+
+This is where YAML became my favorite. Its role in modern DevOps practices is central, simplifying complex configurations and making automation approachable.
+
+One of the projects I’m particularly proud of is [Trusted Postgres Architect (TPA)](https://github.com/EnterpriseDB/tpa), which I helped develop.
+Now open-sourced under a GPLv3 license, it taught me invaluable lessons about designing automation for repetitive tasks, understanding use cases, and creating solutions that streamline database operations.
+
+## Inclusivity in tech communities
+
+At the end of the conversation, we talked about inclusivity in tech communities.
+I am involved in a few communities to promote diversity and inclusion in tech. One of them is [Kadin Yazilimci](https://x.com/kadinyazilimci), which is a community for women in tech in Turkey that I co-founded and actively involved in for the past 10 years.
+We organize an annual conference called [Diva: Dive into AI](https://divaconf.com), focused on developments in the field of AI.
+But our aim is creating a conference experience that pushes the boundaries of what a tech conference can be in terms of inclusivity, diversity, and accessibility.
+We are looking for sponsors to support us in making this happen. If you are interested in sponsoring the conference, please get in touch at diva@kadinyazilimci.com
+
+## Conclusion
+
+I think there is no end to maintainability, you can always keep improving the system! And I enjoyed our discussion with Robby on the Maintainable Podcast.
+If you are interested in listening to more episodes, you can find them on [maintainable.fm](https://maintainable.fm/episodes).
