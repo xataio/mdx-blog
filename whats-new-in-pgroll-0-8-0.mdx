@@ -1,0 +1,396 @@
+---
+title: pgroll 0.8.0 update
+description: Learn about the latest changes in pgroll in the v0.8.0 release as we add new CLI commands, expand what's possible with multi-column keys and constraints and add performance benchmarks
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-update-0-6-0@2x.jpg
+  alt: pgroll
+author: Andrew Farries
+authorEmail: andrew@xata.io
+date: 11-28-2024
+tags: ['open-source', 'postgres', 'schema', 'migrations', 'pgroll', 'fpSchemaMigrations', 'oss']
+published: true
+slug: pgroll-0-8-0-update
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-update-0-6-0@2x.jpg
+---
+
+In this latest installment of our `pgroll` update series of posts, we'll take a look at the changes that have gone into the most recent `v0.8` release of `pgroll`.
+
+[pgroll](https://github.com/xataio/pgroll) is our open-source schema migration tool for Postgres that provides a couple of unique features that set it apart from other schema migration tools out there:
+
+- **Multi-version**: For every supported operation, `pgroll` produces a new version of your database schema, allowing both old and new versions of client applications to work with the version of the schema they expect. This makes application rollouts much easier; as long as each application is configured to read the right schema version, applications aren't impacted by incompatible schema changes. Behind the scenes, `pgroll` takes care of the data backfills and dual writes to make this work seamlessly.
+- **Safe locking**: By specifying migrations declaratively in JSON, `pgroll` is able to take the high-level migration description and implement it in a series of steps that avoid taking long-lived exclusive locks on the affected objects. Offloading lock-awareness to the migration tool removes a large burden on migration authors and eliminates a large class of migration-related downtime problems.
+
+Full documention for `pgroll` can be found in the [documentation section](https://github.com/xataio/pgroll/tree/main/docs) of the [pgroll Github repository](https://github.com/xataio/pgroll).
+
+`pgroll` `v0.8` was a large release with lots of new features, so let's dive in and see what's new.
+
+## What's new in pgroll v0.8.0
+
+The release includes three new commands for the `pgroll` CLI, new support for working with multi-column primary keys and constraints and some initial work on performance benchmarks.
+
+### Support for multi-column primary keys
+
+In all versions of `pgroll` before `v0.8`, only tables with single-column primary keys were supported. This meant that `create_table` operations could only define one column with a `pk` field set:
+
+```json
+{
+  "name": "01_create_table",
+  "operations": [
+    {
+      "create_table": {
+        "name": "products",
+        "columns": [
+          {
+            "name": "manufacturer",
+            "type": "varchar(255)",
+            "pk": true
+          },
+          {
+            "name": "name",
+            "type": "varchar(255)"
+          },
+          {
+            "name": "price",
+            "type": "decimal(10,2)"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+Attempting to define a table with multiple columns with the `pk` field set would result in an error:
+
+```
+multiple primary keys for table "_pgroll_new_products" are not allowed
+```
+
+As of `v0.8`, `pgroll` now supports multi-column primary keys. This means that `create_table` operations now support defining multiple columns with the `pk` field set:
+
+```json
+{
+  "name": "01_create_table",
+  "operations": [
+    {
+      "create_table": {
+        "name": "products",
+        "columns": [
+          {
+            "name": "manufacturer",
+            "type": "varchar(255)",
+            "pk": true
+          },
+          {
+            "name": "name",
+            "type": "varchar(255)",
+            "pk": true
+          },
+          {
+            "name": "price",
+            "type": "decimal(10,2)"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+Such tables can be modified in subsequent `add_column` or `alter_column` migrations and `pgroll` will handle the necessary backfills correctly using the table's multi-column key.
+
+### Support for multi-column constraints
+
+Continuing the multi-column theme, `pgroll` `v0.8` now supports defining multi-column `UNIQUE`, `CHECK` and `FOREIGN KEY` constraints using the new [create_constraint](https://github.com/xataio/pgroll/tree/main/docs#create-constraint) operation:
+
+```json
+{
+  "create_constraint": {
+    "table": "name of table",
+    "name": "my_unique_constraint",
+    "columns": ["column1", "column2"],
+    "type": "unique"| "check" | "foreign_key",
+    "check": "SQL expression for CHECK constraint",
+    "references": {
+      "name": "name of foreign key reference",
+      "table": "name of referenced table",
+      "columns": "[names of referenced columns]",
+      "on_delete": "ON DELETE behaviour, can be CASCADE, SET NULL, RESTRICT, or NO ACTION. Default is NO ACTION",
+    },
+    "up": {
+      "column1": "up SQL expressions for each column covered by the constraint",
+      ...
+    },
+    "down": {
+      "column1": "up SQL expressions for each column covered by the constraint",
+      ...
+    }
+  }
+}
+```
+
+As with primary keys, versions of `pgroll` before `0.8` only supported single-column versions of these constraints.
+
+Removing multi-column constraints is possible using the new [drop_multicolumn_constraint](https://github.com/xataio/pgroll/tree/main/docs#drop-multi-column-constraint) operation:
+
+```json
+{
+  "drop_multicolumn_constraint": {
+    "table": "name of table",
+    "name": "name of constraint to drop",
+    "up": {
+      "column1": "up SQL expressions for each column covered by the constraint",
+      ...
+    },
+    "down": {
+      "column1": "down SQL expressions for each column covered by the constraint",
+      ...
+    }
+  }
+}
+```
+
+Of course, the `drop_multicolumn_constraint` operation can also be used to remove single-column constraints. The old [drop_constraint](https://github.com/xataio/pgroll/tree/main/docs#create-constraint) operation that only acts on single column constraints will be removed before `pgroll` `v1.0`; all new migrations should use the multicolumn operation instead.
+
+`create_constraint` and `drop_multicolumn_constraint` are [multi-versioned operations](https://github.com/xataio/pgroll/blob/main/docs/README.md#concepts) in the same way that all other `pgroll` operations are. For the `create_constraint` operation, this means:
+
+- All columns covered by the new constraint are duplicated.
+- Any existing constraints on the columns covered by the new constraint are also duplicated to apply to the duplicated columns.
+- The duplicated columns are backfilled; data is copied from the original columns and rewritten using the `up` SQL expression for the column from the migration file.
+
+At this point the migration is active and client applications can access the version of the schema with or without the new constraint by setting the Postgres search path as described in the migration [workflow section](https://github.com/xataio/pgroll/tree/main/docs#migration-workflow) of the [pgroll documentation](https://github.com/xataio/pgroll/blob/main/docs/README.md).
+
+As long as the migration is active:
+
+- records written by clients accessing the new version of the schema with the constraint are dual-written to the version without the constraint using the `down` SQL expressions from the migration definition.
+- records written by clients accessing the old version of the schema without the constraint are dual-written to the version with the constraint using the `up` SQL expressions from the migration definition.
+
+On migration completion, the original columns are dropped and the duplicated ones renamed to take their place.
+
+### Support for more index types
+
+More index types are now supported in the latest release of `pgroll`. Previously only `btree` indexes were supported, but `pgroll` `v0.8` extends the set of supported index types to include `hash`, `gist`, `spgist`, `gin` and `brin` indexes. The [create_index](https://github.com/xataio/pgroll/blob/main/docs/README.md#create-index) operation has been extended with a new `method` field to define the type of the index:
+
+```json
+{
+  "name": "38_create_hash_index_with_fillfactor",
+  "operations": [
+    {
+      "create_index": {
+        "name": "idx_fruits_name",
+        "table": "fruits",
+        "columns": ["name"],
+        "method": "hash",
+        "storage_parameters": "fillfactor = 70"
+      }
+    }
+  ]
+}
+```
+
+The above migration also shows another change in `pgroll` `v0.8`: the `storage_parameters` field has been added to the `create_index` operation to allow setting [index storage parameters](https://www.postgresql.org/docs/current/sql-createindex.html#SQL-CREATEINDEX-STORAGE-PARAMETERS) like the index fill factor.
+
+### Dropping column defaults
+
+`pgroll` `v0.8` also adds support for dropping column defaults. It was always possible to set a column `DEFAULT` to `NULL` using the [alter column](https://github.com/xataio/pgroll/tree/main/docs#change-default) operation:
+
+```json
+{
+  "name": "46_alter_column_drop_default",
+  "operations": [
+    {
+      "alter_column": {
+        "table": "tickets",
+        "column": "ticket_type",
+        "default": "NULL",
+        "up": "ticket_type",
+        "down": "ticket_type"
+      }
+    }
+  ]
+}
+```
+
+but it's now possible to explictly drop the `DEFAULT` by setting the `default` field to `null` in the `alter_column` operation:
+
+```json
+{
+  "name": "46_alter_column_drop_default",
+  "operations": [
+    {
+      "alter_column": {
+        "table": "tickets",
+        "column": "ticket_type",
+        "default": null,
+        "up": "ticket_type",
+        "down": "ticket_type"
+      }
+    }
+  ]
+}
+```
+
+Dropping a column default in this way corresponds to the SQL statement:
+
+```sql
+SQL `ALTER TABLE <table> ALTER COLUMN <column> DROP DEFAULT` statement.
+```
+
+Dropping a `DEFAULT` is cleaner in terms of its effect on the Postgres system catalogs than setting the default to `NULL`. See [this issue](https://github.com/xataio/pgroll/issues/450) for more information on the difference between setting a column `DEFAULT` to `NULL` vs dropping the default.
+
+### New command: pgroll migrate
+
+`pgroll` `v0.8` adds a new command, [pgroll migrate](https://github.com/xataio/pgroll/tree/main/docs#migrate), that is used to apply all unapplied migrations in a migrations directory to the target database schema. Suppose that we have a `migrations/` directory containing some migration files:
+
+```bash
+$ ls -1 migrations/
+
+01_create_tables.json
+02_create_another_table.json
+03_add_column.json
+04_rename_table.json
+```
+
+and we have a database to which no migrations have yet been applied. We can apply all migrations in the `migrations/` directory to the database using:
+
+```bash
+pgroll migrate migrations/ --complete
+```
+
+This applies each of the migrations in the `migrations/` directory in order to the target database schema:
+
+```bash
+SUCCESS  New version of the schema available under the postgres "public_01_create_tables" schema
+SUCCESS  New version of the schema available under the postgres "public_02_create_another_table" schema
+SUCCESS  New version of the schema available under the postgres "public_03_add_column_to_products" schema
+SUCCESS  New version of the schema available under the postgres "public_04_rename_table" schema
+```
+
+Now we add two new migration files to the `migrations/` directory:
+
+```bash
+$ ls -1 migrations/
+
+01_create_tables.json
+02_create_another_table.json
+03_add_column.json
+04_rename_table.json
+05_sql.json
+06_add_column_to_sql_table.json
+```
+
+Running `pgroll migrate` again will run only the new migrations that have not yet been applied:
+
+```bash
+$ pgroll migrate migrations/ --complete
+```
+
+The applies the new migrations to the target database schema:
+
+```bash
+SUCCESS  New version of the schema available under the postgres "public_05_sql" schema
+SUCCESS  New version of the schema available under the postgres "public_06_add_column_to_sql_table" schema
+```
+
+All migrations applied by the `pgroll migrate` command are completed except the final one which is started and left active. To also complete fhe final migration, use the `--complete` flag to `pgroll migrate`.
+
+See the [documentation for pgroll migrate](https://github.com/xataio/pgroll/blob/main/docs/README.md#migrate) for full details.
+
+### New command: pgroll pull
+
+Another new command in `pgroll` `v0.8` is [pgroll pull](https://github.com/xataio/pgroll/tree/main/docs#pull) which is used to populate a directory of migration files from a target database schema.
+
+Assuming that we have a database to which all [example migrations](https://github.com/xataio/pgroll/tree/main/examples) have been applied, running:
+
+```
+$ pgroll pull migrations/
+```
+
+will populate the `migrations` directory with all the migrations from the target database schema:
+
+```bash
+$ ls -1 migrations/
+
+01_create_tables.json
+02_create_another_table.json
+03_add_column.json
+04_rename_table.json
+05_sql.json
+06_add_column_to_sql_table.json
+07_drop_table.json
+08_create_fruits_table.json
+09_drop_column.json
+10_create_index.json
+...
+```
+
+This effectively recreates the `examples/` directory under a new name, `migrations/`, by pulling the migration files from the migration history of the target database.
+
+Complete [documentation for the pgroll pull command](https://github.com/xataio/pgroll/tree/main/docs#pull) is on the docs site.
+
+### New command: pgroll latest
+
+The final new CLI command added in `pgroll` `v0.8` is the [pgroll latest](https://github.com/xataio/pgroll/blob/main/docs/README.md#latest) command which is used to discover the name of the latest schema version in either a live database or a directory of migration files.
+
+Assuming that the [example migrations](https://github.com/xataio/pgroll/tree/main/examples) have been applied to the `public` schema in the target database, running:
+
+```bash
+$ pgroll latest
+```
+
+will print the latest version in the target database:
+
+```bash
+45_add_table_check_constraint
+```
+
+The exact output will vary as the `examples/` directory is updated.
+
+The `--with-schema` flag can be used to include the schema name in the output:
+
+```bash
+$ pgroll latest --with-schema
+
+public_45_add_table_check_constraint
+```
+
+To discover the latest version in a directory of migration files, use the `--local` flag to `pgroll latest`. Assuming that all [example migrations]() are on disk in a directory called `examples/`, running:
+
+```bash
+$ pgroll latest --local examples/
+```
+
+will dsicover the latest version in the `examples/` directory:
+
+```bash
+45_add_table_check_constraint
+```
+
+Again, the `--with-schema` flag can be used to prefix the schema name to the output.
+
+The `pgroll latest` command can be used from CI in order to build the latest version schema name for the purposes of [setting the application search path](https://github.com/xataio/pgroll/blob/main/docs/README.md#client-applications) to work with the correct version of the database schema.
+
+### Benchmarks
+
+Although not strictly a new feature, it's worth talking about how we're approaching benchmarking for `pgroll`.
+
+`pgroll` is designed to be a high-performance schema migration tool that can be used in production environments. To ensure that `pgroll` is meeting its performance goals, we're in the process of setting up a benchmarking suite that will allow us to measure the performance of `pgroll` over time in a variety of scenarios.
+
+In particular, we want to measure the performance of `pgroll` in the following areas:
+
+- How fast can `pgroll` backfill a new column in a large table?
+- What is the effect on write performance incurred by the dual write triggers present on a table during an active migration?
+
+In between the `v0.7` and `v0.8` releases, we have taken the first steps to benchmarking against these criteria. Benchmarks are run on every commit to the `main` branch and each benchmark is run against Postgres `14.8,` `15.3`, `16.4,` `17.0` and `latest.`
+
+The results are published on the [pgroll Github repository](https://xataio.github.io/pgroll/benchmarks.html). Each line on the chart represents the number of rows the benchmark was run against; currently 10k, 100k and 300k rows. For the backfill and dual write benchmarks the Y-axis represents the number of rows processed per second.
+
+Benchmarking performance is an ongoing process and we will continue to refine our benchmarks and add new ones as we move forward.
+
+## Conclusion
+
+The `v0.8` release of `pgroll` adds new CLI commands, making the tool easier to use for real-world use cases, broadens the set of supported operations to include multi-column primary keys and constraints, and takes the first steps towards benchmarking the performance of the tool in production environments.
+
+We continue to work on `pgroll` as we build towards a `v1.0` release next year.
+
+`pgroll` is open source, under the Apache license, and we welcome all external contributions either in terms of code, documentation or issues. Visit the [pgroll repository on Github](https://github.com/xataio/pgroll) to get involved.
