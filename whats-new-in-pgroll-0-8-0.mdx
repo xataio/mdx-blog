@@ -165,7 +165,7 @@ As long as the migration is active:
 - records written by clients accessing the new version of the schema with the constraint are dual-written to the version without the constraint using the `down` SQL expressions from the migration definition.
 - records written by clients accessing the old version of the schema without the constraint are dual-written to the version with the constraint using the `up` SQL expressions from the migration definition.
 
-On migration completion, the original columns are dropped and the duplicated ones renamed to take their place.
+On migration completion, the original columns are dropped and the duplicated ones are renamed to take their place.
 
 ### Support for more index types
 
