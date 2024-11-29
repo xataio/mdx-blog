@@ -60,7 +60,7 @@ As of `v0.6.0`, `pgroll` will now run all DDL operations before running any data
 
 Changing a column default is a versioned operation so the column to which the new default is applied is duplicated and backfilled according to the `up` and `down` SQL supplied with the 'alter column' operation. `up` and `down` default to a simple copy of the field between new and old columns.
 
-See the documentation for the [alter column operation](https://github.com/xataio/pgroll/tree/main/docs#change-default) for more information.
+See the documentation for the [alter column operation](https://github.com/xataio/pgroll/blob/main/docs/operations-reference.md#change-default) for more information.
 
 ### Changing multiple column properties in one operation
 
@@ -95,7 +95,7 @@ A migration that changes multiple column properties in one operation looks like 
 }
 ```
 
-See the documentation for the [alter column operation](https://github.com/xataio/pgroll/tree/main/docs#alter-column) for more information.
+See the documentation for the [alter column operation](https://github.com/xataio/pgroll/blob/main/docs/operations-reference.md#alter-column) for more information.
 
 ### Renaming constraints
 
@@ -116,7 +116,7 @@ Perhaps it's a smaller change than others listed here, but the ability to rename
 }
 ```
 
-See the documentation for the [rename constraint operation](https://github.com/xataio/pgroll/tree/main/docs#rename-constraint) for more information.
+See the documentation for the [rename constraint operation](https://github.com/xataio/pgroll/blob/main/docs/operations-reference.md#rename-constraint) for more information.
 
 ### Running raw SQL migrations on completion
 
@@ -140,7 +140,7 @@ In versions of `pgroll` before `v0.6.0`, SQL migrations would always be run on m
 
 The ability to run a raw SQL migration on completion allows the SQL statement to reference the versioned views that `pgroll` creates for any non raw SQL operations in the same migration.
 
-See the documentation for the [raw SQL operation](https://github.com/xataio/pgroll/tree/main/docs#raw-sql) for more information.
+See the documentation for the [raw SQL operation](https://github.com/xataio/pgroll/blob/main/docs/operations-reference.md#raw-sql) for more information.
 
 ## Using pgroll as a module
 
