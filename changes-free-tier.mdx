@@ -1,0 +1,48 @@
+---
+title: 'Changes to the Xata free plan'
+description: "We're announcing important changes to the Xata free tier plan."
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/simple-xata-logo-bg.png
+  alt: Postgres free tier
+author: Tudor Golubenco
+date: 12-04-2024
+tags: ['free plan']
+published: true
+slug: changes-free-tier
+---
+
+As we continue to grow and refine our offerings, we want to make sure we're focusing our efforts on our core mission: providing the best possible Postgres platform. To focus on this mission and optimize our resources as we scale, we're making an important change to our free tier:
+
+**Starting January 10, 2025, the search APIs and files APIs will no longer be available in the free tier.**
+
+These features will remain available on our Pro and Enterprise tiers, ensuring that customers on those plans are not affected.
+
+We understand that this change impacts your applications, and we do not take this impact lightly. If you rely on these features for a production application but are unable to upgrade to Pro, please contact us over our [support channels](https://xata.io/docs/resources/support) or email us at [support@xata.io](mailto:support@xata.io). We'll do our best to support you during this transition.
+
+Thank you for your understanding and continued support. We're excited about the road ahead and remain committed to delivering even more value as we focus on what we do best.
+
+## FAQ
+
+### Are there any other changes to the free tier?
+
+No, you continue to get one of the most generous free tiers for Postgres offerings in the industry, including 15 GB of storage space, no cold starts, and no pausing in case of inactivity.
+
+### I'm on the free tier and am using search or files, am I affected?
+
+Yes. You can either upgrade to the pro account or implement the search/files functionality in a different way.
+
+### If I upgrade to the Pro tier before January 10th, will I be able to continue to use search and files?
+
+Yes, Pro accounts are not affected.
+
+### I need to export all files, how can I do it?
+
+You can download the files via the regular APIs. If you need a one time export to S3 or similar, for all files, please contact support.
+
+### What about vector search?
+
+The [similarity search API](https://xata.io/docs/sdk/vector-search), which is powered by OpenSearch behind the scenes is affected by this change and won't be available on the free tier. However, you can continue to use the vector search implementation from Postgres (pgvector) on the free tier.
+
+### Will Xata delete the data?
+
+No, the data from the search engine is replicated from Postgres, which is the source of truth, so we can reindex it anytime. In case of files, we will only block API access in the free tier, we won't actually remove the files. This means that if you upgrade to Pro, even after January 10th, you'll be able to use Xata just as before.
