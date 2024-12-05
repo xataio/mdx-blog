@@ -1,0 +1,154 @@
+---
+title: 'Is pg_dump a backup tool?'
+description: 'I was invited to the Postgres.fm podcast together with Robert Haas, hosted by Michael Christofides and Nikolay Samokhvalov, to discuss the technical aspects of the question if pg_dump is a backup tool, and in what way it is or is not.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgresfm/podcast-postgres-fm@2x.png
+  alt: Is pg_dump a backup tool
+author: Gulcin Yildirim Jelinek
+authorEmail: gulcin@xata.io
+date: 12-05-2024
+tags:
+  [
+    'postgres',
+    'postgresql',
+    'podcast',
+    'postgresfm',
+    'database',
+    'backup',
+    'pg_dump',
+    'pg_restore',
+    'pg_dumpall',
+    'restore',
+    'dump',
+    'disaster-recovery',
+    'maintenance',
+    'system-maintenance',
+    'dba',
+    'database-administrator',
+    'database-engineer',
+    'database-developer',
+    'robert-haas',
+    'database-architect',
+    'community',
+    'backup-tool',
+    'backup-solution',
+    'backup-tool-pg_dump',
+    'pg_dump-backup-tool',
+    'pg_dump-backup',
+    'pg_dump-backup-solution'
+  ]
+published: true
+slug: postgresfm
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgresfm/podcast-postgres-fm@2x.png
+---
+
+## Podcast Appearance: Postgres.fm 🎙
+
+I was invited to the [Postgres.fm](https://postgres.fm) podcast together with [Robert Haas](https://www.linkedin.com/in/robertmhaas/), hosted by [Michael Christofides](https://postgres.fm/people/michael-christofides) and [Nikolay Samokhvalov](https://postgres.fm/people/nikolay-samokhvalov), to discuss the technical aspects of the question: _Is pg_dump a backup tool_, and in what way is it or is not?
+The podcast experience was much better for me this time, as I was joined by Robert, compared to solo episodes I’ve done before.
+Robert and I had already been exploring this topic through our blogs, and it became a topic we liked to chat about.
+
+That familiarity carried over into the podcast, making the discussion flow naturally.
+We had a great time recording this episode and hope listeners enjoy it too!
+
+[![Is pg_dump a backup tool?](/images/postgresfm/postgres-fm-youtube.png)](https://youtu.be/-DO5ad-KtFY)
+
+I will share some of the highlights of our conversation in this blog post.
+🎧 If you prefer listening, you can find the episode on [postgres.fm](https://postgres.fm/episodes/is-pg_dump-a-backup-tool).
+
+## Why did we blog about pg_dump?
+
+The podcast started with high level thoughts on `pg_dump` and Michael asked what prompted us to blog about it.
+And for me, it was the [CVE-2024-7348 vulnerability](https://xata.io/blog/cve-2024-7348-postgres-upgrade).
+
+[![Why you should upgrade PostgreSQL today](/images/postgresfm/upgrade-postgres.png)](https://xata.io/blog/cve-2024-7348-postgres-upgrade)
+
+I joined Xata in August, and I was checking the discussions going around in our [Discord channel](https://discord.com/channels/996791218879086662/1271351087370207273/1271351087370207273).
+I noticed a user reporting a problem with a `pg_dump` query:
+
+```
+pg_dump: error: query failed: couldn't get first string argument
+pg_dump: detail: Query was: SELECT set_config(name, 'view, foreign-table', false) FROM pg_settings WHERE name = 'restrict_nonsystem_relation_kind'
+```
+
+I did not recognize the `restrict_nonsystem_relation_kind` setting and this led me to discover about the CVE-2024-7348 vulnerability that affects `pg_dump`.
+In the blog I used the sentence below and mentioned `pg_dump` is a utility used for backing up PostgreSQL databases, the way it is explained in the Postgres documentation.
+
+> CVE-2024-7348 is a Time-of-Check Time-of-Use (TOCTOU) race condition vulnerability in pg_dump, a utility used for backing up PostgreSQL databases.
+
+[![pg_dump, a utility used for backing up PostgreSQL databases](/images/postgresfm/pgdump-backup.png)](https://www.postgresql.org/docs/17/app-pgdump.html)
+
+Some people disagreed with me calling `pg_dump` a backup tool, as Postgres documentation is being changed for PostgreSQL 18.
+It will be updated to say that `pg_dump` is a utility for exporting a PostgreSQL database. Referring to the output as dump instead of backup.
+This led to a discussion and my writing another blog: [If pg_dump is not a backup tool, what is?](https://xata.io/blog/pgdump-is-not-a-backup-tool).
+
+[![If pg_dump is not a backup tool, what is?](/images/postgresfm/what-is-backup.png)](https://xata.io/blog/pgdump-is-not-a-backup-tool)
+
+## Context and nuance matter
+
+I understand where people are coming from when they say `pg_dump` is not a backup tool.
+What they likely mean is that `pg_dump` alone isn't sufficient for a comprehensive backup solution.
+I agree with this view, but I also believe that `pg_dump` is a valuable tool and can play a role in a backup strategy if used appropriately.
+
+What I don't find helpful is when Postgres users ask for a question related to pg_dump and the answer is that pg_dump is not a backup tool.
+
+For example, these are the conversations I have seen in the past in Postgres groups:
+
+**User**: pg_dump can limit a backup by schema..
+**Answer**: But pg_dump is not a backup.
+
+**User**: Can someone send me the command to take backup of partial database..
+**Answer**: There is no such command. The standard backup tools take backups of the entire database cluster.
+
+I think these answers are not helpful and we should try to help users understand the nuance of the tools they are using without being dismissive.
+
+## Good, bad and ugly
+
+Robert has two great blogs on this topic:
+
+- [Is pg_dump a backup tool?](https://rhaas.blogspot.com/2024/10/is-pgdump-backup-tool.html)
+- [Why pg_dump is amazing](https://rhaas.blogspot.com/2024/11/why-pgdump-is-amazing.html)
+
+I recommend reading both blogs but I have a few points I'd like to mention here.
+
+One of the most common arguments against `pg_dump` is that it takes a long time to create dumps and restore them, especially for large databases.
+pg_dump holds an MVCC snapshot while it's running, which can lead to database bloat and that is not fun to deal with afterwards.
+We should be aware of this and plan for `VACUUM` or `VACUUM FULL` after running `pg_dump`.
+
+The process is error-prone, users need to back up each database individually (using `pg_dump`) and also globals (roles, tablespaces using `pg_dumpall -g`) and configuration files (`pg_hba.conf`, `postgresql.conf`) separately.
+In multiple database setups, this can get cumbersome and potentially lead to inconsistencies during restoration.
+
+Using a specialized backup tool (for physical backups) can help with management of the backup process, especially in large-scale or mission-critical environments.
+They also have additional features like backup retention, continuous backups, point-in-time recovery, orchestration, etc.
+
+But logical backups (or dumps) have their own set of benefits, if you treat them as complimentary to your physical backup strategy.
+Robert has a [great example](https://rhaas.blogspot.com/2024/11/why-pgdump-is-amazing.html) of a scenario where there is a database corruption:
+
+> Converting to and from text format can also be used as a way of eliminating corruption in the internal binary format.
+> For example, imagine that you have a database table containing rows where the xmin of a tuple is less than the relation's relfrozenxid but, sadly, the tuple is not frozen.
+> In other words, you've got a corrupted database. Hopefully this won't happen to you, and if it does, hopefully you will be able to fail over to an unaffected replica or restore from an uncorrupted backup.
+> However, it's easy for this kind of corruption to go undetected for a relatively long period of time because the database is still readable despite the corruption, so it's possible that by the time the problem is realized, all of your replicas and backups will be affected.
+> One day, though, the system will remove old clog files that it things are no longer needed, and suddenly that data will become unreadable.
+> Obviously, I've chosen this example to prove a point, because even if you're not familiar with the details of how PostgreSQL represents data on disk, you can perhaps see that the solution here is to dump and restore the affected table at a time when the data is still readable.
+> In fact, this shows how database dumps and physical backups can work hand in glove to solve real-world problems.
+> When one day the table abruptly becomes unreadable, you can restore from a physical backup where the data still was readable, and then use pg_dump to get the data out, and then reload it wherever you like.
+
+One of the least talked features of `pg_dump` is how it handles dependencies:
+
+> Have you ever tried to manually recreate a database schema from one server on another server? If you have, you've probably discovered that it's pretty much no fun at all.
+> For instance, you might try to create a table and find that it because that table has a foreign key to some other table that doesn't exist yet.
+> You need to recreate things in the right order for it to work but you don't know what the right order is.
+> Sometimes you might even have circular dependencies, where no matter which table you create first, it fails for some reason.
+> Then, you might need to solve the dependency problem by first creating the table without subsidiary objects like foreign keys or constraints or indexes, and adding those later, after you've set up some other database objects.
+> And the great thing is that instead of doing all this yourself, you can just run pg_dump and it will figure it out for you.
+> If you're dumping the data and not just the schema, pg_dump will even arrange the dump so that the data restoration is as efficient as possible, as by postponing the creation of indexes until after the data load.
+> All of this can save enormous amounts of DBA time and energy.
+
+## Conclusion
+
+I like to go deeper into a particular topic related to Postgres, this time it was `pg_dump`.
+I am thankful there are podcasts like [Postgres.fm](https://postgres.fm) that give me the opportunity to share my thoughts on these topics.
+
+If you read this far, I would love to hear your thoughts on `pg_dump` and your experiences with it.
+
+🎧 You can listen our opinion on the [Postgres.fm episode](https://postgres.fm/episodes/is-pg_dump-a-backup-tool).
