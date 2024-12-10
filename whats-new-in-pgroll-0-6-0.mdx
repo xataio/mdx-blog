@@ -11,6 +11,7 @@ tags: ['open-source', 'postgres', 'schema', 'migrations', 'pgroll', 'fpSchemaMig
 published: true
 slug: pgroll-0-6-0-update
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-update-0-6-0@2x.jpg
+canonicalUrl: https://pgroll.com/blog/pgroll-060-update
 ---
 
 [pgroll](https://xata.io/pgroll) is Xata's open-source schema migration tool for Postgres. The feature that sets it apart from other migration tools is its ability to perform multi-version schema migrations using the expand/contract pattern: while a migration is in progress, `pgroll` is able to present two versions of your database schema to client applications - the old version and the new. This means that client applications that depend on the old version of the database schema continue to function while the migration is in progress, making application deployments much simpler. Gone are the days of having to perform [complicated multi-step workflows](https://planetscale.com/docs/learn/handling-table-and-column-renames#how-to-rename-a-column-on-planetscale) to do simple schema changes without breaking clients.
