@@ -26,7 +26,7 @@ Schema changes can lead to various issues, particularly around:
 
 - **Schema debt:** Development teams often accrue “schema debt” over time, adding rather than modifying fields to avoid risky changes. This buildup can lead to cluttered schemas that impact performance and maintainability.
 - **Exclusive locks:** Many schema changes in Postgres require exclusive locks, which can block reads and writes, risking significant downtime. pgroll’s approach helps minimize these locks, keeping applications responsive during migrations.
-- **Rollback complexity:** Rollbacks are often tricky and rarely tested, especially when schema changes can’t be easily undone. pgroll addresses this with a migration pattern that simplifies reverting changes without application downtime.
+- **Rollback complexity:** Rollbacks are often tricky and rarely tested, especially when schema changes can’t be easily undone. pgroll addresses this with a pattern that simplifies reverting changes without application downtime.
 
 ## pgroll’s approach: automating expand-contract
 
