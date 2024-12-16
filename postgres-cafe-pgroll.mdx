@@ -33,7 +33,7 @@ Schema changes can lead to various issues, particularly around:
 The [expand-contract pattern](https://xata.io/blog/pgroll-expand-contract) is a safe and reliable approach for schema migrations. pgroll automates this multi-step process by:
 
 - Using **triggers to enable dual writes**, allowing applications to continue working with both old and new schema versions.
-- Offering **schema version views** so applications can connect to the specific schema version they need, enabling zero-downtime migrations.
+- Offering **schema version views** so applications can connect to the specific schema version they need, enabling zero-downtime alterations.
 - Supporting the ability to **pause in the “expand” phase**, giving teams flexibility to test changes before finalizing.
 
 pgroll provides a practical solution to the most pressing migration challenges, reducing downtime and making complex changes more manageable for developers.
