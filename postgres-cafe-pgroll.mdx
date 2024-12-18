@@ -1,0 +1,49 @@
+---
+title: 'Postgres Cafe: Exploring pgroll for zero-downtime schema changes'
+description: 'Discover how pgroll helps teams manage schema changes with ease in our new Postgres Cafe blog and video series.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-cafe-pgroll.png
+  alt: pgroll
+author: Gulcin Yildirim Jelinek
+authorEmail: gulcin@xata.io
+date: 12-18-2024
+tags: ['open-source', 'postgres', 'fpSchemaMigrations', 'fpPgroll', 'oss']
+published: true
+slug: postgres-cafe-pgroll
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-postgres-cafe-og@2x.png
+---
+
+We’re excited to kick off [Postgres Cafe](https://www.youtube.com/watch?v=WwaJd2c9whM), a blog and video series from Xata in collaboration with [Data Bene](https://www.data-bene.io/en/), where we dive into innovative open-source tools for Postgres. Each episode highlights a new tool designed to make working with Postgres databases easier and more efficient.
+In this first episode, we explore [pgroll](https://pgroll.com/), our tool for achieving zero-downtime database schema changes, and the solutions it offers for overcoming common challenges in modifying database schemas.
+
+# Episode 1: pgroll
+
+Schema changes are often challenging, especially for production databases where downtime is not an option. In this episode, we discuss pgroll, a tool designed to tackle these challenges with an approach that prioritizes reliability and uptime. Here’s a look at what this episode covered:
+
+## Key challenges in schema changes
+
+Schema changes can lead to various issues, particularly around:
+
+- **Schema debt:** Development teams often accrue “schema debt” over time, adding rather than modifying fields to avoid risky changes. This buildup can lead to cluttered schemas that impact performance and maintainability.
+- **Exclusive locks:** Many schema changes in Postgres require exclusive locks, which can block reads and writes, risking significant downtime. pgroll’s approach helps minimize these locks, keeping applications responsive during migrations.
+- **Rollback complexity:** Rollbacks are often tricky and rarely tested, especially when schema changes can’t be easily undone. pgroll addresses this with a pattern that simplifies reverting changes without application downtime.
+
+## pgroll’s approach: automating expand-contract
+
+The [expand-contract pattern](https://xata.io/blog/pgroll-expand-contract) is a safe and reliable approach for schema changes. pgroll automates this multi-step process by:
+
+- Using **triggers to enable dual writes**, allowing applications to continue working with both old and new schema versions.
+- Offering **schema version views** so applications can connect to the specific schema version they need, enabling zero-downtime alterations.
+- Supporting the ability to **pause in the “expand” phase**, giving teams flexibility to test changes before finalizing.
+
+pgroll provides a practical solution to the most pressing schema change challenges, by enabling safe rollbacks, adjustable backfilling, and thorough testing, giving developer and DBA teams the confidence they need to implement database changes without downtime.
+
+## Watch the full episode
+
+For an in-depth exploration of pgroll and its capabilities, watch the full episode here:
+
+<ArticleVideo platform="youtube" src="https://www.youtube.com/embed/1j07dnd1nSY?si=LBPoDKT98RAn7KFs" />
+
+## Stay tuned for more Postgres tools
+
+This is just the start of Postgres Cafe! [Subscribe to the playlist](https://www.youtube.com/playlist?list=PLf7KS0svgDP_zJmby3RMzzOVO45qLbruA) for future episodes that will feature more open-source tools like [pgstream](https://xata.io/pgstream) for managing real-time data streaming, [StatsMgr](https://git.data-bene.io/cedric/statsmgr) for managing statistics in PostgreSQL, and more. Watch this space to learn how each tool can make working with Postgres smoother and more efficient.
