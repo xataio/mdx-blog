@@ -14,11 +14,11 @@ canonicalUrl: https://pgroll.com/blog/anatomy-of-table-level-locks-in-postgresql
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/anatomy-of-locks-og@2x.png
 ---
 
-## Art of Locking or Unlocking?
+## Art of locking or unlocking?
 
-It is normal to think about database locks and go into physical-world lock analogies, and maybe order three books about the history of locks, Persian locks, and lock-picking techniques.
-Probably most of us learn by going deeper into the term “locking” to understand a concept in PostgreSQL that doesn’t really have much to do with physical-world locks, as physical locks are mostly about security.
-In the case of Postgres, though, it is all about concurrency and controlling which transaction can hold a lock while another transaction can do its thing and ideally without ever blocking each other.
+It is common to think about database locks by drawing analogies to physical locks, which might even lead you to order books on the history of locks, Persian locks, and lock-picking techniques.
+Probably most of us learn by going deeper into the term "locking" to understand a concept in PostgreSQL that doesn’t have much to do with physical locks at all, which are primarily about **security**.
+Postgres locks though are all about **concurrency** and controlling which transaction can hold a lock while another transaction can do its thing, ideally without ever blocking each other.
 But as we know, no world is ideal, whether it’s a door lock or an `AccessShareLock`.
 
 However, now that I’ve bought those said books about locks, I think I should be allowed to draw some parallels between, let’s say, the art of lock-picking and database locking mechanisms.
@@ -26,7 +26,7 @@ There is one thing I will start with: to be able to pick a lock, any type of loc
 By manipulating them, you can find the correct position to unlock the door or safe without a key!
 In the same way, to be able to manage database locks, you need to understand the internal workings of a database, and mainly how concurrency works in Postgres.
 
-## A Short Primer on MVCC
+## A short primer on MVCC
 
 PostgreSQL uses **Multi-Version Concurrency Control (MVCC)** to avoid many of the locking issues traditionally associated with databases.
 MVCC works by:
@@ -42,7 +42,7 @@ Each row version contains system columns that are invisible to users but crucial
 - `cmin`, `cmax`: Command IDs within the transaction
 - `ctid`: Physical location of the row version
 
-When a transaction begins, Postgres creates a snapshot containing:
+With the default Read Committed Isolation Level, every time a statement begins, Postgres creates a snapshot containing:
 
 - All active transaction IDs at that moment
 - The latest committed transaction ID
@@ -90,16 +90,15 @@ But, of course, MVCC approach also comes with some implications:
 To finish up with clear benefits, MVCC design allows Postgres to provide consistent snapshots for long-running queries (hopefully they won't run too long 😄), high concurrency for mixed read-write workloads and strong isolation without excessive locking.
 While MVCC design is not specific to PostgreSQL, thanks to this approach we have most of concurrency issues sorted.
 
-## The Purpose of Locking
+## The purpose of locking
 
-All locking, whatever their type is, will reduce the throughput, and that means a loss of performance, as nothing is ever free.
-If my intention is to make sure my data does not have corruption and everyone is getting a correct result at their time of query, I have to agree that I'd have to lock access when multiple transactions are targeting the same column or same row to make sure we take some time to keep the order of things instead of showing wrong results, fast.
+All locking, whatever their type is, will reduce the throughput, and potentially increase the latency, which means a loss of performance, as nothing is ever free.
+If my intention is to make sure my data does not have corruption and everyone is getting a correct result at their time of query, I have to agree that I'd have to lock access when multiple transactions are targeting the same table or same row to make sure we take some time to keep the order of things instead of showing wrong results, fast.
 
-But we cannot also keep a lock too long, as that also comes with consequences.
-Let's imagine the two extremes: we never lock any transaction.
+But we cannot also keep a lock too long, as that also comes with consequences. Let's imagine the two extremes: we never lock any transaction.
 A long-running financial report is calculating averages across departments while HR is processing year-end raises, and simultaneously, we try to add a new audit column.
 In PostgreSQL, even without explicit locks, adding a column requires an `AccessExclusiveLock` on the table.
-If we somehow bypassed this (imagine a hypothetical unsafe mode), we would be looking at a real chaos: the report query might see the table structure without the audit column while trying to write results to a temporary table that includes it, the salary updates might fail as they encounter different table structures mid-transaction, and subsequent queries could face data corruption as the system catalog becomes inconsistent with actual table data.
+If we somehow bypassed this (imagine a hypothetical unsafe mode), we would be looking at a real chaos: the salary updates might fail as they encounter different table structures mid-transaction, and subsequent queries could face data corruption as the system catalog becomes inconsistent with actual table data.
 As hectic as it sounds, not locking anything would create different degrees of mess.
 
 Now, let's consider the other extreme: we are locking every operation and each of them waits for another; one finishes, and the other one starts.
@@ -109,7 +108,7 @@ That would also be okay if a few users, maybe using a small database, never had 
 The moment we have to serve multiple users at the same time, we will have to accept a level of isolation, so we make sure we agree to a standard that ensures we don't get dirty reads or phantom reads and such.
 This is why Postgres offers [different isolation levels](https://www.postgresql.org/docs/current/transaction-iso.html) from Read Committed to Serializable.
 
-## DDL Locks
+## DDL locks
 
 MVCC approach makes PostgreSQL highly efficient for concurrent DML operations.
 Instead of modifying data in place, writes create new copies of the data, allowing reads and writes to proceed without blocking each other.
@@ -123,7 +122,7 @@ For DDL operations (e.g., `ALTER TABLE` or `VACUUM FULL`), stronger locks are of
 Such operations may block other DDL commands, DML operations, or even SELECT queries that are trying to access the same object.
 The complexity increases as each DDL command (and sometimes even sub-commands) has its own specific locking requirements, making it crucial to understand the implications of schema modifications in a busy database.
 
-## Table-Level Lock Modes
+## Table-level lock modes
 
 Let's look at the various table-level lock modes, each serving different operations:
 
@@ -150,7 +149,7 @@ A critical lesson is that DDL operations may block both writes and reads for the
 Because of this, it's crucial to avoid mixing commands that require strong locks with others in the same transaction.
 For example, if you need to perform both a table alteration and data updates, it's better to separate these into different transactions to minimize blocking.
 
-## Understanding Lock Queues in Postgres
+## Understanding lock queues in Postgres
 
 When a transaction requests a lock that conflicts with a lock already held by a different transaction, it enters a **lock queue**.
 By default, the requesting transaction will wait indefinitely until the lock becomes available.
@@ -173,11 +172,13 @@ However, when implementing timeouts, your application must be prepared to handle
 
 The biggest insight from this is that **any long-running query** can cause blocking during schema changes, but this cumulative waiting effect can be mitigated by setting appropriate `lock_timeout` values.
 
-## Locking It All Together
+We also have a good blog post on [Schema changes and the Postgres lock queue](https://xata.io/blog/migrations-and-exclusive-locks), in case you'd like to read more.
+
+## Locking it all together
 
 I've noticed that this blog has become quite long, and I have much more to say. So, I will end it here and write a follow-up to discuss lock contention and ways to minimize the impact of locks where necessary.
 
-So far, we've explored how MVCC helps handle concurrent transactions and how the various lock modes protect data integrity. We've seen that locks range from lightweight **ACCESS SHARE** to heavyweight **ACCESS EXCLUSIVE**, each playing a crucial role in maintaining data consistency. While MVCC avoids many traditional locking issues, some level of locking remains unavoidable. The key is finding the right balance, too little locking risks data corruption, while too much creates unnecessary bottlenecks.
+So far, we've explored how MVCC helps handle concurrent transactions and how the various lock modes protect data integrity. We've seen that locks range from more permissive **ACCESS SHARE** to more restrictive **ACCESS EXCLUSIVE**, each playing a crucial role in maintaining data consistency. While MVCC avoids many traditional locking issues, some level of locking remains unavoidable. The key is finding the right balance, too little locking risks data corruption, while too much creates unnecessary bottlenecks.
 
 To summarize, here are the key takeaways from this blog:
 
