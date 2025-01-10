@@ -48,38 +48,31 @@ With the default Read Committed Isolation Level, every time a statement begins, 
 - The latest committed transaction ID
 - The list of in-progress transactions
 
-Let's see how it works in practice with a simple example:
+Let's see how it works in practice with Read Committed isolation level:
 
-```sql
--- Initial state of employees table
--- id | name | salary | xmin | xmax
--- 1 | Alice | 50000 | 99 | null
--- Transaction 1 starts (txid: 100)
-BEGIN;
-SELECT FROM employees WHERE id = 1;
--- Sees: Alice, 50000 (because xmax is null, row is visible)
--- Transaction 2 (txid: 101) updates the salary
-BEGIN;
-UPDATE employees SET salary = 60000 WHERE id = 1;
--- Creates new version:
--- id | name | salary | xmin | xmax
--- 1 | Alice | 50000 | 99 | 101
--- 1 | Alice | 60000 | 101 | null
-COMMIT;
--- Transaction 1 still sees salary 50000 because:
--- 1. It uses snapshot from start of transaction 100
--- 2. Changes by transaction 101 are invisible to snapshot 100
-SELECT FROM employees WHERE id = 1; -- Still sees 50000
-```
+| Transaction 1 (txid: 100) | Transaction 2 (txid: 101) | Row Versions |
+|--------------------------|--------------------------|--------------|
+| BEGIN; | | (0,1) \| 1 \| Alice \| 50000 \| 99 \| null |
+| SELECT ctid, id, name, salary, xmin, xmax<br>FROM employees<br>WHERE id = 1;<br>-- Sees: salary = 50000 | | (0,1) \| 1 \| Alice \| 50000 \| 99 \| null |
+| | BEGIN; | (0,1) \| 1 \| Alice \| 50000 \| 99 \| null |
+| | UPDATE employees<br>SET salary = 60000<br>WHERE id = 1; | (0,1) \| 1 \| Alice \| 50000 \| 99 \| 101<br>(0,2) \| 1 \| Alice \| 60000 \| 101 \| null |
+| SELECT ctid, id, name, salary, xmin, xmax<br>FROM employees<br>WHERE id = 1;<br>-- Sees: salary = 50000 | | (0,1) \| 1 \| Alice \| 50000 \| 99 \| 101<br>(0,2) \| 1 \| Alice \| 60000 \| 101 \| null |
+| | COMMIT; | (0,1) \| 1 \| Alice \| 50000 \| 99 \| 101<br>(0,2) \| 1 \| Alice \| 60000 \| 101 \| null |
+| SELECT ctid, id, name, salary, xmin, xmax<br>FROM employees<br>WHERE id = 1;<br>-- Sees: salary = 60000 | | (0,1) \| 1 \| Alice \| 50000 \| 99 \| 101<br>(0,2) \| 1 \| Alice \| 60000 \| 101 \| null |
+| COMMIT; | | (0,1) \| 1 \| Alice \| 50000 \| 99 \| 101<br>(0,2) \| 1 \| Alice \| 60000 \| 101 \| null |
 
-So to summarize, a single row exists with Alice's salary at 50000.
-First transaction (`txid:100`) starts and gets a snapshop and sees Alice's salary at 50000 because the row's `xmax` is null (meaning it's current), the row's `xmin` (`99`) is less than our transaction ID (`100`) and transaction `99` is already committed.
+So to summarize, a single row exists with Alice's salary at 50000. First transaction (`txid:100`) starts and gets a snapshot for its `SELECT` statement and sees Alice's salary at 50000 because the row's `xmax` is null (meaning it's current), the row's `xmin` (`99`) is less than our transaction ID (`100`) and transaction `99` is already committed.
 
-The second transaction (`txid:101`) updates the salary to 60000. This creates two row versions; old version marked with `xmax=101`, new version created with `xmin=101`. Then second transaction commits, changes are now visible to new transactions.
+The second transaction (`txid:101`) updates the salary to 60000. This creates two row versions; old version marked with `xmax=101`, new version created with `xmin=101`. Then second transaction commits, making its changes visible to any new snapshots.
 
-But the first transaction still sees salary 50000 because it is using its snapshot from the start of transaction `100`. Changes made by transaction `101` are invisible to this snapshot. The original row version (`xmin=99`, `xmax=101`) is visible to transaction `100`.
+When the first transaction executes its second `SELECT` statement (before Transaction 2 commits), it still sees salary 50000 because Transaction `101` hasn't committed yet. After Transaction 2 commits, when Transaction 1 executes its third `SELECT` statement, it gets a fresh snapshot (Read Committed behavior) and now sees salary 60000 because:
 
-A row version is visible to a transaction if its creating transaction (`xmin`) is committed and its deleting transaction (`xmax`) is not committed, or its deleting transaction completed after the snapshot was taken.
+- Each statement gets a new snapshot
+- Transaction `101` is now committed
+- The row version with `xmin=101` is the current version (`xmax` is null)
+- The old version with `xmax=101` is no longer visible to new snapshots
+
+This behavior is specific to Read Committed isolation level, where each statement gets a fresh snapshot and can see committed changes from other transactions, even within the same transaction.
 
 But, of course, MVCC approach also comes with some implications:
 
