@@ -6,7 +6,7 @@ image:
   alt: Anatomy of Table-Level Locks in PostgreSQL
 author: Gulcin Yildirim Jelinek
 authorEmail: gulcin@xata.io
-date: 01-10-2025
+date: 01-13-2025
 tags: ['postgres', 'postgresql', 'locks', 'ddl', 'dml', 'MVCC', 'pgroll']
 published: true
 slug: anatomy-of-locks
@@ -50,16 +50,7 @@ With the default Read Committed Isolation Level, every time a statement begins, 
 
 Let's see how it works in practice with Read Committed isolation level:
 
-| Transaction 1 (txid: 100) | Transaction 2 (txid: 101) | Row Versions |
-|--------------------------|--------------------------|--------------|
-| BEGIN; | | (0,1) \| 1 \| Alice \| 50000 \| 99 \| null |
-| SELECT ctid, id, name, salary, xmin, xmax<br>FROM employees<br>WHERE id = 1;<br>-- Sees: salary = 50000 | | (0,1) \| 1 \| Alice \| 50000 \| 99 \| null |
-| | BEGIN; | (0,1) \| 1 \| Alice \| 50000 \| 99 \| null |
-| | UPDATE employees<br>SET salary = 60000<br>WHERE id = 1; | (0,1) \| 1 \| Alice \| 50000 \| 99 \| 101<br>(0,2) \| 1 \| Alice \| 60000 \| 101 \| null |
-| SELECT ctid, id, name, salary, xmin, xmax<br>FROM employees<br>WHERE id = 1;<br>-- Sees: salary = 50000 | | (0,1) \| 1 \| Alice \| 50000 \| 99 \| 101<br>(0,2) \| 1 \| Alice \| 60000 \| 101 \| null |
-| | COMMIT; | (0,1) \| 1 \| Alice \| 50000 \| 99 \| 101<br>(0,2) \| 1 \| Alice \| 60000 \| 101 \| null |
-| SELECT ctid, id, name, salary, xmin, xmax<br>FROM employees<br>WHERE id = 1;<br>-- Sees: salary = 60000 | | (0,1) \| 1 \| Alice \| 50000 \| 99 \| 101<br>(0,2) \| 1 \| Alice \| 60000 \| 101 \| null |
-| COMMIT; | | (0,1) \| 1 \| Alice \| 50000 \| 99 \| 101<br>(0,2) \| 1 \| Alice \| 60000 \| 101 \| null |
+![MVCC example](/images/mvcc-example.png)
 
 So to summarize, a single row exists with Alice's salary at 50000. First transaction (`txid:100`) starts and gets a snapshot for its `SELECT` statement and sees Alice's salary at 50000 because the row's `xmax` is null (meaning it's current), the row's `xmin` (`99`) is less than our transaction ID (`100`) and transaction `99` is already committed.
 
@@ -181,3 +172,7 @@ To summarize, here are the key takeaways from this blog:
 - Don’t mix commands that need strong locks with others working in same transaction.
 - Use `lock_timeout` to limit how long something waits for lock.
 - Using `lock_timeout` for DDL commands is often enough. Must be able to handle failures, for example retry the DDL again.
+
+I'll be presenting this topic at [PGDay CERN](https://indico.cern.ch/event/1471762/timetable/#20250117) on 17th of January, if you're around, please come by and say hi!
+
+Stay tuned for the upcoming blog post.
