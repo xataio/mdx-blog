@@ -1,0 +1,65 @@
+---
+title: 'Postgres Cafe: Solving schema replication gaps with pgstream'
+description: 'In this episode of Postgres Café, we discuss pgstream, an open-source tool for capturing and replicating schema and data changes in PostgreSQL. Learn how it solves schema replication challenges and enhances data pipelines.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-cafe-pgstream-og@2x.png
+  alt: pgstream
+author: Cezzaine Zaher
+authorEmail: cezzaine@xata.io
+date: 01-15-2025
+tags: ['open-source', 'postgres', 'fpgstream', 'oss']
+published: true
+slug: postgres-cafe-pgstream
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-cafe-pgstream-og@2x.png
+---
+
+In [episode 3 of Postgres Café](https://www.youtube.com/embed/j1R3a0-jg6c?si=rEPoVI9vyR2MI_e8), we’re talking about pgstream, an open-source tool designed to handle one of PostgreSQL’s biggest gaps: seamlessly replicating schema and data changes. 
+
+# Episode 3: pgstream
+
+pgstream is a purpose-built **change data capture (CDC) tool for PostgreSQL**. While PostgreSQL offers built-in replication, it lacks support for replicating **schema changes (DDL)**. pgstream bridges this gap by capturing both **data changes** and **schema updates**, ensuring downstream systems stay synchronized without requiring manual fixes.
+
+Designed with flexibility in mind, pgstream uses a **modular architecture** to enable integrations with tools like Kafka and OpenSearch. It’s open-source, extensible, and ideal for developers building data pipelines
+
+## Why use pgstream for PostgreSQL replication?
+
+Traditional PostgreSQL replication tools often fall short when managing schema changes or handling replication lag. pgstream addresses these limitations with features tailored for modern workflows:
+
+- **Schema change replication:** Ensures schema updates (e.g., table structure changes) are captured and applied downstream without breaking your pipelines.
+- **Lag management:** Uses buffering and Kafka integration to prevent replication slot lag, keeping your database performant and your data pipeline flowing.
+- **Modular integrations:** Connect pgstream to OpenSearch for real-time search, implement custom processors for Snowflake or S3, or trigger workflows with webhooks.
+
+## Key takeaways from the episode
+
+### How pgstream handles schema changes
+
+Schema changes, such as altering table structures or adding columns, can disrupt replication pipelines if not accounted for. pgstream automatically captures these changes and propagates them downstream, so your data pipelines stay in sync without manual interventions.
+
+### Tackling replication lag
+
+pgstream prevents replication slot lag with two key approaches:
+- **Memory buffering:** Allocates memory to keep consuming replication slots even when downstream systems are slow.
+- **Kafka integration:** Decouples upstream and downstream systems by writing changes to Kafka topics, allowing multiple consumers to process data independently and at their own pace.
+
+### Modular and extensible design
+
+pgstream’s architecture is built around listeners (reading data changes) and processors (handling those changes). This modular design allows for flexible integrations and customizations. For example:
+- Use a **Postgres-to-OpenSearch processor** for real-time search.
+- Build custom processors to integrate with Snowflake, S3, or any other system.
+- Leverage its webhook processor to trigger external workflows based on database events.
+
+### Use cases
+
+The team shared how pgstream is already in use at Xata:
+- **Search integration:** pgstream powers Postgres-to-OpenSearch replication to enable advanced search features directly from PostgreSQL data.
+- **File cleanup workflows:** A custom processor detects when files are deleted in Postgres and triggers corresponding deletions in S3 storage, keeping data consistent across systems.
+
+## Watch the full episode
+
+For an in-depth exploration of pgstream and its capabilities, watch the full episode here:
+
+<ArticleVideo platform="youtube" src="https://www.youtube.com/embed/j1R3a0-jg6c?si=rEPoVI9vyR2MI_e8" />
+
+## Stay tuned for more Postgres tools
+
+This is part of the Postgres Cafe video series! [Subscribe to the playlist](https://www.youtube.com/playlist?list=PLf7KS0svgDP_zJmby3RMzzOVO45qLbruA) for more episodes that feature open-source tools like [pgroll](https://pgroll.com/) for zero downtime schema changes in production, [StatsMgr](https://www.data-bene.io/en/blog/postgres-cafe-expand-monitoring-capabilities-with-statsmgr/) for monitoring and tracking events across PostgreSQL, and more. Watch this space to learn how each tool can make working with Postgres smoother and more efficient.
