@@ -13,7 +13,7 @@ slug: postgres-cafe-pgstream
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-cafe-pgstream-og@2x.png
 ---
 
-In [episode 3 of Postgres Café](https://www.youtube.com/embed/j1R3a0-jg6c?si=rEPoVI9vyR2MI_e8), we’re talking about pgstream, an open-source tool designed to handle one of PostgreSQL’s biggest gaps: seamlessly replicating schema and data changes. 
+In [episode 3 of Postgres Café](https://www.youtube.com/embed/j1R3a0-jg6c?si=rEPoVI9vyR2MI_e8), we’re talking about pgstream, an open-source tool designed to handle one of PostgreSQL’s biggest gaps: seamlessly replicating schema and data changes.
 
 # Episode 3: pgstream
 
@@ -38,12 +38,14 @@ Schema changes, such as altering table structures or adding columns, can disrupt
 ### Tackling replication lag
 
 pgstream prevents replication slot lag with two key approaches:
+
 - **Memory buffering:** Allocates memory to keep consuming replication slots even when downstream systems are slow.
 - **Kafka integration:** Decouples upstream and downstream systems by writing changes to Kafka topics, allowing multiple consumers to process data independently and at their own pace.
 
 ### Modular and extensible design
 
 pgstream’s architecture is built around listeners (reading data changes) and processors (handling those changes). This modular design allows for flexible integrations and customizations. For example:
+
 - Use a **Postgres-to-OpenSearch processor** for real-time search.
 - Build custom processors to integrate with Snowflake, S3, or any other system.
 - Leverage its webhook processor to trigger external workflows based on database events.
@@ -51,6 +53,7 @@ pgstream’s architecture is built around listeners (reading data changes) and p
 ### Use cases
 
 The team shared how pgstream is already in use at Xata:
+
 - **Search integration:** pgstream powers Postgres-to-OpenSearch replication to enable advanced search features directly from PostgreSQL data.
 - **File cleanup workflows:** A custom processor detects when files are deleted in Postgres and triggers corresponding deletions in S3 storage, keeping data consistent across systems.
 
