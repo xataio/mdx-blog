@@ -1,9 +1,9 @@
 ---
-title: 'Anatomy of Table-Level Locks: Reducing Locking Impact'
+title: 'Anatomy of table-level locks: Reducing locking impact'
 description: 'Not all operations require the same level of locking, and PostgreSQL offers tools and techniques to minimize locking impact.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/anatomy-of-locks-og@2x.png
-  alt: Anatomy of Table-Level Locks in PostgreSQL Reducing Locking Impact
+  alt: Anatomy of table-level locks in PostgreSQL: Reducing locking impact
 author: Gulcin Yildirim Jelinek
 authorEmail: gulcin@xata.io
 date: 01-20-2025
@@ -14,7 +14,7 @@ canonicalUrl: https://pgroll.com/blog/anatomy-of-table-level-locks-reducing-lock
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/anatomy-of-locks-og@2x.png
 ---
 
-I've started blogging about [Anatomy of Table-Level Locks in PostgreSQL](https://pgroll.com/posts/anatomy-of-table-level-locks-in-postgresql). In the first [blog](https://pgroll.com/posts/anatomy-of-table-level-locks-in-postgresql), we've talked about why database systems use locking mechanisms and how Postgres utilizes MVCC to avoid most concurrency issues, reducing the necessity for locks. We then talked about DDL locks and explained how the Postgres lock queue works.
+I've started blogging about [Anatomy of table-level locks in PostgreSQL](https://pgroll.com/posts/anatomy-of-table-level-locks-in-postgresql). In the first [blog](https://pgroll.com/posts/anatomy-of-table-level-locks-in-postgresql), we've talked about why database systems use locking mechanisms and how Postgres utilizes MVCC to avoid most concurrency issues, reducing the necessity for locks. We then talked about DDL locks and explained how the Postgres lock queue works.
 
 In this follow-up post, we will talk about lock contention to explore the ways of reducing locking impact in production systems to reduce potential downtime risks related to DDL changes.
 
@@ -41,7 +41,7 @@ One of the most effective strategies for reducing lock contention is breaking do
 Let's imagine, you need to add a `NOT NULL` column with a default value:
 
 ```sql
-ALTER TABLE mytable ADD COLUMN newcol timestamptz NOT NULL DEFAULT now();
+ALTER TABLE mytable ADD COLUMN newcol timestamptz NOT NULL DEFAULT clock_timestamp();
 ```
 
 This single command requires an **ACCESS EXCLUSIVE** lock and will rewrite the entire table. For large tables, this can lead to significant downtime as it:
@@ -53,13 +53,13 @@ This single command requires an **ACCESS EXCLUSIVE** lock and will rewrite the e
 Instead of a single heavy operation we chose above, we can break it into three less-blocking steps:
 
 ```sql
-ALTER TABLE mytable ADD COLUMN newcol timestamptz DEFAULT now();
-UPDATE mytable SET newcol = now() WHERE newcol IS NULL;
+ALTER TABLE mytable ADD COLUMN newcol timestamptz DEFAULT clock_timestamp();
+UPDATE mytable SET newcol = clock_timestamp() WHERE newcol IS NULL;
 ALTER TABLE mytable ALTER COLUMN newcol SET NOT NULL;
 ```
 
-1. First, add the nullable column with a default: `ALTER TABLE mytable ADD COLUMN newcol timestamptz DEFAULT now();`
-2. Then, populate any `NULL` values: `UPDATE mytable SET newcol = now() WHERE newcol IS NULL;` You should actually do this update in batches, remember any long-running query can cause problems.
+1. First, add the nullable column with a default: `ALTER TABLE mytable ADD COLUMN newcol timestamptz DEFAULT clock_timestamp();`
+2. Then, populate any `NULL` values: `UPDATE mytable SET newcol = clock_timestamp() WHERE newcol IS NULL;` You should actually do this update in batches, remember any long-running query can cause problems.
 3. Finally, add the `NOT NULL` constraint: `ALTER TABLE mytable ALTER COLUMN newcol SET NOT NULL;`
 
 This approach has several advantages:
@@ -68,7 +68,9 @@ This approach has several advantages:
 - The data population can be done with normal **ROW EXCLUSIVE** locks, allowing concurrent operations
 - Each step can be rolled back if something goes wrong
 
-There are a few good practices to be mindful here. It is always a good idea to do the batch updates for large tables to avoid long-running transactions. You could add appropriate indexes before running batch updates if needed.
+There are a few good practices to be mindful here. It is always a good idea to do the batch updates for large tables to avoid long-running transactions.
+In our zero-downtime, multi-version schema change tool [pgroll](https://github.com/xataio/pgroll), when we do backfills, we do it in batches to avoid taking a row lock on every row in the table for example.
+The tool allows setting a custom backfill batch size (`--backfill-batch-size`) and delay (`--backfill-batch-delay`) to control the speed of the backfill.
 
 This pattern of splitting DDL operations can be applied to many other schema changes. The general principle is to find ways to break down operations that require **ACCESS EXCLUSIVE** locks into smaller steps that can use less restrictive locks or hold the locks for shorter durations. This reduces the duration of strong locks and prevents long-running operations from blocking others.
 
@@ -82,7 +84,7 @@ As we discussed earlier, there are multiple ways to achieve the same result by t
 ALTER TABLE mytable ALTER COLUMN newcol SET NOT NULL;
 ```
 
-This command still takes long time and **blocks writes**, but it is an improvement as it **does not block reads** unlike the original command and it takes a shorter time than the original command as it does only one table-scan.
+This command still takes a long time and **blocks writes**, but it is an improvement as it **does not block reads** unlike the original command and it takes a shorter time than the original command as it does only one table-scan.
 
 We can optimize this further by leveraging `CHECK` constraints:
 
@@ -110,7 +112,7 @@ ALTER TABLE mytable ADD COLUMN newcol int NOT NULL DEFAULT 1;
 
 This command still requires an **ACCESS EXCLUSIVE** lock and blocks other operations. However, in modern PostgreSQL versions, it executes very quickly because Postgres recognizes that a constant default value (like `1`) can be stored as metadata without rewriting the table. The lock duration is minimal, making this operation much less disruptive in production.
 
-In contrast, older PostgreSQL versions would trigger a full table rewrite for this same command, similar to our earlier `DEFAULT now()` example. The performance difference is substantial, especially for large tables.
+In contrast, older PostgreSQL versions would trigger a full table rewrite for this same command, similar to our earlier `DEFAULT clock_timestamp()` example. The performance difference is substantial, especially for large tables.
 
 If possible, always run the latest version of Postgres:
 
