@@ -3,7 +3,7 @@ title: 'Anatomy of table-level locks: Reducing locking impact'
 description: 'Not all operations require the same level of locking, and PostgreSQL offers tools and techniques to minimize locking impact.'
 image:
   src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/anatomy-of-locks-og@2x.png
-  alt: Anatomy of table-level locks in PostgreSQL: Reducing locking impact
+  alt: 'Anatomy of table-level locks in PostgreSQL: Reducing locking impact'
 author: Gulcin Yildirim Jelinek
 authorEmail: gulcin@xata.io
 date: 01-20-2025
@@ -58,9 +58,9 @@ UPDATE mytable SET newcol = clock_timestamp() WHERE newcol IS NULL;
 ALTER TABLE mytable ALTER COLUMN newcol SET NOT NULL;
 ```
 
-1. First, add the nullable column with a default: `ALTER TABLE mytable ADD COLUMN newcol timestamptz DEFAULT clock_timestamp();`
-2. Then, populate any `NULL` values: `UPDATE mytable SET newcol = clock_timestamp() WHERE newcol IS NULL;` You should actually do this update in batches, remember any long-running query can cause problems.
-3. Finally, add the `NOT NULL` constraint: `ALTER TABLE mytable ALTER COLUMN newcol SET NOT NULL;`
+1.  First, add the nullable column with a default: `ALTER TABLE mytable ADD COLUMN newcol timestamptz DEFAULT clock_timestamp();`
+2.  Then, populate any `NULL` values: `UPDATE mytable SET newcol = clock_timestamp() WHERE newcol IS NULL;` You should actually do this update in batches, remember any long-running query can cause problems.
+3.  Finally, add the `NOT NULL` constraint: `ALTER TABLE mytable ALTER COLUMN newcol SET NOT NULL;`
 
 This approach has several advantages:
 
@@ -95,8 +95,8 @@ ALTER TABLE mytable ALTER COLUMN newcol SET NOT NULL; --optional
 ALTER TABLE mytable DROP CONSTRAINT mytable_newcol_not_null; --optional
 ```
 
-1. First, we can add a `NOT VALID` check constraint: `ALTER TABLE mytable ADD CONSTRAINT mytable_newcol_not_null CHECK (newcol IS NOT NULL) NOT VALID;`
-2. Then validate the constraint: `ALTER TABLE mytable VALIDATE CONSTRAINT mytable_newcol_not_null;` The scan during the `VALIDATE CONSTRAINT` does not block writes.
+1.  First, we can add a `NOT VALID` check constraint: `ALTER TABLE mytable ADD CONSTRAINT mytable_newcol_not_null CHECK (newcol IS NOT NULL) NOT VALID;`
+2.  Then validate the constraint: `ALTER TABLE mytable VALIDATE CONSTRAINT mytable_newcol_not_null;` The scan during the `VALIDATE CONSTRAINT` does not block writes.
 
 If you prefer to have a `NOT NULL` set on the column (rather than a `CHECK` constraint), setting it now is only metadata operation as Postgres is smart enough to recognize a **valid** `CHECK` constraint (still will do brief **ACCESS EXCLUSIVE** lock though). Afterwards, you should also drop the now-redundant `CHECK` constraint (another brief **ACCESS EXCLUSIVE** lock).
 
