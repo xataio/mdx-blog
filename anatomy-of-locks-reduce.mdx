@@ -1,0 +1,130 @@
+---
+title: 'Anatomy of table-level locks: Reducing locking impact'
+description: 'Not all operations require the same level of locking, and PostgreSQL offers tools and techniques to minimize locking impact.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/anatomy-of-locks-og@2x.png
+  alt: Anatomy of table-level locks in PostgreSQL: Reducing locking impact
+author: Gulcin Yildirim Jelinek
+authorEmail: gulcin@xata.io
+date: 01-20-2025
+tags: ['postgres', 'postgresql', 'locks', 'ddl', 'dml', 'MVCC', 'pgroll']
+published: true
+slug: anatomy-of-locks-reduce
+canonicalUrl: https://pgroll.com/blog/anatomy-of-table-level-locks-reducing-locking-impact
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/anatomy-of-locks-og@2x.png
+---
+
+I've started blogging about [Anatomy of table-level locks in PostgreSQL](https://pgroll.com/posts/anatomy-of-table-level-locks-in-postgresql). In the first [blog](https://pgroll.com/posts/anatomy-of-table-level-locks-in-postgresql), we've talked about why database systems use locking mechanisms and how Postgres utilizes MVCC to avoid most concurrency issues, reducing the necessity for locks. We then talked about DDL locks and explained how the Postgres lock queue works.
+
+In this follow-up post, we will talk about lock contention to explore the ways of reducing locking impact in production systems to reduce potential downtime risks related to DDL changes.
+
+## Lock contention
+
+Lock contention occurs when multiple transactions compete for access to the same database resource (like a table or row), and at least one transaction has to wait because it requires a lock that conflicts with locks held by other transactions. In PostgreSQL, this commonly happens during schema modifications (DDL operations) that require exclusive locks, or during heavy concurrent DML operations on the same rows. When contention occurs, transactions form a queue, waiting for their turn to acquire the needed lock. High lock contention can lead to decreased throughput, increased latency, and in severe cases, application timeouts or downtime. This is particularly problematic in high-traffic production systems where long-running queries or poorly timed schema changes can cause a cascade of waiting transactions, effectively blocking access to critical tables.
+
+## Reducing locking impact
+
+When making schema changes or running maintenance tasks in PostgreSQL, it's crucial to minimize locking to avoid blocking other queries and degrading performance. Not all operations require the same level of locking, and PostgreSQL offers tools and techniques to minimize locking impact.
+
+### Use CONCURRENTLY commands
+
+Commands like `CREATE INDEX CONCURRENTLY` or `ALTER TABLE DETACH PARTITION CONCURRENTLY` acquire less-restrictive locks compared to the same statements without `CONCURRENTLY`, allowing other operations to proceed. However, these commands:
+
+- Take longer to complete.
+- Are non-transactional (can't be in transaction block, can’t be rolled back).
+- Require additional care to handle failures, which can leave partial changes (there are commands like `FINALIZE` to clean up or finish the work).
+
+### Split complex operations
+
+One of the most effective strategies for reducing lock contention is breaking down large DDL operations into smaller, less-blocking steps.
+
+Let's imagine, you need to add a `NOT NULL` column with a default value:
+
+```sql
+ALTER TABLE mytable ADD COLUMN newcol timestamptz NOT NULL DEFAULT clock_timestamp();
+```
+
+This single command requires an **ACCESS EXCLUSIVE** lock and will rewrite the entire table. For large tables, this can lead to significant downtime as it:
+
+- **Blocks all concurrent access** (even `SELECT`s)
+- Holds the lock for **the entire duration of the table rewrite**
+- Can take minutes or hours for large tables
+
+Instead of a single heavy operation we chose above, we can break it into three less-blocking steps:
+
+```sql
+ALTER TABLE mytable ADD COLUMN newcol timestamptz DEFAULT clock_timestamp();
+UPDATE mytable SET newcol = clock_timestamp() WHERE newcol IS NULL;
+ALTER TABLE mytable ALTER COLUMN newcol SET NOT NULL;
+```
+
+1. First, add the nullable column with a default: `ALTER TABLE mytable ADD COLUMN newcol timestamptz DEFAULT clock_timestamp();`
+2. Then, populate any `NULL` values: `UPDATE mytable SET newcol = clock_timestamp() WHERE newcol IS NULL;` You should actually do this update in batches, remember any long-running query can cause problems.
+3. Finally, add the `NOT NULL` constraint: `ALTER TABLE mytable ALTER COLUMN newcol SET NOT NULL;`
+
+This approach has several advantages:
+
+- The initial column addition is very quick and requires only a brief **ACCESS EXCLUSIVE** lock
+- The data population can be done with normal **ROW EXCLUSIVE** locks, allowing concurrent operations
+- Each step can be rolled back if something goes wrong
+
+There are a few good practices to be mindful here. It is always a good idea to do the batch updates for large tables to avoid long-running transactions.
+In our zero-downtime, multi-version schema change tool [pgroll](https://github.com/xataio/pgroll), when we do backfills, we do it in batches to avoid taking a row lock on every row in the table for example.
+The tool allows setting a custom backfill batch size (`--backfill-batch-size`) and delay (`--backfill-batch-delay`) to control the speed of the backfill.
+
+This pattern of splitting DDL operations can be applied to many other schema changes. The general principle is to find ways to break down operations that require **ACCESS EXCLUSIVE** locks into smaller steps that can use less restrictive locks or hold the locks for shorter durations. This reduces the duration of strong locks and prevents long-running operations from blocking others.
+
+It's always a good idea to keep an eye on lock contention while you're doing complex operations. Sometimes you might even want to explicitly lock things to prevent unexpected concurrent access. And don't forget to set appropriate `lock_timeout` values to make sure transactions don't end up waiting forever.
+
+### Validate constraints separately
+
+As we discussed earlier, there are multiple ways to achieve the same result by tweaking the queries. In the previous section, as a last step we added the `NOT NULL` constraint with the query below:
+
+```sql
+ALTER TABLE mytable ALTER COLUMN newcol SET NOT NULL;
+```
+
+This command still takes a long time and **blocks writes**, but it is an improvement as it **does not block reads** unlike the original command and it takes a shorter time than the original command as it does only one table-scan.
+
+We can optimize this further by leveraging `CHECK` constraints:
+
+```sql
+ALTER TABLE mytable ADD CONSTRAINT mytable_newcol_not_null CHECK (newcol IS NOT NULL) NOT VALID;
+ALTER TABLE mytable VALIDATE CONSTRAINT mytable_newcol_not_null;
+ALTER TABLE mytable ALTER COLUMN newcol SET NOT NULL; --optional
+ALTER TABLE mytable DROP CONSTRAINT mytable_newcol_not_null; --optional
+```
+
+1. First, we can add a `NOT VALID` check constraint: `ALTER TABLE mytable ADD CONSTRAINT mytable_newcol_not_null CHECK (newcol IS NOT NULL) NOT VALID;`
+2. Then validate the constraint: `ALTER TABLE mytable VALIDATE CONSTRAINT mytable_newcol_not_null;` The scan during the `VALIDATE CONSTRAINT` does not block writes.
+
+If you prefer to have a `NOT NULL` set on the column (rather than a `CHECK` constraint), setting it now is only metadata operation as Postgres is smart enough to recognize a **valid** `CHECK` constraint (still will do brief **ACCESS EXCLUSIVE** lock though). Afterwards, you should also drop the now-redundant `CHECK` constraint (another brief **ACCESS EXCLUSIVE** lock).
+
+Splitting actions takes expertise, but it’s often necessary to minimize locking. Try to find approach that does less locking. And some things are impossible or very hard to do without heavy locking from plain SQL.
+
+## Postgres keeps getting better
+
+PostgreSQL has many optimizations for DDL and continues to improve with each release. Let's look at a slightly modified example from before:
+
+```sql
+ALTER TABLE mytable ADD COLUMN newcol int NOT NULL DEFAULT 1;
+```
+
+This command still requires an **ACCESS EXCLUSIVE** lock and blocks other operations. However, in modern PostgreSQL versions, it executes very quickly because Postgres recognizes that a constant default value (like `1`) can be stored as metadata without rewriting the table. The lock duration is minimal, making this operation much less disruptive in production.
+
+In contrast, older PostgreSQL versions would trigger a full table rewrite for this same command, similar to our earlier `DEFAULT clock_timestamp()` example. The performance difference is substantial, especially for large tables.
+
+If possible, always run the latest version of Postgres:
+
+- Newer versions include optimizations that reduce required lock-modes.
+- Additional `CONCURRENTLY` variants become available for DDL operations
+- Lock mechanisms themselves are improved
+- Previously long-running operations might become quick metadata-only changes
+
+Running an older PostgreSQL version means you might be dealing with locking issues that have already been solved in newer releases. Each major version brings improvements to schema modification operations, often making them faster and less disruptive to production workloads.
+
+## Conclusion: Balancing locks, performance and correctness
+
+PostgreSQL’s locking system is a powerful tool for ensuring data consistency and concurrency, but it’s also a source of contention and bottlenecks. By understanding the types of locks, their impact, and strategies for minimizing them, you can manage locks effectively and keep your database performant.
+
+I'll be presenting this topic at [Prague PostgreSQL Developer Day](https://p2d2.cz/2025/program) on 29th of January and at [FOSDEM PostgreSQL Devroom](https://fosdem.org/2025/schedule/track/postgresql/) on 2nd of February. If you'll be around, come say hi!
