@@ -383,7 +383,52 @@ For more complex foreign key constraints including different constraint options,
 
 ### Exclude constraints
 
-It's also possible to specify exclude constraints using the table-level `constraints` field . Examples of how to do so can be found in the [documentation for the create_table operation](https://pgroll.com/docs/v0.9.0/operations/create_table).
+It's also possible to specify exclude constraints using the table-level `constraints` field:
+
+```json
+{
+  "name": "01_create_table",
+  "operations": [
+    {
+      "create_table": {
+        "name": "room_reservations",
+        "columns": [
+          {
+            "name": "id",
+            "type": "serial"
+          },
+          {
+            "name": "start",
+            "type": "timestamp"
+          },
+          {
+            "name": "end",
+            "type": "timestamp"
+          },
+          {
+            "name": "canceled",
+            "type": "boolean",
+            "default": "false"
+          }
+        ],
+        "constraints": [
+          {
+            "name": "forbid_double_booking",
+            "type": "exclude",
+            "exclude": {
+              "index_method": "gist",
+              "elements": "id WITH =, tsrange(\"start\", \"end\") WITH &&",
+              "predicate": "NOT canceled"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+Exclude constraints were not possible to specify in any version of `pgroll` before `v0.9`.
 
 ## Generated columns
 
