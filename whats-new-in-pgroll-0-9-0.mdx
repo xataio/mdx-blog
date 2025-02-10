@@ -1,0 +1,487 @@
+---
+title: pgroll 0.9.0 update
+description: pgroll v0.9 includes one breaking change, several improvements to table level constraint definitions and better CLI feedback
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-update-0-6-0@2x.jpg
+  alt: pgroll
+author: Andrew Farries
+authorEmail: andrew@xata.io
+date: 10-02-2025
+tags: ['open-source', 'postgres', 'schema', 'migrations', 'pgroll', 'fpSchemaMigrations', 'oss']
+published: true
+slug: pgroll-0-9-0-update
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-update-0-6-0@2x.jpg
+canonicalUrl: https://pgroll.com/blog/pgroll-090-update
+---
+
+We've just released `v0.9` of `pgroll`, our open-source schema migration tool for Postgres. As we've done for previous releases, we'll take a look at some of the headline features that made it into the release and look ahead to what's coming next. Past entries in the release blog series can be read here:
+
+- [pgroll v0.8 release blog](https://pgroll.com/blog/pgroll-080-update)
+- [pgroll v0.7 release blog](https://pgroll.com/blog/pgroll-070-update)
+- [pgroll v0.6 release blog](https://pgroll.com/blog/pgroll-060-update)
+
+For the complete notes for this release see the [Github v0.9.0 release page](https://github.com/xataio/pgroll/releases/tag/v0.9.0).
+
+## What is pgroll?
+
+[pgroll](https://pgroll.com/) is a schema migration tool for Postgres. Designed for application developers working on applications that require frequent schema changes but also need to maintain zero downtime around those schema changes, `pgroll` takes a different approach compared to most other migration tools on the market. There are two aspects that characterize `pgroll`'s approach to migrations:
+
+- **Multi-version migrations**: Making a schema change with `pgroll` results in two versions of the schema; the one before the change and the one after the change - this allows applications to select which version of the schema they want to work with and allows side-by-side rollout of applications that require the new schema changes with old applications that may be incompatible with it.
+- **Lock-safe migrations**: Migrations using `pgroll` are expressed declaratively, rather than using SQL directly. This allows `pgroll` to implement the steps required to perform the schema change in a safe manner, ensuring that any locks required on the affected objects are held for the shortest possible time.
+
+Full documentation for pgroll is in the [documentation section](https://pgroll.com/docs/latest/getting-started) of this site.
+
+`pgroll` `v0.9` includes several new features and one breaking change. Let's take a look at what went into the `v0.9` release in more detail:
+
+## Breaking change to alter_column operations
+
+`pgroll` `v0.9` includes one breaking change to how columns in tables are renamed. Previously, an `alter_column` operation was used to rename a column, like this:
+
+```json
+{
+  "name": "13_rename_column",
+  "operations": [
+    {
+      "alter_column": {
+        "table": "employees",
+        "column": "role",
+        "name": "job_title"
+      }
+    }
+  ]
+}
+```
+
+The `name` field of the `alter_column` operation was used to specify the new name of the column. Here, the `role` field in the `employees` table was renamed to `job_title`.
+
+With `pgroll` `v0.9` this method of renaming a column is no longer supported; the new `rename_column` operation should be used instead. The same migration is now written:
+
+```json
+{
+  "name": "13_rename_column",
+  "operations": [
+    {
+      "rename_column": {
+        "table": "employees",
+        "from": "role",
+        "to": "job_title"
+      }
+    }
+  ]
+}
+```
+
+Expressing column renames in this way makes it easier to combine renames with other operations in the same migration and adheres more closely to SQL where column renames are performed with `ALTER TABLE ... RENAME COLUMN` statements, not `ALTER TABLE ... ALTER COLUMN` statements.
+
+## Table level constraints
+
+`pgroll` `v0.9` introduces several new options for the `create_table` operation. It is now possible to create table-level constraints in the operation directly using the new `constraints` field rather than having to add constraints separately after table creation.
+
+Full documention can be found in the [docs for the create_table](https://pgroll.com/docs/v0.9.0/operations/create_table) operation.
+
+We'll look at each supported constraint type in turn:
+
+### Primary key constraints
+
+Previously, columns that should be included in a primary key constraint were marked with `pk: true` in the column definitions themselves:
+
+```json
+{
+  "name": "01_create_table",
+  "operations": [
+    {
+      "create_table": {
+        "name": "items",
+        "columns": [
+          {
+            "name": "id",
+            "type": "serial",
+            "pk": true
+          },
+          {
+            "name": "name",
+            "type": "text"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+This way of creating tables with primary key constraints is still the best way to create simple primary key constraints, but the new `constraints` field offers an alternative way to create more complex primary keys:
+
+```json
+{
+  "name": "01_create_table",
+  "operations": [
+    {
+      "create_table": {
+        "name": "items",
+        "columns": [
+          {
+            "name": "manufacturer",
+            "type": "serial"
+          },
+          {
+            "name": "name",
+            "type": "text"
+          }
+        ],
+        "constraints": [
+          {
+            "name": "items_pk",
+            "type": "primary_key",
+            "columns": ["manufacturer", "name"]
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+### Unique constraints
+
+As with primary keys, single column unique constraints can be added when creating a table by setting `unique: true` in the column definitions themselves:
+
+```json
+{
+  "name": "01_create_table",
+  "operations": [
+    {
+      "create_table": {
+        "name": "items",
+        "columns": [
+          {
+            "name": "id",
+            "type": "serial",
+            "pk": true
+          },
+          {
+            "name": "name",
+            "type": "text",
+            "unique": true
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+But by using the `constraints` field instead, more complex unique constraints are possible:
+
+```json
+{
+  "name": "01_create_table",
+  "operations": [
+    {
+      "create_table": {
+        "name": "phonebook",
+        "columns": [
+          {
+            "name": "id",
+            "type": "serial",
+            "pk": true
+          },
+          {
+            "name": "name",
+            "type": "varchar(255)"
+          },
+          {
+            "name": "city",
+            "type": "varchar(255)"
+          },
+          {
+            "name": "phone",
+            "type": "varchar(255)"
+          }
+        ],
+        "constraints": [
+          {
+            "name": "unique_numbers",
+            "type": "unique",
+            "columns": ["phone"],
+            "index_parameters": {
+              "include_columns": ["name"]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+The `constraints` field allows us to define unique constraints spanning multiple columns and setting options like included columns.
+
+### Check constraints
+
+As with primary keys and unique constraints, single column check constraints on new tables have always been possible to create directly in the definition of each column:
+
+```json
+{
+  "name": "01_create_table",
+  "operations": [
+    {
+      "create_table": {
+        "name": "users",
+        "columns": [
+          {
+            "name": "id",
+            "type": "serial",
+            "pk": true
+          },
+          {
+            "name": "name",
+            "type": "text"
+          },
+          {
+            "name": "age",
+            "type": "int",
+            "check": {
+              "name": "age_check",
+              "constraint": "age > 0"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+For the creation of more complex check constraints spanning multiple columns or setting constraint options, use the `constraints` field instead:
+
+```json
+{
+  "name": "01_create_table",
+  "operations": [
+    {
+      "create_table": {
+        "name": "events",
+        "columns": [
+          {
+            "name": "id",
+            "type": "serial",
+            "pk": true
+          },
+          {
+            "name": "name",
+            "type": "varchar(255)"
+          },
+          {
+            "name": "start_date",
+            "type": "timestamp"
+          },
+          {
+            "name": "end_date",
+            "type": "timestamp"
+          }
+        ],
+        "constraints": [
+          {
+            "name": "start_before_end",
+            "type": "check",
+            "check": "end_date > start_date"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+### Foreign key constraints
+
+As with the other constraints, simple foreign key constraints can be added at table creation time directly in a column definition:
+
+```json
+{
+  "name": "02_create_orders_table",
+  "operations": [
+    {
+      "create_table": {
+        "name": "orders",
+        "columns": [
+          {
+            "name": "id",
+            "type": "serial",
+            "pk": true
+          },
+          {
+            "name": "user_id",
+            "type": "integer",
+            "references": {
+              "name": "fk_users_id",
+              "table": "users",
+              "column": "id"
+            }
+          },
+          {
+            "name": "quantity",
+            "type": "int"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+For more complex foreign key constraints including different constraint options, use the `constraints` field at table level instead:
+
+```json
+{
+  "name": "02_create_table",
+  "operations": [
+    {
+      "create_table": {
+        "name": "phonebook",
+        "columns": [
+          {
+            "name": "id",
+            "type": "serial",
+            "pk": true
+          },
+          {
+            "name": "provider_id",
+            "type": "serial"
+          },
+          {
+            "name": "name",
+            "type": "varchar(255)"
+          },
+          {
+            "name": "city",
+            "type": "varchar(255)"
+          },
+          {
+            "name": "phone",
+            "type": "varchar(255)"
+          }
+        ],
+        "constraints": [
+          {
+            "name": "provider_fk",
+            "type": "foreign_key",
+            "columns": ["provider_id"],
+            "deferrable": false,
+            "references": {
+              "table": "telephone_providers",
+              "columns": ["id"],
+              "on_delete": "CASCADE",
+              "on_update": "CASCADE",
+              "match_type": "SIMPLE"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+### Exclude constraints
+
+It's also possible to specify exclude constraints using the table-level `constraints` field:
+
+```json
+{
+  "name": "01_create_table",
+  "operations": [
+    {
+      "create_table": {
+        "name": "room_reservations",
+        "columns": [
+          {
+            "name": "id",
+            "type": "serial"
+          },
+          {
+            "name": "start",
+            "type": "timestamp"
+          },
+          {
+            "name": "end",
+            "type": "timestamp"
+          },
+          {
+            "name": "canceled",
+            "type": "boolean",
+            "default": "false"
+          }
+        ],
+        "constraints": [
+          {
+            "name": "forbid_double_booking",
+            "type": "exclude",
+            "exclude": {
+              "index_method": "gist",
+              "elements": "id WITH =, tsrange(\"start\", \"end\") WITH &&",
+              "predicate": "NOT canceled"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+Exclude constraints were not possible to specify in any version of `pgroll` before `v0.9`.
+
+## Generated columns
+
+`pgroll` `v0.9` adds support for [generated columns](https://www.postgresql.org/docs/current/ddl-generated-columns.html) in `create_table` and `add_column` operations. To create a generated column, use the `generated` field in a `column` definition:
+
+```json
+{
+  "name": "08_create_fruits_table",
+  "operations": [
+    {
+      "create_table": {
+        "name": "fruits",
+        "columns": [
+          {
+            "name": "id",
+            "type": "bigint",
+            "pk": true,
+            "generated": {
+              "identity": {
+                "user_specified_values": "BY DEFAULT"
+              }
+            }
+          },
+          {
+            "name": "name",
+            "type": "varchar(255)",
+            "unique": true
+          },
+          {
+            "name": "price",
+            "type": "decimal(10,2)"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+The [documentation for the create_table operation](https://pgroll.com/docs/v0.9.0/operations/create_table) describes the full set of options that are available for generated columns.
+
+## CLI progress updates
+
+When `pgroll` modifies a column, for example to add a constraint, the column is duplicated and the constraint is added to the duplicated column. Data is then 'backfilled' into the new column from the old column, performing any data migrations as necessary using the user-supplied `up` SQL expression from the migration definition. This process is the heart of how `pgroll` is able to offer two schema versions for every migration.
+
+The [backfill process](https://pgroll.com/docs/latest/tutorial#second-migration) is the most time consuming part of starting a pgroll migration. With pgroll v0.9 the CLI output now gives a better indication of how far the process is from completion:
+
+![The CLI now shows how much work remains in the backfill process](images/whats-new-in-pgroll-0-9-0/cli-progress.png)
+
+## Conclusion
+
+`pgroll` is open-source; check out [the repository](https://github.com/xataio/pgroll) to get involved.
+
+Many of the features that have gone into this and previous releases have been directly influenced by how users tell us they are using the tool and where it's currently lacking. We welcome any feedback in [issues](https://github.com/xataio/pgroll/issues), or contributions via [pull requests](https://github.com/xataio/pgroll/pulls)!
