@@ -474,7 +474,7 @@ The [documentation for the create_table operation](https://pgroll.com/docs/v0.9.
 
 ## CLI progress updates
 
-When `pgroll` modifies a column, for example to add a constraint, the column is duplicated and the constraint added to the duplicated column. Data is then 'backfilled' into the new column from the old column, performing any data migrations as necessary using the user-supplied `up` SQL expression from the migration definition. This process is the heart of how `pgroll` is able to offer two schema versions for every migration.
+When `pgroll` modifies a column, for example to add a constraint, the column is duplicated and the constraint is added to the duplicated column. Data is then 'backfilled' into the new column from the old column, performing any data migrations as necessary using the user-supplied `up` SQL expression from the migration definition. This process is the heart of how `pgroll` is able to offer two schema versions for every migration.
 
 The [backfill process](https://pgroll.com/docs/latest/tutorial#second-migration) is the most time consuming part of starting a pgroll migration. With pgroll v0.9 the CLI output now gives a better indication of how far the process is from completion:
 
