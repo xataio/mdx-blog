@@ -1,0 +1,68 @@
+---
+title: 'Postgres Cafe: Building PostgreSQL extensions in Zig using pgzx'
+description: 'In this episode of Postgres Café, we discuss pgzx, an open-source Zig framework for developing PostgreSQL extensions that combine modern memory safety, direct C interoperability, and flexible design.'
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-cafe-pgzx-og@2x.png
+  alt: pgzx
+author: Cezzaine Zaher
+authorEmail: cezzaine@xata.io
+date: 02-12-2025
+tags: ['open-source', 'postgres', 'fpgzx', 'oss']
+published: true
+slug: postgres-cafe-pgzx
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/postgres-cafe-pgzx-og@2x.png
+---
+
+In [episode 4 of Postgres Café](https://www.youtube.com/watch?v=G2BK17d7UME), we’re talking about pgzx, an open-source tool that makes it easier to create Postgres extensions using the Zig programming language. While C has long been the de facto choice for Postgres extension development, Zig offers a fresh alternative—providing modern language features, runtime safety checks, and direct interoperability with existing C code.
+
+# Episode 5: pgzx
+
+pgzx draws inspiration from pgrx (the popular Rust-based framework) but targets the Zig ecosystem. The goal is to let developers build Postgres extensions that harness Zig’s “modern C” design without sacrificing direct access to Postgres internals. By leveraging Zig’s ability to include C headers and macros while providing built-in memory safety checks, pgzx allows developers to work more seamlessly with Postgres’s extensive C API, reducing friction without adding unnecessary overhead.
+
+## Highlights of pgzx
+
+### Zig interoperability
+Zig has been designed with C interoperability in mind. The Zig toolchain can compile and link C and Zig code out of the box. C-headers can be imported directly from Zig code, in most cases making C functions readily available without the need of additional boilerplate. Internally the Zig compiler attempts to translate function signatures, inline functions, and macros into Zig code, which is then compiled into the target binary. pgzx already imports and re-exports a number of postgres headers, making many postgres internals readily available to extension authors.
+
+### Runtime safety checks
+Avoid common C mistakes like buffer overflows and null pointer issues, giving you a safer environment than traditional C, all while keeping extension development straightforward.
+
+### Lightweight abstractions 
+pgzx integrates Postgres MemoryContext based memory management with Zig Allocators, and it provides utility functions for working with Postgres errors. In addition, it simplifies the implementation of Zig based SQL functions or the execution of SQL statements via SPI by leveraging Zig compile time features (comptime) to compute the translation between Zig types and Postgres internal values. This cuts down on boilerplate, reduces risk of errors, and provides an experience reminiscent of higher language SQL library interfaces as can be found in Go.
+
+## Why use pgzx for PostgreSQL development?
+
+Traditional extension development in C can be challenging, especially if you’re looking for safer memory management or more elegant language features. Meanwhile, pgrx (Rust) offers strong memory guarantees but requires robust abstraction layers to integrate with Postgres’s C internals. Enter pgzx, which provides:
+
+- **Balanced approach between C and Rust** pgzx provides an ideal balance. It's more approachable than Rust yet safer and more modern than plain C. You’ll experience some memory-safety benefits while retaining a familiar programming style, making it a comfortable middle ground for extension developers.
+- **Easy migration path::**  If you’re comfortable with C-style coding, Zig’s syntax and approach will feel familiar, shortening the learning curve. It is possible to combine C and Zig code, which is what we do within pgzx itself! This allows you to reuse existing code or gradually introduce Zig into your project.
+- **Full Postgres API access** Because pgzx uses Zig’s direct interoperability with C, you can tap into the entire Postgres codebase (function calls, macros, etc.) without waiting on large abstraction libraries. This ensures maximum flexibility for extension developers.
+
+## Key takeaways from the episode
+
+### How pgzx handles Postgres integration
+
+Zig is designed for seamless C interoperability which is crucial for a codebase as large as Postgres. pgzx takes that a step further by manually translating some of Postgres’s trickier C macros and mapping them to Zig structures. The result is that you can directly call Postgres functions without writing your own bridging layers.
+
+### Comparisons with C and Rust
+
+- **C:** Zig is often described as “modern C.” It feels familiar but adds compile-time features (known as “comptime”) and built-in safety checks.
+- **Rust:** pgrx brings powerful compile-time memory guarantees but can be complex to integrate with Postgres’s dynamic C internals. Zig finds a middle ground which is less strict than Rust, but safer than plain C.
+
+### Use cases
+
+The pgzx framework is well-suited for:
+
+- **Performance-critical tasks:** Zig compiles to efficient machine code and offers direct memory management.
+- **Incremental modernization:** Migrate older C-based extensions to a safer, more expressive environment.
+- **Mixed codebases:** If your team has existing C libraries or brand-new Zig modules, pgzx makes them play nicely together.
+
+## Watch the full episode
+
+For an in-depth exploration of pgzx, including a discussion about Zig’s unique design features and how it stacks up against pgrx, watch the full episode here:
+
+<ArticleVideo platform="youtube" src="https://www.youtube.com/embed/G2BK17d7UME?si=ABsfdYBmMX2jm56e" />
+
+## Stay tuned for more Postgres tools
+
+This is part of the Postgres Cafe video series! [Subscribe to the playlist](https://www.youtube.com/playlist?list=PLf7KS0svgDP_zJmby3RMzzOVO45qLbruA) for more episodes that feature open-source tools like [pgroll](https://pgroll.com/) for zero downtime schema changes in production, [StatsMgr](https://www.data-bene.io/en/blog/postgres-cafe-expand-monitoring-capabilities-with-statsmgr/) for monitoring and tracking events across PostgreSQL, and more. Watch this space to learn how each tool can make working with Postgres smoother and more efficient.
