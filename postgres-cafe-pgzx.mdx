@@ -22,12 +22,15 @@ pgzx draws inspiration from pgrx (the popular Rust-based framework) but targets 
 ## Highlights of pgzx
 
 ### Zig interoperability
+
 Zig has been designed with C interoperability in mind. The Zig toolchain can compile and link C and Zig code out of the box. C-headers can be imported directly from Zig code, in most cases making C functions readily available without the need of additional boilerplate. Internally the Zig compiler attempts to translate function signatures, inline functions, and macros into Zig code, which is then compiled into the target binary. pgzx already imports and re-exports a number of postgres headers, making many postgres internals readily available to extension authors.
 
 ### Runtime safety checks
+
 Avoid common C mistakes like buffer overflows and null pointer issues, giving you a safer environment than traditional C, all while keeping extension development straightforward.
 
-### Lightweight abstractions 
+### Lightweight abstractions
+
 pgzx integrates Postgres MemoryContext based memory management with Zig Allocators, and it provides utility functions for working with Postgres errors. In addition, it simplifies the implementation of Zig based SQL functions or the execution of SQL statements via SPI by leveraging Zig compile time features (comptime) to compute the translation between Zig types and Postgres internal values. This cuts down on boilerplate, reduces risk of errors, and provides an experience reminiscent of higher language SQL library interfaces as can be found in Go.
 
 ## Why use pgzx for PostgreSQL development?
@@ -35,7 +38,7 @@ pgzx integrates Postgres MemoryContext based memory management with Zig Allocato
 Traditional extension development in C can be challenging, especially if you’re looking for safer memory management or more elegant language features. Meanwhile, pgrx (Rust) offers strong memory guarantees but requires robust abstraction layers to integrate with Postgres’s C internals. Enter pgzx, which provides:
 
 - **Balanced approach between C and Rust** pgzx provides an ideal balance. It's more approachable than Rust yet safer and more modern than plain C. You’ll experience some memory-safety benefits while retaining a familiar programming style, making it a comfortable middle ground for extension developers.
-- **Easy migration path::**  If you’re comfortable with C-style coding, Zig’s syntax and approach will feel familiar, shortening the learning curve. It is possible to combine C and Zig code, which is what we do within pgzx itself! This allows you to reuse existing code or gradually introduce Zig into your project.
+- **Easy migration path::** If you’re comfortable with C-style coding, Zig’s syntax and approach will feel familiar, shortening the learning curve. It is possible to combine C and Zig code, which is what we do within pgzx itself! This allows you to reuse existing code or gradually introduce Zig into your project.
 - **Full Postgres API access** Because pgzx uses Zig’s direct interoperability with C, you can tap into the entire Postgres codebase (function calls, macros, etc.) without waiting on large abstraction libraries. This ensures maximum flexibility for extension developers.
 
 ## Key takeaways from the episode
