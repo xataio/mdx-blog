@@ -7,7 +7,20 @@ image:
 author: Andrew Farries, Noémi Ványi
 authorEmail: noemi@xata.io
 date: 28-02-2025
-tags: ['open-source', 'postgres', 'schema', 'migrations', 'pgroll', 'fpSchemaMigrations', 'oss', 'django', 'prisma', 'sqlalchemy', 'drizzle']
+tags:
+  [
+    'open-source',
+    'postgres',
+    'schema',
+    'migrations',
+    'pgroll',
+    'fpSchemaMigrations',
+    'oss',
+    'django',
+    'prisma',
+    'sqlalchemy',
+    'drizzle'
+  ]
 published: false
 slug: pgroll-0-10-0-update
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-update-0-6-0@2x.jpg
@@ -138,6 +151,7 @@ Drizzle is an ORM for Typescript projects.
 You can translate your Drizzle migrations with the schema below:
 
 ```
+
 ```
 
 Then run `pgroll convert` to get the approprate pgroll migrations.
@@ -330,7 +344,6 @@ Also, SQL migration files usually start with `BEGIN` and `COMMIT` because the OR
 
 `pgroll` `v0.10` includes one breaking change to how columns are configured when creating new indexes. Previously, the `columns` list of `create_index` operations expected a list of strings:
 
-
 ```json
 {
   "name": "10_create_index",
@@ -350,7 +363,6 @@ Now `create_index` supports several new options to configure the index elements 
 ### Sort order
 
 Using `sort` attribute you can change the sort order from the default ascending to descending.
-
 
 ```json
 {
