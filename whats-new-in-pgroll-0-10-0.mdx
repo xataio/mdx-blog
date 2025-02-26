@@ -186,7 +186,7 @@ pgroll convert 0000_init.sql --name 0000_init
 
 ### Limitations
 
-We are releasing this feature so we can get your feedback early. The functionality still has some limitations. The generated pgroll migrations must be edited to provide `up` and `down` migrations manually.
+We are releasing this feature so we can get your feedback early. The functionality still has some limitations. The generated pgroll migrations must be edited to provide `up` and `down` data migrations manually.
 
 Furthermore, the SQL statements are not aggregated into single pgroll operations. Some ORMs add unique constraints in a different statement when they are creating a table with a unique column. This leads to more pgroll operations than necessary. You can resolve this manually by removing the unique constraint operation from the pgroll migration, and add it to the list of `constraints` of `create_table`.
 
