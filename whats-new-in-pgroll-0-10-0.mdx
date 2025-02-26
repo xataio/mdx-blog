@@ -454,9 +454,57 @@ Another option to change sort ordering of the index is `nulls`. You can specify 
 }
 ```
 
-## Improvements to adding default values to existing tables
+## Adding columns with default values
 
-TODO Andrew
+`pgroll` `v0.10` makes improvements to how columns with `DEFAULT` values are added to existing tables to avoid long-lived `ACCESS_EXCLUSIVE` locks when adding columns with [volatile](https://www.postgresql.org/docs/current/xfunc-volatility.html) `DEFAULT` values.
+
+In Postgres, adding a new column with a `DEFAULT` value is an operation that comes with a pitfall: Postgres has different behaviour depending on the volatility of the `DEFAULT`. Consider this `ALTER TABLE` statement:
+
+```sql
+ALTER TABLE items ADD COLUMN value INTEGER DEFAULT 100;
+```
+
+The `DEFAULT` expression here is non-volatile, meaning that Postgres can apply [an optimization](https://brandur.org/postgres-default) when adding the column - rather than rewriting the table to populate every row with the new `DEFAULT`, Postgres applies the `DEFAULT` lazily. The entry in the system catalog `pg_attribute` for the new column is updated to record that there is a default value for the column that should be populated on-the-fly whenever the column is read.
+
+By contrast, consider this `ALTER TABLE` operation:
+
+```sql
+ALTER TABLE items ADD COLUMN value INTEGER DEFAULT (random()*100)::integer;
+```
+
+This time, the `DEFAULT` expression is volatile, meaning that Postgres cannot apply the same optimization as before. Instead, Postgres must rewrite the table to populate the new field with its `DEFAULT` in every row. The table rewrite requires an `ACCESS_EXCLUSIVE` lock for the duration of the rewrite.
+
+Previously, `pgroll` did not differentiate between these two cases when adding a new column with a `DEFAULT` value, meaning that adding a new column with a volatile `DEFAULT` would take an `ACCESS_EXCLUSIVE` lock, locking out reads and writes from the affected table for the duration of the table rewrite.
+
+Starting with `pgroll` `v0.10`, `pgroll` now detects whether the `DEFAULT` value for a new column is volatile or non-volatile, and applies the `DEFAULT` differently in each case:
+
+- For non-volatile `DEFAULT` values, `pgroll` applies the `DEFAULT` to the new column directly as before. The operation is a catalog-only update and requires only a very brief `ACCESS_EXCLUSIVE` lock.
+- For a volatile `DEFAULT`, `pgroll` creates the column without a `DEFAULT`, avoiding the table rewrite. The new column is then backfilled with the `DEFAULT` value using `pgroll`'s backfill mechanism. The `DEFAULT` is added to the column on migration completion.
+
+A migration to add a new column with a volatile `DEFAULT` is written:
+
+```json
+{
+  "name": "29_add_column_with_default",
+  "operations": [
+    {
+      "add_column": {
+        "table": "items",
+        "up": "(random()*100)::integer",
+        "column": {
+          "name": "value",
+          "type": "integer",
+          "default": "(random()*100)::integer"
+        }
+      }
+    }
+  ]
+}
+```
+
+The `up` expression used as the backfill must be the same as the `default` expression for the new column. `pgroll` will backfill the new column with the new `DEFAULT` value, and then apply the `DEFAULT` to the column on completion of the migration.
+
+This means that adding columns with volatile `DEFAULT` values no longer requires a potentially long-lived `ACCESS_EXCLUSIVE` lock, making such operations safe to perform on tables with large row counts.
 
 ## Conclusion
 
