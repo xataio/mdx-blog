@@ -261,7 +261,7 @@ Resulting in the following pgroll migration using the `convert` subcommand:
   "add_column": {
     "column": {
       "check": {
-        "constraint": "age \u003e= 0",
+        "constraint": "age >= 18",
         "name": "age_check"
       },
       "default": "18",
@@ -358,7 +358,25 @@ Also, SQL migration files usually start with `BEGIN` and `COMMIT` because the OR
 }
 ```
 
-Now `create_index` supports several new options to configure the index elements per column.
+Now you need to specify columns as map values:
+
+```json
+{
+  "name": "10_create_index",
+  "operations": [
+    {
+      "create_index": {
+        "table": "employees",
+        "columns": {
+          "salary": {}
+        }
+      }
+    }
+  ]
+}
+```
+
+Pgroll is not using maps, so `create_index` can support several new options to configure the index elements per column.
 
 ### Sort order
 
