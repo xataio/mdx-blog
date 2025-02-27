@@ -151,7 +151,7 @@ Drizzle is a popular ORM for Typescript projects. You can extract SQL statements
 The following examples schema in Drizzle can be translated using `pgroll`:
 
 ```ts
-import { pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, varchar } from 'drizzle-orm/pg-core';
 
 export const employees = pgTable('employees', {
   name: varchar({ length: 100 }),
