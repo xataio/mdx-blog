@@ -408,6 +408,28 @@ Using the `sort` attribute, you can change the sort order from ascending, which 
 }
 ```
 
+### Ordering of NULL values
+
+Another option to change sort ordering of the index is `nulls`. You can specify if the null values come before (`first`) or after (`last`) non-null values.
+
+```json
+{
+  "name": "10_create_index",
+  "operations": [
+    {
+      "create_index": {
+        "table": "employees",
+        "columns": [
+           "position": {
+             "nulls": "last"
+           }
+        ]
+      }
+    }
+  ]
+}
+```
+
 ### Collation
 
 The attribute `collation` changes the collation used for the index.
@@ -450,28 +472,6 @@ Now you can also change the operator class for the indexed column. Also, you can
                  "param1": "val1"
                }
              }
-           }
-        ]
-      }
-    }
-  ]
-}
-```
-
-### Ordering of NULL values
-
-Another option to change sort ordering of the index is `nulls`. You can specify if the null values come before (`first`) or after (`last`) non-null values.
-
-```json
-{
-  "name": "10_create_index",
-  "operations": [
-    {
-      "create_index": {
-        "table": "employees",
-        "columns": [
-           "position": {
-             "nulls": "last"
            }
         ]
       }
