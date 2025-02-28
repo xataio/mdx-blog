@@ -104,7 +104,7 @@ $ alembic update {revision} --sql | pgroll convert --name {revision}
 
 Django is the go-to tool for Python web development. It can connect to several databases, including PostgreSQL. If your web application uses PostgreSQL storage, you can leverage the `convert` subcommand.
 
-After your defined your migration in Python, you can use `manage.py` to extract the SQL script from Django. The [subcommand `sqlmigrate`](https://docs.djangoproject.com/en/5.1/ref/django-admin/#django-admin-sqlmigrate) prints
+After you've defined your migration in Python, you can use `manage.py` to extract the SQL script from Django. The [subcommand `sqlmigrate`](https://docs.djangoproject.com/en/5.1/ref/django-admin/#django-admin-sqlmigrate) prints
 the SQL statements to stdout.
 
 Create a new model for an `Employee` with a following simplified model:
