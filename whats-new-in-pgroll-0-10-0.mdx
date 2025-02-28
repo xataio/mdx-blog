@@ -70,7 +70,7 @@ You can use `pgroll` with any ORM that can generate raw SQL statements for its m
 #### Alembic
 
 [Alembic](https://alembic.sqlalchemy.org/en/latest/) is a database migration tool used in SQLAlchemy projects. You can generate SQL statements from its migrations in [its offline mode](https://alembic.sqlalchemy.org/en/latest/offline.html). If you add
-`--sql` flag to `upgrade` command of `alembic` it prints the SQL statements to stdout. You can pipe this output into `pgroll convert`:
+`a --sql` flag to the `upgrade` command of `alembic` it prints the SQL statements to stdout. You can pipe this output into `pgroll convert`:
 
 ```sh
 $ alembic update {revision} --sql | pgroll convert --name {revision}
