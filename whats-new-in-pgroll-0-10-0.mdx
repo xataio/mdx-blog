@@ -484,7 +484,7 @@ Another option to change sort ordering of the index is `nulls`. You can specify 
 
 `pgroll` `v0.10` makes improvements to how columns with `DEFAULT` values are added to existing tables to avoid long-lived `ACCESS_EXCLUSIVE` locks when adding columns with [volatile](https://www.postgresql.org/docs/current/xfunc-volatility.html) `DEFAULT` values.
 
-In Postgres, adding a new column with a `DEFAULT` value is an operation that comes with a pitfall: Postgres has different behaviour depending on the volatility of the `DEFAULT`. Consider this `ALTER TABLE` statement:
+In Postgres, adding a new column with a `DEFAULT` value is an operation that comes with a pitfall: Postgres has different behaviours depending on the volatility of the `DEFAULT`. Consider this `ALTER TABLE` statement:
 
 ```sql
 ALTER TABLE items ADD COLUMN value INTEGER DEFAULT 100;
