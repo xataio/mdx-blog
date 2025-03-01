@@ -14,7 +14,7 @@ canonicalUrl: https://pgroll.com/blog/anatomy-of-table-level-locks-reducing-lock
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/anatomy-of-locks-og@2x.png
 ---
 
-I've started blogging about [Anatomy of table-level locks in PostgreSQL](https://pgroll.com/posts/anatomy-of-table-level-locks-in-postgresql). In the first [blog](https://pgroll.com/posts/anatomy-of-table-level-locks-in-postgresql), we've talked about why database systems use locking mechanisms and how Postgres utilizes MVCC to avoid most concurrency issues, reducing the necessity for locks. We then talked about DDL locks and explained how the Postgres lock queue works.
+I've started blogging about [Anatomy of table-level locks in PostgreSQL](anatomy-of-locks). In the first blog post, we've talked about why database systems use locking mechanisms and how Postgres utilizes MVCC to avoid most concurrency issues, reducing the necessity for locks. We then talked about DDL locks and explained how the Postgres lock queue works.
 
 In this follow-up post, we will talk about lock contention to explore the ways of reducing locking impact in production systems to reduce potential downtime risks related to DDL changes.
 
