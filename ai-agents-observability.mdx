@@ -47,7 +47,7 @@ Think about how you are doing on-call today. If your process is similar to ours,
 
 1. An observability tool raises alerts based on metrics (usually) or logs/traces (occasionally). If the alert hits at night, the tool wakes you, the person on-call, up.
 2. If you’re lucky, the alert links to a playbook your team already wrote on how to troubleshoot it.
-3. The playbook might point to specific dashboards and metrics to check for correlations. You eyeball the graphs, using your two very human eyes
+3. The playbook might point to specific dashboards and metrics to check for correlations. You eyeball the graphs, using your two very human eyes.
 4. If the situation seems to be similar to one that has happened before, the playbook might already give you instructions on how to resolve, or at least mitigate, the issue.
 5. In something like 42.9% of the cases (I made the number up), the action to take is “no action”. The system just recovers on its own after, for example, the increase in traffic that has caused the alert has passed. This makes you question whether you needed to wake up at 3 a.m. for a ghost alert. Again.
 6. If you're not lucky—no playbook, or the playbook doesn’t match the situation—you’ll probably need to: check recent PRs for likely culprits, fire up your IDE to reason through the code, grep through logs, etc.
