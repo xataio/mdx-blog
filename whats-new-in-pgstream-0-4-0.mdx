@@ -57,7 +57,7 @@ This release adds a new `pgstream` output to support replication to Postgres dat
 - **Schema Change Handling**: Automatically replicates schema changes (e.g., adding or renaming columns).
 - **Memory Guarding**: Prevents replication lag by using configurable memory guards.
 
-In contrast to existing Postgres tools, such as `pg_dump`/ `pg_restore` and Postgres logical replication, `pgstream` allows to keep track of schema changes as well as data, making the replication pipeline more robust. 
+In contrast to existing Postgres tools, such as `pg_dump`/ `pg_restore` and Postgres logical replication, `pgstream` allows to keep track of schema changes as well as data, making the replication pipeline more robust.
 
 #### Example
 
@@ -92,7 +92,7 @@ For more details on how the snapshots are implemented, check out the [snapshot s
 
 #### Example with initial snapshot and replication
 
-You're setting up a new analytics pipeline and need to initialize the target Postgres database with existing data. Snapshots ensure that all data is captured before replication begins. 
+You're setting up a new analytics pipeline and need to initialize the target Postgres database with existing data. Snapshots ensure that all data is captured before replication begins.
 
 ```sh
 # Listener config
@@ -109,7 +109,7 @@ PGSTREAM_POSTGRES_WRITER_TARGET_URL="postgres://analytics_user:password@analytic
 
 #### Example with standalone snapshots
 
-You want to have a realistic staging database, without the need for continuous replication, so you perform snapshots weekly. 
+You want to have a realistic staging database, without the need for continuous replication, so you perform snapshots weekly.
 
 ```bash
 # Listener config
