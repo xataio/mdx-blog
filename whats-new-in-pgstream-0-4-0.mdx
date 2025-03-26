@@ -45,11 +45,11 @@ The new release brings three powerful features to `pgstream`: **Postgres to Post
 
 If you want a sneak peek, this demo shows all three in action 💪.
 
-![demo.gif](/images/pgstream/pgstream_v0-4-0.gif)
+![demo](/images/pgstream/pgstream_v0-4-0.gif)
 
 ### Postgres to Postgres replication
 
-![pgstream_tutorial_pg2pg.svg](/images/pgstream/pgstream_tutorial_pg2pg.svg)
+![pgstream_tutorial_pg2pg](/images/pgstream/pgstream_tutorial_pg2pg.svg)
 
 This release adds a new `pgstream` output to support replication to Postgres databases. The Postgres processor processes the WAL events and translates them into SQL queries, which are then sent to the target Postgres database, ensuring efficient, near real-time replication of both data and schema changes. The implementation includes:
 
@@ -77,7 +77,7 @@ Check out the [Postgres to Postgres tutorial](https://github.com/xataio/pgstream
 
 ### Snapshots
 
-![pgstream_tutorial_snapshot2pg.svg](/images/pgstream/pgstream_tutorial_snapshot2pg.svg)
+![pgstream_tutorial_snapshot2pg](/images/pgstream/pgstream_tutorial_snapshot2pg.svg)
 
 With the addition of snapshots to `pgstream`, it's now possible to capture a consistent view of your Postgres database at a specific point in time, be it as an initial snapshot of the database before starting replication, or as a stand alone process when replication is not needed.
 
@@ -86,7 +86,7 @@ The snapshot listener produces the snapshot in different ways for the schema and
 - **Schema Snapshots**: Capture the database schema using the `pgstream.schema_log` table or Postgres utilities `pg_dump`/ `pg_restore` for Postgres to Postgres replication.
 - **Data Snapshots**: Use transaction snapshot IDs to obtain a stable view of the data, allowing to process tables and rows in parallel. When combined with replication, the current LSN is stored before starting the snapshot to ensure any WAL events that occur during the snapshot can be replayed.
 
-![pgstream_snapshot_sequence.svg](/images/pgstream/pgstream_snapshot_sequence.svg)
+![pgstream_snapshot_sequence](/images/pgstream/pgstream_snapshot_sequence.svg)
 
 For more details on how the snapshots are implemented, check out the [snapshot section](https://github.com/xataio/pgstream/tree/main/docs#snapshots) in the pgstream documentation.
 
@@ -124,7 +124,7 @@ Check out the [snapshot tutorial](https://github.com/xataio/pgstream/blob/main/d
 
 ### Transformers
 
-![pgstream_transformer_diagram.svg](/images/pgstream/pgstream_transformer_diagram.svg)
+![pgstream_transformer_diagram](/images/pgstream/pgstream_transformer_diagram.svg)
 
 Transformers in `pgstream` allow you to modify column values during replication or snapshots. This is particularly useful for anonymizing sensitive data, which is critical for:
 
