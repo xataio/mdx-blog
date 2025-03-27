@@ -6,14 +6,14 @@ image:
   alt: pgstream
 author: Esther Minano Sanz
 authorEmail: esther@xata.io
-date: 03-26-2025
+date: 03-27-2025
 tags: ['open-source', 'postgres', 'schema', 'pgstream', 'replication', 'transformers', 'snapshots', 'oss']
 published: true
 slug: pgstream-0-4-0-update
 ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgstream/update-on-pgstream@2x.png
 ---
 
-We're proud to announce the release of `v0.4` of `pgstream`, our open-source CDC tool for Postgres! 🚀 In this blog post, we'll dive into some of the key features packed into this latest release, and look at what the future holds!
+We're proud to announce the release of `v0.4` of `[pgstream](https://github.com/xataio/pgstream)`, our open-source CDC tool for Postgres! 🚀 In this blog post, we'll dive into some of the key features packed into this latest release, and look at what the future holds!
 
 You can find the complete release notes on the [Github v0.4.0 release page](https://github.com/xataio/pgstream/releases/tag/v0.4.0).
 
@@ -43,9 +43,9 @@ If you want a sneak peek, this demo shows all three in action 💪.
 
 This release adds a new `pgstream` output to support replication to Postgres databases. The Postgres processor processes the WAL events and translates them into SQL queries, which are then sent to the target Postgres database, ensuring efficient, near real-time replication of both data and schema changes. The implementation includes:
 
-- **Batch Processing**: queries are grouped into batches to optimize performance and reduce I/O overhead.
-- **Schema Change Handling**: Automatically replicates schema changes (e.g., adding or renaming columns).
-- **Memory Guarding**: Prevents replication lag by using configurable memory guards.
+- **Batch processing**: queries are grouped into batches to optimize performance and reduce I/O overhead.
+- **Schema change handling**: Automatically replicates schema changes (e.g., adding or renaming columns).
+- **Memory guarding**: Prevents replication lag by using configurable memory guards.
 
 In contrast to existing Postgres tools, such as `pg_dump`/ `pg_restore` and Postgres logical replication, `pgstream` allows to keep track of schema changes as well as data, making the replication pipeline more robust.
 
@@ -73,8 +73,8 @@ With the addition of snapshots to `pgstream`, it's now possible to capture a con
 
 The snapshot listener produces the snapshot in different ways for the schema and the data in order to optimise the implementation for the different outputs:
 
-- **Schema Snapshots**: Capture the database schema using the `pgstream.schema_log` table or Postgres utilities `pg_dump`/ `pg_restore` for Postgres to Postgres replication.
-- **Data Snapshots**: Use transaction snapshot IDs to obtain a stable view of the data, allowing to process tables and rows in parallel. When combined with replication, the current LSN is stored before starting the snapshot to ensure any WAL events that occur during the snapshot can be replayed.
+- **Schema snapshots**: Capture the database schema using the `pgstream.schema_log` table or Postgres utilities `pg_dump`/ `pg_restore` for Postgres to Postgres replication.
+- **Data snapshots**: Use transaction snapshot IDs to obtain a stable view of the data, allowing to process tables and rows in parallel. When combined with replication, the current LSN is stored before starting the snapshot to ensure any WAL events that occur during the snapshot can be replayed.
 
 ![Snapshot sequence](/images/pgstream/pgstream_snapshot_sequence.svg)
 
@@ -120,8 +120,8 @@ Transformers in `pgstream` allow you to modify column values during replication 
 
 - **Compliance**: Meeting legal and regulatory requirements by masking or modifying PII before it reaches unauthorized systems.
 - **Security**: Preventing sensitive data leaks by ensuring that only de-identified information is replicated.
-- **Testing & Development**: Providing developers with realistic datasets while safeguarding personal information.
-- **Analytics & Reporting**: Enabling insights from anonymized data without exposing private user details.
+- **Testing & development**: Providing developers with realistic datasets while safeguarding personal information.
+- **Analytics & reporting**: Enabling insights from anonymized data without exposing private user details.
 
 The `pgstream` implementation of transformers acts as a wrapper around the existing processors, which means they can be applied to any available outputs (Elasticsearch/OpenSearch, webhooks, Postgres). It leverages open source libraries, such as [Greenmask](https://github.com/GreenmaskIO/greenmask) and [Neosync](https://github.com/nucleuscloud/neosync), and it can integrate with custom transformers.
 
