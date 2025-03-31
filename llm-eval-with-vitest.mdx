@@ -63,7 +63,7 @@ We’re using [Vercel's AI SDK](https://sdk.vercel.ai/) to perform tool calling 
 We then convert this to a human readable format:
 
 ```bash
-System Prompt: 
+System Prompt:
 You are an AI assistant expert in PostgreSQL and database administration.
 Your name is Xata Agent.
 ...
@@ -77,7 +77,7 @@ I'll help you get an overview of the tables in your database. I'll use the getTa
 
 getTablesAndInstanceInfo with args: {}
 
-Tool Result: 
+Tool Result:
 Here are the tables, their sizes, and usage counts:
 
 [{"name":"dogs","schema":"public","rows":150,"size":"24 kB","seqScans":45,"idxScans":120,"nTupIns":200,"nTupUpd":50,"nTupDel":10}]
@@ -111,12 +111,11 @@ export default defineConfig({
 ```
 
 ```tsx
-import { randomUUID } from 'crypto'
+import { randomUUID } from 'crypto';
 
 export default async function globalSetup() {
   process.env.TEST_RUN_ID = randomUUID();
 }
-
 ```
 
 We can then create and reference the folder for our eval run like this: `path.join('/tmp/eval-runs/', process.env.TEST_RUN_ID)`
@@ -125,19 +124,19 @@ We can then create and reference the folder for our eval run like this: `path.jo
 
 Getting an id for each individual eval test case is a bit more tricky.
 
-Since LLM calls take some time, we need to run vitest tests in parallel using `describe.concurrent` . But we must then use a local copy of the `expect` variable from the test to [ensure the test name is correct](https://vitest.dev/api/#describe-concurrent). 
+Since LLM calls take some time, we need to run vitest tests in parallel using `describe.concurrent` . But we must then use a local copy of the `expect` variable from the test to [ensure the test name is correct](https://vitest.dev/api/#describe-concurrent).
 
 We can use the vitest describe + test name as the eval id:
 
 ```tsx
-import { describe, it } from 'vitest'
+import { describe, it } from 'vitest';
 
 describe.concurrent('judge', () => {
-  it.test('eval_id_1', ({ expect }) => { 
+  it.test('eval_id_1', ({ expect }) => {
     // note: we must use a local version of expect when running tests concurrently
-    const fullEvalId = getEvalId(expect)
-  })
-})
+    const fullEvalId = getEvalId(expect);
+  });
+});
 
 export const getEvalId = (expect: ExpectStatic) => {
   const testName = expect.getState().currentTestName;
@@ -166,13 +165,12 @@ import { Reporter } from 'vitest/reporters';
 import { testNameToEvalId } from './lib/test-id';
 
 export default class EvalReporter implements Reporter {
-
   async onTestRunEnd() {
-    const traceFolder = path.join('/tmp/eval-runs/', process.env.TEST_RUN_ID)
+    const traceFolder = path.join('/tmp/eval-runs/', process.env.TEST_RUN_ID);
     const folders = fs.readdirSync(evalTraceFolder);
 
     // post run processing goes here
-    
+
     console.log(`View eval results: http://localhost:4001/evals?folder=${evalTraceFolder}`);
   }
 
@@ -185,14 +183,13 @@ export default class EvalReporter implements Reporter {
 
     const testCaseResult = {
       id: evalId,
-      result: testCase.result().state as 'passed' | 'failed',
+      result: testCase.result().state as 'passed' | 'failed'
       // other stuff..
-    } 
+    };
 
-    const traceFolder = path.join('/tmp/eval-runs/', process.env.TEST_RUN_ID, testNameToEvalId(expect))
+    const traceFolder = path.join('/tmp/eval-runs/', process.env.TEST_RUN_ID, testNameToEvalId(expect));
     fs.writeFileSync(path.join(traceFolder, 'result.json'), JSON.stringify(testCaseResult, null, 2));
   }
-
 }
 ```
 
@@ -200,6 +197,6 @@ export default class EvalReporter implements Reporter {
 
 Vitest is a powerful and versatile test runner for the TypeScript which can be straightforwardly adapted to run an Eval.
 
-Vercel AI’s [Response objects](https://sdk.vercel.ai/docs/reference/ai-sdk-core/generate-text#returns) contain almost everything needed to see what happened in an eval. 
+Vercel AI’s [Response objects](https://sdk.vercel.ai/docs/reference/ai-sdk-core/generate-text#returns) contain almost everything needed to see what happened in an eval.
 
 For full details check out the [Pull Request](https://github.com/xataio/agent/commit/ff3a2534281efc6312182ff8c55e99dca5bcabcd) which introduces in the open source Xata Agent.
