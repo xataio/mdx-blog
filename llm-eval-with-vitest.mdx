@@ -39,7 +39,7 @@ When we run the eval the output is a directory with one folder for each eval tes
 
 The folder contains the output files of the run along with 'trace' information so we can debug what happened.
 
-```bash
+```text
 ./eval-run-output/
 ├── evalResults.json
 ├── eval_id_1
@@ -62,7 +62,7 @@ We’re using [Vercel's AI SDK](https://sdk.vercel.ai/) to perform tool calling 
 
 We then convert this to a human readable format:
 
-```bash
+```text
 System Prompt:
 You are an AI assistant expert in PostgreSQL and database administration.
 Your name is Xata Agent.
@@ -199,4 +199,4 @@ Vitest is a powerful and versatile test runner for the TypeScript which can be s
 
 Vercel AI’s [Response objects](https://sdk.vercel.ai/docs/reference/ai-sdk-core/generate-text#returns) contain almost everything needed to see what happened in an eval.
 
-For full details check out the website-fiqgk03hc-xata.vercel.app[Pull Request](https://github.com/xataio/agent/commit/ff3a2534281efc6312182ff8c55e99dca5bcabcd) which introduces in the open source Xata Agent.
+For full details check out the [Pull Request](https://github.com/xataio/agent/commit/ff3a2534281efc6312182ff8c55e99dca5bcabcd) which introduces in the open source Xata Agent.
