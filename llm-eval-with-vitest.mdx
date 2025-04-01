@@ -103,7 +103,7 @@ Vitest is a popular TypeScript testing framework. To create our desired folder s
 
 ### Get an id for the eval run
 
-To get a consistent id for each run of all our eval tests we can set an `TEST_RUN_ID` environment variable in vitest’s globalSetup.
+To get a consistent id for each run of all our eval tests we can set an `TEST_RUN_ID` environment variable in Vitest’s globalSetup.
 
 ```tsx
 export default defineConfig({
@@ -126,9 +126,9 @@ We can then create and reference the folder for our eval run like this: `path.jo
 
 Getting an id for each individual eval test case is a bit more tricky.
 
-Since LLM calls take some time, we need to run vitest tests in parallel using `describe.concurrent` . But we must then use a local copy of the `expect` variable from the test to [ensure the test name is correct](https://vitest.dev/api/#describe-concurrent).
+Since LLM calls take some time, we need to run Vitest tests in parallel using `describe.concurrent` . But we must then use a local copy of the `expect` variable from the test to [ensure the test name is correct](https://vitest.dev/api/#describe-concurrent).
 
-We can use the vitest describe + test name as the eval id:
+We can use the Vitest describe + test name as the eval id:
 
 ```tsx
 import { describe, it } from 'vitest';
