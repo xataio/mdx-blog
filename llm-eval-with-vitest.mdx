@@ -16,7 +16,7 @@ ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/llm-evals
 
 Recently we launched [Xata Agent](https://github.com/xataio/agent), an open-source AI agent which helps diagnose issues and suggest optimizations for PostgreSQL databases.
 
-To make sure that Xata Agent still works well after modifying a prompt or switching LLM models we decided to test it with an Eval.
+To make sure that Xata Agent still works well after modifying a prompt or switching LLM models we decided to test it with an Eval. Here, we'll explain how we used [Vercel's AI SDK](https://sdk.vercel.ai) and [Vitest](https://vitest.dev) to build an Eval in TypeScript.
 
 ## Testing the Agent with an Eval
 
@@ -37,7 +37,7 @@ An [Eval](https://hamel.dev/blog/posts/evals/) is usually similar to a system te
 
 ## The Eval run output
 
-When we run the eval the output is a directory with one folder for each eval test case.
+When we run the Eval the output is a directory with one folder for each Eval test case.
 
 The folder contains the output files of the run along with 'trace' information so we can debug what happened.
 
@@ -93,17 +93,17 @@ Based on the results, you have one table in your database: `dogs`
 
 ```
 
-We then built a custom UI to see all all these outputs in so we can quickly debug what happened in a particular eval run:
+We then built a custom UI to see all all these outputs in so we can quickly debug what happened in a particular Eval run:
 
 ![LLM Eval Runner](images/llm-eval-runner.png)
 
-## Using Vitest to run an eval
+## Using Vitest to run an Eval
 
 Vitest is a popular TypeScript testing framework. To create our desired folder structure we have to hook into Vitest in a few places:
 
-### Get an id for the eval run
+### Get an id for the Eval run
 
-To get a consistent id for each run of all our eval tests we can set a `TEST_RUN_ID` environment variable in Vitest’s globalSetup.
+To get a consistent id for each run of all our Eval tests we can set a `TEST_RUN_ID` environment variable in Vitest’s globalSetup.
 
 ```tsx
 export default defineConfig({
@@ -122,13 +122,13 @@ export default async function globalSetup() {
 
 We can then create and reference the folder for our eval run like this: `path.join('/tmp/eval-runs/', process.env.TEST_RUN_ID)`
 
-### Get an id for an individual eval
+### Get an id for an individual Eval
 
-Getting an id for each individual eval test case is a bit more tricky.
+Getting an id for each individual Eval test case is a bit more tricky.
 
 Since LLM calls take some time, we need to run Vitest tests in parallel using `describe.concurrent` . But we must then use a local copy of the `expect` variable from the test to [ensure the test name is correct](https://vitest.dev/api/#describe-concurrent).
 
-We can use the Vitest describe + test name as the eval id:
+We can use the Vitest describe + test name as the Eval id:
 
 ```tsx
 import { describe, it } from 'vitest';
@@ -199,7 +199,7 @@ export default class EvalReporter implements Reporter {
 
 Vitest is a powerful and versatile test runner for the TypeScript which can be straightforwardly adapted to run an Eval.
 
-Vercel AI’s [Response objects](https://sdk.vercel.ai/docs/reference/ai-sdk-core/generate-text#returns) contain almost everything needed to see what happened in an eval.
+Vercel AI’s [Response objects](https://sdk.vercel.ai/docs/reference/ai-sdk-core/generate-text#returns) contain almost everything needed to see what happened in an Eval.
 
 For full details check out the [Pull Request](https://github.com/xataio/agent/commit/ff3a2534281efc6312182ff8c55e99dca5bcabcd) which introduces in the open source Xata Agent.
 
