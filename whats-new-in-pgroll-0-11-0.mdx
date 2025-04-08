@@ -1,0 +1,133 @@
+---
+title: pgroll 0.11.0 update
+description: pgroll v0.11 includes support for YAML migration files, a fix for the bookkeeping of pgroll, and smaller usability improvements.
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-update-0-6-0@2x.jpg
+  alt: pgroll
+author: Noémi Ványi
+authorEmail: noemi@xata.io
+date: 04-08-2025
+tags: ['open-source', 'postgres', 'schema', 'migrations', 'pgroll', 'fpSchemaMigrations', 'oss', 'yaml']
+published: true
+slug: pgroll-0-11-0-update
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-update-0-6-0@2x.jpg
+canonicalUrl: https://pgroll.com/blog/pgroll-0110-update
+---
+
+We've just released `v0.11` of `pgroll`, our open-source schema migration tool for Postgres. As we've done for previous releases, we'll take a look at some of the headline features that made it into the release and look ahead to what's coming next. Past entries in the release blog series can be read here:
+
+- [pgroll v0.10 release blog](https://pgroll.com/blog/pgroll-10-update)
+- [pgroll v0.9 release blog](https://pgroll.com/blog/pgroll-09-update)
+- [pgroll v0.8 release blog](https://pgroll.com/blog/pgroll-080-update)
+
+For the complete notes for this release see the [Github v0.11.0 release page](https://github.com/xataio/pgroll/releases/tag/v0.11.0).
+
+## What is pgroll?
+
+[pgroll](https://pgroll.com/) is a schema migration tool for Postgres. Designed for application developers working on applications that require frequent schema changes but also need to maintain zero downtime around those schema changes, `pgroll` takes a different approach compared to most other migration tools on the market. There are two aspects that characterize `pgroll`'s approach to migrations:
+
+- **Multi-version migrations**: Making a schema change with `pgroll` results in two versions of the schema; the one before the change and the one after the change - this allows applications to select which version of the schema they want to work with and allows side-by-side rollout of applications that require the new schema changes with old applications that may be incompatible with it.
+- **Lock-safe migrations**: Migrations using `pgroll` are expressed declaratively, rather than using SQL directly. This allows `pgroll` to implement the steps required to perform the schema change in a safe manner, ensuring that any locks required on the affected objects are held for the shortest possible time.
+
+Full documentation for pgroll is in the [documentation section](https://pgroll.com/docs/latest/getting-started) of this site.
+
+`pgroll` `v0.11` includes support for YAML migration files, fixes to the bookkeeping of `pgroll` and dropping `name` requirement in migration files. Let's take a look at what went into the `v0.11` release in more detail:
+
+## YAML migration files
+
+In this release we added support for YAML migration files. From now on you can write your migration files either in JSON or YAML. The extension of YAML migration files must be either `.yaml` or `.yml`.
+
+YAML is an ideal option for several reasons. You can add comments to your migration files ([as some of you have requested it](https://github.com/xataio/pgroll/issues/281)). It supports multiline strings, so you can write clearer up and down migrations, even if the expression gets long and complex. Look how cleaner this migration is in YAML compared to JSON:
+
+```json
+{
+  "operations": [
+    {
+      "create_constraint": {
+        "name": "limited_required_bio",
+        "table": "employee",
+        "type": "check",
+        "columns": ["bio"],
+        "check": "length(bio) > 15 AND length(bio) < 100",
+        "up": {
+          "bio": "CASE WHEN bio IS NULL THEN 'this employee did not provide a bio' WHEN length(bio) <= 15 THEN bio || SELECT random_bio(16-length(bio)) WHEN length(bio) >= 100 THEN left(bio, 96) || '...' ELSE bio END"
+        },
+        "down": {
+          "bio": "bio"
+        }
+      }
+    }
+  ]
+}
+```
+
+and
+
+```yaml
+operations:
+  - create_constraint:
+      name: limited_required_bio
+      table: employee
+      type: check
+      columns:
+        - bio
+      check: length(bio) > 15 AND length(bio) < 100
+      up:
+        bio: >
+          CASE
+            WHEN bio IS NULL THEN 'this employee did not provide a bio'
+            WHEN length(bio) <= 15 THEN bio || SELECT random_bio(16-length(bio))
+            WHEN length(bio) >= 100 THEN left(bio, 96) || '...'
+            ELSE bio
+          END
+      down:
+        bio: bio
+```
+
+You can also mix the two formats. If you already had migration files written in JSON, you do not have to convert them to YAML. Also, you can decide to add a JSON migration file to your YAML files. The ordering of the migration does not depend on the extension. `pgroll` considers only the filename without the extension, when it is ordering migrations lexicographically.
+
+The following migration folder contents are valid:
+
+```sh
+01_my_first_migration.json
+02_my_second_migration.yaml
+03_my_third_migration.yml
+04_my_fourth_migration.json
+```
+
+These migrations are executed in the order they are listed because I listed them lexicograpyhcally (not including the extension name).
+
+### Limitations
+
+You can write migration files in YAML. However, when you are retrieving migration history from your database using [`pgroll pull`](https://pgroll.com/docs/latest/cli/pull), the migrations are stored as JSON files.
+
+## Add timezone to timestamps in `pgroll` bookkeeping
+
+`pgroll` stores migration information and metadata in `pgroll.migration` table. Previously, the columns `created_at` and `updated_at` did not contain any timezone information. This lead to [issues when you tried to consume this fields](https://github.com/xataio/pgroll/issues/711) from client applications relying on UTC.
+
+## Migration `name` is no longer required
+
+Previously, `pgroll` required `name` attribute for all migrations. However, keeping the filename and the migration name in sync can be uncomfortable during development. From now on `name` is not a required field. If `name ` is missing, `pgroll` considers the filename as the migration name.
+
+For example, the following `drop_index` operations changes from this:
+
+```yaml
+name: drop_my_index
+operations:
+  - drop_index:
+      name: my_index
+```
+
+to this:
+
+```yaml
+operations:
+  - drop_index:
+      name: my_index
+```
+
+## Conclusion
+
+`pgroll` is open-source; check out [the repository](https://github.com/xataio/pgroll) to get involved.
+
+Many of the features that have gone into this and previous releases have been directly influenced by how users tell us they are using the tool and where it's currently lacking. We welcome any feedback in [issues](https://github.com/xataio/pgroll/issues), or contributions via [pull requests](https://github.com/xataio/pgroll/pulls)!
