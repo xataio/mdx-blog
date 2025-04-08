@@ -37,7 +37,53 @@ Full documentation for pgroll is in the [documentation section](https://pgroll.c
 
 In this release we added support for YAML migration files. From now on you can write your migration files either in JSON or YAML. The extension of YAML migration files must be either `.yaml` or `.yml`.
 
-YAML is an ideal option for several reasons. You can add comments to your migration files ([as some of you have requested it](https://github.com/xataio/pgroll/issues/281)). It supports multiline strings, so you can write clearer up and down migrations, even if the expression gets long and complex.
+YAML is an ideal option for several reasons. You can add comments to your migration files ([as some of you have requested it](https://github.com/xataio/pgroll/issues/281)). It supports multiline strings, so you can write clearer up and down migrations, even if the expression gets long and complex. Look how cleaner this migration is in YAML compared to JSON:
+
+```json
+{
+    "operations": [
+        {
+            "create_constraint": {
+                "name": "limited_required_bio",
+                "table": "employee",
+                "type": "check",
+                "columns": [
+                    "bio"
+                ],
+                "check": "length(bio) > 15 AND length(bio) < 100",
+                "up": {
+                    "bio": "CASE WHEN bio IS NULL THEN 'this employee did not provide a bio' WHEN length(bio) <= 15 THEN bio || SELECT random_bio(16-length(bio)) WHEN length(bio) >= 100 THEN left(bio, 96) || '...' ELSE bio END",
+                },
+                "down": {
+                    "bio": "bio"
+                }
+            }
+        }
+    ]
+}
+```
+and
+
+```yaml
+operations:
+ - create_constraint:
+    name: limited_required_bio
+    table: employee
+    type: check
+    columns:
+     - bio
+    check: length(bio) > 15 AND length(bio) < 100
+    up:
+     bio: >
+       CASE
+         WHEN bio IS NULL THEN 'this employee did not provide a bio'
+         WHEN length(bio) <= 15 THEN bio || SELECT random_bio(16-length(bio))
+         WHEN length(bio) >= 100 THEN left(bio, 96) || '...'
+         ELSE bio
+       END
+    down:
+     bio: bio
+```
 
 You can also mix the two formats. If you already had migration files written in JSON, you do not have to convert them to YAML. Also, you can decide to add a JSON migration file to your YAML files. The ordering of the migration does not depend on the extension. `pgroll` considers only the filename without the extension, when it is ordering migrations lexicographically.
 
