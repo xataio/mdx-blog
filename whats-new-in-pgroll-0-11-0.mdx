@@ -37,15 +37,13 @@ Full documentation for pgroll is in the [documentation section](https://pgroll.c
 
 In this release we added support for YAML migration files. From now on you can write your migration files either in JSON or YAML. The extension of YAML migration files must be either `.yaml` or `.yml`.
 
-YAML is an ideal option for several reasons. You can add comments to your migration files ([as some of you requested it](https://github.com/xataio/pgroll/issues/281)). It supports multiline strings, so you can write clearer up and down migrations, even if the expression gets long and complex.
+YAML is an ideal option for several reasons. You can add comments to your migration files ([as some of you have requested it](https://github.com/xataio/pgroll/issues/281)). It supports multiline strings, so you can write clearer up and down migrations, even if the expression gets long and complex.
 
-You can also mix the two formats. If you already had migration files written in JSON, you do not have to convert them to YAML. Also, you can decide to add a JSON migration file to your YAML files.
-
-The ordering of the migration does not depend on the extension. `pgroll` considers only the filename without the extension, when it is ordering migrations lexicographycally.
+You can also mix the two formats. If you already had migration files written in JSON, you do not have to convert them to YAML. Also, you can decide to add a JSON migration file to your YAML files. The ordering of the migration does not depend on the extension. `pgroll` considers only the filename without the extension, when it is ordering migrations lexicographycally.
 
 The following migration folder contents are valid:
 
-```
+```sh
 01_my_first_migration.json
 02_my_second_migration.yaml
 03_my_third_migration.yml
