@@ -41,48 +41,47 @@ YAML is an ideal option for several reasons. You can add comments to your migrat
 
 ```json
 {
-    "operations": [
-        {
-            "create_constraint": {
-                "name": "limited_required_bio",
-                "table": "employee",
-                "type": "check",
-                "columns": [
-                    "bio"
-                ],
-                "check": "length(bio) > 15 AND length(bio) < 100",
-                "up": {
-                    "bio": "CASE WHEN bio IS NULL THEN 'this employee did not provide a bio' WHEN length(bio) <= 15 THEN bio || SELECT random_bio(16-length(bio)) WHEN length(bio) >= 100 THEN left(bio, 96) || '...' ELSE bio END",
-                },
-                "down": {
-                    "bio": "bio"
-                }
-            }
+  "operations": [
+    {
+      "create_constraint": {
+        "name": "limited_required_bio",
+        "table": "employee",
+        "type": "check",
+        "columns": ["bio"],
+        "check": "length(bio) > 15 AND length(bio) < 100",
+        "up": {
+          "bio": "CASE WHEN bio IS NULL THEN 'this employee did not provide a bio' WHEN length(bio) <= 15 THEN bio || SELECT random_bio(16-length(bio)) WHEN length(bio) >= 100 THEN left(bio, 96) || '...' ELSE bio END"
+        },
+        "down": {
+          "bio": "bio"
         }
-    ]
+      }
+    }
+  ]
 }
 ```
+
 and
 
 ```yaml
 operations:
- - create_constraint:
-    name: limited_required_bio
-    table: employee
-    type: check
-    columns:
-     - bio
-    check: length(bio) > 15 AND length(bio) < 100
-    up:
-     bio: >
-       CASE
-         WHEN bio IS NULL THEN 'this employee did not provide a bio'
-         WHEN length(bio) <= 15 THEN bio || SELECT random_bio(16-length(bio))
-         WHEN length(bio) >= 100 THEN left(bio, 96) || '...'
-         ELSE bio
-       END
-    down:
-     bio: bio
+  - create_constraint:
+      name: limited_required_bio
+      table: employee
+      type: check
+      columns:
+        - bio
+      check: length(bio) > 15 AND length(bio) < 100
+      up:
+        bio: >
+          CASE
+            WHEN bio IS NULL THEN 'this employee did not provide a bio'
+            WHEN length(bio) <= 15 THEN bio || SELECT random_bio(16-length(bio))
+            WHEN length(bio) >= 100 THEN left(bio, 96) || '...'
+            ELSE bio
+          END
+      down:
+        bio: bio
 ```
 
 You can also mix the two formats. If you already had migration files written in JSON, you do not have to convert them to YAML. Also, you can decide to add a JSON migration file to your YAML files. The ordering of the migration does not depend on the extension. `pgroll` considers only the filename without the extension, when it is ordering migrations lexicographically.
