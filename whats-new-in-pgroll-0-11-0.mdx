@@ -6,7 +6,7 @@ image:
   alt: pgroll
 author: Noémi Ványi
 authorEmail: noemi@xata.io
-date: 04-10-2025
+date: 04-08-2025
 tags: ['open-source', 'postgres', 'schema', 'migrations', 'pgroll', 'fpSchemaMigrations', 'oss', 'yaml']
 published: true
 slug: pgroll-0-11-0-update
@@ -39,7 +39,7 @@ In this release we added support for YAML migration files. From now on you can w
 
 YAML is an ideal option for several reasons. You can add comments to your migration files ([as some of you have requested it](https://github.com/xataio/pgroll/issues/281)). It supports multiline strings, so you can write clearer up and down migrations, even if the expression gets long and complex.
 
-You can also mix the two formats. If you already had migration files written in JSON, you do not have to convert them to YAML. Also, you can decide to add a JSON migration file to your YAML files. The ordering of the migration does not depend on the extension. `pgroll` considers only the filename without the extension, when it is ordering migrations lexicographycally.
+You can also mix the two formats. If you already had migration files written in JSON, you do not have to convert them to YAML. Also, you can decide to add a JSON migration file to your YAML files. The ordering of the migration does not depend on the extension. `pgroll` considers only the filename without the extension, when it is ordering migrations lexicographically.
 
 The following migration folder contents are valid:
 
@@ -54,7 +54,7 @@ These migrations are executed in the order they are listed because I listed them
 
 ### Limitations
 
-You can write migration files in YAML. However, when you are retrieving migration history from your database using `pgroll pull`, the migrations are stored as JSON files.
+You can write migration files in YAML. However, when you are retrieving migration history from your database using [`pgroll pull`](https://pgroll.com/docs/latest/cli/pull), the migrations are stored as JSON files.
 
 ## Add timezone to timestamps in `pgroll` bookkeeping
 
@@ -63,6 +63,22 @@ You can write migration files in YAML. However, when you are retrieving migratio
 ## Migration `name` is no longer required
 
 Previously, `pgroll` required `name` attribute for all migrations. However, keeping the filename and the migration name in sync can be uncomfortable during development. From now on `name` is not a required field. If `name ` is missing, `pgroll` considers the filename as the migration name.
+
+For example, the following `drop_index` operations changes from this:
+
+```yaml
+name: drop_my_index
+operations:
+ - drop_index:
+    name: my_index
+```
+to this:
+
+```yaml
+operations:
+ - drop_index:
+    name: my_index
+```
 
 ## Conclusion
 
