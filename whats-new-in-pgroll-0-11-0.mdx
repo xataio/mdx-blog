@@ -103,7 +103,7 @@ You can write migration files in YAML. However, when you are retrieving migratio
 
 ## Add timezone to timestamps in `pgroll` bookkeeping
 
-`pgroll` stores migration information and metadata in `pgroll.migration` table. Previously, the columns `created_at` and `updated_at` did not contain any timezone information. This lead to issues when you tried to consume this fields from client applications relying on UTC.
+`pgroll` stores migration information and metadata in `pgroll.migration` table. Previously, the columns `created_at` and `updated_at` did not contain any timezone information. This lead to [issues when you tried to consume this fields](https://github.com/xataio/pgroll/issues/711) from client applications relying on UTC.
 
 ## Migration `name` is no longer required
 
