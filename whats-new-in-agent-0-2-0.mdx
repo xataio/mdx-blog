@@ -1,0 +1,90 @@
+---
+title: Xata Agent v0.2.0: Powered-up chat, custom playbooks, GCP support & more
+description: The latest version of our agent has a revamped chat experience, the ability to create your own playbooks, support for monitoring Postgres instances on GCP and various improvements across the board.
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/are-ai-agents-the-future-of-observability@2x.png
+  alt: The Xata Agent
+author: Alex Francoeur
+authorEmail: alexf@xata.io
+date: 04-15-2025
+tags: ['open-source', 'postgres', 'agent', 'ai', 'oss']
+published: true
+slug: postgres-agent-0-2-0-update
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/are-ai-agents-the-future-of-observability@2x.png
+---
+
+About a month ago, we released the [Xata Agent](https://github.com/xataio/agent) — an open source AI agent that monitors and optimizes your PostgreSQL databases. The feedback has been tremendous so far and our community tends to agree that the [future of observability](https://xata.io/blog/are-ai-agents-the-future-of-observability) is significantly more agentic than our current one. With the `v0.2.0` release today, we are doubling down on that belief with a bunch of new features and improvements.
+
+## Improvements to chat
+
+One of the key parts of the agent workflow is chat. Every playbook ran, event captured and notification sent leads back to a chat interface with the agent. We recently [made some improvements](https://github.com/xataio/agent/pull/52) that level-up our chat experience and open the door to some amazing possibilities.
+
+![New chat interface](/images/agent/agent-chat-welcome.png)
+
+**Chat persistance**
+
+Previously, chats were only persisted as part of the playbooks run history.
+
+![v0.1 run history](/images/agent/agent-chat-run-history.png)
+
+Now you can spark up a conversation with the agent and revisit it at any time. This makes it perfect for any ad-hoc queries or an opportunity to build context for any long-running investigations.
+
+![Chat peristence in v0.2](/images/agent/agent-chat-persisted.png)
+
+**Better syntax highlighting**
+
+There are many times when the agent will be sharing SQL or configuration parameters to help optimize performance issues or troubleshoot errors in real time. With this updated design, you can visually see what’s important faster. When it comes to databases, sometimes even seconds of downtime can be expensive.
+
+![Syntax highlighting refresh](/images/agent/agent-chat-syntax.png)
+
+**Artifacts**
+
+Tables tend to be one of the most common outputs required when interacting with a database. In `v0.2.0` we’ve added artifacts to chat, making it possible to output and interact with a table or document. These are transparent to the user and the agent will decided when best to surface them, but if you ask nicely, I’m sure you’ll get the output you’re looking for ✨
+
+![Document and spreadsheet artifacts](/images/agent/agent-chat-artifacts.png)
+
+We’re especially excited about artifacts, this framework allows us to introduce many new chat experiences. We plan to build out a library of artifacts for the agent starting with an interactive SQL editor.
+
+## Custom playbooks
+
+If you are one or have ever worked with a SRE, playbooks are a foundational part of observability workflows and critical to ensuring uptime and swift recoveries when down. Every unwanted behavior or degraded pattern observed has explicit steps and actions to remediate. If an event has never been observed before, a new playbook is added. Playbooks are a core element to the monitoring and actions taken by the agent and we ship with a handful of generic playbooks that are useful for most PostgreSQL instances.
+
+Though we realize every company, business and database is unique and different. With [custom playbooks](https://github.com/xataio/agent/pull/61), you can create your own playbook or fork one of Xata’s. This is the first step toward building out a library of custom workflows specific to your needs. We have already started work on [adding custom tools via MCP](https://github.com/xataio/agent/issues/79) and envision the agent authoring and revising it’s own playbooks.
+
+![Create a custom playbook or generate one from a description](/images/agent/agent-playbook-custom.png)
+
+![Easily fork a playbook and make it your own](/images/agent/agent-playbook-copy.png)
+
+## Support for GCP CloudSQL Databases
+
+Our initial release supported vanilla Postgres instances and AWS flavors of Postgres. Adding native support for cloud providers allows us to pull in monitoring data and logs available as context for the agent. With [this latest integration](https://github.com/xataio/agent/wiki/Xata-Agent-%E2%80%90-GCP-CloudSQL-integration-guide), you can now use CloudSQL logs and monitoring data to help monitor, troubleshoot and optimize your PostgreSQL database.
+
+![Use our native CloudSQL integration for your GCP PostgreSQL instances](/images/agent/agent-integration-gcp.png)
+
+You can add this to any new project in the agents interface.
+
+## Support for Gemini models
+
+We’ve heard it from numerous leaders in the industry, Gemini provides pretty good answers when it comes to PostgreSQL. While it was on our roadmap, we’d like to give a shout out to a valued member of our community [Leonardo Benedet](https://github.com/leonardobenedet) for [adding support for Gemini](https://github.com/xataio/agent/pull/82)! You can now choose Gemini as the model for any chat or scheduled playbook.
+
+![Gemini models now available for chat and scheduled playbooks](/images/agent/agent-model-gemini.png)
+
+## Connection re-use
+
+Agents can be pretty chatty. If you have an active database, there can be multiple conversations happening in parallel. Each tool interacts with a target database and we now ensure that the connection is re-used between tool calls. This will help restrict the number of connections open to your database from the agent. You can read more up on the implementation in [this pull request](https://github.com/xataio/agent/pull/67).
+
+## Errors as context
+
+There is now more robust error handling by the agent. With `v0.2.0` all errors are [fed back to the models as context](https://github.com/xataio/agent/pull/91) so it can react to errors in real time.
+
+## Up next
+
+This was an exciting release and we encourage you to check out the **full changelog (need link)** to dig into all the other improvements and bug fixes that came with this release. We are dogfooding the agent with the Xata platform, monitoring and optimizing ~40,000 active databases and continually improving the agent to work with PostgreSQL at scale.
+
+On our near term roadmap you can expect to see:
+
+- Support for custom tooling and MCP servers so you can customize not just your playbooks, but the actions the agent takes.
+- Approval workflows through GitHub to review changes requested by the agent.
+- A hosted SaaS agent so you don’t need to run any infrastructure yourself.
+
+Would you like to see a new feature, supported model or enhancements in the [Xata Agent](https://github.com/xataio/agent)? We welcome you to [open up an issue](https://github.com/xataio/agent/issues/new), [create a pull request](https://github.com/xataio/agent/compare) or just come say [hi in discord.](http://xata.io/discord)
