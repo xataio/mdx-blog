@@ -1,0 +1,126 @@
+---
+title: pgroll 0.12.0 update
+description: pgroll v0.12 includes one breaking change, a new subcommand to convert SQL statements into pgroll operations and improvements to adding default values to existing tables.
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-update-0-6-0@2x.jpg
+  alt: pgroll
+author: Noémi Ványi
+authorEmail: noemi@xata.io
+date: 05-09-2025
+tags:
+  [
+    'open-source',
+    'postgres',
+    'schema',
+    'migrations',
+    'pgroll',
+    'fpSchemaMigrations',
+    'oss',
+  ]
+published: true
+slug: pgroll-0-12-0-update
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgroll-update-0-6-0@2x.jpg
+canonicalUrl: https://pgroll.com/blog/pgroll-0120-update
+---
+
+We've just released `v0.12` of `pgroll`, our open-source schema migration tool for Postgres. As we've done for previous releases, we'll take a look at some of the headline features that made it into the release and look ahead to what's coming next. Past entries in the release blog series can be read here:
+
+- [pgroll v0.11 release blog](https://pgroll.com/blog/pgroll-11-update)
+- [pgroll v0.10 release blog](https://pgroll.com/blog/pgroll-10-update)
+- [pgroll v0.9 release blog](https://pgroll.com/blog/pgroll-09-update)
+
+For the complete notes for this release see the [Github v0.12.0 release page](https://github.com/xataio/pgroll/releases/tag/v0.12.0).
+
+## What is pgroll?
+
+[pgroll](https://pgroll.com/) is a schema migration tool for Postgres. Designed for application developers working on applications that require frequent schema changes but also need to maintain zero downtime around those schema changes, `pgroll` takes a different approach compared to most other migration tools on the market. There are two aspects that characterize `pgroll`'s approach to migrations:
+
+- **Multi-version migrations**: Making a schema change with `pgroll` results in two versions of the schema; the one before the change and the one after the change - this allows applications to select which version of the schema they want to work with and allows side-by-side rollout of applications that require the new schema changes with old applications that may be incompatible with it.
+- **Lock-safe migrations**: Migrations using `pgroll` are expressed declaratively, rather than using SQL directly. This allows `pgroll` to implement the steps required to perform the schema change in a safe manner, ensuring that any locks required on the affected objects are held for the shortest possible time.
+
+Full documentation for pgroll is in the [documentation section](https://pgroll.com/docs/latest/getting-started) of this site.
+
+`pgroll` `v0.12` includes verbose mode for migrations, a usability improvement and one new constraint type. Most of the feautes were suggested by you, the community. We appreciate your participation and insightful suggestions coming from you. Let's take a look at what went into the `v0.12` release in more detail:
+
+## Verbose mode
+
+Ever wondered exactly what `pgroll` was doing behind the scenes during a migration? Now you can find out! We have added a new `--verbose` flag to migrator commands: `start`, `rollback`, `complete` and `migrate`. When you set `--verbose`, `pgroll` will log every step of the process from start, rollback, complete and backfilling phases. This is invaluable for debugging, following complex migrations, and ensuring everything is happening as expected. This feature was directly requested on [GitHub](https://github.com/xataio/pgroll/issues).
+
+The output of `start` is short and consize:
+
+```sh
+$ pgroll start 01_create_tables.yaml
+ SUCCESS  New version of the schema available under the postgres "public_01_create_tables" schema
+```
+
+However, the cryptic `start` command can tell you a lot more if you set `--verbose`:
+
+```sh
+$ pgroll start --verbose 01_create_tables.yaml
+2025-05-07 15:04:15 INFO  starting migration
+                      ├ name: 01_create_tables
+                      └ operation_count: 3
+2025-05-07 15:04:15 INFO  starting operation
+                      ├ operation: create_table
+                      ├ name: customers
+                      ├ columns: [id name credit_card]
+                      ├ comment: <nil>
+                      └ constraints: []
+2025-05-07 15:04:15 INFO  starting operation
+                      ├ operation: create_table
+                      ├ name: bills
+                      ├ columns: [id date quantity]
+                      ├ comment: <nil>
+                      └ constraints: []
+2025-05-07 15:04:15 INFO  starting operation
+                      ├ operation: create_table
+                      ├ name: sellers
+                      ├ columns: [name zip description]
+                      ├ comment: <nil>
+                      └ constraints: []
+2025-05-07 15:04:15 INFO  created versioned schema for migration
+                      ├ migration: 01_create_tables
+                      └ schema_name: public_01_create_tables
+ SUCCESS  New version of the schema available under the postgres "public_01_create_tables" schema
+```
+
+You can get this level of detail in all migrator commands including `start`, `rollback`, `complete` and `migrate`.
+
+## New constraint type: `primary_key` in `create_constraint` operation
+
+Need to quickly add a primary key constraint to an existing table? You can now do it directly with the `create_constraint` operation! This simplifies the process and makes it easier to ensure data integrity with the help of `pgroll`.
+
+The new constraint type is called `primary_key`.
+
+### Example
+
+Add a composite primary key to the existing `tickets` table.
+
+```yaml
+operations:
+  - create_constraint:
+      type: primary_key
+      table: tickets
+      name: pk_zip_name
+      columns:
+        - sellers_name
+        - sellers_zip
+      up:
+        sellers_name: sellers_name
+        sellers_zip: sellers_zip
+      down:
+        sellers_name: sellers_name
+        sellers_zip: sellers_zip
+```
+
+## Idempotent `migrate`
+
+You might try to run `migrate` from several CI jobs in paralel. To prevent `pgroll` from throwing an error and potentially halting your workflow, we have made the `migrate` command idempotent. If a migration is currently running, `pgroll` will now simply report that a migration is in progress and will not return an error.
+
+This significantly improves reliability and reduces the chance of unexpected interruptions during automated workflows. This issue was raised on [Discord](https://xata.io/discord).
+
+## Conclusion
+
+`pgroll` is open-source; check out [the repository](https://github.com/xataio/pgroll) to get involved.
+
+Many of the features that have gone into this and previous releases have been directly influenced by how users tell us they are using the tool and where it's currently lacking. We welcome any feedback in [issues](https://github.com/xataio/pgroll/issues), or contributions via [pull requests](https://github.com/xataio/pgroll/pulls)!
