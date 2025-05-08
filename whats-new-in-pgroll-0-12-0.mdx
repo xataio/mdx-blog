@@ -40,55 +40,89 @@ For the complete notes for this release see the [Github v0.12.0 release page](ht
 
 Full documentation for pgroll is in the [documentation section](https://pgroll.com/docs/latest/getting-started) of this site.
 
-`pgroll` `v0.12` includes verbose mode for migrations, a usability improvement and one new constraint type. Most of the feautes were suggested by you, the community. We appreciate your participation and insightful suggestions coming from you. Let's take a look at what went into the `v0.12` release in more detail:
+`pgroll` `v0.12` includes verbose mode for migrations, a usability improvement and one new constraint type. Most of the features were suggested by you, the community. We appreciate your participation and insightful suggestions coming from you. Let's take a look at what went into the `v0.12` release in more detail:
 
 ## Verbose mode
 
-Ever wondered exactly what `pgroll` was doing behind the scenes during a migration? Now you can find out! We have added a new `--verbose` flag to migrator commands: `start`, `rollback`, `complete` and `migrate`. When you set `--verbose`, `pgroll` will log every step of the process from start, rollback, complete and backfilling phases. This is invaluable for debugging, following complex migrations, and ensuring everything is happening as expected. This feature was directly requested on [GitHub](https://github.com/xataio/pgroll/issues).
+Ever wondered exactly what `pgroll` was doing behind the scenes during a migration? Now you can find out! We have added a new `--verbose` flag to migrator commands: `start`, `rollback`, `complete` and `migrate`. When you set `--verbose`, `pgroll` will log every step of the process from start, rollback, complete and backfilling phases. This is invaluable for debugging, following complex migrations, and ensuring everything is happening as expected. This feature was directly requested on [GitHub](https://github.com/xataio/pgroll/issue/784).
 
-The output of `start` is short and consize:
+The output of `start` is short and consise:
 
 ```sh
 $ pgroll start 01_create_tables.yaml
  SUCCESS  New version of the schema available under the postgres "public_01_create_tables" schema
 ```
 
-However, the cryptic `start` command can tell you a lot more if you set `--verbose`:
+However, the `start` command can tell you a lot more if you set `--verbose`:
 
 ```sh
 $ pgroll start --verbose 01_create_tables.yaml
-2025-05-07 15:04:15 INFO  starting migration
+2025-05-08 14:01:15 INFO  starting migration
                       ├ name: 01_create_tables
                       └ operation_count: 3
-2025-05-07 15:04:15 INFO  starting operation
+2025-05-08 14:01:15 INFO  starting operation
                       ├ operation: create_table
                       ├ name: customers
                       ├ columns: [id name credit_card]
                       ├ comment: <nil>
                       └ constraints: []
-2025-05-07 15:04:15 INFO  starting operation
+2025-05-08 14:01:15 INFO  starting operation
                       ├ operation: create_table
                       ├ name: bills
                       ├ columns: [id date quantity]
                       ├ comment: <nil>
                       └ constraints: []
-2025-05-07 15:04:15 INFO  starting operation
+2025-05-08 14:01:15 INFO  starting operation
                       ├ operation: create_table
                       ├ name: sellers
                       ├ columns: [name zip description]
                       ├ comment: <nil>
                       └ constraints: []
-2025-05-07 15:04:15 INFO  created versioned schema for migration
+2025-05-08 14:01:15 INFO  created versioned schema for migration
                       ├ migration: 01_create_tables
                       └ schema_name: public_01_create_tables
  SUCCESS  New version of the schema available under the postgres "public_01_create_tables" schema
+```
+
+Now let's run `rollback` with the new flag `--verbose`:
+
+```
+$ pgroll rollback --verbose 01_create_tables.yaml
+2025-05-08 14:02:23 INFO  rolling back migration
+                      ├ name: 01_create_tables
+                      └ operation_count: 3
+2025-05-08 14:02:23 INFO  dropped versioned schema for migration
+                      ├ migration: 01_create_tables
+                      └ schema_name: public_01_create_tables
+2025-05-08 14:02:23 INFO  rolling back operation
+                      ├ operation: create_table
+                      ├ name: sellers
+                      ├ columns: [name zip description]
+                      ├ comment: <nil>
+                      └ constraints: []
+2025-05-08 14:02:23 INFO  rolling back operation
+                      ├ operation: create_table
+                      ├ name: bills
+                      ├ columns: [id date quantity]
+                      ├ comment: <nil>
+                      └ constraints: []
+2025-05-08 14:02:23 INFO  rolling back operation
+                      ├ operation: create_table
+                      ├ name: customers
+                      ├ columns: [id name credit_card]
+                      ├ comment: <nil>
+                      └ constraints: []
+2025-05-08 14:02:23 INFO  rolled back migration
+                      ├ name: 01_create_tables
+                      └ operation_count: 3
+ SUCCESS  Migration rolled back. Changes made since the last version have been reverted
 ```
 
 You can get this level of detail in all migrator commands including `start`, `rollback`, `complete` and `migrate`.
 
 ## New constraint type: `primary_key` in `create_constraint` operation
 
-Need to quickly add a primary key constraint to an existing table? You can now do it directly with the `create_constraint` operation! This simplifies the process and makes it easier to ensure data integrity with the help of `pgroll`.
+Previously, the only way to add primary key constraint to tables was in `create_table` operations: either by setting `pk` in a column definition or adding a constraint to the list of `constraints`. But what if you need to quickly add a primary key constraint to an existing table? You can now do it directly with the `create_constraint` operation! This simplifies the process and makes it easier to ensure data integrity with the help of `pgroll`.
 
 The new constraint type is called `primary_key`.
 
@@ -113,9 +147,13 @@ operations:
         sellers_zip: sellers_zip
 ```
 
-## Idempotent `migrate`
+## `pull` command stores files in YAML format by default
 
-You might try to run `migrate` from several CI jobs in paralel. To prevent `pgroll` from throwing an error and potentially halting your workflow, we have made the `migrate` command idempotent. If a migration is currently running, `pgroll` will now simply report that a migration is in progress and will not return an error.
+In the [last release](https://pgroll.com/blog/pgroll-0-11-0-update), we added support for YAML migration files. However, it had one [limitation](https://xata.io/blog/pgroll-0-11-0-update#limitations). When you ran `pull` to fetch migrations from your PostgreSQL instance, `pgroll` persisted the files to disk in JSON format. From now on the migrations files are stored as YAML, unless you set the new flag `--json`.
+
+## `migrate` command is idempotent
+
+You might try to run `migrate` from several CI jobs in parallel. To prevent `pgroll` from throwing an error and potentially halting your workflow, we have made the `migrate` command idempotent. If a migration is currently running, `pgroll` will now simply report that a migration is in progress and will not return an error.
 
 This significantly improves reliability and reduces the chance of unexpected interruptions during automated workflows. This issue was raised on [Discord](https://xata.io/discord).
 
