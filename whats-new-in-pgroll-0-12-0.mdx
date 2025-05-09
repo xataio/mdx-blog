@@ -31,13 +31,21 @@ For the complete notes for this release see the [Github v0.12.0 release page](ht
 
 Full documentation for pgroll is in the [documentation section](https://pgroll.com/docs/latest/getting-started) of this site.
 
-`pgroll` `v0.12` includes verbose mode for migrations, a usability improvement and one new constraint type. Most of the features were suggested by you, the community. We appreciate your participation and insightful suggestions coming from you. Let's take a look at what went into the `v0.12` release in more detail:
+`pgroll` `v0.12` includes verbose mode for migrations, usability improvements and one new constraint type. Most of the features were suggested by you, the community. We appreciate your participation and insightful suggestions coming from you. Let's take a look at what went into the `v0.12` release in more detail:
+
+## Create migrations interactively
+
+If you are tired of writing migration files in your editor, you can try the new `create` command. It helps you geneate migration files interactively from the command line.
+
+![Create command](/images/pgroll-0-12-0/create_v0-12-0.gif)
+
+Alternatively, if you want to generate new migration files from scripts, you can initialize new migrations by setting `--name` and `--empty` flag in the command.
 
 ## Verbose mode
 
 Ever wondered exactly what `pgroll` was doing behind the scenes during a migration? Now you can find out! We have added a new `--verbose` flag to migrator commands: `start`, `rollback`, `complete` and `migrate`. When you set `--verbose`, `pgroll` will log every step of the process from start, rollback, complete and backfilling phases. This is invaluable for debugging, following complex migrations, and ensuring everything is happening as expected. This feature was directly requested on [GitHub](https://github.com/xataio/pgroll/issue/784).
 
-The output of `start` is short and consise:
+The output of `start` is short and concise:
 
 ```sh
 $ pgroll start 01_create_tables.yaml
