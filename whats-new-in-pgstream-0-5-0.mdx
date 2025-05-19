@@ -56,7 +56,7 @@ transformations:
           name: masking
           parameters:
             type: email
-		address:
+        address:
           name: masking
           parameters:
             type: custom
@@ -79,15 +79,15 @@ In the following example, we have a `users` table with a `name` and `sex` column
 
 ```yaml
 transformations:
-	table_transformers:
-	- schema: public
-		table: users
-		column_transformers:
-		name:
-			name: greenmask_firstname
-			dynamic_parameters:
-			gender:
-				column: sex
+    table_transformers:
+    - schema: public
+        table: users
+        column_transformers:
+        name:
+            name: greenmask_firstname
+            dynamic_parameters:
+            gender:
+                column: sex
 ```
 
 | Input Name Value | Input Sex Value | Output Value |
@@ -109,31 +109,31 @@ In order to ensure you don't accidentally forget to add a transformation rule fo
 transformations:
   validation_mode: table_level
   table_transformers:
-	- schema: public
-	  table: users
-	  validation_mode: strict # all columns in the table users need to be explicitly mentioned
-	  column_transformers:
-		name:
-		  name: greenmask_firstname
-		  parameters:
-			generator: deterministic
-		email:
-		  name: neosync_email
-		  parameters:
-			preserve_length: true
-			preserve_domain: true
-			email_type: fullname
-		age: # no transformation applied to column age
-		dob:
-		  name: noop # no transformation applied to column dob
-	- schema: public
-	  table: orders
-	  validation_mode: relaxed
-	  column_transformers:
-		id:
-		  name: greemask_uuid
-		  parameters:
-			generator: deterministic
+    - schema: public
+      table: users
+      validation_mode: strict # all columns in the table users need to be explicitly mentioned
+      column_transformers:
+        name:
+          name: greenmask_firstname
+          parameters:
+            generator: deterministic
+        email:
+          name: neosync_email
+          parameters:
+            preserve_length: true
+            preserve_domain: true
+            email_type: fullname
+        age: # no transformation applied to column age
+        dob:
+          name: noop # no transformation applied to column dob
+    - schema: public
+      table: orders
+      validation_mode: relaxed
+      column_transformers:
+        id:
+          name: greemask_uuid
+          parameters:
+            generator: deterministic
 ```
 
 For more details on the new transformers, check out the [supported transformers section](https://github.com/xataio/pgstream/tree/main/docs#supported-transformers) in the `pgstream` documentation.
@@ -224,7 +224,7 @@ Source status:
 
 For more details on how to use the new CLI, check out the [usage documentation](https://github.com/xataio/pgstream/tree/main?tab=readme-ov-file#usage) or our [tutorials section](https://github.com/xataio/pgstream?tab=readme-ov-file#tutorials).
 
-### Table level filtering
+### 🔍 Table level filtering
 
 We recently received some community feedback requesting table level filtering. Up until now, the only way of achieving this was to use `pgstream` as a library. In this release we finally added this feature, allowing you to specify which tables to include or exclude from the replication process, giving you more control over the data that is replicated when using the CLI. You can provide the configuration as part of the modifiers section in the new YAML configuration file, or as part of the environment variables.
 
