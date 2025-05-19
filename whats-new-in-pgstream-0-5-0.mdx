@@ -1,0 +1,259 @@
+---
+title: 'pgstream v0.5.0 update'
+description: Improved user experience with new transformers, YAML configuration, CLI refactoring and table filtering.
+image:
+  src: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgstream/update-on-pgstream@2x.png
+  alt: pgstream
+author: Esther Minano Sanz
+authorEmail: esther@xata.io
+date: 05-21-2025
+tags: ['open-source', 'postgres', 'schema', 'pgstream', 'replication', 'transformers', 'snapshots', 'oss']
+published: true
+slug: pgstream-0-5-0-update
+ogImage: https://raw.githubusercontent.com/xataio/mdx-blog/main/images/pgstream/update-on-pgstream@2x.png
+---
+
+We're proud to announce the release of `v0.5` of [`pgstream`](https://github.com/xataio/pgstream), our open-source CDC tool for Postgres! 🚀 In this blog post, we'll dive into some of the key features packed into this latest release, and look at what the future holds!
+
+You can find the complete release notes on the [Github v0.5.0 release page](https://github.com/xataio/pgstream/releases/tag/v0.5.0).
+
+## What is pgstream?
+
+`pgstream` is an open source CDC(Change Data Capture) tool and library that offers Postgres replication support with DDL changes. Some of its key features include:
+
+- **Replication of DDL changes:** schema changes are tracked and seamlessly replicated downstream alongside the data, avoiding manual intervention and data loss.
+- **Modular deployment configuration:** pgstream modular implementation allows it to be configured for simple use cases, removing unnecessary complexity and deployment challenges. However, it can also easily integrate with Kafka for more complex use cases.
+- **Out of the box supported targets:**
+  - Postgres: replication to Postgres databases with support for schema changes and batch processing.
+  - Elasticsearch/Opensearch: replication to search stores with special handling of field IDs to minimise re-indexing.
+  - Webhooks: subscribe and receive webhook notifications whenever your source data changes.
+- **Column transformations:** modify column values during replication or snapshots, which is particularly useful for anonymizing sensitive data.
+- **Snapshots:** capture a consistent view of your Postgres database at a specific point in time, either as an initial snapshot before starting replication or as a standalone process when replication is not needed.
+
+For more details on how pgstream works under the hood, check out the full [documentation](https://github.com/xataio/pgstream/blob/main/docs/README.md).
+
+## What's new?
+
+This update focuses on improving the usability of `pgstream`, from adding new column transformers for added flexibility, to simplifying the configuration management by introducing YAML support, and refining the CLI experience. Also, table filtering is finally here! Let's take a look at the main new features in detail.
+
+### 🔐 Advanced data transformations
+
+After the introduction of transformers in `v0.4`, in this release we continue the work towards improving the transformation capabilities of `pgstream`. Masking, phone number and literal transformers, dynamic parameter support, and transformation rules validation are now available. Let's dive a bit deeper into some of these new transformation features!
+
+#### Masking
+
+Instead of producing random/realistic data to anonymize sensitive information, you can now just simply mask the data or parts of it. Powered by the [`go-masker`](https://github.com/ggwhite/go-masker) library, it comes with a predefined set of masking functions (password, name, address, email, mobile, tel, id, credit_card, url), while also offering a custom function in which the user can define the level of masking/unmasking by either providing indexes or percentages (useful when the fields are variable in length).
+
+##### Example masking rules
+
+```yaml
+transformations:
+  table_transformers:
+    - schema: public
+      table: users
+      column_transformers:
+        email:
+          name: masking
+          parameters:
+            type: email
+		address:
+          name: masking
+          parameters:
+            type: custom
+            mask_begin: "15%"
+            mask_end: "85%
+```
+
+| Input Value            | Configuration Parameters | Output Value           |
+| ---------------------- | ------------------------ | ---------------------- |
+| `john.doe@example.com` | `type: email`            | `joh****e@example.com` |
+| `Sensitive Data`       | `type: custom`           | `Se***********ta`      |
+
+#### Dynamic parameter support
+
+Supported transformers can now use dynamic parameters, which allows them to define the transformation rules based on the values of different columns in the same row. This is particularly useful for complex transformations that depend on multiple fields.
+
+##### Example dynamic parameter rules
+
+In the following example, we have a `users` table with a `name` and `sex` column. The transformer will use the value of the `sex` column to determine the randomized output name gender.
+
+```yaml
+transformations:
+	table_transformers:
+	- schema: public
+		table: users
+		column_transformers:
+		name:
+			name: greenmask_firstname
+			dynamic_parameters:
+			gender:
+				column: sex
+```
+
+| Input Name Value | Input Sex Value | Output Value |
+| ---------------- | --------------- | ------------ |
+| `Jane`           | `Female`        | `Pam`        |
+| `John`           | `Male`          | `Jim`        |
+
+#### Transformation rules validation
+
+In order to ensure you don't accidentally forget to add a transformation rule for a column, which can lead to leaking sensitive data, `pgstream` transformation rules now exposes a validation mode. The validation mode can be set to `strict`, `relaxed` or `table_level`.
+
+- `relaxed` mode maintains the current behaviour, only validating the provided transformations.
+- `strict` mode checks the transformation rules against the source table schema and enforces the explicit mention of all columns. Not all columns need to have a transformation applied to them (it can be bypassed by just using a `noop` transformer name or just leaving it unset), but they need to be explicitly mentioned in the configuration.
+- `table_level` mode means the validation mode is evaluated on a per table basis, allowing to have different validation modes for different tables.
+
+##### Example transformation rules with strict validation
+
+```yaml
+transformations:
+  validation_mode: table_level
+  table_transformers:
+	- schema: public
+	  table: users
+	  validation_mode: strict # all columns in the table users need to be explicitly mentioned
+	  column_transformers:
+		name:
+		  name: greenmask_firstname
+		  parameters:
+			generator: deterministic
+		email:
+		  name: neosync_email
+		  parameters:
+			preserve_length: true
+			preserve_domain: true
+			email_type: fullname
+		age: # no transformation applied to column age
+		dob:
+		  name: noop # no transformation applied to column dob
+	- schema: public
+	  table: orders
+	  validation_mode: relaxed
+	  column_transformers:
+		id:
+		  name: greemask_uuid
+		  parameters:
+			generator: deterministic
+```
+
+For more details on the new transformers, check out the [supported transformers section](https://github.com/xataio/pgstream/tree/main/docs#supported-transformers) in the `pgstream` documentation.
+
+For more details on how to set up and use transformers with `pgstream`, check out the [transformers tutorial](https://github.com/xataio/pgstream/blob/main/docs/tutorials/postgres_transformer.md).
+
+### 📜 YAML configuration
+
+In this release, we have added support for YAML configuration files. This allows you to define the `pgstream` configuration in a more human-readable format, making it easier to manage and share your configurations. The transformation rules are embedded into the same configuration file, simplifying the configuration setup. Environment variables are still supported, however they can't be mixed.
+
+#### Example YAML configuration
+
+```yaml
+source:
+  postgres:
+    url: 'postgres://postgres:postgres@localhost:5432?sslmode=disable'
+    mode: replication # options are replication, snapshot or snapshot_and_replication
+    replication:
+      replication_slot: pgstream_tutorial_slot
+
+target:
+  postgres:
+    url: 'postgres://postgres:postgres@localhost:7654?sslmode=disable'
+    batch:
+      timeout: 5000 # batch timeout in milliseconds
+      size: 25 # number of messages in a batch
+    disable_triggers: false # whether to disable triggers on the target database
+    on_conflict_action: 'nothing' # options are update, nothing or error
+
+modifiers:
+  transformations:
+    validation_mode: relaxed
+    table_transformers:
+      - schema: public
+        table: test
+        column_transformers:
+          email:
+            name: neosync_email
+            parameters:
+              preserve_length: true
+              preserve_domain: true
+              email_type: fullname
+          name:
+            name: greenmask_firstname
+            parameters:
+              generator: deterministic
+              gender: Female
+```
+
+For more details on how to set up and use YAML configuration files with `pgstream`, check out the [configuration documentation](https://github.com/xataio/pgstream/blob/main/docs/README.md#yaml).
+
+### 🧰 Command-Line Interface (CLI) Refactoring
+
+We finally decided to spend a bit of time on the CLI, and refactor it to improve the user experience. The new CLI is more intuitive and user-friendly, making it easier to configure and run `pgstream`. The main changes include:
+
+- Added flags to all commands, removing the need to provide a configuration file. This allows you to quickly set up `pgstream` without needing to create a configuration file, making it easier to get started. It relies on defaults for the configuration, but you can still use a configuration file if you prefer.
+
+```sh
+pgstream run --source postgres --source-url "postgres://postgres:postgres@localhost:5432?sslmode=disable" --target postgres --target-url "postgres://postgres:postgres@localhost:7654?sslmode=disable" --log-level trace
+```
+
+- The `snapshot` command is now a separate command from the `run` replication command. This allows you to run snapshots independently of replication, making it more straightforward to manage your snapshot workflows (e.g. running a snapshot as a nigthly job).
+
+```sh
+pgstream snapshot --postgres-url "postgres://postgres:postgres@localhost:5432?sslmode=disable" --target postgres --target-url "postgres://postgres:postgres@localhost:7654?sslmode=disable" --tables "*" --log-level trace
+```
+
+- Added a `status` command to validate the `pgstream` configuration and initialisation.
+
+```sh
+pgstream status -c pg2pg_tutorial.yaml
+SUCCESS  pgstream status check encountered no issues
+Initialisation status:
+- Pgstream schema exists: true
+- Pgstream schema_log table exists: true
+- Migration current version: 7
+- Migration status: success
+- Replication slot name: pgstream_tutorial_slot
+- Replication slot plugin: wal2json
+- Replication slot database: postgres
+Config status:
+- Valid: true
+Transformation rules status:
+- Valid: true
+Source status:
+- Reachable: true
+```
+
+For more details on how to use the new CLI, check out the [usage documentation](https://github.com/xataio/pgstream/tree/main?tab=readme-ov-file#usage) or our [tutorials section](https://github.com/xataio/pgstream?tab=readme-ov-file#tutorials).
+
+### Table level filtering
+
+We recently received some community feedback requesting table level filtering. Up until now, the only way of achieving this was to use `pgstream` as a library. In this release we finally added this feature, allowing you to specify which tables to include or exclude from the replication process, giving you more control over the data that is replicated when using the CLI. You can provide the configuration as part of the modifiers section in the new YAML configuration file, or as part of the environment variables.
+
+#### Example table level filtering
+
+```yaml
+modifiers:
+  filter: # one of include_tables or exclude_tables
+    include_tables: # list of tables for which events should be allowed. Tables should be schema qualified. If no schema is provided, the public schema will be assumed. Wildcards "*" are supported.
+      - 'test'
+      - 'test_schema.test'
+      - 'another_schema.*'
+    exclude_tables: # list of tables for which events should be skipped. Tables should be schema qualified. If no schema is provided, the public schema will be assumed. Wildcards "*" are supported.
+      - 'excluded_test'
+      - 'excluded_schema.test'
+      - 'another_excluded_schema.*'
+```
+
+```sh
+PGSTREAM_FILTER_INCLUDE_TABLES="test, test_schema.test, another_schema.*"
+PGSTREAM_FILTER_EXCLUDE_TABLES="excluded_test, excluded_schema.test, another_excluded_schema.*"
+```
+
+For more details about the new table filtering configuration, check out the [configuration documentation](https://github.com/xataio/pgstream/blob/main/docs/README.md#configuration).
+
+## Conclusion
+
+With the latest features discussed in this blogpost, you can build robust, compliant, and efficient data workflows. Whether you're replicating data to downstream systems, anonymizing sensitive information, or creating snapshots, `pgstream` has the tools you need.
+
+If you have any suggestions or questions, you can reach out to us on [Discord](https://xata.io/discord) or follow us on [X / Twitter](https://twitter.com/xata). We welcome any feedback in [issues](https://github.com/xataio/pgstream/issues), or contributions via [pull requests](https://github.com/xataio/pgstream/pulls)! 💜
+
+Ready to get started? Check out the [pgstream documentation](https://github.com/xataio/pgstream) for more details.
